@@ -60,6 +60,33 @@ export function assertValidDocument(
         { details: { elementId: element.id, issues: result.issues } },
       );
     }
+    const policy = definition.childPolicy ?? { kind: "any" };
+    if (policy.kind === "none" && element.children.length > 0) {
+      throw new PagebldrError(
+        "INVALID_ELEMENT",
+        `Element ${element.id} cannot contain children.`,
+      );
+    }
+    if (
+      "max" in policy &&
+      policy.max !== undefined &&
+      element.children.length > policy.max
+    ) {
+      throw new PagebldrError(
+        "STRUCTURAL_LIMIT",
+        `Element ${element.id} exceeds its child limit.`,
+      );
+    }
+    if (policy.kind === "types") {
+      for (const childId of element.children) {
+        const child = document.elements[childId]!;
+        if (!policy.types.includes(child.type))
+          throw new PagebldrError(
+            "INVALID_ELEMENT",
+            `Element ${element.id} cannot contain ${child.type}.`,
+          );
+      }
+    }
     for (const classId of element.classIds) {
       if (!document.classes[classId]) {
         throw new PagebldrError(

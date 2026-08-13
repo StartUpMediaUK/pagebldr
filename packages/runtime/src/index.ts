@@ -1,4 +1,5 @@
 import type { Pagebldr, PageDocument, PreparedResources } from "@pagebldr/core";
+import { resolveDocumentResources } from "@pagebldr/core";
 
 export type RuntimeResolution =
   | { readonly status: "found"; readonly page: PublishedPage }
@@ -34,13 +35,21 @@ export function createPagebldrRuntime(options: PagebldrRuntimeOptions) {
     }): Promise<RuntimeResolution> => {
       const document = await options.publications.resolve(request);
       if (!document) return { status: "notFound" };
+      const validated = options.builder.documents.migrate(document);
+      const resources = await resolveDocumentResources(
+        options.builder,
+        validated,
+        request.scope ? { scope: request.scope } : {},
+      );
       return {
         status: "found",
         page: {
-          document,
+          document: validated,
           canonicalPath: request.path,
-          resources: { values: new Map() },
-          metadata: { title: document.title },
+          resources,
+          metadata: {
+            title: validated.settings.metadata.title || validated.title,
+          },
         },
       };
     },
