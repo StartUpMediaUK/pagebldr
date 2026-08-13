@@ -1,0 +1,36 @@
+{
+  "name": "pagebldr-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workspace for the pagebldr visual page-building engine.",
+  "license": "MIT",
+  "packageManager": "pnpm@10.8.0",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm packages:check && pnpm licenses:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "licenses:check": "pnpm licenses list",
+    "lint": "eslint .",
+    "packages:check": "pnpm --filter pagebldr package:check && node scripts/check-packed-package.mjs",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@changesets/cli": "3.0.0",
+    "@eslint/js": "9.39.2",
+    "@types/node": "22.19.7",
+    "@vitest/coverage-v8": "4.1.10",
+    "eslint": "9.39.2",
+    "prettier": "3.9.6",
+    "publint": "0.3.23",
+    "turbo": "2.10.9",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.67.0",
+    "vitest": "4.1.10"
+  }
+}

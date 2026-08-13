@@ -1,0 +1,7 @@
+.changeset/pre.json
+.next
+.source
+coverage
+dist
+node_modules
+pnpm-lock.yaml
