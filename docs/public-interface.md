@@ -120,6 +120,51 @@ Hosts may theme it with `--pagebldr-background`, `--pagebldr-foreground`,
 `--pagebldr-focus`, and `--pagebldr-font-sans`. Consumers do not need Tailwind
 or access to package source classes.
 
+## Elements, Resources, Blocks, and Templates
+
+An Element definition owns its property schema and defaults, child policy, Style
+capabilities, migration, Controls, accessibility metadata, Resource references,
+and framework-neutral render tree. React rendering translates that tree; it does
+not switch on Element type. The bundled `standardElements` and
+`standardStyleCapabilities` can be installed like any other definitions.
+
+```ts
+const builder = createPagebldr({
+  namespace: "my-app",
+  elements: standardElements,
+  styleCapabilities: standardStyleCapabilities,
+  resources: {
+    asset: {
+      reference: assetReferenceSchema,
+      resolve: ({ id }) => assetUrl(id),
+    },
+  },
+});
+
+const resources = await resolveDocumentResources(builder, document, {
+  scope: { workspace: "example" },
+});
+```
+
+The Host resolves Resources before synchronous SSR and passes the resulting map
+to `PagebldrRenderer`. Missing adapters and invalid references fail explicitly.
+The renderer never browses, uploads, or fetches Resources while rendering.
+
+Blocks and Templates are factories for ordinary editable Element trees:
+
+```ts
+const hero = defineBlock({
+  key: "hero",
+  label: "Hero",
+  create: () => ({
+    type: "container",
+    children: [{ type: "heading", props: { text: "Welcome", level: 1 } }],
+  }),
+});
+```
+
+They have no special persisted identity or privileged renderer behavior.
+
 ## React interface
 
 The primary editor is controlled:

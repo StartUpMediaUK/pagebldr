@@ -9,6 +9,12 @@ export { defineElement } from "./element.js";
 export { compileDocumentStyles, defineStyleCapability } from "./styles.js";
 export { assertUniqueId, createId, createSequentialIdFactory } from "./ids.js";
 export { PagebldrError } from "./types.js";
+export { resolveDocumentResources, resourceKey } from "./resources.js";
+export {
+  standardElements,
+  standardStyleCapabilities,
+} from "./standard-elements.js";
+export { defineBlock, defineTemplate } from "./factories.js";
 export type { Pagebldr, PagebldrOptions } from "./config.js";
 export type { CreateDocumentInput } from "./document.js";
 export type {
@@ -35,11 +41,24 @@ export type {
   EditorTransaction,
 } from "./commands.js";
 export type { EditorEngine } from "./editor.js";
-export type { ElementControl, ElementDefinition } from "./element.js";
+export type {
+  ElementAccessibility,
+  ElementChildPolicy,
+  ElementControl,
+  ElementDefinition,
+  ElementRenderContext,
+  RenderElement,
+  RenderNode,
+} from "./element.js";
 export type { IdFactory } from "./ids.js";
 export type { CommitOptions, HistoryEntry, LocalHistory } from "./history.js";
 export type { DocumentPatch } from "./patches.js";
 export type { DocumentMigration } from "./migrations.js";
+export type {
+  BlockDefinition,
+  ElementTree,
+  TemplateDefinition,
+} from "./factories.js";
 export type {
   CompiledDocumentStyles,
   StyleCapabilityDefinition,

@@ -2,6 +2,7 @@ import type { ElementDefinition } from "./element.js";
 import { createEditor, type EditorEngine } from "./editor.js";
 import { createDocuments, type Documents } from "./documents.js";
 import type { DocumentMigration } from "./migrations.js";
+import type { BlockDefinition, TemplateDefinition } from "./factories.js";
 import {
   createStyleEngine,
   type StyleCapabilityDefinition,
@@ -15,6 +16,8 @@ export interface PagebldrOptions {
   readonly migrations?: readonly DocumentMigration[];
   readonly resources?: Readonly<Record<string, ResourceAdapter>>;
   readonly styleCapabilities?: readonly StyleCapabilityDefinition[];
+  readonly blocks?: readonly BlockDefinition[];
+  readonly templates?: readonly TemplateDefinition[];
 }
 
 export interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {
@@ -24,6 +27,8 @@ export interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {
   readonly documents: Documents;
   readonly editor: EditorEngine;
   readonly styles: StyleEngine;
+  readonly blocks: ReadonlyMap<string, BlockDefinition>;
+  readonly templates: ReadonlyMap<string, TemplateDefinition>;
 }
 
 const namespacePattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
@@ -62,6 +67,20 @@ export function createPagebldr<const Options extends PagebldrOptions>(
     }
     resources.set(kind, adapter);
   }
+  const blocks = keyedDefinitions("Block", options.blocks ?? []);
+  const templates = keyedDefinitions("Template", options.templates ?? []);
+  const styles = createStyleEngine(
+    options.namespace,
+    options.styleCapabilities ?? [],
+  );
+  for (const definition of elements.values()) {
+    for (const capability of definition.styles ?? [])
+      if (!styles.capabilities.has(capability))
+        throw new PagebldrError(
+          "INVALID_CONFIGURATION",
+          `Element ${definition.type} references unregistered Style capability ${capability}.`,
+        );
+  }
 
   return Object.freeze({
     namespace: options.namespace,
@@ -69,9 +88,29 @@ export function createPagebldr<const Options extends PagebldrOptions>(
     resources,
     documents: createDocuments(elements, options.migrations ?? []),
     editor: createEditor(elements),
-    styles: createStyleEngine(
-      options.namespace,
-      options.styleCapabilities ?? [],
-    ),
+    styles,
+    blocks,
+    templates,
   });
+}
+
+function keyedDefinitions<Definition extends { readonly key: string }>(
+  kind: string,
+  definitions: readonly Definition[],
+): ReadonlyMap<string, Definition> {
+  const result = new Map<string, Definition>();
+  for (const definition of definitions) {
+    if (!namespacePattern.test(definition.key))
+      throw new PagebldrError(
+        "INVALID_CONFIGURATION",
+        `${kind} key ${definition.key} must use lowercase kebab-case.`,
+      );
+    if (result.has(definition.key))
+      throw new PagebldrError(
+        "DUPLICATE_REGISTRATION",
+        `${kind} ${definition.key} is registered more than once.`,
+      );
+    result.set(definition.key, definition);
+  }
+  return result;
 }

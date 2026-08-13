@@ -1,9 +1,17 @@
-import { createPagebldr } from "@pagebldr/core";
+import {
+  createPagebldr,
+  standardElements,
+  standardStyleCapabilities,
+} from "@pagebldr/core";
 import { describe, expect, it } from "vitest";
 
 import { createPagebldrRuntime } from "./index.js";
 
-const builder = createPagebldr({ namespace: "test-app" });
+const builder = createPagebldr({
+  namespace: "test-app",
+  elements: standardElements,
+  styleCapabilities: standardStyleCapabilities,
+});
 const document = builder.documents.create({ id: "home", title: "Home" });
 
 describe("createPagebldrRuntime", () => {
