@@ -6,6 +6,7 @@ export {
   MAX_DOCUMENT_ELEMENTS,
 } from "./document-constants.js";
 export { defineElement } from "./element.js";
+export { compileDocumentStyles, defineStyleCapability } from "./styles.js";
 export { assertUniqueId, createId, createSequentialIdFactory } from "./ids.js";
 export { PagebldrError } from "./types.js";
 export type { Pagebldr, PagebldrOptions } from "./config.js";
@@ -39,6 +40,11 @@ export type { IdFactory } from "./ids.js";
 export type { CommitOptions, HistoryEntry, LocalHistory } from "./history.js";
 export type { DocumentPatch } from "./patches.js";
 export type { DocumentMigration } from "./migrations.js";
+export type {
+  CompiledDocumentStyles,
+  StyleCapabilityDefinition,
+  StyleEngine,
+} from "./styles.js";
 export type {
   InferSchemaOutput,
   StandardSchemaResult,

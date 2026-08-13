@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import { copyFile, mkdir } from "node:fs/promises";
 
 export default defineConfig({
   clean: true,
@@ -14,6 +15,10 @@ export default defineConfig({
   },
   external: ["react", "react-dom"],
   noExternal: [/^@pagebldr\//u],
+  onSuccess: async () => {
+    await mkdir("dist", { recursive: true });
+    await copyFile("src/styles.css", "dist/styles.css");
+  },
   format: ["esm"],
   sourcemap: true,
   splitting: false,

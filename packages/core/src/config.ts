@@ -2,6 +2,11 @@ import type { ElementDefinition } from "./element.js";
 import { createEditor, type EditorEngine } from "./editor.js";
 import { createDocuments, type Documents } from "./documents.js";
 import type { DocumentMigration } from "./migrations.js";
+import {
+  createStyleEngine,
+  type StyleCapabilityDefinition,
+  type StyleEngine,
+} from "./styles.js";
 import { PagebldrError, type ResourceAdapter } from "./types.js";
 
 export interface PagebldrOptions {
@@ -9,6 +14,7 @@ export interface PagebldrOptions {
   readonly elements?: readonly ElementDefinition[];
   readonly migrations?: readonly DocumentMigration[];
   readonly resources?: Readonly<Record<string, ResourceAdapter>>;
+  readonly styleCapabilities?: readonly StyleCapabilityDefinition[];
 }
 
 export interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {
@@ -17,6 +23,7 @@ export interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {
   readonly resources: ReadonlyMap<string, ResourceAdapter>;
   readonly documents: Documents;
   readonly editor: EditorEngine;
+  readonly styles: StyleEngine;
 }
 
 const namespacePattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
@@ -62,5 +69,9 @@ export function createPagebldr<const Options extends PagebldrOptions>(
     resources,
     documents: createDocuments(elements, options.migrations ?? []),
     editor: createEditor(elements),
+    styles: createStyleEngine(
+      options.namespace,
+      options.styleCapabilities ?? [],
+    ),
   });
 }
