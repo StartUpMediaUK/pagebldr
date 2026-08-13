@@ -3,23 +3,36 @@ import { describe, expect, it } from "vitest";
 
 import { createPagebldrServer, type StorageAdapter } from "./index.js";
 
+const capabilities = {
+  atomicLifecycle: true,
+  optimisticConcurrency: true,
+  revisions: true,
+  publicationPointers: true,
+  pagination: true,
+  scopeIsolation: true,
+  transactionalAudit: false,
+};
+
+function storage(
+  overrides: Partial<typeof capabilities> = {},
+): StorageAdapter<"prisma", "mongodb"> {
+  return {
+    integration: "prisma",
+    provider: "mongodb",
+    capabilities: { ...capabilities, ...overrides },
+    setup: { strategy: "prisma-db-push", summary: "Test" },
+    read: () => Promise.reject(new Error("not called")),
+    transaction: () => Promise.reject(new Error("not called")),
+  };
+}
+
 describe("createPagebldrServer", () => {
   it("preserves provider identity", () => {
-    const storage: StorageAdapter<"prisma", "mongodb"> = {
-      integration: "prisma",
-      provider: "mongodb",
-      capabilities: {
-        atomicSave: true,
-        optimisticConcurrency: true,
-        transactionalAudit: false,
-      },
-    };
     const server = createPagebldrServer({
       builder: createPagebldr({ namespace: "test-app" }),
-      storage,
+      storage: storage(),
       collection: { mode: "multiple" },
     });
-
     expect(server.storage.provider).toBe("mongodb");
   });
 
@@ -27,15 +40,7 @@ describe("createPagebldrServer", () => {
     expect(() =>
       createPagebldrServer({
         builder: createPagebldr({ namespace: "test-app" }),
-        storage: {
-          integration: "prisma",
-          provider: "mongodb",
-          capabilities: {
-            atomicSave: true,
-            optimisticConcurrency: true,
-            transactionalAudit: false,
-          },
-        },
+        storage: storage({ transactionalAudit: false }),
         collection: { mode: "single", key: "home" },
         requireCapabilities: { transactionalAudit: true },
       }),

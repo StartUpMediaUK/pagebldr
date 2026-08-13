@@ -110,11 +110,15 @@ export const page = <PagebldrRenderer builder={builder} document={document} />;
 import { memoryAdapter } from "pagebldr/adapters/memory";
 import { createPagebldrRuntime } from "pagebldr/runtime";
 import { createPagebldrServer } from "pagebldr/server";
+import { createPagebldrHandler } from "pagebldr/server/next";
+import { asPagebldrPrismaClient } from "pagebldr/adapters/prisma";
 
 const builder = createPagebldr({ namespace: "next-app" });
 const storage = memoryAdapter();
 export const server = createPagebldrServer({ builder, storage, collection: { mode: "multiple" } });
 export const runtime = createPagebldrRuntime({ builder, publications: { resolve: async () => null } });
+void createPagebldrHandler;
+void asPagebldrPrismaClient;
 `,
   );
   execFileSync(
@@ -127,7 +131,7 @@ export const runtime = createPagebldrRuntime({ builder, publications: { resolve:
     [
       "--input-type=module",
       "--eval",
-      "await Promise.all([import('pagebldr'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/runtime'), import('pagebldr/adapters/memory')])",
+      "await Promise.all([import('pagebldr'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/server/next'), import('pagebldr/runtime'), import('pagebldr/adapters/memory'), import('pagebldr/adapters/prisma')])",
     ],
     { cwd: consumerDirectory, stdio: "inherit" },
   );

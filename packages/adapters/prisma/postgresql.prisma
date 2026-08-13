@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/postgresql"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PAGEBLDR_POSTGRESQL_URL")
+}
+
+model PagebldrDocument {
+  storageId String   @id
+  scopeKey  String
+  scope     Json
+  key       String
+  document  Json
+  version   Int
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@index([scopeKey, key])
+}
+
+model PagebldrRevision {
+  storageId   String   @id
+  scopeKey    String
+  scope       Json
+  id          String
+  documentKey String
+  document    Json
+  version     Int
+  createdAt   DateTime
+
+  @@index([scopeKey, documentKey, createdAt, version])
+}
+
+model PagebldrPublication {
+  storageId   String   @id
+  scopeKey    String
+  scope       Json
+  documentKey String
+  revisionId  String
+  publishedAt DateTime
+
+  @@index([scopeKey, documentKey])
+}

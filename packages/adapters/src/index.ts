@@ -1,13 +1,10 @@
-import type { StorageAdapter } from "@pagebldr/server";
-
-export function memoryAdapter(): StorageAdapter<"memory", "memory"> {
-  return Object.freeze({
-    integration: "memory",
-    provider: "memory",
-    capabilities: {
-      atomicSave: true,
-      optimisticConcurrency: true,
-      transactionalAudit: true,
-    },
-  });
-}
+export { memoryAdapter } from "./memory.js";
+export {
+  asPagebldrPrismaClient,
+  prismaMongodbAdapter,
+  prismaPostgresqlAdapter,
+} from "./prisma.js";
+export type {
+  PagebldrPrismaClient,
+  PagebldrPrismaTransactionClient,
+} from "./prisma.js";
