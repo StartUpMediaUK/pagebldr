@@ -160,9 +160,11 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     "Button / link",
     { label: "Button", href: "#" },
     (props) =>
-      node("a", { href: text(props, "href", "#") }, [
-        text(props, "label", "Button"),
-      ]),
+      node(
+        "a",
+        { href: text(props, "href", "#"), "data-pagebldr-action": "activate" },
+        [text(props, "label", "Button")],
+      ),
     none,
     { keyboardInteractive: true, requiresLabel: true },
   ),

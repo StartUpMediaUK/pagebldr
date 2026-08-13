@@ -10,6 +10,7 @@ export default defineConfig({
     server: "src/server.ts",
     "server-next": "src/server-next.ts",
     runtime: "src/runtime.ts",
+    "runtime-next": "src/runtime-next.ts",
     "adapters-memory": "src/adapters-memory.ts",
     "adapters-prisma": "src/adapters-prisma.ts",
   },

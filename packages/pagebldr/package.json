@@ -52,6 +52,10 @@
       "types": "./dist/runtime.d.ts",
       "import": "./dist/runtime.js"
     },
+    "./runtime/next": {
+      "types": "./dist/runtime-next.d.ts",
+      "import": "./dist/runtime-next.js"
+    },
     "./adapters/memory": {
       "types": "./dist/adapters-memory.d.ts",
       "import": "./dist/adapters-memory.js"

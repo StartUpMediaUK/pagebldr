@@ -165,6 +165,50 @@ const hero = defineBlock({
 
 They have no special persisted identity or privileged renderer behavior.
 
+## Production Runtime and events
+
+The Runtime resolves a normalized Host path and optional Host scope into a
+validated, migrated, Resource-prepared Published page. Found pages include
+metadata, canonical identity, cache identity, and the exact event context used
+by `PagebldrPage`. Redirect, not-found, and isolated error outcomes are
+explicit.
+
+```ts
+const events = createEventDelivery({
+  sink: callbackEventSink((batch) => analytics.write(batch)),
+  consent: (event) => consent.allows(event.type),
+});
+
+const runtime = createPagebldrRuntime({
+  builder,
+  canonicalOrigin: "https://example.com",
+  publications: {
+    resolve: ({ path, scope }) => loadPublishedDocument(path, scope),
+  },
+  events,
+});
+```
+
+`PagebldrPage` renders the prepared page and can record a Visit at client mount.
+Semantic interactions are collected only from definition-owned
+`data-pagebldr-action` markers; pagebldr does not install arbitrary global DOM
+capture. Set `visit="manual"` when the Host wants to call
+`runtime.recordVisit(page)` at a different counting point.
+
+Audit and Analytics are separate schema-versioned envelopes. Audit events carry
+Host Actor, Scope, and correlation context; Analytics excludes Actor identity
+and passes through the Host consent policy. Event data is allowlisted to scalar
+metadata and sensitive key names are removed. Raw authored content is not
+emitted.
+
+Memory, callback, console, Audit-store, and OpenTelemetry-style sinks are local
+adapters. The Host owns storage, querying, retention, export, privacy, consent,
+and costs. `createAuditQuery()` demonstrates an authorized, scope-resolved Host
+HTTP integration. No event has a package-owned network destination.
+
+Next.js helpers under `pagebldr/runtime/next` translate prepared pages to
+metadata, cache tags, and route outcomes without owning an application route.
+
 ## React interface
 
 The primary editor is controlled:

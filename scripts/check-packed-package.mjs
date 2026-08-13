@@ -109,6 +109,7 @@ export const page = <PagebldrRenderer builder={builder} document={document} />;
     `import { createPagebldr } from "pagebldr";
 import { memoryAdapter } from "pagebldr/adapters/memory";
 import { createPagebldrRuntime } from "pagebldr/runtime";
+import { pagebldrMetadata } from "pagebldr/runtime/next";
 import { createPagebldrServer } from "pagebldr/server";
 import { createPagebldrHandler } from "pagebldr/server/next";
 import { asPagebldrPrismaClient } from "pagebldr/adapters/prisma";
@@ -119,6 +120,7 @@ export const server = createPagebldrServer({ builder, storage, collection: { mod
 export const runtime = createPagebldrRuntime({ builder, publications: { resolve: async () => null } });
 void createPagebldrHandler;
 void asPagebldrPrismaClient;
+void pagebldrMetadata;
 `,
   );
   execFileSync(
@@ -131,7 +133,7 @@ void asPagebldrPrismaClient;
     [
       "--input-type=module",
       "--eval",
-      "await Promise.all([import('pagebldr'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/server/next'), import('pagebldr/runtime'), import('pagebldr/adapters/memory'), import('pagebldr/adapters/prisma')])",
+      "await Promise.all([import('pagebldr'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/server/next'), import('pagebldr/runtime'), import('pagebldr/runtime/next'), import('pagebldr/adapters/memory'), import('pagebldr/adapters/prisma')])",
     ],
     { cwd: consumerDirectory, stdio: "inherit" },
   );
