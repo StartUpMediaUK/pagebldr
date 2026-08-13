@@ -27,8 +27,17 @@ export type {
   VariableReference,
 } from "./document-types.js";
 export type { Documents } from "./documents.js";
+export type { PagebldrClipboard } from "./clipboard.js";
+export type {
+  DocumentChangeEvent,
+  EditorCommand,
+  EditorTransaction,
+} from "./commands.js";
+export type { EditorEngine } from "./editor.js";
 export type { ElementControl, ElementDefinition } from "./element.js";
 export type { IdFactory } from "./ids.js";
+export type { CommitOptions, HistoryEntry, LocalHistory } from "./history.js";
+export type { DocumentPatch } from "./patches.js";
 export type { DocumentMigration } from "./migrations.js";
 export type {
   InferSchemaOutput,

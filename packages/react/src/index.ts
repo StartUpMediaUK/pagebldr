@@ -1,12 +1,13 @@
 import { createElement, type ReactElement, type ReactNode } from "react";
 
-import type { Pagebldr, PageDocument, PreparedResources } from "@pagebldr/core";
+import type {
+  DocumentChangeEvent,
+  Pagebldr,
+  PageDocument,
+  PreparedResources,
+} from "@pagebldr/core";
 
-export interface DocumentChangeEvent {
-  readonly document: PageDocument;
-  readonly command: string;
-  readonly changedElementIds: readonly string[];
-}
+export type { DocumentChangeEvent } from "@pagebldr/core";
 
 export interface SaveRequest {
   readonly document: PageDocument;

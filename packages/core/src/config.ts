@@ -1,4 +1,5 @@
 import type { ElementDefinition } from "./element.js";
+import { createEditor, type EditorEngine } from "./editor.js";
 import { createDocuments, type Documents } from "./documents.js";
 import type { DocumentMigration } from "./migrations.js";
 import { PagebldrError, type ResourceAdapter } from "./types.js";
@@ -15,6 +16,7 @@ export interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {
   readonly elements: ReadonlyMap<string, ElementDefinition>;
   readonly resources: ReadonlyMap<string, ResourceAdapter>;
   readonly documents: Documents;
+  readonly editor: EditorEngine;
 }
 
 const namespacePattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
@@ -59,5 +61,6 @@ export function createPagebldr<const Options extends PagebldrOptions>(
     elements,
     resources,
     documents: createDocuments(elements, options.migrations ?? []),
+    editor: createEditor(elements),
   });
 }
