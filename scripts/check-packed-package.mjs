@@ -155,6 +155,15 @@ void asPagebldrPrismaClient;
   if (!/from ["']react["']/u.test(reactBundle)) {
     throw new Error("React must remain external in the published bundle.");
   }
+  const packageCss = readFileSync(
+    join(consumerDirectory, "node_modules", "pagebldr", "dist", "styles.css"),
+    "utf8",
+  );
+  if (!packageCss.includes("--pagebldr-focus")) {
+    throw new Error(
+      "The packed package must contain the documented theme CSS.",
+    );
+  }
 } finally {
   rmSync(temporaryDirectory, { recursive: true, force: true });
 }

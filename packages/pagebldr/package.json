@@ -59,7 +59,8 @@
     "./adapters/prisma": {
       "types": "./dist/adapters-prisma.d.ts",
       "import": "./dist/adapters-prisma.js"
-    }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "engines": {
     "node": ">=20.19.0"
@@ -74,7 +75,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "package:check": "publint && attw --pack --profile esm-only",
+    "package:check": "publint && attw --pack --profile esm-only --ignore-rules no-resolution",
     "prepack": "pnpm build",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"

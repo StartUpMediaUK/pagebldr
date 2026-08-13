@@ -1,0 +1,29 @@
+@layer pagebldr {
+  [data-pagebldr-editor] {
+    color: var(--pagebldr-foreground, #18181b);
+    background: var(--pagebldr-background, #ffffff);
+    font-family: var(
+      --pagebldr-font-sans,
+      ui-sans-serif,
+      system-ui,
+      sans-serif
+    );
+  }
+
+  [data-pagebldr-editor] :focus-visible {
+    outline: 2px solid var(--pagebldr-focus, #2563eb);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-pagebldr-editor],
+    [data-pagebldr-editor] *,
+    [data-pagebldr-editor] *::before,
+    [data-pagebldr-editor] *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

@@ -79,6 +79,47 @@ Internal registry classes are implementation details. Extension authors submit
 definitions through `createPagebldr`; they should not orchestrate registry
 ordering themselves.
 
+## Styling interface
+
+Hosts register named Style capabilities rather than passing arbitrary editor
+configuration. A property can belong to only one capability, which keeps the
+inspector vocabulary and compiler validation coherent.
+
+```ts
+const builder = createPagebldr({
+  namespace: "my-app",
+  styleCapabilities: [
+    defineStyleCapability({
+      key: "spacing",
+      label: "Spacing",
+      properties: ["gap", "padding", "margin"],
+    }),
+  ],
+});
+
+const compiled = builder.styles.compile(document);
+```
+
+`compiled.css` is authored page CSS only. It is byte-stable for the same
+Document, scoped by the builder namespace and Document ID, and safe to extract
+at build time or emit in an SSR `<style>` element. When a Host uses a CSP, it
+must hash the returned CSS or apply its request nonce to that `<style>` element;
+pagebldr does not weaken the Host policy.
+
+The renderer applies the returned `data-pagebldr` and `data-pagebldr-document`
+scope attributes. Element and Class selectors use package-owned data attributes
+rather than public implementation classes.
+
+Editor-shell and renderer baseline CSS is separate:
+
+```ts
+import "pagebldr/styles.css";
+```
+
+Hosts may theme it with `--pagebldr-background`, `--pagebldr-foreground`,
+`--pagebldr-focus`, and `--pagebldr-font-sans`. Consumers do not need Tailwind
+or access to package source classes.
+
 ## React interface
 
 The primary editor is controlled:
