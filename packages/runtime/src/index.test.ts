@@ -1,19 +1,15 @@
-import { createPagebldr, type PageDocument } from "@pagebldr/core";
+import { createPagebldr } from "@pagebldr/core";
 import { describe, expect, it } from "vitest";
 
 import { createPagebldrRuntime } from "./index.js";
 
-const document: PageDocument = {
-  format: "pagebldr",
-  schemaVersion: 1,
-  id: "home",
-  title: "Home",
-};
+const builder = createPagebldr({ namespace: "test-app" });
+const document = builder.documents.create({ id: "home", title: "Home" });
 
 describe("createPagebldrRuntime", () => {
   it("resolves a published document and prepares route metadata", async () => {
     const runtime = createPagebldrRuntime({
-      builder: createPagebldr({ namespace: "test-app" }),
+      builder,
       publications: { resolve: () => Promise.resolve(document) },
     });
 
@@ -25,7 +21,7 @@ describe("createPagebldrRuntime", () => {
 
   it("returns notFound when the Host has no matching publication", async () => {
     const runtime = createPagebldrRuntime({
-      builder: createPagebldr({ namespace: "test-app" }),
+      builder,
       publications: { resolve: () => Promise.resolve(null) },
     });
 

@@ -1,12 +1,5 @@
 import type { StandardSchemaV1 } from "./schema.js";
 
-export interface PageDocument {
-  readonly format: "pagebldr";
-  readonly schemaVersion: number;
-  readonly id: string;
-  readonly title: string;
-}
-
 export interface ResourceReference<
   Kind extends string = string,
   Value = unknown,
@@ -61,4 +54,16 @@ export class PagebldrError extends Error {
 }
 
 export type PagebldrErrorCode =
-  "DUPLICATE_REGISTRATION" | "INVALID_CONFIGURATION" | "INVALID_NAMESPACE";
+  | "BROKEN_REFERENCE"
+  | "CIRCULAR_NESTING"
+  | "DUPLICATE_ID"
+  | "DUPLICATE_REGISTRATION"
+  | "ELEMENT_NOT_FOUND"
+  | "FUTURE_SCHEMA"
+  | "INVALID_CONFIGURATION"
+  | "INVALID_DOCUMENT"
+  | "INVALID_ELEMENT"
+  | "INVALID_NAMESPACE"
+  | "INVALID_PARENT"
+  | "MIGRATION_MISSING"
+  | "STRUCTURAL_LIMIT";
