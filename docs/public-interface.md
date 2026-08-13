@@ -379,10 +379,11 @@ interface ElementDefinition<Props, Type extends string = string> {
 }
 ```
 
-The actual schema abstraction needs a deliberate decision: exporting Zod
-directly maximizes immediate inference and matches the source, while a narrow
-Standard Schema-compatible contract reduces lock-in. This is an owner
-decision/prototype item, not something to conceal behind `unknown` prematurely.
+Element schemas use the Standard Schema v1 contract. The Phase 2 tracer proved
+that a Zod schema can be passed directly while retaining inference for defaults,
+migrations, controls, and reference extraction. This keeps Zod ergonomic for
+Hosts that already use it without making Zod a public runtime dependency or
+preventing other Standard Schema-compatible validators.
 
 ## Errors and compatibility
 

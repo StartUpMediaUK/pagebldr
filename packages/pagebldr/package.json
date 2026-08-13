@@ -9,6 +9,22 @@
   "sideEffects": [
     "./dist/styles.css"
   ],
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@pagebldr/adapters": "workspace:*",
+    "@pagebldr/core": "workspace:*",
+    "@pagebldr/react": "workspace:*",
+    "@pagebldr/runtime": "workspace:*",
+    "@pagebldr/server": "workspace:*",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tsup": "8.5.1"
+  },
   "files": [
     "dist",
     "README.md",
@@ -18,6 +34,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js"
+    },
+    "./adapters/memory": {
+      "types": "./dist/adapters-memory.d.ts",
+      "import": "./dist/adapters-memory.js"
     }
   },
   "engines": {
@@ -32,7 +64,7 @@
     "url": "git+https://github.com/StartUpMediaUK/pagebldr.git"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup",
     "package:check": "publint && attw --pack --profile esm-only",
     "prepack": "pnpm build",
     "test": "vitest run",
