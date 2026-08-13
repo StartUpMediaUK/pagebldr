@@ -160,7 +160,7 @@ function createPrismaAdapter<Provider extends "postgresql" | "mongodb">(
       publicationPointers: true,
       pagination: true,
       scopeIsolation: true,
-      transactionalAudit: true,
+      transactionalAudit: false,
     },
     setup,
     read,

@@ -1,4 +1,5 @@
 export { createPagebldrServer } from "./server.js";
+export { createAuditQuery } from "./audit.js";
 export type {
   CollectionPolicy,
   CreateRequest,

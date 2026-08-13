@@ -3,6 +3,11 @@ import {
   type Pagebldr,
   type PageDocument,
 } from "@pagebldr/core";
+import type {
+  AuditEventType,
+  EventContext,
+  EventDelivery,
+} from "@pagebldr/runtime";
 
 import type {
   StorageAdapter,
@@ -29,6 +34,11 @@ export interface PagebldrServerOptions<
   readonly requireCapabilities?: Partial<StorageCapabilities>;
   readonly now?: () => Date;
   readonly createId?: () => string;
+  readonly audit?: {
+    readonly delivery: EventDelivery;
+    readonly context: (request: DocumentRequest) => EventContext;
+    readonly requireTransactional?: boolean;
+  };
 }
 
 export interface DocumentRequest {
@@ -58,6 +68,8 @@ export function createPagebldrServer<Adapter extends StorageAdapter>(
   options: PagebldrServerOptions<Adapter>,
 ) {
   assertCapabilities(options.storage, options.requireCapabilities);
+  if (options.audit?.requireTransactional === true)
+    assertCapabilities(options.storage, { transactionalAudit: true });
   const now = options.now ?? (() => new Date());
   const createId = options.createId ?? (() => crypto.randomUUID());
   const scopeOf = (scope?: StorageScope) => scope ?? {};
@@ -97,7 +109,7 @@ export function createPagebldrServer<Adapter extends StorageAdapter>(
     return revision;
   };
 
-  return Object.freeze({
+  const server = Object.freeze({
     builder: options.builder,
     storage: options.storage,
     collection: options.collection,
@@ -259,6 +271,48 @@ export function createPagebldrServer<Adapter extends StorageAdapter>(
         options.storage.transaction(async (tx) =>
           tx.publications.delete(scopeOf(request.scope), keyOf(request.key)),
         ),
+    },
+  });
+  if (!options.audit) return server;
+  const wrap =
+    <Request extends DocumentRequest, Result>(
+      type: AuditEventType,
+      operation: (request: Request) => Promise<Result>,
+    ) =>
+    async (request: Request): Promise<Result> => {
+      const result = await operation(request);
+      await options.audit!.delivery.audit({
+        type,
+        context: options.audit!.context(request),
+        subject: {
+          documentKey: request.key,
+          ...(type === "revision.restored" && "revisionId" in request
+            ? { revisionId: String(request.revisionId) }
+            : {}),
+        },
+        data:
+          result && typeof result === "object" && "version" in result
+            ? { version: Number(result.version) }
+            : {},
+      });
+      return result;
+    };
+  return Object.freeze({
+    ...server,
+    documents: {
+      ...server.documents,
+      create: wrap("document.created", server.documents.create),
+      save: wrap("document.saved", server.documents.save),
+      delete: wrap("document.deleted", server.documents.delete),
+    },
+    revisions: {
+      ...server.revisions,
+      restore: wrap("revision.restored", server.revisions.restore),
+    },
+    publications: {
+      ...server.publications,
+      publish: wrap("publication.published", server.publications.publish),
+      unpublish: wrap("publication.unpublished", server.publications.unpublish),
     },
   });
 }

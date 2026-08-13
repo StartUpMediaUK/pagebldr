@@ -64,6 +64,9 @@ importers:
       '@pagebldr/core':
         specifier: workspace:*
         version: link:../core
+      '@pagebldr/runtime':
+        specifier: workspace:*
+        version: link:../runtime
       '@prisma/client':
         specifier: 6.19.0
         version: 6.19.0(prisma@6.19.0(typescript@5.9.3))(typescript@5.9.3)
@@ -118,6 +121,9 @@ importers:
       '@pagebldr/core':
         specifier: workspace:*
         version: link:../core
+      '@pagebldr/runtime':
+        specifier: workspace:*
+        version: link:../runtime
     devDependencies:
       '@types/react':
         specifier: 19.2.18
@@ -143,6 +149,9 @@ importers:
       '@pagebldr/core':
         specifier: workspace:*
         version: link:../core
+      '@pagebldr/runtime':
+        specifier: workspace:*
+        version: link:../runtime
 
 packages:
 

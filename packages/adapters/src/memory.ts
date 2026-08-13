@@ -50,7 +50,7 @@ export function memoryAdapter(): StorageAdapter<"memory", "memory"> {
       publicationPointers: true,
       pagination: true,
       scopeIsolation: true,
-      transactionalAudit: true,
+      transactionalAudit: false,
     },
     setup: {
       strategy: "automatic",

@@ -3,6 +3,7 @@ import {
   Fragment,
   type ReactElement,
   type ReactNode,
+  useEffect,
 } from "react";
 
 import type {
@@ -14,6 +15,11 @@ import type {
   RenderNode,
 } from "@pagebldr/core";
 import { resourceKey } from "@pagebldr/core";
+import type {
+  AnalyticsEvent,
+  EventDelivery,
+  PublishedPage,
+} from "@pagebldr/runtime";
 
 export type { DocumentChangeEvent } from "@pagebldr/core";
 
@@ -127,6 +133,71 @@ export function PagebldrRenderer({
       renderElement(document.rootId),
     ),
   );
+}
+
+export interface PagebldrPageProps {
+  readonly builder: Pagebldr;
+  readonly page: PublishedPage;
+  readonly events?: EventDelivery;
+  readonly analyticsConsent?: boolean;
+  readonly visit?: "mount" | "manual" | false;
+  readonly styleNonce?: string;
+}
+
+export function PagebldrPage({
+  builder,
+  page,
+  events,
+  analyticsConsent = false,
+  visit = "mount",
+  styleNonce,
+}: PagebldrPageProps): ReactElement {
+  useEffect(() => {
+    if (!events || !analyticsConsent || visit !== "mount") return;
+    void emitAnalytics(events, page, "page.visit", {});
+  }, [analyticsConsent, events, page, visit]);
+  const track = (event: { readonly target: EventTarget | null }) => {
+    if (!events || !analyticsConsent || !(event.target instanceof Element))
+      return;
+    const target = event.target.closest<HTMLElement>("[data-pagebldr-action]");
+    const element = target?.closest<HTMLElement>("[data-pagebldr-element]");
+    if (!target || !element) return;
+    void emitAnalytics(events, page, "element.interaction", {
+      action: target.dataset.pagebldrAction ?? "activate",
+      elementId: element.dataset.pagebldrElement ?? "unknown",
+    });
+  };
+  return createElement(
+    "div",
+    { onClick: track, onSubmit: track, "data-pagebldr-page": page.document.id },
+    createElement(PagebldrRenderer, {
+      builder,
+      document: page.document,
+      resources: page.resources,
+      mode: "published",
+      ...(styleNonce ? { styleNonce } : {}),
+    }),
+  );
+}
+
+async function emitAnalytics(
+  events: EventDelivery,
+  page: PublishedPage,
+  type: AnalyticsEvent["type"],
+  input: { readonly action?: string; readonly elementId?: string },
+): Promise<void> {
+  await events.analytics({
+    type,
+    context: page.eventContext,
+    subject: {
+      documentId: page.document.id,
+      ...(input.elementId ? { elementId: input.elementId } : {}),
+    },
+    data: {
+      path: page.canonicalPath,
+      ...(input.action ? { action: input.action } : {}),
+    },
+  });
 }
 
 function toReact(
