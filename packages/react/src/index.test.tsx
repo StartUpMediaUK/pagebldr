@@ -1,16 +1,11 @@
-import { createPagebldr, type PageDocument } from "@pagebldr/core";
+import { createPagebldr } from "@pagebldr/core";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { PagebldrEditor, PagebldrRenderer } from "./index.js";
 
 const builder = createPagebldr({ namespace: "test-app" });
-const document: PageDocument = {
-  format: "pagebldr",
-  schemaVersion: 1,
-  id: "page-1",
-  title: "Page",
-};
+const document = builder.documents.create({ id: "page-1", title: "Page" });
 
 describe("React tracer modules", () => {
   it("renders on the server without browser globals", () => {

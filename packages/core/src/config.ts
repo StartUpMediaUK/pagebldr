@@ -1,9 +1,12 @@
 import type { ElementDefinition } from "./element.js";
+import { createDocuments, type Documents } from "./documents.js";
+import type { DocumentMigration } from "./migrations.js";
 import { PagebldrError, type ResourceAdapter } from "./types.js";
 
 export interface PagebldrOptions {
   readonly namespace: string;
   readonly elements?: readonly ElementDefinition[];
+  readonly migrations?: readonly DocumentMigration[];
   readonly resources?: Readonly<Record<string, ResourceAdapter>>;
 }
 
@@ -11,6 +14,7 @@ export interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {
   readonly namespace: Options["namespace"];
   readonly elements: ReadonlyMap<string, ElementDefinition>;
   readonly resources: ReadonlyMap<string, ResourceAdapter>;
+  readonly documents: Documents;
 }
 
 const namespacePattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
@@ -54,5 +58,6 @@ export function createPagebldr<const Options extends PagebldrOptions>(
     namespace: options.namespace,
     elements,
     resources,
+    documents: createDocuments(elements, options.migrations ?? []),
   });
 }

@@ -99,7 +99,7 @@ try {
 import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
 
 const builder = createPagebldr({ namespace: "vite-app" });
-const document = { format: "pagebldr" as const, schemaVersion: 1, id: "home", title: "Home" };
+const document = builder.documents.create({ id: "home", title: "Home" });
 export const editor = <PagebldrEditor builder={builder} document={document} onChange={() => undefined} />;
 export const page = <PagebldrRenderer builder={builder} document={document} />;
 `,
