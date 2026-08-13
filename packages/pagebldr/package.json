@@ -1,0 +1,41 @@
+{
+  "name": "pagebldr",
+  "version": "0.0.0-alpha.0",
+  "description": "Embeddable visual page-building engine for React applications.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StartUpMediaUK/pagebldr.git"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "package:check": "publint && attw --pack --profile esm-only",
+    "prepack": "pnpm build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

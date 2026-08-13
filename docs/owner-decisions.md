@@ -1,15 +1,47 @@
-# Owner decisions before scaffolding and remote creation
+# Foundation decisions
 
-No remote repository, npm package, licence, or support promise should be created until these decisions are explicit.
+Status: Phase 0 decisions resolved on 2026-08-13. External publishing and
+deployment remain separately authorized actions.
 
-## Required decisions
+## Resolved
 
-1. **GitHub owner and incubation visibility** — confirm `joshuag-startupmedia/pagebldr` (or an organization-owned alternative) and whether the repository starts public or private until the first alpha. The product goal requires public visibility by open-source launch.
-2. **npm identity** — prefer unscoped `pagebldr` if registry availability and ownership are confirmed at publish time; otherwise choose an organization scope such as `@startupmedia/pagebldr`. The repository name can remain `pagebldr` either way.
-3. **Licence** — choose MIT for minimum conditions and ecosystem familiarity, or Apache-2.0 for its explicit patent grant/termination terms. Do not add a licence file until chosen.
-4. **Support floor** — proposed: React/React DOM `^18.3 || ^19`, Node 20+ for ordinary development/tooling (with a newer release runner where npm trusted publishing requires it), modern evergreen browsers for the editor, and SSR renderer support in maintained React runtimes. Confirm the browser policy and whether Node 20 remains acceptable in 2026.
-5. **Schema dependency** — choose direct Zod exposure for best near-term inference/source compatibility, or prototype a Standard Schema-compatible public contract to avoid locking extension authors to one Zod major.
+- **Repository**: the existing public repository is `StartUpMediaUK/pagebldr`;
+  local `origin` points to it.
+- **npm identity**: target unscoped `pagebldr`. The registry returned HTTP 404
+  on 2026-08-13, which is not a reservation; recheck immediately before the
+  authorized bootstrap publish. Fallback: `@startupmedia/pagebldr` if the name
+  cannot be secured.
+- **Support floor**: React and React DOM peers `^18.3.0 || ^19.0.0`; Node 20+
+  for ordinary development/tooling; a release runner meeting current npm
+  trusted-publishing requirements; modern evergreen editor browsers; SSR
+  renderer support in maintained React runtimes.
+- **Schema interface direction**: prototype a Standard Schema-compatible public
+  seam in Phase 2 while retaining Zod as an allowed implementation dependency.
+  Phase 2 compile fixtures must prove inference before the interface freezes.
+- **UI foundation**: package-owned shadcn primitives, ReUI compositions where
+  appropriate, and compiled CSS with no consumer Tailwind/shadcn/ReUI
+  requirement.
+- **Backend boundary**: optional server lifecycle, Provider-aware Storage
+  adapters, Host-operated APIs/routes, production Runtime, and Host Event sinks.
+- **Docs stack**: private `apps/docs` workspace using Next.js 16, Fumadocs
+  MDX/Core/UI, Tailwind 4, and Orama search; no initial AI chat.
+- **Licence and source ownership**: MIT. The product owner confirmed Startup
+  Media owns the Quizr builder implementation in its private SaaS repository and
+  authorizes its extraction and open-source relicensing.
+- **Documentation deployment**: use the Startup Media Vercel organization and
+  proposed project name `pagebldr-docs`; deployment and custom-domain selection
+  are deferred until separately authorized.
+- **Browser policy**: alpha supports the latest two major versions of Chrome,
+  Edge, Firefox, and Safari, current Safari on iOS, and current Chrome on
+  Android. Internet Explorer is unsupported. Reassess the matrix before beta.
+
+## Deferred operational decisions
+
+1. Recheck and secure the npm name only when bootstrap publishing is authorized.
+2. Select the docs production domain when deployment is authorized.
+3. Reassess browser telemetry and the explicit support matrix before beta.
 
 ## Proposed defaults
 
-The UI and Host-integration decisions are now resolved: use package-owned shadcn primitives with ReUI as the preferred higher-level registry source, compiled package CSS with no consumer Tailwind requirement, and no Quizr/Tener compatibility or privileged adapters. The remaining proposed defaults are a single published `pagebldr` package with subpath exports, an internal core/react workspace split, a controlled editor, generic Resource adapters, MIT unless patent language is important to Startup Media, and React 18/19 peers.
+Phase 1 scaffolding is authorized to begin locally. Repository creation, pushes,
+npm publication, and Vercel deployment remain separate external actions.
