@@ -67,6 +67,9 @@ try {
       "--ignore-scripts",
       "--no-audit",
       "--no-fund",
+      "typescript@5.9.3",
+      "@types/react@19.2.18",
+      "@types/react-dom@19.2.4",
     ],
     {
       cwd: consumerDirectory,
@@ -74,9 +77,58 @@ try {
       stdio: "inherit",
     },
   );
+  writeFileSync(
+    join(consumerDirectory, "tsconfig.json"),
+    JSON.stringify({
+      compilerOptions: {
+        exactOptionalPropertyTypes: true,
+        jsx: "react-jsx",
+        lib: ["DOM", "ES2022"],
+        module: "NodeNext",
+        moduleResolution: "NodeNext",
+        noEmit: true,
+        strict: true,
+        target: "ES2022",
+      },
+      include: ["*.ts", "*.tsx"],
+    }),
+  );
+  writeFileSync(
+    join(consumerDirectory, "vite-consumer.tsx"),
+    `import { createPagebldr } from "pagebldr";
+import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
+
+const builder = createPagebldr({ namespace: "vite-app" });
+const document = { format: "pagebldr" as const, schemaVersion: 1, id: "home", title: "Home" };
+export const editor = <PagebldrEditor builder={builder} document={document} onChange={() => undefined} />;
+export const page = <PagebldrRenderer builder={builder} document={document} />;
+`,
+  );
+  writeFileSync(
+    join(consumerDirectory, "next-consumer.ts"),
+    `import { createPagebldr } from "pagebldr";
+import { memoryAdapter } from "pagebldr/adapters/memory";
+import { createPagebldrRuntime } from "pagebldr/runtime";
+import { createPagebldrServer } from "pagebldr/server";
+
+const builder = createPagebldr({ namespace: "next-app" });
+const storage = memoryAdapter();
+export const server = createPagebldrServer({ builder, storage, collection: { mode: "multiple" } });
+export const runtime = createPagebldrRuntime({ builder, publications: { resolve: async () => null } });
+`,
+  );
+  execFileSync(
+    process.execPath,
+    [join(consumerDirectory, "node_modules", "typescript", "bin", "tsc")],
+    { cwd: consumerDirectory, stdio: "inherit" },
+  );
   execFileSync(
     "node",
-    ["--input-type=module", "--eval", "await import('pagebldr')"],
+    [
+      "--input-type=module",
+      "--eval",
+      "await Promise.all([import('pagebldr'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/runtime'), import('pagebldr/adapters/memory')])",
+    ],
     { cwd: consumerDirectory, stdio: "inherit" },
   );
 
@@ -91,6 +143,13 @@ try {
   }
   if (installedManifest.name !== "pagebldr") {
     throw new Error("The packed package has the wrong name.");
+  }
+  const reactBundle = readFileSync(
+    join(consumerDirectory, "node_modules", "pagebldr", "dist", "react.js"),
+    "utf8",
+  );
+  if (!/from ["']react["']/u.test(reactBundle)) {
+    throw new Error("React must remain external in the published bundle.");
   }
 } finally {
   rmSync(temporaryDirectory, { recursive: true, force: true });

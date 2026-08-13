@@ -1,4 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*.ts", "vitest.config.ts"]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@pagebldr/core": ["../core/src/index.ts"],
+      "@pagebldr/react": ["../react/src/index.ts"],
+      "@pagebldr/server": ["../server/src/index.ts"],
+      "@pagebldr/runtime": ["../runtime/src/index.ts"],
+      "@pagebldr/adapters": ["../adapters/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "tsup.config.ts", "vitest.config.ts"]
 }
