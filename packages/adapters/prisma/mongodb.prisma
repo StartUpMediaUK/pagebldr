@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/mongodb"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("PAGEBLDR_MONGODB_URL")
+}
+
+model PagebldrDocument {
+  storageId String   @id @map("_id")
+  scopeKey  String
+  scope     Json
+  key       String
+  document  Json
+  version   Int
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@index([scopeKey, key])
+}
+
+model PagebldrRevision {
+  storageId   String   @id @map("_id")
+  scopeKey    String
+  scope       Json
+  id          String
+  documentKey String
+  document    Json
+  version     Int
+  createdAt   DateTime
+
+  @@index([scopeKey, documentKey, createdAt, version])
+}
+
+model PagebldrPublication {
+  storageId   String   @id @map("_id")
+  scopeKey    String
+  scope       Json
+  documentKey String
+  revisionId  String
+  publishedAt DateTime
+
+  @@index([scopeKey, documentKey])
+}

@@ -55,6 +55,8 @@ export class PagebldrError extends Error {
 
 export type PagebldrErrorCode =
   | "BROKEN_REFERENCE"
+  | "CAPABILITY_UNAVAILABLE"
+  | "CONFLICT"
   | "CIRCULAR_NESTING"
   | "DUPLICATE_ID"
   | "DUPLICATE_REGISTRATION"
@@ -68,5 +70,6 @@ export type PagebldrErrorCode =
   | "INVALID_PARENT"
   | "LOCKED_ELEMENT"
   | "MIGRATION_MISSING"
+  | "NOT_FOUND"
   | "ROOT_OPERATION"
   | "STRUCTURAL_LIMIT";

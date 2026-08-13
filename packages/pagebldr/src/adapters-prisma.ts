@@ -1,10 +1,9 @@
-export { memoryAdapter } from "./memory.js";
 export {
   asPagebldrPrismaClient,
   prismaMongodbAdapter,
   prismaPostgresqlAdapter,
-} from "./prisma.js";
+} from "../../adapters/src/index.js";
 export type {
   PagebldrPrismaClient,
   PagebldrPrismaTransactionClient,
-} from "./prisma.js";
+} from "../../adapters/src/index.js";

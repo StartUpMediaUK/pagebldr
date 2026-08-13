@@ -13,5 +13,10 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@pagebldr/core": "workspace:*",
+    "@prisma/client": "6.19.0",
+    "prisma": "6.19.0"
   }
 }

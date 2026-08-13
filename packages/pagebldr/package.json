@@ -27,6 +27,7 @@
   },
   "files": [
     "dist",
+    "prisma",
     "README.md",
     "LICENSE"
   ],
@@ -43,6 +44,10 @@
       "types": "./dist/server.d.ts",
       "import": "./dist/server.js"
     },
+    "./server/next": {
+      "types": "./dist/server-next.d.ts",
+      "import": "./dist/server-next.js"
+    },
     "./runtime": {
       "types": "./dist/runtime.d.ts",
       "import": "./dist/runtime.js"
@@ -50,6 +55,10 @@
     "./adapters/memory": {
       "types": "./dist/adapters-memory.d.ts",
       "import": "./dist/adapters-memory.js"
+    },
+    "./adapters/prisma": {
+      "types": "./dist/adapters-prisma.d.ts",
+      "import": "./dist/adapters-prisma.js"
     }
   },
   "engines": {
