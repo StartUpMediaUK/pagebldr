@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "jsx": "react-jsx",
     "paths": {
+      "@/*": ["../react/src/*"],
       "@pagebldr/core": ["../core/src/index.ts"],
       "@pagebldr/react": ["../react/src/index.ts"],
       "@pagebldr/server": ["../server/src/index.ts"],

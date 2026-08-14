@@ -1,5 +1,5 @@
 import { defineConfig } from "tsup";
-import { copyFile, mkdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 export default defineConfig({
   clean: true,
@@ -18,7 +18,11 @@ export default defineConfig({
   noExternal: [/^@pagebldr\//u],
   onSuccess: async () => {
     await mkdir("dist", { recursive: true });
-    await copyFile("src/styles.css", "dist/styles.css");
+    const [baseStyles, editorStyles] = await Promise.all([
+      readFile("src/styles.css", "utf8"),
+      readFile("../react/dist/editor.css", "utf8"),
+    ]);
+    await writeFile("dist/styles.css", `${baseStyles}\n${editorStyles}`);
   },
   format: ["esm"],
   sourcemap: true,
