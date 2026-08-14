@@ -1,7 +1,6 @@
 # Phase 7 audit — React editor foundation
 
-Status: testable candidate; browser and product-owner review pending. Date:
-2026-08-14.
+Status: complete; product-owner review accepted 2026-08-14. Date: 2026-08-14.
 
 ## Outcome
 
@@ -36,13 +35,15 @@ workspace consumer is available at `examples/vite-basic`.
 - The Vite development server opened in the collaborative browser and exposed
   the editor controls; the preview service accepted a tab interaction.
 
-## Pending gate and risks
+## Deferred work and risks
 
 - The collaborative browser's snapshot/evaluation service repeatedly failed, so
   automated accessibility inspection and a recorded full authoring flow could
   not be completed in this session.
-- Manual keyboard-only review remains product-owner test work. Phase 8 must not
-  begin until this browser gate is accepted or rerun successfully.
+- The product owner accepted the testable editor candidate and authorized
+  Phase 8. Browser automation should be rerun when the collaborative preview
+  service is reliable; the prior infrastructure failure remains recorded rather
+  than being represented as a successful automated accessibility result.
 - The ReUI skill/registry was unavailable in this runtime. The implementation
   follows the documented fallback: shadcn primitives plus a small package-owned
   composition. Provenance is recorded in `docs/attributions/ui.md`.
@@ -51,4 +52,4 @@ workspace consumer is available at `examples/vite-basic`.
 
 ## Commit
 
-To be recorded after this candidate is committed.
+`6e70d97 feat: add controlled visual editor foundation`
