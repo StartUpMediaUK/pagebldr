@@ -20,8 +20,15 @@ import type {
   EventDelivery,
   PublishedPage,
 } from "@pagebldr/runtime";
+import { EditorShell } from "./editor/editor-shell.js";
 
 export type { DocumentChangeEvent } from "@pagebldr/core";
+export { usePagebldrEditor } from "./editor/context.js";
+export type {
+  EditorContextValue,
+  EditorMode,
+  EditorViewport,
+} from "./editor/context.js";
 
 export interface SaveRequest {
   readonly document: PageDocument;
@@ -42,27 +49,21 @@ export interface PagebldrEditorProps {
   readonly onPublish?: (request: PublishRequest) => void | Promise<void>;
   readonly mode?: "edit" | "preview" | "readOnly";
   readonly children?: ReactNode;
+  readonly className?: string;
 }
 
-export function PagebldrEditor({
-  builder,
-  children,
-  document,
-  mode = "edit",
-}: PagebldrEditorProps): ReactElement {
+export function PagebldrEditor(props: PagebldrEditorProps): ReactElement {
+  const { builder, children, className, document, mode = "edit" } = props;
+  if (!children) return createElement(EditorShell, props);
   return createElement(
     "div",
     {
+      className,
       "data-pagebldr-editor": builder.namespace,
       "data-pagebldr-document": document.id,
       "data-pagebldr-mode": mode,
     },
-    children ??
-      createElement(PagebldrRenderer, {
-        builder,
-        document,
-        mode: mode === "edit" ? "edit" : "preview",
-      }),
+    children,
   );
 }
 
