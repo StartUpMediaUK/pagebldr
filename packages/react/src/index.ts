@@ -21,6 +21,7 @@ import type {
   PublishedPage,
 } from "@pagebldr/runtime";
 import { EditorShell } from "./editor/editor-shell.js";
+import type { EditorContribution, EditorPreset } from "./editor/composition.js";
 
 export type { DocumentChangeEvent } from "@pagebldr/core";
 export { usePagebldrEditor } from "./editor/context.js";
@@ -29,6 +30,23 @@ export type {
   EditorMode,
   EditorViewport,
 } from "./editor/context.js";
+export {
+  createEditorComposition,
+  defineEditorContribution,
+  defineEditorPreset,
+  editorSlots,
+} from "./editor/composition.js";
+export type {
+  EditorCapability,
+  EditorComposition,
+  EditorContribution,
+  EditorContributionContext,
+  EditorContributionKind,
+  EditorPlacement,
+  EditorPreset,
+  EditorSlot,
+} from "./editor/composition.js";
+export { focusEditorPreset, standardEditorPreset } from "./editor/presets.js";
 
 export interface SaveRequest {
   readonly document: PageDocument;
@@ -50,6 +68,8 @@ export interface PagebldrEditorProps {
   readonly mode?: "edit" | "preview" | "readOnly";
   readonly children?: ReactNode;
   readonly className?: string;
+  readonly preset?: EditorPreset;
+  readonly contributions?: readonly EditorContribution[];
 }
 
 export function PagebldrEditor(props: PagebldrEditorProps): ReactElement {

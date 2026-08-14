@@ -6,7 +6,15 @@ import {
   useId,
   useState,
   type MouseEvent,
+  type ReactNode,
 } from "react";
+import {
+  createEditorComposition,
+  defineEditorContribution,
+  type EditorCapability,
+  type EditorContribution,
+  type EditorContributionContext,
+} from "./composition.js";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -69,6 +77,7 @@ import {
   usePagebldrEditor,
   type EditorViewport,
 } from "./context.js";
+import { standardEditorPreset } from "./presets.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -87,8 +96,10 @@ export function EditorShell(props: PagebldrEditorProps) {
 
 function EditorWorkspace({
   className,
+  contributions = [],
   onPublish,
   onSave,
+  preset = standardEditorPreset,
 }: PagebldrEditorProps) {
   const editor = usePagebldrEditor();
   const [pending, setPending] = useState<"save" | "publish" | null>(null);
@@ -147,6 +158,28 @@ function EditorWorkspace({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [editor, onSave, perform, readOnly]);
 
+  const capabilities = new Set<EditorCapability>([
+    ...(editor.mode === "edit" ? (["edit"] as const) : []),
+    ...(onSave ? (["save"] as const) : []),
+    ...(onPublish ? (["publish"] as const) : []),
+    ...(editor.builder.resources.size > 0 ? (["resources"] as const) : []),
+  ]);
+  const contributionContext: EditorContributionContext = {
+    ...editor,
+    capabilities,
+  };
+  const composition = createEditorComposition(preset, [
+    ...builtInContributions({
+      canPublish: !!onPublish,
+      canSave: !!onSave,
+      pending,
+      status,
+      onSave: () => void perform("save"),
+      onPublish: () => void perform("publish"),
+    }),
+    ...contributions,
+  ]);
+
   return (
     <section
       aria-label="Page builder"
@@ -159,60 +192,113 @@ function EditorWorkspace({
       data-pagebldr-mode={editor.mode}
     >
       <EditorToolbar
-        pending={pending}
-        onSave={() => void perform("save")}
-        onPublish={() => void perform("publish")}
-        canSave={!!onSave}
-        canPublish={!!onPublish}
+        start={composition.render("toolbar.leading", contributionContext)}
+        end={composition.render("toolbar.trailing", contributionContext)}
       />
       <Separator />
       <ResizablePanelGroup orientation="horizontal">
         <ResizablePanel defaultSize={22} minSize={16}>
-          <LeftPanel />
+          {composition.render("sidebar.start", contributionContext)}
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={56} minSize={32}>
-          <Canvas />
+          <Canvas>
+            {composition.render("canvas.overlay", contributionContext)}
+          </Canvas>
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={22} minSize={18}>
-          <Inspector />
+          {composition.render("sidebar.end", contributionContext)}
         </ResizablePanel>
       </ResizablePanelGroup>
-      <div className="flex h-8 items-center justify-between border-t px-3 text-xs text-muted-foreground">
-        <span>
-          {editor.document.elements[editor.selectedId ?? ""]?.name ??
-            "No selection"}
-        </span>
-        <span aria-live="polite" role="status">
-          {status}
-        </span>
+      <div className="flex h-8 items-center justify-between gap-2 border-t px-3 text-xs text-muted-foreground">
+        {composition.render("status", contributionContext)}
       </div>
     </section>
   );
 }
 
-function EditorToolbar({
-  pending,
-  onSave,
-  onPublish,
-  canSave,
-  canPublish,
-}: {
+function builtInContributions(input: {
+  readonly canPublish: boolean;
+  readonly canSave: boolean;
   readonly pending: "save" | "publish" | null;
+  readonly status: string;
   readonly onSave: () => void;
   readonly onPublish: () => void;
-  readonly canSave: boolean;
-  readonly canPublish: boolean;
+}): readonly EditorContribution[] {
+  return [
+    defineEditorContribution({
+      id: "pagebldr.history",
+      kind: "toolbarAction",
+      label: "History and viewport",
+      render: HistoryControls,
+    }),
+    defineEditorContribution({
+      id: "pagebldr.persistence",
+      kind: "toolbarAction",
+      label: "Save and publish",
+      render: () => <PersistenceControls {...input} />,
+    }),
+    defineEditorContribution({
+      id: "pagebldr.navigator",
+      kind: "panel",
+      label: "Navigator",
+      render: LeftPanel,
+    }),
+    defineEditorContribution({
+      id: "pagebldr.inspector",
+      kind: "panel",
+      label: "Inspector",
+      render: Inspector,
+    }),
+    defineEditorContribution({
+      id: "pagebldr.selection",
+      kind: "statusItem",
+      label: "Selection",
+      render: ({ context }) => (
+        <span>
+          {context.document.elements[context.selectedId ?? ""]?.name ??
+            "No selection"}
+        </span>
+      ),
+    }),
+    defineEditorContribution({
+      id: "pagebldr.status",
+      kind: "statusItem",
+      label: "Operation status",
+      render: () => (
+        <span aria-live="polite" role="status">
+          {input.status}
+        </span>
+      ),
+    }),
+  ];
+}
+
+function EditorToolbar({
+  start,
+  end,
+}: {
+  readonly start: ReactNode;
+  readonly end: ReactNode;
 }) {
   const editor = usePagebldrEditor();
   return (
     <header className="flex h-12 items-center gap-2 px-2">
       <strong className="truncate px-2 text-sm">{editor.document.title}</strong>
       <Badge variant="secondary">{editor.mode}</Badge>
-      <div className="flex flex-1 justify-center">
-        <ViewportToggle />
-      </div>
+      {start}
+      <div className="flex-1" />
+      {end}
+    </header>
+  );
+}
+
+function HistoryControls() {
+  const editor = usePagebldrEditor();
+  return (
+    <div className="flex items-center gap-2">
+      <ViewportToggle />
       <ToolButton
         label="Undo"
         disabled={!editor.canUndo}
@@ -225,6 +311,25 @@ function EditorToolbar({
         onClick={editor.redo}
         icon={Redo2Icon}
       />
+    </div>
+  );
+}
+
+function PersistenceControls({
+  canPublish,
+  canSave,
+  pending,
+  onSave,
+  onPublish,
+}: {
+  readonly canPublish: boolean;
+  readonly canSave: boolean;
+  readonly pending: "save" | "publish" | null;
+  readonly onSave: () => void;
+  readonly onPublish: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
       <Button
         size="sm"
         variant="outline"
@@ -242,7 +347,7 @@ function EditorToolbar({
         <SendIcon data-icon="inline-start" />
         {pending === "publish" ? "Publishing…" : "Publish"}
       </Button>
-    </header>
+    </div>
   );
 }
 
@@ -412,7 +517,7 @@ function ElementLibrary() {
   );
 }
 
-function Canvas() {
+function Canvas({ children }: { readonly children?: ReactNode }) {
   const editor = usePagebldrEditor();
   const widths = { desktop: "100%", tablet: "768px", mobile: "390px" } as const;
   const select = (event: MouseEvent<HTMLDivElement>) => {
@@ -424,7 +529,13 @@ function Canvas() {
       editor.select(target.dataset.pagebldrElement);
   };
   return (
-    <div className="h-full overflow-auto bg-muted p-4" onClick={select}>
+    <div
+      className="relative h-full overflow-auto bg-muted p-4"
+      onClick={select}
+    >
+      {children ? (
+        <div className="pointer-events-none absolute inset-0">{children}</div>
+      ) : null}
       <div
         className="mx-auto min-h-full overflow-hidden rounded-md border bg-background shadow-sm transition-[width]"
         style={{ width: widths[editor.viewport], maxWidth: "100%" }}

@@ -227,7 +227,7 @@ import "pagebldr/styles.css";
 />;
 ```
 
-Proposed editor properties:
+Editor properties:
 
 ```ts
 interface PagebldrEditorProps {
@@ -241,11 +241,16 @@ interface PagebldrEditorProps {
     request: PublishRequest,
   ) => void | PublishResult | Promise<void | PublishResult>;
   mode?: "edit" | "preview" | "readOnly";
-  composition?: EditorComposition;
-  capabilities?: Partial<EditorCapabilities>;
+  preset?: EditorPreset;
+  contributions?: readonly EditorContribution[];
   className?: string;
+  children?: ReactNode;
 }
 ```
+
+The editor derives `edit`, `save`, `publish`, and `resources` capabilities from
+its controlled mode, callbacks, and configured Resource adapters. See
+[editor composition](editor-composition.md) for the typed extension interface.
 
 There is no simultaneous `document` and `initialDocument` on this module: that
 creates two state-ownership modes and synchronization ambiguity. A separate
