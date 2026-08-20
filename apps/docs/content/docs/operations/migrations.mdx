@@ -1,0 +1,12 @@
+---
+title: Schema migrations
+description: Upgrade persisted Documents deterministically and safely.
+---
+
+Document `schemaVersion` is independent from the npm package version. Migrations
+run sequentially, are side-effect free, and either produce a valid new Document
+or return a structured failure. Never mutate the persisted source in place;
+validate and persist the migrated result through the Host lifecycle.
+
+Test migrations with immutable fixtures representing every supported old version
+and custom Element shape.

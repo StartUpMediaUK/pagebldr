@@ -1,0 +1,13 @@
+---
+title: SSR and accessibility
+description:
+  Preserve server safety, keyboard access, and reduced-motion behavior.
+---
+
+Import the presentation renderer from `pagebldr/react/server` in server-only
+paths. Load browser-dependent editor code through its explicit client entry
+point. The package is React-portable and does not require Next.js.
+
+Custom controls must be labeled, keyboard operable, visibly focused, and usable
+with reduced motion. Validate interactive states manually with a keyboard in
+addition to automated accessibility checks.

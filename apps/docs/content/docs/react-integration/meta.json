@@ -1,0 +1,4 @@
+{
+  "title": "React integration",
+  "pages": ["index", "editor", "renderer", "modes"]
+}

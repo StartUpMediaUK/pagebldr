@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en-GB",
+  "useGitignore": true,
+  "words": [
+    "App Router",
+    "Fumadocs",
+    "Local history",
+    "MDX",
+    "Orama",
+    "pagebldr",
+    "prerender",
+    "server-side",
+    "stylesheet",
+    "TypeScript",
+    "Vite"
+  ]
+}
