@@ -7,6 +7,7 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     react: "src/react.ts",
+    "react-server": "src/react-server.ts",
     server: "src/server.ts",
     "server-next": "src/server-next.ts",
     runtime: "src/runtime.ts",

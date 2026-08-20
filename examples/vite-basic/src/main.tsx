@@ -1,4 +1,4 @@
-import { StrictMode, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import {
@@ -6,8 +6,9 @@ import {
   standardElements,
   standardStyleCapabilities,
   type PageDocument,
+  type StandardSchemaV1,
 } from "pagebldr";
-import { PagebldrEditor } from "pagebldr/react";
+import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
 import {
   defineEditorContribution,
   defineEditorPreset,
@@ -15,10 +16,39 @@ import {
 } from "pagebldr/react";
 import "pagebldr/styles.css";
 
+const stringReference: StandardSchemaV1<unknown, string> = {
+  "~standard": {
+    version: 1,
+    vendor: "vite-example",
+    validate: (value) =>
+      typeof value === "string"
+        ? { value }
+        : { issues: [{ message: "Resource reference must be a string." }] },
+  },
+};
+
 const builder = createPagebldr({
   namespace: "vite-example",
   elements: standardElements,
   styleCapabilities: standardStyleCapabilities,
+  resources: {
+    asset: {
+      reference: stringReference,
+      resolve: (id) => (typeof id === "string" ? `/assets/${id}` : null),
+      browse: ({ query }) =>
+        Promise.resolve({
+          items: ["hero.jpg", "product.jpg"].filter((id) =>
+            id.includes(query ?? ""),
+          ),
+        }),
+    },
+    "application-link": {
+      reference: stringReference,
+      resolve: (slug) =>
+        typeof slug === "string" ? `#/preview/${slug}` : null,
+      browse: () => Promise.resolve({ items: ["welcome", "pricing"] }),
+    },
+  },
 });
 
 const initialDocument = builder.documents.create({
@@ -95,23 +125,49 @@ const examplePreset = defineEditorPreset({
 
 function App() {
   const [document, setDocument] = useState<PageDocument>(initialDocument);
+  const [route, setRoute] = useState(window.location.hash || "#/edit");
+
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash || "#/edit");
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  if (route.startsWith("#/preview"))
+    return (
+      <main>
+        <nav>
+          <a href="#/edit">Back to editor</a>
+        </nav>
+        <PagebldrRenderer
+          builder={builder}
+          document={document}
+          mode="published"
+        />
+      </main>
+    );
 
   return (
-    <PagebldrEditor
-      builder={builder}
-      contributions={exampleContributions}
-      document={document}
-      onChange={({ document: nextDocument }) => setDocument(nextDocument)}
-      onSave={async ({ document: nextDocument }) => {
-        await pause();
-        localStorage.setItem(
-          "pagebldr-vite-example",
-          JSON.stringify(nextDocument),
-        );
-      }}
-      onPublish={async () => pause()}
-      preset={examplePreset}
-    />
+    <main>
+      <nav>
+        <a href="#/preview/welcome">Open production preview</a>
+      </nav>
+      <PagebldrEditor
+        builder={builder}
+        contributions={exampleContributions}
+        document={document}
+        onChange={({ document: nextDocument }) => setDocument(nextDocument)}
+        onSave={async ({ document: nextDocument }) => {
+          await pause();
+          localStorage.setItem(
+            "pagebldr-vite-example",
+            JSON.stringify(nextDocument),
+          );
+        }}
+        onPublish={async () => pause()}
+        preset={examplePreset}
+      />
+    </main>
   );
 }
 
