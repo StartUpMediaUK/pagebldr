@@ -1,6 +1,6 @@
 # Phase 8 audit — typed editor composition
 
-Status: complete locally; awaiting product-owner review. Date: 2026-08-14.
+Status: complete; product-owner review accepted 2026-08-20. Date: 2026-08-14.
 
 ## Outcome
 
@@ -45,4 +45,4 @@ exposing internal components, DOM structure, or the editor store.
 
 ## Commit
 
-To be recorded after product-owner review and authorization.
+`9412de9 feat: add typed editor composition`
