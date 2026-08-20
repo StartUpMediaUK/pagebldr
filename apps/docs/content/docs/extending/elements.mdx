@@ -1,0 +1,14 @@
+---
+title: Custom Elements
+description:
+  Define schema, controls, rendering, and accessibility as one coherent
+  extension.
+---
+
+An Element definition owns the contract for one document node type: its schema,
+defaults, child policy, controls, renderer, styles, migrations, reference
+extraction, and accessibility behavior. Register the definition in the Host
+configuration and keep project-specific services behind Resource adapters.
+
+Use stable, namespaced type identifiers. Changing an existing persisted shape
+requires an Element migration; changing only the renderer does not.

@@ -1,0 +1,4 @@
+{
+  "title": "Host integrations",
+  "pages": ["index", "persistence", "resources", "events"]
+}

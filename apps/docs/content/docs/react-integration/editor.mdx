@@ -1,0 +1,8 @@
+---
+title: Controlled editor
+description: Document ownership, change events, save, and publish intents.
+---
+
+`PagebldrEditor` receives `document` and emits the next Document through
+`onChange`. `onSave` and `onPublish` signal Host intent and surface thrown Host
+errors; they do not install persistence policy.

@@ -1,0 +1,13 @@
+---
+title: Configuration
+description: Define a Host namespace and assemble its public integrations.
+---
+
+`defineConfig` validates and preserves the Host's namespace, Element registry,
+Blocks, Templates, layout, Resources, Contributions, and optional adapters.
+Configuration is ordinary TypeScript: it is imported by the Host build and does
+not start a server or discover infrastructure.
+
+Keep configuration serializable where possible, but inject runtime services at
+the Host boundary rather than embedding credentials or database clients in
+shared browser code.

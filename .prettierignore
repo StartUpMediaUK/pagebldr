@@ -1,6 +1,8 @@
 .changeset/pre.json
 .next
 .source
+apps/docs/AGENTS.md
+examples/nextjs-basic/AGENTS.md
 coverage
 dist
 node_modules

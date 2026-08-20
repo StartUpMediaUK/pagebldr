@@ -1,0 +1,15 @@
+---
+title: Package exports
+description: Choose the smallest supported entry point for each runtime.
+---
+
+- `pagebldr` — configuration and shared public contracts.
+- `pagebldr/core` — Documents, validation, migrations, commands, history, and
+  registries.
+- `pagebldr/react` — controlled React editor and renderer interfaces.
+- `pagebldr/react/server` — SSR-safe presentation renderer.
+- `pagebldr/server` — optional framework-neutral lifecycle orchestration.
+- `pagebldr/runtime` — published-route resolution and analytics preparation.
+- `pagebldr/styles.css` — compiled editor styles and theme variables.
+
+Use only package export paths; filesystem paths inside the package are private.

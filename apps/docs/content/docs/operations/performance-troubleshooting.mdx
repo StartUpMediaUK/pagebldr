@@ -1,0 +1,13 @@
+---
+title: Performance and troubleshooting
+description: Diagnose integration failures at the correct ownership boundary.
+---
+
+Keep controlled editor state stable, memoize registries, and avoid rebuilding
+Resource adapters on every render. Published routes should cache according to
+the Host's publication and invalidation model.
+
+When an operation fails, first identify the boundary: document validation,
+command dispatch, Resource resolution, server lifecycle, Storage capability, or
+Host transport. Preserve structured pagebldr errors and attach Host request
+identifiers without logging private document content.

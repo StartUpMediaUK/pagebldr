@@ -1,0 +1,51 @@
+---
+title: Five-minute quickstart
+description:
+  Edit, save, and render a page without a database or external account.
+---
+
+```tsx
+import { useState } from "react";
+import {
+  createPagebldr,
+  standardElements,
+  standardStyleCapabilities,
+  type PageDocument,
+} from "pagebldr";
+import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
+import "pagebldr/styles.css";
+
+const builder = createPagebldr({
+  namespace: "my-app",
+  elements: standardElements,
+  styleCapabilities: standardStyleCapabilities,
+});
+
+const initialDocument = builder.documents.create({
+  id: "home",
+  title: "Home",
+  slug: "home",
+});
+
+export function PageBuilder() {
+  const [document, setDocument] = useState<PageDocument>(initialDocument);
+
+  return (
+    <PagebldrEditor
+      builder={builder}
+      document={document}
+      onChange={(event) => setDocument(event.document)}
+      onSave={({ document: next }) =>
+        localStorage.setItem("home", builder.documents.serialize(next))
+      }
+    />
+  );
+}
+
+export function PublishedPage({ document }: { document: PageDocument }) {
+  return <PagebldrRenderer builder={builder} document={document} />;
+}
+```
+
+The Host owns the controlled `document` state. Every editor mutation arrives
+through `onChange`; saving is an explicit Host callback.

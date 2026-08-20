@@ -1,0 +1,10 @@
+---
+title: Errors
+description: Handle validation, migration, concurrency, and adapter failures.
+---
+
+Expected failures are represented with stable codes and contextual details so
+Hosts can map them to transport responses and user-facing notifications.
+Preserve the original code across API boundaries. Do not expose internal error
+messages, credentials, private document content, or database diagnostics to
+published clients.

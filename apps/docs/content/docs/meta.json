@@ -1,0 +1,15 @@
+{
+  "title": "pagebldr",
+  "pages": [
+    "index",
+    "installation",
+    "quickstart",
+    "core-concepts",
+    "react-integration",
+    "host-integrations",
+    "runtime",
+    "extending",
+    "operations",
+    "reference"
+  ]
+}
