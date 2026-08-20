@@ -1,7 +1,6 @@
 # Phase 9 audit — product-neutral examples
 
-Status: testable candidate; interactive browser review pending. Date:
-2026-08-20.
+Status: complete; accepted by the product owner. Date: 2026-08-20.
 
 ## Outcome
 
@@ -36,7 +35,7 @@ Revisions, publication, and observable integration/Provider identity.
 - Collaborative-browser navigation loaded the Vite application, the Next.js
   published route with Runtime metadata, and the Next.js editor route.
 
-## Pending gate and risks
+## Deferred work and risks
 
 - The collaborative preview's snapshot and click automation failed again, so a
   complete recorded edit/save/preview and interaction-post flow remains pending
@@ -50,4 +49,7 @@ Revisions, publication, and observable integration/Provider identity.
 
 ## Commit
 
-To be recorded after this candidate is committed.
+`597c8b2` (`feat: add product-neutral examples`).
+
+The product owner accepted the phase and directed work to continue to Phase 10
+on 2026-08-20.
