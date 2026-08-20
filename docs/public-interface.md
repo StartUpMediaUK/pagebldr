@@ -271,6 +271,12 @@ them directly or connect them to the optional `pagebldr/server` module. This
 preserves local-first and unusual integrations while giving ordinary
 applications a standardized save path.
 
+Server Components import the presentation-only renderer from
+`pagebldr/react/server`. This subpath contains no editor context or browser
+hooks, so a Next.js Host can SSR a Runtime result without marking its route as a
+Client Component. Interactive editor and analytics helpers remain explicit
+client boundaries.
+
 ## Optional server interface
 
 ```ts

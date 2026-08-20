@@ -11,3 +11,4 @@ packages/adapters/generated/
 node_modules/
 *.log
 *.tgz
+*.tsbuildinfo

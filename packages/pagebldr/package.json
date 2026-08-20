@@ -40,6 +40,10 @@
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
     },
+    "./react/server": {
+      "types": "./dist/react-server.d.ts",
+      "import": "./dist/react-server.js"
+    },
     "./server": {
       "types": "./dist/server.d.ts",
       "import": "./dist/server.js"

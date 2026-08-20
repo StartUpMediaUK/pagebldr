@@ -1,5 +1,16 @@
 {
   "name": "@pagebldr-example/custom-persistence",
   "version": "0.0.0",
-  "private": true
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "pagebldr": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
 }
