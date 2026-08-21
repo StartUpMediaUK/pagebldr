@@ -56,4 +56,7 @@ provider, purpose, retention period, and consent policy are approved.
 
 ## Commit
 
-To be recorded after this candidate is committed.
+`98f9d00` (`docs: add Fumadocs documentation app`).
+
+The product owner accepted the authorized Phase 10 scope and directed work to
+continue to Phase 11 on 2026-08-21.
