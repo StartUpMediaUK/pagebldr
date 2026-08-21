@@ -1,9 +1,12 @@
 import { execFileSync } from "node:child_process";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -26,6 +29,16 @@ const cleanEnvironment = Object.fromEntries(
     ([name]) => !name.toLowerCase().startsWith("npm_config_"),
   ),
 );
+const reactVersion = process.env.PAGEBLDR_REACT_VERSION ?? "19.2.8";
+const reactTypes = reactVersion.startsWith("18.")
+  ? ["@types/react@18.3.31", "@types/react-dom@18.3.7"]
+  : ["@types/react@19.2.18", "@types/react-dom@19.2.4"];
+
+function assertMaximumSize(file, maximumBytes, label) {
+  const bytes = statSync(file).size;
+  if (bytes > maximumBytes)
+    throw new Error(`${label} is ${bytes} bytes; budget is ${maximumBytes}.`);
+}
 
 try {
   const packOutput = execFileSync(
@@ -48,6 +61,7 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
+  assertMaximumSize(archivePath, 1_100_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -68,8 +82,11 @@ try {
       "--no-audit",
       "--no-fund",
       "typescript@5.9.3",
-      "@types/react@19.2.18",
-      "@types/react-dom@19.2.4",
+      `react@${reactVersion}`,
+      `react-dom@${reactVersion}`,
+      ...reactTypes,
+      "esbuild@0.28.2",
+      "jsdom@30.0.1",
     ],
     {
       cwd: consumerDirectory,
@@ -92,6 +109,12 @@ try {
       },
       include: ["*.ts", "*.tsx"],
     }),
+  );
+  writeFileSync(
+    join(consumerDirectory, "tree-shake.ts"),
+    `import { createPagebldr } from "pagebldr";
+export const builder = createPagebldr({ namespace: "tree-shake-check" });
+`,
   );
   writeFileSync(
     join(consumerDirectory, "vite-consumer.tsx"),
@@ -129,6 +152,57 @@ void pagebldrMetadata;
     { cwd: consumerDirectory, stdio: "inherit" },
   );
   execFileSync(
+    process.execPath,
+    [
+      join(consumerDirectory, "node_modules", "esbuild", "bin", "esbuild"),
+      "tree-shake.ts",
+      "--bundle",
+      "--format=esm",
+      "--minify",
+      "--outfile=tree-shake.js",
+    ],
+    { cwd: consumerDirectory, stdio: "inherit" },
+  );
+  assertMaximumSize(
+    join(consumerDirectory, "tree-shake.js"),
+    100_000,
+    "Tree-shaken core consumer",
+  );
+  const treeShakenBundle = readFileSync(
+    join(consumerDirectory, "tree-shake.js"),
+    "utf8",
+  );
+  if (treeShakenBundle.includes("react"))
+    throw new Error("A core-only consumer must not bundle React.");
+
+  writeFileSync(
+    join(consumerDirectory, "ssr-hydration.mjs"),
+    `import React from "react";
+import { JSDOM } from "jsdom";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
+import { createPagebldr } from "pagebldr";
+import { PagebldrRenderer } from "pagebldr/react/server";
+
+const builder = createPagebldr({ namespace: "hydration-check" });
+const document = builder.documents.create({ id: "home", title: "Home" });
+const element = React.createElement(PagebldrRenderer, { builder, document });
+const markup = renderToString(element);
+if (!markup.includes('data-pagebldr-renderer="hydration-check"')) throw new Error("SSR renderer marker missing.");
+const dom = new JSDOM(\`<!doctype html><div id="root">\${markup}</div>\`, { url: "https://example.test" });
+Object.assign(globalThis, { window: dom.window, document: dom.window.document });
+const errors = [];
+const root = hydrateRoot(dom.window.document.querySelector("#root"), element, { onRecoverableError: (error) => errors.push(error) });
+await new Promise((resolve) => setTimeout(resolve, 20));
+root.unmount();
+if (errors.length > 0) throw errors[0];
+`,
+  );
+  execFileSync(process.execPath, ["ssr-hydration.mjs"], {
+    cwd: consumerDirectory,
+    stdio: "inherit",
+  });
+  execFileSync(
     "node",
     [
       "--input-type=module",
@@ -150,16 +224,67 @@ void pagebldrMetadata;
   if (installedManifest.name !== "pagebldr") {
     throw new Error("The packed package has the wrong name.");
   }
+  const installedPackage = join(consumerDirectory, "node_modules", "pagebldr");
+  for (const [subpath, target] of Object.entries(installedManifest.exports)) {
+    const targets =
+      typeof target === "string" ? [target] : Object.values(target);
+    for (const relativeTarget of targets) {
+      if (!existsSync(join(installedPackage, relativeTarget)))
+        throw new Error(`${subpath} points to missing file ${relativeTarget}.`);
+    }
+  }
+  const allowedTopLevel = new Set([
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json",
+    "prisma",
+  ]);
+  for (const entry of readdirSync(installedPackage)) {
+    if (!allowedTopLevel.has(entry))
+      throw new Error(`Unexpected packed top-level entry: ${entry}.`);
+  }
+  const distributionDirectory = join(installedPackage, "dist");
+  const distributionFiles = readdirSync(distributionDirectory);
+  for (const entry of distributionFiles) {
+    if (!/\.(?:css|d\.ts|js|js\.map)$/u.test(entry))
+      throw new Error(`Unexpected distribution file: ${entry}.`);
+    if (entry.endsWith(".js")) {
+      const mapFile = `${entry}.map`;
+      if (!distributionFiles.includes(mapFile))
+        throw new Error(`${entry} has no source map.`);
+      const sourceMap = JSON.parse(
+        readFileSync(join(distributionDirectory, mapFile), "utf8"),
+      );
+      if (!Array.isArray(sourceMap.sourcesContent))
+        throw new Error(`${mapFile} does not contain sourcesContent.`);
+    }
+  }
   const reactBundle = readFileSync(
-    join(consumerDirectory, "node_modules", "pagebldr", "dist", "react.js"),
+    join(distributionDirectory, "react.js"),
     "utf8",
+  );
+  assertMaximumSize(
+    join(distributionDirectory, "react.js"),
+    600_000,
+    "React entry",
+  );
+  assertMaximumSize(
+    join(distributionDirectory, "index.js"),
+    200_000,
+    "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {
     throw new Error("React must remain external in the published bundle.");
   }
   const packageCss = readFileSync(
-    join(consumerDirectory, "node_modules", "pagebldr", "dist", "styles.css"),
+    join(distributionDirectory, "styles.css"),
     "utf8",
+  );
+  assertMaximumSize(
+    join(distributionDirectory, "styles.css"),
+    60_000,
+    "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {
     throw new Error(
