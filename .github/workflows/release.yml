@@ -1,0 +1,31 @@
+name: Release pull request
+
+on:
+  push:
+    branches: [master]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  version:
+    name: Version packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.8.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - uses: changesets/action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
