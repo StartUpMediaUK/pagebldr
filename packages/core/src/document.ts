@@ -50,8 +50,16 @@ export function createDocument(input: CreateDocumentInput): PageDocument {
     variableOrder: [],
     settings: {
       contentWidth: 1_200,
+      showDefaultHeader: true,
       breakpoints: { tabletMax: 1_024, mobileMax: 767 },
-      metadata: { title, description: "", noIndex: false },
+      seo: {
+        title,
+        description: "",
+        socialTitle: "",
+        socialDescription: "",
+        socialImage: null,
+        noIndex: false,
+      },
     },
   };
   return parseDocument(document);

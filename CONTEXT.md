@@ -9,6 +9,17 @@ that integrate it.
 persistence, publication, resources, permissions, and surrounding screens.
 _Avoid_: CMS, tenant
 
+**Reference Host**: The repository's runnable example application that consumes
+the packed public package exactly as an external developer would. It is the
+canonical visual and interaction acceptance surface for the Default experience,
+not sample code or a disposable demo. _Avoid_: Playground, showcase
+
+**Default experience**: The complete, package-owned and pre-styled editor,
+renderer, standard Elements, Blocks, Templates, controls and tools available
+immediately after installation and the documented minimal Host wiring. A Host
+may theme or extend it but does not assemble or redesign it. _Avoid_: Starter
+UI, headless editor
+
 **Builder configuration**: An immutable, application-level description of a
 builder namespace, definitions, contributions, presets, and resource adapters.
 _Avoid_: Global config, options bag
@@ -43,6 +54,11 @@ reference, such as an asset or application link target. _Avoid_: Quiz, media row
 
 **Resource adapter**: A Host implementation that browses, creates, resolves, and
 optionally inspects one Resource kind. _Avoid_: Database adapter, provider
+
+**Destination**: A typed Element-owned navigation intent: external URL, anchor,
+email, telephone, or Host application Resource. Destinations are validated in
+the Document and resolved only at the Host/runtime seam. _Avoid_: Raw href, Quiz
+link
 
 **Storage adapter**: A server-side implementation that persists Documents and
 Revisions using a declared database integration and Provider while satisfying

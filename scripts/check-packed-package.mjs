@@ -1,6 +1,8 @@
 import { execFileSync } from "node:child_process";
 import {
   existsSync,
+  cpSync,
+  copyFileSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -61,7 +63,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  assertMaximumSize(archivePath, 1_100_000, "Packed archive");
+  // The complete 24-Element runtime and its source maps raise the intentional
+  // package baseline while keeping the archive comfortably below 1.25 MB.
+  assertMaximumSize(archivePath, 1_250_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -87,6 +91,8 @@ try {
       ...reactTypes,
       "esbuild@0.28.2",
       "jsdom@30.0.1",
+      "vite@7.3.1",
+      "@vitejs/plugin-react@5.1.4",
     ],
     {
       cwd: consumerDirectory,
@@ -165,7 +171,7 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    100_000,
+    120_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -175,20 +181,36 @@ void pagebldrMetadata;
   if (treeShakenBundle.includes("react"))
     throw new Error("A core-only consumer must not bundle React.");
 
+  copyFileSync(
+    join(workspace, "fixtures", "parity", "all-elements.document.json"),
+    join(consumerDirectory, "all-elements.document.json"),
+  );
   writeFileSync(
     join(consumerDirectory, "ssr-hydration.mjs"),
     `import React from "react";
+import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { renderToString } from "react-dom/server";
 import { hydrateRoot } from "react-dom/client";
-import { createPagebldr } from "pagebldr";
+import { createPagebldr, standardElements, standardStyleCapabilities } from "pagebldr";
 import { PagebldrRenderer } from "pagebldr/react/server";
 
-const builder = createPagebldr({ namespace: "hydration-check" });
-const document = builder.documents.create({ id: "home", title: "Home" });
+const builder = createPagebldr({
+  namespace: "hydration-check",
+  elements: standardElements,
+  styleCapabilities: standardStyleCapabilities,
+});
+const document = builder.documents.migrate(
+  JSON.parse(readFileSync(new URL("./all-elements.document.json", import.meta.url), "utf8")),
+);
 const element = React.createElement(PagebldrRenderer, { builder, document });
 const markup = renderToString(element);
 if (!markup.includes('data-pagebldr-renderer="hydration-check"')) throw new Error("SSR renderer marker missing.");
+for (const element of Object.values(document.elements)) {
+  if (!markup.includes(\`data-pagebldr-element="\${element.id}"\`)) {
+    throw new Error(\`SSR output missing standard Element: \${element.type}\`);
+  }
+}
 const dom = new JSDOM(\`<!doctype html><div id="root">\${markup}</div>\`, { url: "https://example.test" });
 Object.assign(globalThis, { window: dom.window, document: dom.window.document });
 const errors = [];
@@ -211,6 +233,56 @@ if (errors.length > 0) throw errors[0];
     ],
     { cwd: consumerDirectory, stdio: "inherit" },
   );
+
+  const referenceHostDirectory = join(
+    consumerDirectory,
+    "examples",
+    "vite-basic",
+  );
+  mkdirSync(referenceHostDirectory, { recursive: true });
+  copyFileSync(
+    join(workspace, "tsconfig.base.json"),
+    join(consumerDirectory, "tsconfig.base.json"),
+  );
+  for (const file of ["index.html", "tsconfig.json", "vite.config.ts"])
+    copyFileSync(
+      join(workspace, "examples", "vite-basic", file),
+      join(referenceHostDirectory, file),
+    );
+  cpSync(
+    join(workspace, "examples", "vite-basic", "src"),
+    join(referenceHostDirectory, "src"),
+    { recursive: true },
+  );
+  const fixtureDirectory = join(consumerDirectory, "fixtures", "parity");
+  mkdirSync(fixtureDirectory, { recursive: true });
+  copyFileSync(
+    join(workspace, "fixtures", "parity", "project-enquiry.document.json"),
+    join(fixtureDirectory, "project-enquiry.document.json"),
+  );
+  copyFileSync(
+    join(workspace, "fixtures", "parity", "all-elements.document.json"),
+    join(fixtureDirectory, "all-elements.document.json"),
+  );
+  execFileSync(
+    process.execPath,
+    [
+      join(consumerDirectory, "node_modules", "typescript", "bin", "tsc"),
+      "-p",
+      referenceHostDirectory,
+    ],
+    { cwd: consumerDirectory, stdio: "inherit" },
+  );
+  execFileSync(
+    process.execPath,
+    [
+      join(consumerDirectory, "node_modules", "vite", "bin", "vite.js"),
+      "build",
+    ],
+    { cwd: referenceHostDirectory, stdio: "inherit" },
+  );
+  if (!existsSync(join(referenceHostDirectory, "dist", "index.html")))
+    throw new Error("The packed Reference Host did not produce a Vite build.");
 
   const installedManifest = JSON.parse(
     readFileSync(
@@ -266,12 +338,12 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    600_000,
+    625_000,
     "React entry",
   );
   assertMaximumSize(
     join(distributionDirectory, "index.js"),
-    200_000,
+    240_000,
     "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {

@@ -26,11 +26,33 @@ export interface StyleEngine {
   readonly capabilities: ReadonlyMap<string, StyleCapabilityDefinition>;
   readonly properties: ReadonlySet<string>;
   readonly compile: (document: PageDocument) => CompiledDocumentStyles;
+  readonly resolve: (
+    document: PageDocument,
+    elementId: string,
+    breakpoint: Breakpoint,
+    state?: StyleState,
+  ) => ResolvedStyles;
 }
 
+export interface ResolvedStyleSource {
+  readonly sourceType: "class" | "local";
+  readonly sourceId: string;
+  readonly breakpoint: Breakpoint;
+  readonly state: StyleState;
+  readonly inherited: boolean;
+}
+
+export interface ResolvedStyleValue {
+  readonly value: StyleValue;
+  readonly source: ResolvedStyleSource;
+}
+
+export type ResolvedStyles = Readonly<Record<string, ResolvedStyleValue>>;
+
 const keyPattern = /^[a-z][a-z0-9-]*$/u;
-const propertyPattern = /^(?:--[a-z][a-z0-9-]*|[a-z][a-z0-9-]*)$/u;
-const unsafeValuePattern = /[;{}]/u;
+const propertyPattern = /^(?:--[a-z][a-z0-9-]*|[a-z][A-Za-z0-9]*)$/u;
+const unsafeValuePattern =
+  /[;{}<>]|\/\*|\*\/|javascript\s*:|expression\s*\(|@import/iu;
 const breakpoints: readonly Breakpoint[] = ["desktop", "tablet", "mobile"];
 const states: readonly StyleState[] = ["normal", "hover", "focusVisible"];
 
@@ -67,10 +89,7 @@ export function createStyleEngine(
     const definition = defineStyleCapability(input);
     if (capabilities.has(definition.key))
       duplicate("capability", definition.key);
-    for (const property of definition.properties) {
-      if (properties.has(property)) duplicate("style property", property);
-      properties.add(property);
-    }
+    for (const property of definition.properties) properties.add(property);
     capabilities.set(definition.key, definition);
   }
   return Object.freeze({
@@ -78,6 +97,12 @@ export function createStyleEngine(
     properties,
     compile: (document: PageDocument) =>
       compileDocumentStyles(namespace, document, properties),
+    resolve: (
+      document: PageDocument,
+      elementId: string,
+      breakpoint: Breakpoint,
+      state: StyleState = "normal",
+    ) => resolveElementStyles(document, elementId, breakpoint, state),
   });
 }
 
@@ -148,7 +173,14 @@ function appendResponsiveRules(
         namespace,
         allowed,
       );
-      if (body) rules.push(`${selector}${stateSuffix(state)}{${body}}`);
+      if (body) {
+        if (state === "normal")
+          rules.push(`${equalSpecificityNormalSelector(selector)}{${body}}`);
+        else
+          rules.push(
+            `${selector}${stateSuffix(state)},${selector}[data-pagebldr-force-state="${state}"]{${body}}`,
+          );
+      }
     }
     if (rules.length === 0) continue;
     const content = rules.join("\n");
@@ -158,6 +190,12 @@ function appendResponsiveRules(
         : `@media (max-width:${breakpoint === "tablet" ? document.settings.breakpoints.tabletMax : document.settings.breakpoints.mobileMax}px){${content}}`,
     );
   }
+}
+
+function equalSpecificityNormalSelector(selector: string): string {
+  const finalCompoundIndex = selector.lastIndexOf(" ");
+  if (finalCompoundIndex < 0) return `${selector}${selector}`;
+  return `${selector}${selector.slice(finalCompoundIndex + 1)}`;
 }
 
 function serializeDeclarations(
@@ -173,7 +211,7 @@ function serializeDeclarations(
         invalid(
           `Style property ${property} is not registered by a Style capability.`,
         );
-      return `${property}:${serializeValue(declarations[property]!, document, namespace)}`;
+      return `${toKebabCase(property)}:${serializeValue(declarations[property]!, document, namespace, property)}`;
     })
     .join(";");
 }
@@ -182,29 +220,116 @@ function serializeValue(
   value: StyleValue,
   document: PageDocument,
   namespace: string,
+  property?: string,
 ): string {
   if (typeof value === "object") {
     if (!document.variables[value.variableId])
       invalid(`Style references missing Variable ${value.variableId}.`);
     return `var(--pb-${namespace}-v-${escapeIdentifier(value.variableId)})`;
   }
-  return serializePrimitive(value);
+  return serializePrimitive(value, property);
 }
 
-function serializePrimitive(value: string | number): string {
+function serializePrimitive(value: string | number, property?: string): string {
   const serialized = String(value);
+  const urls = [...serialized.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/giu)];
+  const hasUrlSyntax = /url\s*\(/iu.test(serialized);
+  const urlsAreSafe =
+    !hasUrlSyntax ||
+    ((property === "background" || property === "backgroundImage") &&
+      urls.length > 0 &&
+      urls.every((match) => /^https?:\/\//iu.test(match[1] ?? "")));
   if (
     !Number.isFinite(typeof value === "number" ? value : 0) ||
     unsafeValuePattern.test(serialized) ||
+    !urlsAreSafe ||
     [...serialized].some((character) => {
       const code = character.codePointAt(0)!;
       return code < 32 || code === 127;
     })
   )
-    invalid(
-      "Style values cannot contain control characters or CSS rule delimiters.",
-    );
+    invalid("A style value contains unsafe CSS syntax.");
   return serialized;
+}
+
+function toKebabCase(property: string): string {
+  return property.replace(
+    /[A-Z]/gu,
+    (character) => `-${character.toLowerCase()}`,
+  );
+}
+
+export function resolveElementStyles(
+  document: PageDocument,
+  elementId: string,
+  breakpoint: Breakpoint,
+  state: StyleState = "normal",
+): ResolvedStyles {
+  const element = document.elements[elementId];
+  if (!element)
+    throw new PagebldrError(
+      "ELEMENT_NOT_FOUND",
+      `Element ${elementId} does not exist.`,
+    );
+  const resolved: Record<string, ResolvedStyleValue> = {};
+  for (const classId of element.classIds) {
+    const styleClass = document.classes[classId];
+    if (!styleClass)
+      throw new PagebldrError(
+        "BROKEN_REFERENCE",
+        `Element ${elementId} references missing Class ${classId}.`,
+      );
+    Object.assign(
+      resolved,
+      resolveStyleLayer(styleClass.styles, breakpoint, state, "class", classId),
+    );
+  }
+  Object.assign(
+    resolved,
+    resolveStyleLayer(element.styles, breakpoint, state, "local", elementId),
+  );
+  return Object.freeze(resolved);
+}
+
+function resolveStyleLayer(
+  styles: ResponsiveStyles,
+  breakpoint: Breakpoint,
+  state: StyleState,
+  sourceType: ResolvedStyleSource["sourceType"],
+  sourceId: string,
+): ResolvedStyles {
+  const resolved: Record<string, ResolvedStyleValue> = {};
+  const chain = breakpoints.slice(0, breakpoints.indexOf(breakpoint) + 1);
+  for (const currentBreakpoint of chain) {
+    const stateStyles = styles[currentBreakpoint];
+    if (!stateStyles) continue;
+    const layers: readonly (readonly [
+      StyleState,
+      StyleDeclarations | undefined,
+    ])[] =
+      state === "normal"
+        ? [["normal", stateStyles.normal]]
+        : [
+            ["normal", stateStyles.normal],
+            [state, stateStyles[state]],
+          ];
+    for (const [currentState, declarations] of layers) {
+      if (!declarations) continue;
+      for (const [property, value] of Object.entries(declarations)) {
+        resolved[property] = {
+          value,
+          source: {
+            sourceType,
+            sourceId,
+            breakpoint: currentBreakpoint,
+            state: currentState,
+            inherited: currentBreakpoint !== breakpoint,
+          },
+        };
+      }
+    }
+  }
+  return resolved;
 }
 
 function stateSuffix(state: StyleState): string {

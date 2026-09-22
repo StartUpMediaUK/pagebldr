@@ -10,12 +10,13 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm packages:check && pnpm licenses:check",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm parity:fixtures:check && pnpm build && pnpm packages:check && pnpm licenses:check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "licenses:check": "pnpm licenses list",
     "lint": "eslint .",
     "packages:check": "pnpm --filter pagebldr package:check && node scripts/check-packed-package.mjs",
+    "parity:fixtures:check": "node scripts/check-parity-fixtures.mjs",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck"
   },

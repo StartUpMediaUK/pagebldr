@@ -15,6 +15,43 @@ export interface DocumentMigration {
   ) => Record<string, unknown>;
 }
 
+export const standardDocumentMigrations: readonly DocumentMigration[] = [
+  {
+    fromVersion: 1,
+    toVersion: 2,
+    migrate: (input) => {
+      const settings = input.settings as
+        | {
+            readonly contentWidth?: unknown;
+            readonly breakpoints?: unknown;
+            readonly metadata?: {
+              readonly title?: unknown;
+              readonly description?: unknown;
+              readonly noIndex?: unknown;
+            };
+          }
+        | undefined;
+      const metadata = settings?.metadata;
+      return {
+        ...input,
+        settings: {
+          contentWidth: settings?.contentWidth,
+          showDefaultHeader: true,
+          breakpoints: settings?.breakpoints,
+          seo: {
+            title: metadata?.title ?? "",
+            description: metadata?.description ?? "",
+            socialTitle: "",
+            socialDescription: "",
+            socialImage: null,
+            noIndex: metadata?.noIndex ?? false,
+          },
+        },
+      };
+    },
+  },
+];
+
 export function validateMigrationChain(
   migrations: readonly DocumentMigration[],
 ): ReadonlyMap<number, DocumentMigration> {

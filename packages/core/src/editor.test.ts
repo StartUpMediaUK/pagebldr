@@ -6,6 +6,7 @@ import {
   createPagebldr,
   createSequentialIdFactory,
   defineElement,
+  standardStyleCapabilities,
 } from "./index.js";
 import { createFiveHundredElementFixture } from "./fixtures.js";
 import type {
@@ -21,10 +22,12 @@ const definition = defineElement({
   label: "Container",
   props: z.record(z.unknown()),
   defaults: () => ({}),
+  styles: standardStyleCapabilities.map(({ key }) => key),
 });
 const builder = createPagebldr({
   namespace: "editor-tests",
   elements: [definition],
+  styleCapabilities: standardStyleCapabilities,
 });
 
 describe("builder.editor", () => {
@@ -179,6 +182,128 @@ describe("builder.editor", () => {
     expect(document.variableOrder).toEqual([]);
   });
 
+  it("creates and assigns a Class atomically", () => {
+    let document = dispatch(base(), {
+      type: "insert",
+      parentId: "root",
+      index: 0,
+      clipboard: clipboard("item"),
+    });
+    const transaction = builder.editor.dispatch(document, {
+      type: "add-class-and-assign",
+      elementId: "item",
+      styleClass: { id: "card", name: "Card", styles: {} },
+    });
+    document = transaction.document;
+    expect(document.classOrder).toEqual(["card"]);
+    expect(document.elements.item?.classIds).toEqual(["card"]);
+    expect(transaction.label).toBe("Create and assign class");
+  });
+
+  it("reorders Element Classes and replaces Class styles through commands", () => {
+    let document = dispatch(base(), {
+      type: "add-class",
+      styleClass: { id: "one", name: "One", styles: {} },
+    });
+    document = dispatch(document, {
+      type: "add-class",
+      styleClass: { id: "two", name: "Two", styles: {} },
+    });
+    document = dispatch(document, {
+      type: "assign-class",
+      elementId: "root",
+      classId: "one",
+    });
+    document = dispatch(document, {
+      type: "assign-class",
+      elementId: "root",
+      classId: "two",
+    });
+    document = dispatch(document, {
+      type: "reorder-element-class",
+      elementId: "root",
+      classId: "two",
+      index: 0,
+    });
+    document = dispatch(document, {
+      type: "replace-class-styles",
+      classId: "two",
+      styles: { desktop: { normal: { opacity: 0.8 } } },
+    });
+    expect(document.elements.root?.classIds).toEqual(["two", "one"]);
+    expect(document.classes.two?.styles).toEqual({
+      desktop: { normal: { opacity: 0.8 } },
+    });
+  });
+
+  it("copies and pastes local styles as one command", () => {
+    let document = dispatch(base(), {
+      type: "insert",
+      parentId: "root",
+      index: 0,
+      clipboard: clipboard("item"),
+    });
+    document = dispatch(document, {
+      type: "set-style",
+      target: { type: "local", elementId: "item" },
+      breakpoint: "desktop",
+      state: "hover",
+      property: "opacity",
+      value: 0.5,
+    });
+
+    const style = builder.editor.clipboard.copyStyles(document, "item");
+    const transaction = builder.editor.dispatch(document, {
+      type: "paste-styles",
+      elementId: "root",
+      clipboard: style,
+    });
+    expect(transaction.document.elements.root?.styles).toEqual(
+      document.elements.item?.styles,
+    );
+    expect(transaction.label).toBe("Paste styles");
+  });
+
+  it("applies a full-page template while preserving page identity and SEO", () => {
+    const source = builder.documents.create({ id: "source", title: "Source" });
+    const createdTemplate = builder.documents.create({
+      id: "template",
+      title: "Template",
+      slug: "template",
+    });
+    const template: PageDocument = {
+      ...createdTemplate,
+      rootId: "template-root",
+      elements: {
+        "template-root": {
+          ...createdTemplate.elements.root!,
+          id: "template-root",
+          name: "Template page",
+          styles: { desktop: { normal: { display: "grid" } } },
+        },
+      },
+      settings: {
+        ...createdTemplate.settings,
+        contentWidth: 960,
+        seo: { ...createdTemplate.settings.seo, title: "Template SEO" },
+      },
+    };
+    const transaction = builder.editor.dispatch(source, {
+      type: "apply-template",
+      template,
+    });
+
+    expect(transaction.document).toMatchObject({
+      id: source.id,
+      title: source.title,
+      slug: source.slug,
+      rootId: source.rootId,
+      settings: { contentWidth: 960, seo: source.settings.seo },
+    });
+    expect(transaction.document.elements.root?.name).toBe("Template page");
+    expect(transaction.label).toBe("Apply template");
+  });
+
   it("replaces complete styles and settings", () => {
     let document = dispatch(base(), {
       type: "replace-styles",
@@ -255,6 +380,33 @@ describe("builder.editor", () => {
       slug: "branch-two",
     });
     expect(history.past).toHaveLength(2);
+  });
+
+  it("uses the exact 750ms coalescing boundary and jumps non-destructively", () => {
+    let history = builder.editor.history.create(base());
+    history = builder.editor.history.commit(
+      history,
+      { type: "update-page", title: "A" },
+      { coalesceKey: "title", timestamp: 0 },
+    );
+    history = builder.editor.history.commit(
+      history,
+      { type: "update-page", title: "AB" },
+      { coalesceKey: "title", timestamp: 750 },
+    );
+    history = builder.editor.history.commit(
+      history,
+      { type: "update-page", title: "ABC" },
+      { coalesceKey: "title", timestamp: 1_501 },
+    );
+    expect(history.past).toHaveLength(2);
+
+    const start = builder.editor.history.jump(history, 0);
+    expect(start.present.title).toBe("Untitled page");
+    expect(start.future).toHaveLength(2);
+    const end = builder.editor.history.jump(start, 99);
+    expect(end.present.title).toBe("ABC");
+    expect(end.past).toHaveLength(2);
   });
 
   it("rolls back atomic multi-command transactions when a command refuses", () => {

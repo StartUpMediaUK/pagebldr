@@ -28,7 +28,8 @@
 }
 
 @layer base {
-  [data-pagebldr-editor] {
+  [data-pagebldr-editor],
+  [data-pagebldr-renderer] {
     --pagebldr-background: #ffffff;
     --pagebldr-foreground: #18181b;
     --pagebldr-card: #ffffff;
@@ -43,6 +44,7 @@
     --pagebldr-radius: 0.625rem;
     color: var(--pagebldr-foreground);
     background: var(--pagebldr-background);
+    color-scheme: light;
     font-family: var(
       --pagebldr-font-sans,
       ui-sans-serif,
@@ -53,8 +55,234 @@
 
   [data-pagebldr-editor] *,
   [data-pagebldr-editor] *::before,
-  [data-pagebldr-editor] *::after {
+  [data-pagebldr-editor] *::after,
+  [data-pagebldr-renderer] *,
+  [data-pagebldr-renderer] *::before,
+  [data-pagebldr-renderer] *::after {
     box-sizing: border-box;
     border-color: var(--pagebldr-border);
+  }
+}
+
+@layer components {
+  [data-pagebldr-renderer] [data-pagebldr-hidden="true"] {
+    opacity: 0.45;
+    outline: 1px dashed currentColor;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-logo,
+  [data-pagebldr-renderer] .pagebldr-menu-link,
+  [data-pagebldr-renderer] .pagebldr-button {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  [data-pagebldr-renderer] img,
+  [data-pagebldr-renderer] video,
+  [data-pagebldr-renderer] iframe {
+    max-width: 100%;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-button {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    border-radius: var(--pagebldr-radius);
+    background: var(--pagebldr-primary);
+    color: var(--pagebldr-primary-foreground);
+    font-weight: 650;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-menu-toggle {
+    display: none;
+  }
+
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-collapse-at="desktop"]
+    .pagebldr-menu-toggle {
+    display: inline-flex;
+  }
+
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-collapse-at="desktop"]
+    .pagebldr-menu-list {
+    display: none;
+  }
+
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-collapse-at="desktop"][data-open="true"]
+    .pagebldr-menu-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-menu-list,
+  [data-pagebldr-renderer] .pagebldr-icon-list,
+  [data-pagebldr-renderer] .pagebldr-social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-icon-list {
+    display: grid;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-icon-list > li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-accordion {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-accordion details {
+    padding: 1rem;
+    border: 1px solid currentColor;
+    border-radius: 0.75rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-accordion summary {
+    cursor: pointer;
+    font-weight: 650;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-tabs-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-bottom: 1px solid currentColor;
+  }
+
+  [data-pagebldr-renderer] [role="tab"] {
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  [data-pagebldr-renderer] [role="tab"][aria-selected="true"] {
+    border-bottom-color: currentColor;
+    font-weight: 700;
+  }
+
+  [data-pagebldr-renderer] [role="tabpanel"] {
+    padding-block: 1.25rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-testimonial,
+  [data-pagebldr-renderer] .pagebldr-counter,
+  [data-pagebldr-renderer] .pagebldr-progress {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-testimonial {
+    margin: 0;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-testimonial img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    object-fit: cover;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-star-rating {
+    letter-spacing: 0.05em;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-progress-meta,
+  [data-pagebldr-renderer] .pagebldr-gallery-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-logo-cloud,
+  [data-pagebldr-renderer] .pagebldr-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+    gap: 1rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-logo-cloud img,
+  [data-pagebldr-renderer] .pagebldr-gallery img,
+  [data-pagebldr-renderer] .pagebldr-gallery video,
+  [data-pagebldr-renderer] .pagebldr-gallery iframe {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 0;
+    border-radius: 0.75rem;
+    object-fit: cover;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-gallery[data-layout="masonry"] {
+    display: block;
+    columns: 13.75rem;
+    column-gap: 1rem;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-gallery figure {
+    margin: 0 0 1rem;
+    break-inside: avoid;
+  }
+
+  [data-pagebldr-renderer] .pagebldr-gallery[data-layout="carousel"] {
+    display: block;
+  }
+
+  @media (max-width: 1024px) {
+    [data-pagebldr-renderer]
+      .pagebldr-menu[data-collapse-at="tablet"]
+      .pagebldr-menu-toggle {
+      display: inline-flex;
+    }
+
+    [data-pagebldr-renderer]
+      .pagebldr-menu[data-collapse-at="tablet"]
+      .pagebldr-menu-list {
+      display: none;
+    }
+
+    [data-pagebldr-renderer]
+      .pagebldr-menu[data-collapse-at="tablet"][data-open="true"]
+      .pagebldr-menu-list {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 767px) {
+    [data-pagebldr-renderer]
+      .pagebldr-menu[data-collapse-at="mobile"]
+      .pagebldr-menu-toggle {
+      display: inline-flex;
+    }
+
+    [data-pagebldr-renderer]
+      .pagebldr-menu[data-collapse-at="mobile"]
+      .pagebldr-menu-list {
+      display: none;
+    }
+
+    [data-pagebldr-renderer]
+      .pagebldr-menu[data-collapse-at="mobile"][data-open="true"]
+      .pagebldr-menu-list {
+      display: flex;
+      flex-direction: column;
+    }
   }
 }

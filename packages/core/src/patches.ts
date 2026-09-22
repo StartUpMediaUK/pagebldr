@@ -141,8 +141,16 @@ export function applyPatches(
 
 export type MutableElement = Omit<
   PageElement,
-  "name" | "props" | "children" | "classIds" | "styles" | "locked" | "hidden"
+  | "id"
+  | "name"
+  | "props"
+  | "children"
+  | "classIds"
+  | "styles"
+  | "locked"
+  | "hidden"
 > & {
+  id: string;
   name: string;
   props: Record<string, unknown>;
   children: string[];

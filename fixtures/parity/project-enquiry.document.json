@@ -1,0 +1,4006 @@
+{
+  "format": "pagebldr",
+  "schemaVersion": 2,
+  "id": "reference-project-enquiry",
+  "title": "Project Enquiry",
+  "slug": "project-enquiry",
+  "rootId": "reference-root-2",
+  "elements": {
+    "reference-root-2": {
+      "id": "reference-root-2",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Page",
+      "props": {
+        "tag": "main",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-container-7",
+        "reference-container-15",
+        "reference-container-36",
+        "reference-container-42",
+        "reference-container-57",
+        "reference-container-80",
+        "reference-container-99",
+        "reference-container-115",
+        "reference-container-118",
+        "reference-container-122",
+        "reference-container-128",
+        "reference-container-133"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "display": "flex",
+            "overflow": "hidden",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-cream"
+            },
+            "flexDirection": "column",
+            "minHeight": "100vh"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-logo-3": {
+      "id": "reference-logo-3",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Header wordmark",
+      "props": {
+        "display": "text",
+        "text": "YOUR STUDIO",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "25px",
+            "fontWeight": 500
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-menu-4": {
+      "id": "reference-menu-4",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Project enquiry navigation",
+      "props": {
+        "ariaLabel": "Primary navigation",
+        "collapseAt": "tablet",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#172016",
+        "panelPadding": 24,
+        "itemGap": 32,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "approach",
+            "label": "Approach",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-37"
+            }
+          },
+          {
+            "id": "fit",
+            "label": "Who it’s for",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-43"
+            }
+          },
+          {
+            "id": "process",
+            "label": "Process",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-81"
+            }
+          },
+          {
+            "id": "faq",
+            "label": "FAQ",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-119"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "14px",
+            "fontWeight": 600
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-button-5": {
+      "id": "reference-button-5",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Start enquiry action",
+      "props": {
+        "label": "Start your enquiry",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-olive"
+            },
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          },
+          "hover": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "borderColor": {
+              "type": "variable",
+              "variableId": "template-clay"
+            }
+          }
+        },
+        "mobile": {
+          "normal": {
+            "width": "100%",
+            "gridColumn": "1 / -1"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-6": {
+      "id": "reference-container-6",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-logo-3",
+        "reference-menu-4",
+        "reference-button-5"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "28px",
+            "alignItems": "center",
+            "gridTemplateColumns": "1fr auto auto",
+            "paddingBottom": "18px",
+            "paddingTop": "18px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr auto"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-7": {
+      "id": "reference-container-7",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header",
+      "props": {
+        "tag": "header",
+        "layout": "flex"
+      },
+      "children": ["reference-container-6"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-olive"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-8": {
+      "id": "reference-heading-8",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Page title",
+      "props": {
+        "content": "A project shaped around your needs.",
+        "level": 1
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "70px",
+            "fontStyle": "italic",
+            "maxWidth": "660px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "58px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "44px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-9": {
+      "id": "reference-rich-text-9",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Hero enquiry promise",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Tell us about your plans, preferences, and timing. We’ll review the details and let you know whether we’re the right fit."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#e6e8df",
+            "fontSize": "20px",
+            "maxWidth": "610px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-button-10": {
+      "id": "reference-button-10",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Start enquiry action",
+      "props": {
+        "label": "Start your enquiry",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-11": {
+      "id": "reference-rich-text-11",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Enquiry duration estimate",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Allow about five minutes · replace with the linked guided enquiry’s real duration"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#d5d9ce",
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-12": {
+      "id": "reference-container-12",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-8",
+        "reference-rich-text-9",
+        "reference-button-10",
+        "reference-rich-text-11"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "26px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-13": {
+      "id": "reference-image-13",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Hero garden image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1558904541-efa843a96f01"
+        },
+        "alt": "A softly lit path through a lush contemporary garden",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "530px",
+            "width": "100%",
+            "borderRadius": "22px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "height": "460px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "height": "330px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-14": {
+      "id": "reference-container-14",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["reference-container-12", "reference-image-13"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "56px",
+            "alignItems": "center",
+            "gridTemplateColumns": ".9fr 1.1fr",
+            "paddingTop": "42px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-15": {
+      "id": "reference-container-15",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-14"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-olive"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-16": {
+      "id": "reference-heading-16",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Enquiry coverage heading",
+      "props": {
+        "content": "What the enquiry covers",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-17": {
+      "id": "reference-rich-text-17",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Enquiry coverage explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "The linked enquiry will ask for the practical details needed to understand your project. These labels are a preview, not form controls."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "760px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-18": {
+      "id": "reference-rich-text-18",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Project type information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Project type"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-19": {
+      "id": "reference-rich-text-19",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Location information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Location"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-20": {
+      "id": "reference-rich-text-20",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Size or scope information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Size or scope"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-21": {
+      "id": "reference-rich-text-21",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Style and preferences information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Style and preferences"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-22": {
+      "id": "reference-rich-text-22",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Approximate budget information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Approximate budget"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-23": {
+      "id": "reference-rich-text-23",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Desired timeline information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Desired timeline"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-24": {
+      "id": "reference-rich-text-24",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Contact details information chip",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Contact details"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "padding": "10px 16px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "999px",
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-25": {
+      "id": "reference-container-25",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Enquiry information chips",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-rich-text-18",
+        "reference-rich-text-19",
+        "reference-rich-text-20",
+        "reference-rich-text-21",
+        "reference-rich-text-22",
+        "reference-rich-text-23",
+        "reference-rich-text-24"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "12px",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-26": {
+      "id": "reference-rich-text-26",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Example preference label",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "EXAMPLE PREFERENCES"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".08em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-27": {
+      "id": "reference-rich-text-27",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Modern static preference",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Modern"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #667858",
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "padding": "8px 13px",
+            "borderRadius": "999px",
+            "fontSize": "13px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-28": {
+      "id": "reference-rich-text-28",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Naturalistic static preference",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Naturalistic"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #667858",
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "padding": "8px 13px",
+            "borderRadius": "999px",
+            "fontSize": "13px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-29": {
+      "id": "reference-rich-text-29",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Entertaining static preference",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Entertaining"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #667858",
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "padding": "8px 13px",
+            "borderRadius": "999px",
+            "fontSize": "13px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-30": {
+      "id": "reference-container-30",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Static preference examples",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-rich-text-27",
+        "reference-rich-text-28",
+        "reference-rich-text-29"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "10px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-31": {
+      "id": "reference-rich-text-31",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Sample fit summary label",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "SAMPLE FIT SUMMARY"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".08em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-32": {
+      "id": "reference-heading-32",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Sample fit summary heading",
+      "props": {
+        "content": "A considered review, not an instant verdict",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "25px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-33": {
+      "id": "reference-rich-text-33",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Sample fit summary explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "We’ll compare your project type, location, scope, preferences, budget, and timing with the criteria you publish here, then explain the next appropriate step."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-34": {
+      "id": "reference-container-34",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Static enquiry preview",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-rich-text-26",
+        "reference-container-30",
+        "reference-rich-text-31",
+        "reference-heading-32",
+        "reference-rich-text-33"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "18px",
+            "padding": "28px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "16px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-35": {
+      "id": "reference-container-35",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Enquiry coverage content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-16",
+        "reference-rich-text-17",
+        "reference-container-25",
+        "reference-container-34"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-36": {
+      "id": "reference-container-36",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Enquiry coverage",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-35"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-cream"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-37": {
+      "id": "reference-heading-37",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Approach heading",
+      "props": {
+        "content": "Designed around how you want to work.",
+        "level": 2,
+        "anchorId": "approach"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "560px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-38": {
+      "id": "reference-rich-text-38",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Approach explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Explain how your service balances the client’s goals, practical constraints, and your professional point of view. Set a clear expectation for what happens after the enquiry is received."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "19px",
+            "maxWidth": "600px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-39": {
+      "id": "reference-container-39",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Approach message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-37", "reference-rich-text-38"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "22px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-40": {
+      "id": "reference-image-40",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Approach garden image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1598902108854-10e335adac99"
+        },
+        "alt": "A contemporary planted courtyard with an outdoor dining table",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "440px",
+            "width": "100%",
+            "borderRadius": "18px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "height": "300px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-41": {
+      "id": "reference-container-41",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Service promise content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["reference-container-39", "reference-image-40"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "60px",
+            "alignItems": "center",
+            "gridTemplateColumns": ".8fr 1.2fr"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-42": {
+      "id": "reference-container-42",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Service promise",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-41"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-43": {
+      "id": "reference-heading-43",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Qualification heading",
+      "props": {
+        "content": "Is your project a fit?",
+        "level": 2,
+        "anchorId": "fit"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-44": {
+      "id": "reference-rich-text-44",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Qualification introduction",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Make the real criteria clear before someone begins. Replace every example below with requirements your service has confirmed."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "720px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-list-45": {
+      "id": "reference-icon-list-45",
+      "type": "icon-list",
+      "elementVersion": 1,
+      "name": "Example qualification criteria",
+      "props": {
+        "items": [
+          {
+            "id": "criterion-1",
+            "icon": "check",
+            "text": "Project type: replace with the work you actually take on."
+          },
+          {
+            "id": "criterion-2",
+            "icon": "check",
+            "text": "Service area: replace with confirmed locations or delivery boundaries."
+          },
+          {
+            "id": "criterion-3",
+            "icon": "check",
+            "text": "Minimum requirements: state any genuine scope or budget threshold."
+          },
+          {
+            "id": "criterion-4",
+            "icon": "check",
+            "text": "Timing: explain the lead time or availability you can support."
+          },
+          {
+            "id": "criterion-5",
+            "icon": "check",
+            "text": "Exclusions: name work that should be referred elsewhere."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-46": {
+      "id": "reference-heading-46",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Service area heading",
+      "props": {
+        "content": "Service area",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-47": {
+      "id": "reference-rich-text-47",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Service area explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace with the exact locations or remote-delivery policy you support."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-48": {
+      "id": "reference-container-48",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Service area criterion",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-46", "reference-rich-text-47"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "12px",
+            "padding": "24px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-49": {
+      "id": "reference-heading-49",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Minimum requirements heading",
+      "props": {
+        "content": "Minimum requirements",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-50": {
+      "id": "reference-rich-text-50",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Minimum requirements explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace with confirmed project, scope, or budget requirements."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-51": {
+      "id": "reference-container-51",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Minimum requirements criterion",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-49", "reference-rich-text-50"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "12px",
+            "padding": "24px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-52": {
+      "id": "reference-heading-52",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Not the right fit heading",
+      "props": {
+        "content": "Not the right fit",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-53": {
+      "id": "reference-rich-text-53",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Not the right fit explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Explain exclusions clearly and offer an alternative route where possible."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-54": {
+      "id": "reference-container-54",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Not the right fit criterion",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-52", "reference-rich-text-53"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "12px",
+            "padding": "24px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-55": {
+      "id": "reference-container-55",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Qualification detail cards",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-container-48",
+        "reference-container-51",
+        "reference-container-54"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "18px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-56": {
+      "id": "reference-container-56",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Project fit content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-43",
+        "reference-rich-text-44",
+        "reference-icon-list-45",
+        "reference-container-55"
+      ],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-57": {
+      "id": "reference-container-57",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Project fit",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-56"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-58": {
+      "id": "reference-heading-58",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Preference examples heading",
+      "props": {
+        "content": "What styles speak to you?",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-59": {
+      "id": "reference-rich-text-59",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Preference examples explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "These images illustrate the kinds of visual choices the linked guided enquiry can ask about. They are examples, not selectable controls."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "760px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-60": {
+      "id": "reference-image-60",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Modern preference image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae"
+        },
+        "alt": "A modern garden with geometric paving and restrained architectural planting",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "220px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-61": {
+      "id": "reference-heading-61",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Modern preference heading",
+      "props": {
+        "content": "Modern",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-62": {
+      "id": "reference-container-62",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Modern preference card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-image-60", "reference-heading-61"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "14px",
+            "overflow": "hidden",
+            "padding": "0 0 18px 0",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "14px",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-63": {
+      "id": "reference-image-63",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Coastal preference image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+        },
+        "alt": "A coastal garden with pale stone, native grasses, and a sea view",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "220px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-64": {
+      "id": "reference-heading-64",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Coastal preference heading",
+      "props": {
+        "content": "Coastal",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-65": {
+      "id": "reference-container-65",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Coastal preference card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-image-63", "reference-heading-64"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "14px",
+            "overflow": "hidden",
+            "padding": "0 0 18px 0",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "14px",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-66": {
+      "id": "reference-image-66",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Mediterranean preference image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1519331379826-f10be5486c6f"
+        },
+        "alt": "A Mediterranean courtyard with olive trees, lavender, and warm stone",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "220px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-67": {
+      "id": "reference-heading-67",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Mediterranean preference heading",
+      "props": {
+        "content": "Mediterranean",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-68": {
+      "id": "reference-container-68",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Mediterranean preference card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-image-66", "reference-heading-67"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "14px",
+            "overflow": "hidden",
+            "padding": "0 0 18px 0",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "14px",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-69": {
+      "id": "reference-image-69",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Naturalistic preference image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e"
+        },
+        "alt": "A naturalistic garden with layered perennials and stepping stones",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "220px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-70": {
+      "id": "reference-heading-70",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Naturalistic preference heading",
+      "props": {
+        "content": "Naturalistic",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-71": {
+      "id": "reference-container-71",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Naturalistic preference card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-image-69", "reference-heading-70"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "14px",
+            "overflow": "hidden",
+            "padding": "0 0 18px 0",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "14px",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-72": {
+      "id": "reference-image-72",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Formal preference image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1584479898061-15742e14f50d"
+        },
+        "alt": "A formal symmetrical garden with clipped hedges and topiary",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "220px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-73": {
+      "id": "reference-heading-73",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Formal preference heading",
+      "props": {
+        "content": "Formal",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-74": {
+      "id": "reference-container-74",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Formal preference card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-image-72", "reference-heading-73"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "14px",
+            "overflow": "hidden",
+            "padding": "0 0 18px 0",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "14px",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-image-75": {
+      "id": "reference-image-75",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Tropical preference image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e"
+        },
+        "alt": "A tropical garden with palms, broad leaves, and a contemporary terrace",
+        "altConfirmed": true,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "220px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-76": {
+      "id": "reference-heading-76",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Tropical preference heading",
+      "props": {
+        "content": "Tropical",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-77": {
+      "id": "reference-container-77",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Tropical preference card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-image-75", "reference-heading-76"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #ded9cf",
+            "display": "flex",
+            "gap": "14px",
+            "overflow": "hidden",
+            "padding": "0 0 18px 0",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderRadius": "14px",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-78": {
+      "id": "reference-container-78",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Preference image cards",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-container-62",
+        "reference-container-65",
+        "reference-container-68",
+        "reference-container-71",
+        "reference-container-74",
+        "reference-container-77"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "18px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-79": {
+      "id": "reference-container-79",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Preference examples content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-58",
+        "reference-rich-text-59",
+        "reference-container-78"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-80": {
+      "id": "reference-container-80",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Preference examples",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-79"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-cream"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-81": {
+      "id": "reference-heading-81",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Process heading",
+      "props": {
+        "content": "A simple, thoughtful process",
+        "level": 2,
+        "anchorId": "process"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-82": {
+      "id": "reference-heading-82",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Share your details number",
+      "props": {
+        "content": "01",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "fontSize": "18px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-83": {
+      "id": "reference-icon-83",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Share your details icon",
+      "props": {
+        "name": "mail",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-84": {
+      "id": "reference-heading-84",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Share your details heading",
+      "props": {
+        "content": "Share your details",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-85": {
+      "id": "reference-rich-text-85",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Share your details description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Complete the linked enquiry with your project, preferences, and timing."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-86": {
+      "id": "reference-container-86",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Share your details step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-82",
+        "reference-icon-83",
+        "reference-heading-84",
+        "reference-rich-text-85"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "14px",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-87": {
+      "id": "reference-heading-87",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "We review fit number",
+      "props": {
+        "content": "02",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "fontSize": "18px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-88": {
+      "id": "reference-icon-88",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "We review fit icon",
+      "props": {
+        "name": "target",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-89": {
+      "id": "reference-heading-89",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "We review fit heading",
+      "props": {
+        "content": "We review fit",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-90": {
+      "id": "reference-rich-text-90",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "We review fit description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "The business compares your information with its published criteria."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-91": {
+      "id": "reference-container-91",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "We review fit step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-87",
+        "reference-icon-88",
+        "reference-heading-89",
+        "reference-rich-text-90"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "14px",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-92": {
+      "id": "reference-heading-92",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Receive a personal response number",
+      "props": {
+        "content": "03",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "fontSize": "18px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-93": {
+      "id": "reference-icon-93",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Receive a personal response icon",
+      "props": {
+        "name": "users",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-94": {
+      "id": "reference-heading-94",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Receive a personal response heading",
+      "props": {
+        "content": "Receive a personal response",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-95": {
+      "id": "reference-rich-text-95",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Receive a personal response description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "You receive the real next step the business has configured."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-96": {
+      "id": "reference-container-96",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Receive a personal response step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-heading-92",
+        "reference-icon-93",
+        "reference-heading-94",
+        "reference-rich-text-95"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "14px",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-97": {
+      "id": "reference-container-97",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Project enquiry process",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-container-86",
+        "reference-container-91",
+        "reference-container-96"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "42px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-98": {
+      "id": "reference-container-98",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Process content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-81", "reference-container-97"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-99": {
+      "id": "reference-container-99",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Process",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-98"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-100": {
+      "id": "reference-heading-100",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Next steps heading",
+      "props": {
+        "content": "What happens next",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-101": {
+      "id": "reference-icon-101",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Response timing icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-102": {
+      "id": "reference-heading-102",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Response timing heading",
+      "props": {
+        "content": "Response timing",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-103": {
+      "id": "reference-rich-text-103",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Response timing explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace with a response window your team has confirmed."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-104": {
+      "id": "reference-container-104",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Response timing expectation",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-icon-101",
+        "reference-heading-102",
+        "reference-rich-text-103"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "13px",
+            "padding": "26px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-105": {
+      "id": "reference-icon-105",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Commitment icon",
+      "props": {
+        "name": "shield",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-106": {
+      "id": "reference-heading-106",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Commitment heading",
+      "props": {
+        "content": "Commitment",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-107": {
+      "id": "reference-rich-text-107",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Commitment explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Explain whether the enquiry creates any obligation before promising that it does not."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-108": {
+      "id": "reference-container-108",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Commitment expectation",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-icon-105",
+        "reference-heading-106",
+        "reference-rich-text-107"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "13px",
+            "padding": "26px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-icon-109": {
+      "id": "reference-icon-109",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Use of details icon",
+      "props": {
+        "name": "mail",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-110": {
+      "id": "reference-heading-110",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Use of details heading",
+      "props": {
+        "content": "Use of details",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-111": {
+      "id": "reference-rich-text-111",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Use of details explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Describe accurately how submitted information supports review and follow-up."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-112": {
+      "id": "reference-container-112",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Use of details expectation",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "reference-icon-109",
+        "reference-heading-110",
+        "reference-rich-text-111"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "13px",
+            "padding": "26px",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            },
+            "borderRadius": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-113": {
+      "id": "reference-container-113",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Next step expectations",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-container-104",
+        "reference-container-108",
+        "reference-container-112"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "18px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-114": {
+      "id": "reference-container-114",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "What happens next content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-100", "reference-container-113"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-115": {
+      "id": "reference-container-115",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "What happens next",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-114"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-stone"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-testimonial-116": {
+      "id": "reference-testimonial-116",
+      "type": "testimonial",
+      "elementVersion": 1,
+      "name": "Client testimonial",
+      "props": {
+        "quote": "The enquiry made it easy to explain what we needed, and the first conversation started with real understanding.",
+        "author": "Replace with a verified client name",
+        "role": "Replace with their project or organisation",
+        "image": null
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontSize": "24px",
+            "fontStyle": "italic",
+            "fontWeight": 500
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-117": {
+      "id": "reference-container-117",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Testimonial content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-testimonial-116"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "940px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-118": {
+      "id": "reference-container-118",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Testimonial",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-117"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-cream"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-119": {
+      "id": "reference-heading-119",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "FAQ heading",
+      "props": {
+        "content": "Frequently asked questions",
+        "level": 2,
+        "anchorId": "faq"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-accordion-120": {
+      "id": "reference-accordion-120",
+      "type": "accordion",
+      "elementVersion": 1,
+      "name": "Project enquiry FAQ",
+      "props": {
+        "allowMultiple": true,
+        "items": [
+          {
+            "id": "faq-1",
+            "question": "What kinds of projects do you take on?",
+            "answer": "Replace with the real project types and exclusions."
+          },
+          {
+            "id": "faq-2",
+            "question": "Which areas do you serve?",
+            "answer": "Replace with a confirmed service area or delivery policy."
+          },
+          {
+            "id": "faq-3",
+            "question": "Is there a minimum project size or budget?",
+            "answer": "State only thresholds the business has confirmed."
+          },
+          {
+            "id": "faq-4",
+            "question": "When should I enquire?",
+            "answer": "Explain the current lead time without promising availability."
+          },
+          {
+            "id": "faq-5",
+            "question": "When will I receive a response?",
+            "answer": "Replace with the real response expectation."
+          },
+          {
+            "id": "faq-6",
+            "question": "How will my information be used?",
+            "answer": "Replace with accurate privacy, storage, and access information."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-121": {
+      "id": "reference-container-121",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-119", "reference-accordion-120"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-122": {
+      "id": "reference-container-122",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-121"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-heading-123": {
+      "id": "reference-heading-123",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Final call to action heading",
+      "props": {
+        "content": "Ready to tell us about your project?",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "44px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-rich-text-124": {
+      "id": "reference-rich-text-124",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Final call to action copy",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Start the linked enquiry and share the details we need to review fit thoughtfully."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#e3e6dd",
+            "maxWidth": "600px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-125": {
+      "id": "reference-container-125",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-heading-123", "reference-rich-text-124"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "12px",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-button-126": {
+      "id": "reference-button-126",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Start enquiry action",
+      "props": {
+        "label": "Start your enquiry",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-127": {
+      "id": "reference-container-127",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["reference-container-125", "reference-button-126"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "42px",
+            "alignItems": "center",
+            "gridTemplateColumns": "1fr auto",
+            "paddingBottom": "54px",
+            "paddingTop": "54px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "stretch",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-128": {
+      "id": "reference-container-128",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["reference-container-127"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-olive"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-logo-129": {
+      "id": "reference-logo-129",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Footer wordmark",
+      "props": {
+        "display": "text",
+        "text": "YOUR STUDIO",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "24px",
+            "fontWeight": 500
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-menu-130": {
+      "id": "reference-menu-130",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Footer navigation",
+      "props": {
+        "ariaLabel": "Footer navigation",
+        "collapseAt": "never",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 22,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "approach",
+            "label": "Approach",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-37"
+            }
+          },
+          {
+            "id": "fit",
+            "label": "Who it’s for",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-43"
+            }
+          },
+          {
+            "id": "process",
+            "label": "Process",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-81"
+            }
+          },
+          {
+            "id": "faq",
+            "label": "FAQ",
+            "destination": {
+              "type": "anchor",
+              "elementId": "reference-heading-119"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#d7dcd0",
+            "fontSize": "13px",
+            "fontWeight": 600
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-copyright-131": {
+      "id": "reference-copyright-131",
+      "type": "copyright",
+      "elementVersion": 1,
+      "name": "Copyright",
+      "props": {
+        "showSymbol": true,
+        "showYear": true,
+        "owner": "Your Brand",
+        "suffix": "All rights reserved."
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#bfc6b8",
+            "fontSize": "12px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-132": {
+      "id": "reference-container-132",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "reference-logo-129",
+        "reference-menu-130",
+        "reference-copyright-131"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "30px",
+            "alignItems": "center",
+            "gridTemplateColumns": "1fr auto auto",
+            "paddingBottom": "28px",
+            "paddingTop": "28px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "start",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "reference-container-133": {
+      "id": "reference-container-133",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer",
+      "props": {
+        "tag": "footer",
+        "layout": "flex"
+      },
+      "children": ["reference-container-132"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-olive"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {
+    "template-section": {
+      "id": "template-section",
+      "name": "Enquiry section",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "38px",
+            "margin": "0 auto",
+            "padding": "86px 40px",
+            "width": "100%",
+            "flexDirection": "column",
+            "maxWidth": {
+              "type": "variable",
+              "variableId": "template-content-width"
+            }
+          }
+        },
+        "tablet": {
+          "normal": {
+            "padding": "68px 30px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gap": "28px",
+            "padding": "52px 20px"
+          }
+        }
+      }
+    },
+    "template-heading": {
+      "id": "template-heading",
+      "name": "Editorial heading",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "margin": 0,
+            "fontFamily": "var(--font-geist-sans), Arial, sans-serif",
+            "fontSize": "50px",
+            "fontWeight": 550,
+            "letterSpacing": "-.045em",
+            "lineHeight": 1.02
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "43px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "35px"
+          }
+        }
+      }
+    },
+    "template-copy": {
+      "id": "template-copy",
+      "name": "Enquiry copy",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontFamily": "var(--font-geist-sans), Arial, sans-serif",
+            "fontSize": "17px",
+            "lineHeight": 1.65
+          }
+        }
+      }
+    },
+    "template-button": {
+      "id": "template-button",
+      "name": "Enquiry action",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "border": "1px solid #7d8d70",
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "display": "inline-flex",
+            "padding": "14px 26px",
+            "width": "fit-content",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-moss"
+            },
+            "borderRadius": "999px",
+            "fontFamily": "var(--font-geist-sans), Arial, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": 700,
+            "justifyContent": "center",
+            "textDecoration": "none"
+          },
+          "hover": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-clay"
+            },
+            "borderColor": {
+              "type": "variable",
+              "variableId": "template-clay"
+            }
+          },
+          "focusVisible": {
+            "outline": "3px solid #b77255",
+            "outlineOffset": "3px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "width": "100%"
+          }
+        }
+      }
+    }
+  },
+  "classOrder": [
+    "template-section",
+    "template-heading",
+    "template-copy",
+    "template-button"
+  ],
+  "variables": {
+    "template-olive": {
+      "id": "template-olive",
+      "name": "Deep olive",
+      "kind": "color",
+      "value": "#172016"
+    },
+    "template-cream": {
+      "id": "template-cream",
+      "name": "Warm cream",
+      "kind": "color",
+      "value": "#fbf8f1"
+    },
+    "template-moss": {
+      "id": "template-moss",
+      "name": "Moss",
+      "kind": "color",
+      "value": "#667858"
+    },
+    "template-clay": {
+      "id": "template-clay",
+      "name": "Clay",
+      "kind": "color",
+      "value": "#b77255"
+    },
+    "template-stone": {
+      "id": "template-stone",
+      "name": "Pale stone",
+      "kind": "color",
+      "value": "#eee9df"
+    },
+    "template-ink": {
+      "id": "template-ink",
+      "name": "Ink",
+      "kind": "color",
+      "value": "#292a23"
+    },
+    "template-muted": {
+      "id": "template-muted",
+      "name": "Muted copy",
+      "kind": "color",
+      "value": "#6d6b63"
+    },
+    "template-white": {
+      "id": "template-white",
+      "name": "White",
+      "kind": "color",
+      "value": "#ffffff"
+    },
+    "template-content-width": {
+      "id": "template-content-width",
+      "name": "Content width",
+      "kind": "contentWidth",
+      "value": "1240px"
+    }
+  },
+  "variableOrder": [
+    "template-olive",
+    "template-cream",
+    "template-moss",
+    "template-clay",
+    "template-stone",
+    "template-ink",
+    "template-muted",
+    "template-white",
+    "template-content-width"
+  ],
+  "settings": {
+    "contentWidth": 1200,
+    "showDefaultHeader": false,
+    "breakpoints": {
+      "tabletMax": 1024,
+      "mobileMax": 767
+    },
+    "seo": {
+      "title": "Project Fit Enquiry",
+      "description": "Help prospective customers share project details so your service business can review fit and prepare a useful response.",
+      "socialTitle": "",
+      "socialDescription": "",
+      "socialImage": null,
+      "noIndex": false
+    }
+  }
+}

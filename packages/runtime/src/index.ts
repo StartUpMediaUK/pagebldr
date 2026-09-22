@@ -1,4 +1,9 @@
-import type { Pagebldr, PageDocument, PreparedResources } from "@pagebldr/core";
+import type {
+  Pagebldr,
+  PageDocument,
+  PreparedResources,
+  ResourceReference,
+} from "@pagebldr/core";
 import { resolveDocumentResources } from "@pagebldr/core";
 
 export * from "./events.js";
@@ -28,6 +33,9 @@ export interface PublishedPage {
   readonly metadata: {
     readonly title: string;
     readonly description: string;
+    readonly socialTitle: string;
+    readonly socialDescription: string;
+    readonly socialImage: ResourceReference | null;
     readonly noIndex: boolean;
   };
   readonly eventContext: {
@@ -95,9 +103,17 @@ export function createPagebldrRuntime(options: PagebldrRuntimeOptions) {
             cacheIdentity: `${options.builder.namespace}:${document.id}:${document.schemaVersion}:${stableScope(request.scope)}`,
             resources,
             metadata: {
-              title: document.settings.metadata.title || document.title,
-              description: document.settings.metadata.description,
-              noIndex: document.settings.metadata.noIndex,
+              title: document.settings.seo.title || document.title,
+              description: document.settings.seo.description,
+              socialTitle:
+                document.settings.seo.socialTitle ||
+                document.settings.seo.title ||
+                document.title,
+              socialDescription:
+                document.settings.seo.socialDescription ||
+                document.settings.seo.description,
+              socialImage: document.settings.seo.socialImage,
+              noIndex: document.settings.seo.noIndex,
             },
             eventContext: {
               namespace: options.builder.namespace,

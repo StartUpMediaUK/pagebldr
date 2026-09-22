@@ -1,4 +1,5 @@
 import type { InferSchemaOutput, StandardSchemaV1 } from "./schema.js";
+import type { ResolvedDestination } from "./destinations.js";
 import type { ResourceReference } from "./types.js";
 import type { StyleCapabilityDefinition } from "./styles.js";
 
@@ -24,12 +25,16 @@ export interface RenderElement {
   readonly attributes?: Readonly<
     Record<string, string | number | boolean | undefined>
   >;
+  readonly style?: Readonly<Record<string, string | number>>;
   readonly children?: readonly RenderNode[];
 }
 
 export interface ElementRenderContext {
   readonly children: readonly RenderNode[];
+  readonly mode: "edit" | "preview" | "published";
+  readonly now: Date;
   readonly resource: (reference: ResourceReference) => string | null;
+  readonly destination: (value: unknown) => ResolvedDestination;
 }
 
 export interface ElementControl<Props> {
@@ -61,6 +66,9 @@ export interface ElementDefinition<
   readonly references?: (
     props: InferSchemaOutput<Schema>,
   ) => readonly ResourceReference[];
+  readonly destinations?: (
+    props: InferSchemaOutput<Schema>,
+  ) => readonly unknown[];
 }
 
 export function defineElement<

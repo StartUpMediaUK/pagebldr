@@ -1,5 +1,6 @@
 import type { PageDocument, PageElement } from "./document-types.js";
 import type { ElementDefinition } from "./element.js";
+import type { StyleEngine } from "./styles.js";
 import {
   executeCommand,
   type EditorCommand,
@@ -9,13 +10,19 @@ import {
   commitCommand,
   createHistory,
   redoHistory,
+  jumpHistory,
   undoHistory,
   type CommitOptions,
   type LocalHistory,
 } from "./history.js";
 import { diffDocuments, invertPatches } from "./patches.js";
 import { PagebldrError } from "./types.js";
-import { serializeSubtree, type PagebldrClipboard } from "./clipboard.js";
+import {
+  serializeStyles,
+  serializeSubtree,
+  type PagebldrClipboard,
+  type PagebldrStyleClipboard,
+} from "./clipboard.js";
 
 export interface EditorEngine {
   readonly dispatch: (
@@ -35,12 +42,17 @@ export interface EditorEngine {
     ) => LocalHistory;
     readonly undo: (history: LocalHistory) => LocalHistory;
     readonly redo: (history: LocalHistory) => LocalHistory;
+    readonly jump: (history: LocalHistory, position: number) => LocalHistory;
   };
   readonly clipboard: {
     readonly copy: (
       document: PageDocument,
       elementId: string,
     ) => PagebldrClipboard;
+    readonly copyStyles: (
+      document: PageDocument,
+      elementId: string,
+    ) => PagebldrStyleClipboard;
   };
   readonly can: (document: PageDocument, command: EditorCommand) => boolean;
   readonly selectors: {
@@ -55,10 +67,11 @@ export interface EditorEngine {
 
 export function createEditor(
   definitions: ReadonlyMap<string, ElementDefinition>,
+  styles: StyleEngine,
 ): EditorEngine {
   return Object.freeze({
     dispatch: (document: PageDocument, command: EditorCommand) =>
-      executeCommand(document, command, definitions),
+      executeCommand(document, command, definitions, styles),
     dispatchMany: (
       document: PageDocument,
       commands: readonly EditorCommand[],
@@ -66,7 +79,12 @@ export function createEditor(
       let current = document;
       const changed = new Set<string>();
       for (const command of commands) {
-        const transaction = executeCommand(current, command, definitions);
+        const transaction = executeCommand(
+          current,
+          command,
+          definitions,
+          styles,
+        );
         current = transaction.document;
         for (const id of transaction.changedElementIds) changed.add(id);
       }
@@ -92,14 +110,18 @@ export function createEditor(
         history: LocalHistory,
         command: EditorCommand,
         options?: CommitOptions,
-      ) => commitCommand(history, command, definitions, options),
-      undo: (history: LocalHistory) => undoHistory(history, definitions),
-      redo: (history: LocalHistory) => redoHistory(history, definitions),
+      ) => commitCommand(history, command, definitions, styles, options),
+      undo: (history: LocalHistory) =>
+        undoHistory(history, definitions, styles),
+      redo: (history: LocalHistory) =>
+        redoHistory(history, definitions, styles),
+      jump: (history: LocalHistory, position: number) =>
+        jumpHistory(history, position, definitions, styles),
     },
-    clipboard: { copy: serializeSubtree },
+    clipboard: { copy: serializeSubtree, copyStyles: serializeStyles },
     can: (document: PageDocument, command: EditorCommand) => {
       try {
-        executeCommand(document, command, definitions);
+        executeCommand(document, command, definitions, styles);
         return true;
       } catch {
         return false;

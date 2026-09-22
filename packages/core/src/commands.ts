@@ -9,6 +9,7 @@ import type {
   StyleVariable,
 } from "./document-types.js";
 import type { ElementDefinition } from "./element.js";
+import type { StyleEngine } from "./styles.js";
 import { createId, type IdFactory } from "./ids.js";
 import {
   diffDocuments,
@@ -21,6 +22,7 @@ import {
   remapClipboard,
   serializeSubtree,
   type PagebldrClipboard,
+  type PagebldrStyleClipboard,
 } from "./clipboard.js";
 import { PagebldrError } from "./types.js";
 import { assertValidDocument } from "./validation.js";
@@ -86,9 +88,20 @@ export type EditorCommand =
       readonly index?: number;
     }
   | {
+      readonly type: "add-class-and-assign";
+      readonly styleClass: StyleClass;
+      readonly elementId: string;
+      readonly classIndex?: number;
+    }
+  | {
       readonly type: "rename-class";
       readonly classId: string;
       readonly name: string;
+    }
+  | {
+      readonly type: "replace-class-styles";
+      readonly classId: string;
+      readonly styles: ResponsiveStyles;
     }
   | {
       readonly type: "delete-class";
@@ -105,6 +118,12 @@ export type EditorCommand =
       readonly type: "unassign-class";
       readonly elementId: string;
       readonly classId: string;
+    }
+  | {
+      readonly type: "reorder-element-class";
+      readonly elementId: string;
+      readonly classId: string;
+      readonly index: number;
     }
   | {
       readonly type: "reorder-class";
@@ -132,6 +151,12 @@ export type EditorCommand =
       readonly index: number;
     }
   | {
+      readonly type: "paste-styles";
+      readonly elementId: string;
+      readonly clipboard: PagebldrStyleClipboard;
+    }
+  | { readonly type: "apply-template"; readonly template: PageDocument }
+  | {
       readonly type: "update-page";
       readonly title?: string;
       readonly slug?: string;
@@ -158,11 +183,14 @@ export function executeCommand(
   source: PageDocument,
   command: EditorCommand,
   definitions: ReadonlyMap<string, ElementDefinition>,
+  styles: StyleEngine,
 ): EditorTransaction {
-  assertValidDocument(source, definitions);
+  assertValidDocument(source, definitions, styles);
+  if (command.type === "apply-template")
+    assertValidDocument(command.template, definitions, styles);
   const document = cloneDocument(source) as MutableDocument;
   mutate(document, command, definitions);
-  assertValidDocument(document, definitions);
+  assertValidDocument(document, definitions, styles);
   const forward = diffDocuments(source, document);
   if (forward.length === 0)
     throw new PagebldrError(
@@ -170,7 +198,7 @@ export function executeCommand(
       "The command did not change the Document.",
     );
   return {
-    label: labels[command.type],
+    label: commandLabel(command),
     document,
     forward,
     inverse: invertPatches(forward),
@@ -272,6 +300,10 @@ function mutate(
       {});
     if (command.value === null) delete declarations[command.property];
     else declarations[command.property] = structuredClone(command.value);
+    if (Object.keys(declarations).length === 0)
+      delete styles[command.breakpoint]![command.state];
+    if (Object.keys(styles[command.breakpoint]!).length === 0)
+      delete styles[command.breakpoint];
     return;
   }
   if (command.type === "add-class") {
@@ -282,10 +314,33 @@ function mutate(
     insertOrdered(document.classOrder, command.styleClass.id, command.index);
     return;
   }
+  if (command.type === "add-class-and-assign") {
+    const target = element(document, command.elementId);
+    assertUnlocked(target);
+    unique(command.styleClass.id, document.classes);
+    document.classes[command.styleClass.id] = structuredClone(
+      command.styleClass,
+    );
+    document.classOrder.push(command.styleClass.id);
+    const index = command.classIndex ?? target.classIds.length;
+    assertIndex(index, target.classIds.length);
+    target.classIds = [...target.classIds];
+    target.classIds.splice(index, 0, command.styleClass.id);
+    return;
+  }
   if (command.type === "rename-class") {
     const item = document.classes[command.classId];
     if (!item) missing("Class");
     document.classes[command.classId] = { ...item, name: command.name };
+    return;
+  }
+  if (command.type === "replace-class-styles") {
+    const item = document.classes[command.classId];
+    if (!item) missing("Class");
+    document.classes[command.classId] = {
+      ...item,
+      styles: structuredClone(command.styles),
+    };
     return;
   }
   if (command.type === "reorder-class") {
@@ -311,6 +366,12 @@ function mutate(
       if (!exists) refusal("Class is not assigned.");
       target.classIds = target.classIds.filter((id) => id !== command.classId);
     }
+    return;
+  }
+  if (command.type === "reorder-element-class") {
+    const target = element(document, command.elementId);
+    assertUnlocked(target);
+    target.classIds = reorder(target.classIds, command.classId, command.index);
     return;
   }
   if (command.type === "delete-class") {
@@ -363,6 +424,21 @@ function mutate(
     );
     return;
   }
+  if (command.type === "paste-styles") {
+    if (
+      command.clipboard.format !== "pagebldr-style-clipboard" ||
+      command.clipboard.schemaVersion !== 1
+    )
+      refusal("Style clipboard data is invalid.");
+    const target = element(document, command.elementId);
+    assertUnlocked(target);
+    target.styles = structuredClone(command.clipboard.styles);
+    return;
+  }
+  if (command.type === "apply-template") {
+    applyTemplate(document, command.template);
+    return;
+  }
   if (command.type === "update-page") {
     if (command.title !== undefined) document.title = command.title;
     if (command.slug !== undefined) document.slug = command.slug;
@@ -371,6 +447,64 @@ function mutate(
   if (command.type === "update-settings")
     document.settings = structuredClone(command.settings);
   void definitions;
+}
+
+function applyTemplate(
+  document: MutableDocument,
+  sourceTemplate: PageDocument,
+): void {
+  const template = cloneDocument(sourceTemplate) as MutableDocument;
+  const templateRootId = template.rootId;
+  if (templateRootId !== document.rootId) {
+    const root = template.elements[templateRootId];
+    if (!root)
+      throw new PagebldrError(
+        "BROKEN_REFERENCE",
+        "The template root is missing.",
+      );
+    delete template.elements[templateRootId];
+    root.id = document.rootId;
+    template.elements[document.rootId] = root;
+    for (const item of Object.values(template.elements))
+      item.props = remapElementReference(
+        item.props,
+        templateRootId,
+        document.rootId,
+      ) as Record<string, unknown>;
+  }
+  const identity = {
+    id: document.id,
+    title: document.title,
+    slug: document.slug,
+    rootId: document.rootId,
+    seo: structuredClone(document.settings.seo),
+  };
+  document.elements = template.elements;
+  document.classes = template.classes;
+  document.classOrder = template.classOrder;
+  document.variables = template.variables;
+  document.variableOrder = template.variableOrder;
+  document.settings = { ...template.settings, seo: identity.seo };
+  document.title = identity.title;
+  document.slug = identity.slug;
+}
+
+function remapElementReference(
+  value: unknown,
+  before: string,
+  after: string,
+): unknown {
+  if (Array.isArray(value))
+    return value.map((child) => remapElementReference(child, before, after));
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [
+      key,
+      key === "elementId" && child === before
+        ? after
+        : remapElementReference(child, before, after),
+    ]),
+  );
 }
 
 function insert(
@@ -492,26 +626,39 @@ function rootRefusal(action: string): never {
 }
 
 const labels: Record<EditorCommand["type"], string> = {
-  insert: "Add Element",
-  move: "Move Element",
-  duplicate: "Duplicate Element",
-  remove: "Delete Element",
-  rename: "Rename Element",
-  "set-locked": "Set lock",
-  "set-hidden": "Set visibility",
-  "update-props": "Edit properties",
+  insert: "Add element",
+  move: "Move element",
+  duplicate: "Duplicate element",
+  remove: "Delete element",
+  rename: "Rename element",
+  "set-locked": "Lock element",
+  "set-hidden": "Hide element",
+  "update-props": "Edit element",
   "set-style": "Edit style",
   "replace-styles": "Edit styles",
-  "add-class": "Add Class",
-  "rename-class": "Rename Class",
-  "delete-class": "Delete Class",
-  "assign-class": "Assign Class",
-  "unassign-class": "Unassign Class",
-  "reorder-class": "Reorder Class",
-  "add-variable": "Add Variable",
-  "update-variable": "Edit Variable",
-  "delete-variable": "Delete Variable",
-  "reorder-variable": "Reorder Variable",
+  "add-class": "Add class",
+  "add-class-and-assign": "Create and assign class",
+  "rename-class": "Rename class",
+  "replace-class-styles": "Edit class styles",
+  "delete-class": "Delete class",
+  "assign-class": "Assign class",
+  "unassign-class": "Remove class",
+  "reorder-element-class": "Reorder assigned class",
+  "reorder-class": "Reorder class",
+  "add-variable": "Add variable",
+  "update-variable": "Edit variable",
+  "delete-variable": "Delete variable",
+  "reorder-variable": "Reorder variable",
+  "paste-styles": "Paste styles",
+  "apply-template": "Apply template",
   "update-page": "Edit page",
-  "update-settings": "Edit settings",
+  "update-settings": "Edit page settings",
 };
+
+function commandLabel(command: EditorCommand): string {
+  if (command.type === "set-locked")
+    return command.locked ? "Lock element" : "Unlock element";
+  if (command.type === "set-hidden")
+    return command.hidden ? "Hide element" : "Show element";
+  return labels[command.type];
+}

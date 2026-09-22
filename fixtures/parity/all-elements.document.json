@@ -1,0 +1,627 @@
+{
+  "format": "pagebldr",
+  "schemaVersion": 2,
+  "id": "reference-all-elements",
+  "title": "All standard Elements",
+  "slug": "all-elements",
+  "rootId": "all-elements-root",
+  "elements": {
+    "all-elements-root": {
+      "id": "all-elements-root",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "All standard Elements",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "all-elements-heading",
+        "all-elements-rich-text",
+        "all-elements-button",
+        "all-elements-logo",
+        "all-elements-menu",
+        "all-elements-copyright",
+        "all-elements-image",
+        "all-elements-video",
+        "all-elements-icon",
+        "all-elements-divider",
+        "all-elements-spacer",
+        "all-elements-list",
+        "all-elements-icon-list",
+        "all-elements-accordion",
+        "all-elements-tabs",
+        "all-elements-testimonial",
+        "all-elements-star-rating",
+        "all-elements-counter",
+        "all-elements-progress",
+        "all-elements-countdown",
+        "all-elements-social-links",
+        "all-elements-logo-cloud",
+        "all-elements-gallery-carousel"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "gap": "32px",
+            "flexDirection": "column"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gap": "24px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gap": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-heading": {
+      "id": "all-elements-heading",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Heading",
+      "props": {
+        "content": "A clear, compelling heading",
+        "level": 2
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-rich-text": {
+      "id": "all-elements-rich-text",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Rich Text",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Add your supporting copy."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-button": {
+      "id": "all-elements-button",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Button",
+      "props": {
+        "label": "Learn more",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-logo": {
+      "id": "all-elements-logo",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Logo",
+      "props": {
+        "display": "text",
+        "text": "Your Brand",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-menu": {
+      "id": "all-elements-menu",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Menu",
+      "props": {
+        "ariaLabel": "Primary navigation",
+        "collapseAt": "mobile",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 24,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "menu-item-1",
+            "label": "About",
+            "destination": {
+              "type": "external",
+              "url": "https://example.com/about",
+              "newTab": false
+            }
+          },
+          {
+            "id": "menu-item-2",
+            "label": "Contact",
+            "destination": {
+              "type": "email",
+              "address": "hello@example.com"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-copyright": {
+      "id": "all-elements-copyright",
+      "type": "copyright",
+      "elementVersion": 1,
+      "name": "Copyright",
+      "props": {
+        "showSymbol": true,
+        "showYear": true,
+        "owner": "Your Brand",
+        "suffix": "All rights reserved."
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-image": {
+      "id": "all-elements-image",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Image",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1557804506-669a67965ba0"
+        },
+        "alt": "",
+        "altConfirmed": false,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-video": {
+      "id": "all-elements-video",
+      "type": "video",
+      "elementVersion": 2,
+      "name": "Video",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        },
+        "title": "Video"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-icon": {
+      "id": "all-elements-icon",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Icon",
+      "props": {
+        "name": "sparkles",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-divider": {
+      "id": "all-elements-divider",
+      "type": "divider",
+      "elementVersion": 1,
+      "name": "Divider",
+      "props": {
+        "decorative": true
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-spacer": {
+      "id": "all-elements-spacer",
+      "type": "spacer",
+      "elementVersion": 1,
+      "name": "Spacer",
+      "props": {},
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-list": {
+      "id": "all-elements-list",
+      "type": "list",
+      "elementVersion": 1,
+      "name": "List",
+      "props": {
+        "ordered": false,
+        "items": [
+          {
+            "id": "item-1",
+            "text": "First benefit"
+          },
+          {
+            "id": "item-2",
+            "text": "Second benefit"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-icon-list": {
+      "id": "all-elements-icon-list",
+      "type": "icon-list",
+      "elementVersion": 1,
+      "name": "Icon List",
+      "props": {
+        "items": [
+          {
+            "id": "item-1",
+            "icon": "check",
+            "text": "A clear customer benefit"
+          },
+          {
+            "id": "item-2",
+            "icon": "check",
+            "text": "A specific proof point"
+          },
+          {
+            "id": "item-3",
+            "icon": "check",
+            "text": "A practical next step"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-accordion": {
+      "id": "all-elements-accordion",
+      "type": "accordion",
+      "elementVersion": 1,
+      "name": "Accordion / FAQ",
+      "props": {
+        "allowMultiple": false,
+        "items": [
+          {
+            "id": "faq-1",
+            "question": "What will I learn?",
+            "answer": "Explain the useful outcome your visitor can expect."
+          },
+          {
+            "id": "faq-2",
+            "question": "How long does it take?",
+            "answer": "Set a clear and honest expectation for the next step."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-tabs": {
+      "id": "all-elements-tabs",
+      "type": "tabs",
+      "elementVersion": 1,
+      "name": "Tabs",
+      "props": {
+        "items": [
+          {
+            "id": "tab-1",
+            "label": "Discover",
+            "content": "Understand the current situation."
+          },
+          {
+            "id": "tab-2",
+            "label": "Decide",
+            "content": "See the clearest next step."
+          },
+          {
+            "id": "tab-3",
+            "label": "Act",
+            "content": "Move forward with confidence."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-testimonial": {
+      "id": "all-elements-testimonial",
+      "type": "testimonial",
+      "elementVersion": 1,
+      "name": "Testimonial",
+      "props": {
+        "quote": "This gave us the clarity to focus on what mattered next.",
+        "author": "Customer name",
+        "role": "Customer role",
+        "image": null
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-star-rating": {
+      "id": "all-elements-star-rating",
+      "type": "star-rating",
+      "elementVersion": 1,
+      "name": "Star Rating",
+      "props": {
+        "value": 5,
+        "label": "5 out of 5 stars"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-counter": {
+      "id": "all-elements-counter",
+      "type": "counter",
+      "elementVersion": 1,
+      "name": "Counter",
+      "props": {
+        "value": 84,
+        "prefix": "",
+        "suffix": "%",
+        "label": "Completion rate"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-progress": {
+      "id": "all-elements-progress",
+      "type": "progress",
+      "elementVersion": 2,
+      "name": "Progress",
+      "props": {
+        "value": 72,
+        "label": "Progress",
+        "showLabel": true,
+        "showValue": true,
+        "trackColor": "#e4e4e7",
+        "indicatorColor": "#18181b",
+        "thickness": 10,
+        "radius": 999
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-countdown": {
+      "id": "all-elements-countdown",
+      "type": "countdown",
+      "elementVersion": 1,
+      "name": "Countdown",
+      "props": {
+        "targetDate": "2030-12-31T23:59:59.000Z",
+        "expiredText": "This event has started."
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-social-links": {
+      "id": "all-elements-social-links",
+      "type": "social-links",
+      "elementVersion": 1,
+      "name": "Social Links",
+      "props": {
+        "links": [
+          {
+            "id": "social-1",
+            "platform": "linkedin",
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com"
+          },
+          {
+            "id": "social-2",
+            "platform": "instagram",
+            "label": "Instagram",
+            "url": "https://www.instagram.com"
+          }
+        ],
+        "newTab": true
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-logo-cloud": {
+      "id": "all-elements-logo-cloud",
+      "type": "logo-cloud",
+      "elementVersion": 1,
+      "name": "Logo Cloud",
+      "props": {
+        "label": "Trusted by ambitious teams",
+        "logos": [
+          {
+            "id": "logo-1",
+            "name": "Partner one",
+            "source": {
+              "type": "external",
+              "url": "https://placehold.co/180x64/f4f4f5/52525b?text=Partner+One"
+            },
+            "alt": "Partner one"
+          },
+          {
+            "id": "logo-2",
+            "name": "Partner two",
+            "source": {
+              "type": "external",
+              "url": "https://placehold.co/180x64/f4f4f5/52525b?text=Partner+Two"
+            },
+            "alt": "Partner two"
+          },
+          {
+            "id": "logo-3",
+            "name": "Partner three",
+            "source": {
+              "type": "external",
+              "url": "https://placehold.co/180x64/f4f4f5/52525b?text=Partner+Three"
+            },
+            "alt": "Partner three"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "all-elements-gallery-carousel": {
+      "id": "all-elements-gallery-carousel",
+      "type": "gallery-carousel",
+      "elementVersion": 2,
+      "name": "Gallery / Carousel",
+      "props": {
+        "layout": "square",
+        "items": [
+          {
+            "id": "gallery-1",
+            "kind": "image",
+            "source": {
+              "type": "external",
+              "url": "https://images.unsplash.com/photo-1556761175-b413da4baf72"
+            },
+            "alt": "People collaborating around a table",
+            "altConfirmed": true,
+            "decorative": false,
+            "caption": "Work together with clarity"
+          },
+          {
+            "id": "gallery-2",
+            "kind": "image",
+            "source": {
+              "type": "external",
+              "url": "https://images.unsplash.com/photo-1521737711867-e3b97375f902"
+            },
+            "alt": "Team in a bright workspace",
+            "altConfirmed": true,
+            "decorative": false,
+            "caption": "Turn insight into action"
+          },
+          {
+            "id": "gallery-3",
+            "kind": "image",
+            "source": {
+              "type": "external",
+              "url": "https://images.unsplash.com/photo-1552664730-d307ca884978"
+            },
+            "alt": "Workshop session",
+            "altConfirmed": true,
+            "decorative": false,
+            "caption": "Create a shared plan"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {},
+  "classOrder": [],
+  "variables": {},
+  "variableOrder": [],
+  "settings": {
+    "contentWidth": 1200,
+    "showDefaultHeader": false,
+    "breakpoints": {
+      "tabletMax": 1024,
+      "mobileMax": 767
+    },
+    "seo": {
+      "title": "Project Fit Enquiry",
+      "description": "Help prospective customers share project details so your service business can review fit and prepare a useful response.",
+      "socialTitle": "",
+      "socialDescription": "",
+      "socialImage": null,
+      "noIndex": false
+    }
+  }
+}
