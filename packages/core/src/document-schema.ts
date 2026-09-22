@@ -9,6 +9,16 @@ import {
   STYLE_STATES,
   VARIABLE_KINDS,
 } from "./document-constants.js";
+import type { ResourceReference } from "./types.js";
+
+const resourceReferenceSchema = z.custom<ResourceReference>(
+  (value) =>
+    !!value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as { kind?: unknown }).kind === "string" &&
+    Object.prototype.hasOwnProperty.call(value, "value"),
+);
 
 export const documentIdSchema = z
   .string()
@@ -83,7 +93,7 @@ const styleVariableSchema = z
 export const pageDocumentSchema = z
   .object({
     format: z.literal(DOCUMENT_FORMAT),
-    schemaVersion: z.number().int().min(1),
+    schemaVersion: z.literal(2),
     id: documentIdSchema,
     title: z.string().min(1).max(160),
     slug: z
@@ -105,6 +115,7 @@ export const pageDocumentSchema = z
     settings: z
       .object({
         contentWidth: z.number().int().min(320).max(2_400),
+        showDefaultHeader: z.boolean(),
         breakpoints: z
           .object({
             tabletMax: z.number().int().min(768).max(1_200),
@@ -112,10 +123,13 @@ export const pageDocumentSchema = z
           })
           .strict()
           .refine(({ mobileMax, tabletMax }) => mobileMax < tabletMax),
-        metadata: z
+        seo: z
           .object({
-            title: z.string().max(160),
-            description: z.string().max(500),
+            title: z.string().max(70),
+            description: z.string().max(170),
+            socialTitle: z.string().max(70),
+            socialDescription: z.string().max(200),
+            socialImage: resourceReferenceSchema.nullable(),
             noIndex: z.boolean(),
           })
           .strict(),

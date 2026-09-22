@@ -2,6 +2,7 @@ import { buildDocumentIndex } from "./document.js";
 import type {
   PageDocument,
   PageElement,
+  ResponsiveStyles,
   StyleClass,
   StyleVariable,
 } from "./document-types.js";
@@ -17,6 +18,29 @@ export interface PagebldrClipboard {
   readonly classOrder: readonly string[];
   readonly variables: Readonly<Record<string, StyleVariable>>;
   readonly variableOrder: readonly string[];
+}
+
+export interface PagebldrStyleClipboard {
+  readonly format: "pagebldr-style-clipboard";
+  readonly schemaVersion: 1;
+  readonly styles: ResponsiveStyles;
+}
+
+export function serializeStyles(
+  document: PageDocument,
+  elementId: string,
+): PagebldrStyleClipboard {
+  const element = document.elements[elementId];
+  if (!element)
+    throw new PagebldrError(
+      "ELEMENT_NOT_FOUND",
+      `Element ${elementId} does not exist.`,
+    );
+  return {
+    format: "pagebldr-style-clipboard",
+    schemaVersion: 1,
+    styles: structuredClone(element.styles),
+  };
 }
 
 export function serializeSubtree(

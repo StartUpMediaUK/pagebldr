@@ -45,13 +45,17 @@ export interface StyleVariable {
 
 export interface PageSettings {
   readonly contentWidth: number;
+  readonly showDefaultHeader: boolean;
   readonly breakpoints: {
     readonly tabletMax: number;
     readonly mobileMax: number;
   };
-  readonly metadata: {
+  readonly seo: {
     readonly title: string;
     readonly description: string;
+    readonly socialTitle: string;
+    readonly socialDescription: string;
+    readonly socialImage: ResourceReference | null;
     readonly noIndex: boolean;
   };
 }
@@ -78,3 +82,4 @@ export interface DocumentIndex {
   readonly descendantsById: ReadonlyMap<string, ReadonlySet<string>>;
   readonly preorder: readonly string[];
 }
+import type { ResourceReference } from "./types.js";

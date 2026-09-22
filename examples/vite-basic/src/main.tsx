@@ -8,13 +8,15 @@ import {
   type PageDocument,
   type StandardSchemaV1,
 } from "pagebldr";
-import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
 import {
-  defineEditorContribution,
-  defineEditorPreset,
-  standardEditorPreset,
+  PagebldrEditor,
+  PagebldrRenderer,
+  PagebldrRuntimeInteractions,
+  type PagebldrEditorProps,
 } from "pagebldr/react";
 import "pagebldr/styles.css";
+import allElementsFixture from "../../../fixtures/parity/all-elements.document.json";
+import projectEnquiryFixture from "../../../fixtures/parity/project-enquiry.document.json";
 
 const stringReference: StandardSchemaV1<unknown, string> = {
   "~standard": {
@@ -51,111 +53,71 @@ const builder = createPagebldr({
   },
 });
 
-const initialDocument = builder.documents.create({
-  id: "welcome",
-  title: "My first page",
-  slug: "welcome",
-});
+const initialDocument = builder.documents.migrate(projectEnquiryFixture);
+const allElementsDocument = builder.documents.migrate(allElementsFixture);
 
-const exampleContributions = [
-  defineEditorContribution({
-    id: "example.preview-action",
-    kind: "toolbarAction",
-    label: "Preview action",
-    render: ({ context }) => (
-      <button
-        type="button"
-        onClick={() => context.select(context.document.rootId)}
-      >
-        Select page
-      </button>
-    ),
-  }),
-  defineEditorContribution({
-    id: "example.notes-panel",
-    kind: "panel",
-    label: "Notes panel",
-    render: () => (
-      <aside aria-label="Example notes">Host-owned notes panel</aside>
-    ),
-  }),
-  defineEditorContribution({
-    id: "example.info-tab",
-    kind: "panelTab",
-    label: "Information tab",
-    render: ({ context }) => <p>{context.document.id}</p>,
-  }),
-  defineEditorContribution({
-    id: "example.canvas-label",
-    kind: "canvasOverlay",
-    label: "Canvas label",
-    render: () => <span>Draft canvas</span>,
-  }),
-  defineEditorContribution({
-    id: "example.element-count",
-    kind: "statusItem",
-    label: "Element count",
-    render: ({ context }) => (
-      <span>{Object.keys(context.document.elements).length} Elements</span>
-    ),
-  }),
-] as const;
-
-const examplePreset = defineEditorPreset({
-  id: "example",
-  label: "Example",
-  placements: standardEditorPreset.placements.map((placement) => ({
-    ...placement,
-    contributionIds:
-      placement.slot === "toolbar.trailing"
-        ? [...placement.contributionIds, "example.preview-action"]
-        : placement.slot === "sidebar.start"
-          ? [
-              ...placement.contributionIds,
-              "example.notes-panel",
-              "example.info-tab",
-            ]
-          : placement.slot === "canvas.overlay"
-            ? ["example.canvas-label"]
-            : placement.slot === "status"
-              ? [...placement.contributionIds, "example.element-count"]
-              : placement.contributionIds,
-  })),
-});
+type ExtensionEditorOptions = Pick<
+  PagebldrEditorProps,
+  "contributions" | "preset"
+>;
 
 function App() {
   const [document, setDocument] = useState<PageDocument>(initialDocument);
-  const [route, setRoute] = useState(window.location.hash || "#/edit");
+  const [route, setRoute] = useState(window.location.hash || "#/editor");
+  const [extensionOptions, setExtensionOptions] =
+    useState<ExtensionEditorOptions | null>(null);
 
   useEffect(() => {
-    const onHashChange = () => setRoute(window.location.hash || "#/edit");
+    const onHashChange = () => setRoute(window.location.hash || "#/editor");
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  if (route.startsWith("#/preview"))
+  useEffect(() => {
+    if (route !== "#/extensions" || extensionOptions) return;
+    void import("./extensions.js").then(({ extensionEditorOptions }) =>
+      setExtensionOptions(extensionEditorOptions),
+    );
+  }, [extensionOptions, route]);
+
+  if (
+    route === "#/preview" ||
+    route === "#/published" ||
+    route === "#/elements"
+  )
     return (
-      <main>
+      <div>
+        <PagebldrRuntimeInteractions />
         <nav>
-          <a href="#/edit">Back to editor</a>
+          <a href="#/editor">Back to editor</a>
         </nav>
         <PagebldrRenderer
           builder={builder}
-          document={document}
-          mode="published"
+          document={route === "#/elements" ? allElementsDocument : document}
+          mode={route === "#/published" ? "published" : "preview"}
         />
-      </main>
+      </div>
     );
 
   return (
     <main>
       <nav>
-        <a href="#/preview/welcome">Open production preview</a>
+        <a href="#/preview">Preview local document</a>
+        {" · "}
+        <a href="#/published">Open published rendering</a>
+        {" · "}
+        <a href="#/elements">Open element gallery</a>
+        {" · "}
+        <a href={route === "#/extensions" ? "#/editor" : "#/extensions"}>
+          {route === "#/extensions"
+            ? "Open standard editor"
+            : "Open extension examples"}
+        </a>
       </nav>
       <PagebldrEditor
         builder={builder}
-        contributions={exampleContributions}
         document={document}
+        mode={route === "#/readonly" ? "readOnly" : "edit"}
         onChange={({ document: nextDocument }) => setDocument(nextDocument)}
         onSave={async ({ document: nextDocument }) => {
           await pause();
@@ -165,7 +127,9 @@ function App() {
           );
         }}
         onPublish={async () => pause()}
-        preset={examplePreset}
+        {...(route === "#/extensions" && extensionOptions
+          ? extensionOptions
+          : {})}
       />
     </main>
   );

@@ -1,5 +1,5 @@
 export const DOCUMENT_FORMAT = "pagebldr" as const;
-export const DOCUMENT_SCHEMA_VERSION = 1 as const;
+export const DOCUMENT_SCHEMA_VERSION = 2 as const;
 export const MAX_DOCUMENT_ELEMENTS = 5_000;
 export const MAX_DOCUMENT_DEPTH = 500;
 export const MAX_ELEMENT_CHILDREN = 5_000;

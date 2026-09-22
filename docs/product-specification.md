@@ -2,13 +2,15 @@
 
 ## Purpose
 
-`pagebldr` lets a React host embed a polished visual editor and render the
-resulting document in production without adopting a CMS, database, backend,
-tenancy model, or publishing workflow.
+`pagebldr` lets a React Host install and immediately embed a complete, polished
+visual page builder and render the resulting document in production without
+adopting a CMS, database, backend, tenancy model, or publishing workflow.
 
-The success measure is integration leverage: a host should learn one small
-interface and receive document safety, editing behavior, extension registration,
-rendering, styling, and migrations from the package.
+The success measure is integration leverage: a Host should learn one small
+interface and receive the finished editor presentation, standard features and
+tools, document safety, editing behavior, rendering, styling and migrations from
+the package. Installing `pagebldr` must not start a new presentation pass or
+require the Host to reconstruct the Quizr-derived experience.
 
 ## Package responsibilities
 
@@ -23,6 +25,9 @@ The package owns:
   Templates, and Style capabilities;
 - visual editor state, interactions, accessible editing UI, preview/read-only
   modes, and a configurable editor shell;
+- the complete Default experience, including its layout, responsive behavior,
+  visual styling, standard toolbar, libraries, Structure, inspectors, dialogs,
+  selection chrome, empty/loading/error states and interaction feedback;
 - standard atomic Elements and the same rendering definitions for editor and
   production use;
 - an SSR-capable React renderer and package-owned CSS with theme custom
@@ -44,6 +49,11 @@ The Host always owns:
 - resource storage and application-specific validation;
 - application navigation, notifications, event retention/querying/export,
   privacy/consent policy, and the screen surrounding the editor.
+
+Host ownership of the surrounding screen does not make the internal editor
+presentation a Host responsibility. A Host may theme documented tokens and add
+documented Contributions, but the installed default must need no redesign,
+replacement controls or Host CSS repairs.
 
 The package requires no backend for local or callback-controlled use. For
 standardized persistence it exposes an optional framework-neutral server module
@@ -78,11 +88,28 @@ operational responsibility.
 12. A Host can resolve and display a Published page at a route without
     rebuilding publication lookup, Resource preparation, metadata,
     instrumentation, or renderer orchestration.
+13. Importing the package stylesheet and mounting the standard preset produces
+    the complete Default experience; no Tailwind setup, copied components,
+    custom layout or feature assembly is required.
+14. The repository's Reference Host consumes a freshly packed artifact through
+    public exports and demonstrates every standard feature with realistic local
+    adapters in a browser.
+15. A feature is not complete until its installed presentation and full
+    interaction can be visually audited in the Reference Host at all supported
+    editor viewport classes.
+16. The Reference Host must not use Host CSS, custom Contributions or internal
+    imports to repair or complete the standard editor. Extension examples live
+    on separate routes and cannot substitute for the Default experience.
 
 ## Integration acceptance scenarios
 
-- A Vite React app edits an in-memory Document, saves it to `localStorage`,
-  browses fake assets, and renders it on a separate route.
+- The Vite Reference Host installs a freshly packed `pagebldr` artifact, imports
+  `pagebldr/styles.css`, mounts the standard preset with minimal documented
+  wiring, exercises every standard tool and renders the result on a separate
+  published route.
+- A fresh consumer can reproduce the Reference Host's Default experience from
+  the installation guide without copying source, adding editor CSS or designing
+  missing UI.
 - A Next.js app server-renders a published Document and mounts the editor only
   on a client route.
 - A Vite router and a Next.js catch-all page both resolve Published pages
@@ -107,7 +134,8 @@ operational responsibility.
 
 - collaboration or multiplayer editing;
 - a hosted database, hosted API, hosted asset service, or deployment product;
-- Host revision UI as a built-in feature;
+- a hosted Revision service; the package may provide the standard Revision UI
+  when a Host supplies the lifecycle capability;
 - arbitrary replacement of internal implementation details;
 - migration or compatibility code for a specific Host's pre-package document
   format;
@@ -116,7 +144,8 @@ operational responsibility.
 ## Release criteria
 
 Alpha requires the engine, renderer, standard definitions, controlled editor,
-default preset, Vite example, package-native fixtures, and deterministic
-migrations. Beta additionally requires the Next.js and custom-extension
+default preset, package-native fixtures, deterministic migrations and the
+Reference Host demonstrating the complete installed Default experience from a
+packed artifact. Beta additionally requires the Next.js and custom-extension
 examples, alternate editor preset, accessibility and browser coverage,
 performance fixtures, and complete product-neutral integration documentation.

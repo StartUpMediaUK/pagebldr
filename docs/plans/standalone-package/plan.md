@@ -1,8 +1,10 @@
 # Standalone package plan
 
-Status: proposed for approval. This plan covers the standalone package,
-examples, Fumadocs site, quality system, prerelease pipeline, and later Host
-adoption. Startup Media repository repair remains a separate plan.
+Status: phases 0–10 record the original delivery sequence. Phase 11 is paused
+pending the proposed
+[Quizr experience parity correction](quizr-parity-correction.md), which replaces
+the assumption that release hardening is the next phase. Startup Media
+repository repair remains a separate plan.
 
 Phase audits live in [`audits/`](audits/) as `phase-<n>.md`. Complete and review
 an audit before starting the next phase.

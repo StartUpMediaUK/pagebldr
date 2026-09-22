@@ -18,8 +18,10 @@ import type {
 import { EditorShell } from "./editor/editor-shell.js";
 import type { EditorContribution, EditorPreset } from "./editor/composition.js";
 import { PagebldrRenderer } from "./renderer.js";
+import { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
 
 export { PagebldrRenderer } from "./renderer.js";
+export { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
 export type { PagebldrRendererProps } from "./renderer.js";
 
 export type { DocumentChangeEvent } from "@pagebldr/core";
@@ -121,6 +123,7 @@ export function PagebldrPage({
   return createElement(
     "div",
     { onClick: track, onSubmit: track, "data-pagebldr-page": page.document.id },
+    createElement(PagebldrRuntimeInteractions),
     createElement(PagebldrRenderer, {
       builder,
       document: page.document,

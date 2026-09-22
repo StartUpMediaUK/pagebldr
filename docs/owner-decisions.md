@@ -21,6 +21,13 @@ deployment remain separately authorized actions.
 - **UI foundation**: package-owned shadcn primitives, ReUI compositions where
   appropriate, and compiled CSS with no consumer Tailwind/shadcn/ReUI
   requirement.
+- **Installed product**: `pagebldr` ships a complete pre-styled Default
+  experience. Hosts may theme and extend it through documented seams, but do not
+  perform a presentation pass or rebuild standard features after installation.
+- **Reference Host**: `examples/vite-basic` is the primary visual and
+  interaction acceptance surface. Completion evidence must use a freshly packed
+  artifact, public exports, package CSS and the standard preset; Host styling or
+  custom Contributions cannot repair the default route.
 - **Backend boundary**: optional server lifecycle, Provider-aware Storage
   adapters, Host-operated APIs/routes, production Runtime, and Host Event sinks.
 - **Docs stack**: private `apps/docs` workspace using Next.js 16, Fumadocs

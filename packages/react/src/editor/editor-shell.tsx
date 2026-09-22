@@ -72,6 +72,7 @@ import {
 import { cn } from "../lib/utils.js";
 
 import { PagebldrRenderer, type PagebldrEditorProps } from "../index.js";
+import { PagebldrRuntimeInteractions } from "../runtime-interactions.js";
 import {
   EditorProvider,
   usePagebldrEditor,
@@ -540,6 +541,7 @@ function Canvas({ children }: { readonly children?: ReactNode }) {
         className="mx-auto min-h-full overflow-hidden rounded-md border bg-background shadow-sm transition-[width]"
         style={{ width: widths[editor.viewport], maxWidth: "100%" }}
       >
+        <PagebldrRuntimeInteractions />
         <PagebldrRenderer
           builder={editor.builder}
           document={editor.document}

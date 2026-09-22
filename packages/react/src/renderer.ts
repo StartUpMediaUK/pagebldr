@@ -5,13 +5,14 @@ import {
   type ReactNode,
 } from "react";
 
-import { resourceKey } from "@pagebldr/core";
+import { resolveDestination, resourceKey } from "@pagebldr/core";
 import type {
   Pagebldr,
   PageDocument,
   PreparedResources,
   RenderElement,
   RenderNode,
+  ResourceReference,
 } from "@pagebldr/core";
 
 export interface PagebldrRendererProps {
@@ -19,6 +20,10 @@ export interface PagebldrRendererProps {
   readonly document: PageDocument;
   readonly resources?: PreparedResources;
   readonly mode?: "edit" | "preview" | "published";
+  readonly now?: Date;
+  readonly resolveApplicationDestination?: (
+    reference: ResourceReference,
+  ) => string | null;
   readonly styleNonce?: string;
 }
 
@@ -27,11 +32,14 @@ export function PagebldrRenderer({
   document,
   resources = { values: new Map() },
   mode = "published",
+  now = new Date(),
+  resolveApplicationDestination,
   styleNonce,
 }: PagebldrRendererProps): ReactElement {
   const compiled = builder.styles.compile(document);
   const renderElement = (id: string): ReactNode => {
     const element = document.elements[id]!;
+    if (element.hidden && mode !== "edit") return null;
     const definition = builder.elements.get(element.type);
     if (!definition?.render) {
       return mode === "edit"
@@ -51,11 +59,20 @@ export function PagebldrRenderer({
       children: element.children.map(
         (childId) => renderElement(childId) as RenderNode,
       ),
+      mode,
+      now,
       resource: (reference) =>
         resources.values.get(resourceKey(reference)) ?? null,
+      destination: (value) =>
+        resolveDestination(document, value, resolveApplicationDestination),
     });
     return toReact(rendered, id, {
       "data-pagebldr-element": id,
+      id:
+        typeof element.props.anchorId === "string"
+          ? element.props.anchorId
+          : `pagebldr-${id}`,
+      ...(element.hidden ? { "data-pagebldr-hidden": "true" } : {}),
       ...(element.classIds.length > 0
         ? { "data-pagebldr-class": element.classIds.join(" ") }
         : {}),
@@ -69,6 +86,16 @@ export function PagebldrRenderer({
           "style",
           { nonce: styleNonce, "data-pagebldr-authored-styles": document.id },
           compiled.css,
+        )
+      : null,
+    mode === "edit"
+      ? createElement(
+          "style",
+          {
+            nonce: styleNonce,
+            "data-pagebldr-edit-visibility": document.id,
+          },
+          `[${compiled.scopeAttribute}="${compiled.scopeValue}"][${compiled.documentAttribute}="${compiled.documentValue}"] [data-pagebldr-hidden="true"]{display:revert!important}`,
         )
       : null,
     createElement(
@@ -94,7 +121,12 @@ function toReact(
   const renderElement: RenderElement = node;
   return createElement(
     renderElement.tag,
-    { key, ...renderElement.attributes, ...rootAttributes },
+    {
+      key,
+      ...renderElement.attributes,
+      ...(renderElement.style ? { style: renderElement.style } : {}),
+      ...rootAttributes,
+    },
     ...(renderElement.children ?? []).map((child, index) =>
       toReact(child, `${key}-${index}`, {}),
     ),

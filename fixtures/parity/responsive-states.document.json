@@ -1,0 +1,144 @@
+{
+  "format": "pagebldr",
+  "schemaVersion": 2,
+  "id": "reference-responsive-states",
+  "title": "Responsive and interaction states",
+  "slug": "responsive-states",
+  "rootId": "responsive-root",
+  "elements": {
+    "responsive-root": {
+      "id": "responsive-root",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Responsive surface",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["responsive-heading"],
+      "classIds": ["responsive-card"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "padding": "48px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "padding": "32px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "display": "none",
+            "padding": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "responsive-heading": {
+      "id": "responsive-heading",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Stateful heading",
+      "props": {
+        "content": "Responsive state fixture",
+        "level": 2
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "ink"
+            },
+            "fontSize": "56px"
+          },
+          "hover": {
+            "color": {
+              "type": "variable",
+              "variableId": "accent"
+            },
+            "transform": "translateY(-2px)"
+          },
+          "focusVisible": {
+            "outline": "3px solid currentColor",
+            "outlineOffset": "4px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "44px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {
+    "responsive-card": {
+      "id": "responsive-card",
+      "name": "Responsive card",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "#f5f2e9",
+            "borderRadius": "24px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "borderRadius": "18px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "borderRadius": "12px"
+          }
+        }
+      }
+    }
+  },
+  "classOrder": ["responsive-card"],
+  "variables": {
+    "ink": {
+      "id": "ink",
+      "name": "Ink",
+      "kind": "color",
+      "value": "#1f241d"
+    },
+    "accent": {
+      "id": "accent",
+      "name": "Accent",
+      "kind": "color",
+      "value": "#667858"
+    }
+  },
+  "variableOrder": ["ink", "accent"],
+  "settings": {
+    "contentWidth": 1200,
+    "showDefaultHeader": false,
+    "breakpoints": {
+      "tabletMax": 1024,
+      "mobileMax": 767
+    },
+    "seo": {
+      "title": "Project Fit Enquiry",
+      "description": "Help prospective customers share project details so your service business can review fit and prepare a useful response.",
+      "socialTitle": "",
+      "socialDescription": "",
+      "socialImage": null,
+      "noIndex": false
+    }
+  }
+}

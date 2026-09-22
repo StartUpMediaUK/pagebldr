@@ -6,8 +6,14 @@ export {
   MAX_DOCUMENT_ELEMENTS,
 } from "./document-constants.js";
 export { defineElement } from "./element.js";
-export { compileDocumentStyles, defineStyleCapability } from "./styles.js";
+export { parseDestination, resolveDestination } from "./destinations.js";
+export {
+  compileDocumentStyles,
+  defineStyleCapability,
+  resolveElementStyles,
+} from "./styles.js";
 export { assertUniqueId, createId, createSequentialIdFactory } from "./ids.js";
+export { findStandardFontFamily, standardFontFamilies } from "./fonts.js";
 export { PagebldrError } from "./types.js";
 export { resolveDocumentResources, resourceKey } from "./resources.js";
 export {
@@ -17,6 +23,7 @@ export {
 export { defineBlock, defineTemplate } from "./factories.js";
 export type { Pagebldr, PagebldrOptions } from "./config.js";
 export type { CreateDocumentInput } from "./document.js";
+export type { Destination, ResolvedDestination } from "./destinations.js";
 export type {
   Breakpoint,
   DocumentIndex,
@@ -34,7 +41,7 @@ export type {
   VariableReference,
 } from "./document-types.js";
 export type { Documents } from "./documents.js";
-export type { PagebldrClipboard } from "./clipboard.js";
+export type { PagebldrClipboard, PagebldrStyleClipboard } from "./clipboard.js";
 export type {
   DocumentChangeEvent,
   EditorCommand,
@@ -51,6 +58,7 @@ export type {
   RenderNode,
 } from "./element.js";
 export type { IdFactory } from "./ids.js";
+export type { FontFamilyOption } from "./fonts.js";
 export type { CommitOptions, HistoryEntry, LocalHistory } from "./history.js";
 export type { DocumentPatch } from "./patches.js";
 export type { DocumentMigration } from "./migrations.js";
@@ -61,6 +69,9 @@ export type {
 } from "./factories.js";
 export type {
   CompiledDocumentStyles,
+  ResolvedStyles,
+  ResolvedStyleSource,
+  ResolvedStyleValue,
   StyleCapabilityDefinition,
   StyleEngine,
 } from "./styles.js";

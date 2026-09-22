@@ -24,8 +24,11 @@ pnpm build
 pnpm --filter @pagebldr-example/vite-basic dev
 ```
 
-The Vite example demonstrates controlled editing and production rendering
-without a database or external account. Public guides live in `apps/docs`.
+The Vite application is the Reference Host: the canonical browser surface for
+auditing the complete installed Default experience, controlled editing and
+production rendering without a database or external account. Acceptance checks
+run it against a freshly packed package artifact using public exports and the
+package stylesheet. Public guides live in `apps/docs`.
 
 ## Current documents
 

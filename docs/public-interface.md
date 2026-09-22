@@ -1,7 +1,6 @@
 # Public interface proposal
 
-Status: proposed; names are intentionally not frozen until the owner decisions
-are resolved and a compile-tested prototype proves inference quality.
+Status: implemented and evolving through the standalone-package phase gates.
 
 ## Design conclusion
 
@@ -82,8 +81,9 @@ ordering themselves.
 ## Styling interface
 
 Hosts register named Style capabilities rather than passing arbitrary editor
-configuration. A property can belong to only one capability, which keeps the
-inspector vocabulary and compiler validation coherent.
+configuration. Capabilities may deliberately overlap when the same property is
+authored in different inspector contexts; the standard set shares `display`
+between Layout and Responsive visibility.
 
 ```ts
 const builder = createPagebldr({
@@ -98,6 +98,7 @@ const builder = createPagebldr({
 });
 
 const compiled = builder.styles.compile(document);
+const resolved = builder.styles.resolve(document, elementId, "tablet", "hover");
 ```
 
 `compiled.css` is authored page CSS only. It is byte-stable for the same
@@ -105,6 +106,14 @@ Document, scoped by the builder namespace and Document ID, and safe to extract
 at build time or emit in an SSR `<style>` element. When a Host uses a CSP, it
 must hash the returned CSS or apply its request nonce to that `<style>` element;
 pagebldr does not weaken the Host policy.
+
+The standard engine exposes the nine Layout, Spacing, Size, Position,
+Typography, Background, Border, Effects, and Responsive visibility groups. It
+accepts the 91-property Quizr-derived allowlist, resolves Desktop → Tablet →
+Mobile inheritance and Normal-state fallback, and reports each winning value's
+Class/local, breakpoint, state, and inherited origin. CSS includes editor-only
+forced-state selectors and rejects rule delimiters, comments, script/expression
+syntax, imports, and unsafe URL values.
 
 The renderer applies the returned `data-pagebldr` and `data-pagebldr-document`
 scope attributes. Element and Class selectors use package-owned data attributes
@@ -150,6 +159,27 @@ The Host resolves Resources before synchronous SSR and passes the resulting map
 to `PagebldrRenderer`. Missing adapters and invalid references fail explicitly.
 The renderer never browses, uploads, or fetches Resources while rendering.
 
+The standard library is the complete 24-Element baseline: Container, Heading,
+Rich Text, Button, Logo, Menu, Copyright, Image, Video, Icon, Divider, Spacer,
+List, Icon List, Accordion, Tabs, Testimonial, Star Rating, Counter, Progress,
+Countdown, Social Links, Logo Cloud, and Gallery / Carousel. Their schemas are
+strict. Image, Video, Progress, and Gallery / Carousel are currently version 2
+and include deterministic v1 migrations. Definitions expose nested Resource
+references and Destinations rather than hiding them in renderer code.
+
+Standard media uses either a safe HTTP(S) source or a neutral
+`ResourceReference`. Resource adapters remain the only route from a Host asset
+identity to a renderable URL. The standard font catalogue exports ten approved
+families through `standardFontFamilies` and `findStandardFontFamily()`; Hosts
+provide any corresponding font custom properties.
+
+Interactive standard Elements emit definition-owned semantic markup and widget
+descriptors. `PagebldrRuntimeInteractions` supplies the client behavior used by
+Menu, Tabs, Countdown, and Gallery / Carousel. `PagebldrPage` and the standard
+editor mount it automatically; a Host using `PagebldrRenderer` directly mounts
+it alongside the renderer when client interaction is required. The renderer
+itself stays SSR-safe.
+
 Blocks and Templates are factories for ordinary editable Element trees:
 
 ```ts
@@ -164,6 +194,30 @@ const hero = defineBlock({
 ```
 
 They have no special persisted identity or privileged renderer behavior.
+
+## Document schema and editor commands
+
+Schema v2 stores normalized Elements, Classes, typed Variables and complete page
+settings: content width, authored breakpoints, default-header intent, and
+search/social SEO. A social image is a neutral `ResourceReference`, not a
+product asset ID. The built-in deterministic v1 → v2 migration converts the
+former metadata shape and supplies safe defaults.
+
+Element definitions may expose typed Destinations for semantic validation.
+`parseDestination()` accepts external, anchor, email, telephone and Host
+application Resource destinations. Anchor IDs are unique lowercase slugs and
+anchor targets must reference existing Elements.
+
+All mutations use `builder.editor.dispatch()`. Alongside structural, content,
+Class, Variable and settings commands, the public command union includes atomic
+create-and-assign Class, assigned-Class reordering, Class style replacement,
+style clipboard paste and whole-Template application. Template application
+preserves Document ID, title, slug, root identity and SEO while replacing the
+design as one reversible Action.
+
+`builder.editor.history` defaults to 100 Actions, coalesces the same non-null
+key through the inclusive 750ms boundary, and exposes undo, redo and clamped
+position jumps. Local history remains unrelated to durable Revisions.
 
 ## Production Runtime and events
 
@@ -457,13 +511,16 @@ The renderer stays small and SSR-safe:
   builder={builder}
   document={document}
   mode="published"
-  resourceContext={requestContext}
+  resources={preparedResources}
+  resolveApplicationDestination={(reference) => hostHref(reference)}
 />
 ```
 
-The renderer validates/migrates at a clearly documented entry point. A
-prevalidated form may be exposed for high-volume rendering only after
-measurement.
+Hidden Elements remain visible and marked while editing, and are omitted from
+preview/published output. Unknown Elements follow the same edit-only discovery
+rule. Anchors become stable DOM IDs, and typed Destinations resolve to HTTP(S),
+fragment, mail, telephone, or Host application hrefs without a central
+Element-type switch.
 
 ## Resource seam
 

@@ -9,6 +9,8 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { PagebldrRenderer } from "./index.js";
+import allElementsFixture from "../../../fixtures/parity/all-elements.document.json";
+import projectEnquiryFixture from "../../../fixtures/parity/project-enquiry.document.json";
 
 const builder = createPagebldr({
   namespace: "standard-library",
@@ -21,9 +23,12 @@ function standardDocument(): PageDocument {
   const definitions = standardElements.filter(
     ({ type }) => type !== "container",
   );
+  const container = standardElements.find(({ type }) => type === "container")!;
   const elements: Record<string, PageElement> = {
     root: {
       ...base.elements.root!,
+      elementVersion: container.version,
+      props: container.defaults() as Readonly<Record<string, unknown>>,
       children: definitions.map(({ type }) => type),
     },
   };
@@ -57,6 +62,9 @@ describe("standard Element renderer", () => {
     expect(html).toContain("<h2");
     expect(html).toContain("<nav");
     expect(html).toContain('role="tablist"');
+    expect(html).toContain('data-pagebldr-widget="menu"');
+    expect(html).toContain('data-pagebldr-widget="tabs"');
+    expect(html).toContain('data-pagebldr-widget="countdown"');
     expect(html).not.toContain("next/");
   });
 
@@ -83,5 +91,43 @@ describe("standard Element renderer", () => {
         />,
       ),
     ).not.toContain("Unknown Element");
+  });
+
+  it("keeps hidden Elements discoverable only while editing", () => {
+    const document = standardDocument();
+    const hidden = {
+      ...document,
+      elements: {
+        ...document.elements,
+        heading: { ...document.elements.heading!, hidden: true },
+      },
+    };
+    const editingHtml = renderToString(
+      <PagebldrRenderer builder={builder} document={hidden} mode="edit" />,
+    );
+    expect(editingHtml).toContain('data-pagebldr-hidden="true"');
+    expect(editingHtml).toContain("display:revert!important");
+    expect(
+      renderToString(
+        <PagebldrRenderer
+          builder={builder}
+          document={hidden}
+          mode="published"
+        />,
+      ),
+    ).not.toContain('id="pagebldr-heading"');
+  });
+
+  it("validates and SSR-renders the complete parity fixtures", () => {
+    for (const input of [allElementsFixture, projectEnquiryFixture]) {
+      const document = input as unknown as PageDocument;
+      const validation = builder.documents.validate(document);
+      if (!validation.valid) throw validation.error;
+      const html = renderToString(
+        <PagebldrRenderer builder={builder} document={document} />,
+      );
+      expect(html).toContain(`data-pagebldr-element="${document.rootId}"`);
+      expect(html).not.toContain("Unknown Element");
+    }
   });
 });
