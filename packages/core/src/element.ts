@@ -42,6 +42,12 @@ export interface ElementControl<Props> {
   readonly label: string;
 }
 
+export interface ElementInlineEditing<Props> {
+  readonly property: keyof Props & string;
+  readonly read: (props: Props) => string;
+  readonly update: (value: string, props: Props) => Partial<Props>;
+}
+
 export interface ElementDefinition<
   Type extends string = string,
   Schema extends StandardSchemaV1 = StandardSchemaV1,
@@ -59,6 +65,7 @@ export interface ElementDefinition<
   readonly childPolicy?: ElementChildPolicy;
   readonly styles?: readonly StyleCapabilityDefinition["key"][];
   readonly accessibility?: ElementAccessibility;
+  readonly inlineEditing?: ElementInlineEditing<InferSchemaOutput<Schema>>;
   readonly render?: (
     props: InferSchemaOutput<Schema>,
     context: ElementRenderContext,

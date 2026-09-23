@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useState,
-  type MouseEvent,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useId, useState, type ReactNode } from "react";
 import {
   createEditorComposition,
   defineEditorContribution,
@@ -21,6 +14,7 @@ import {
   EyeIcon,
   LaptopIcon,
   LockIcon,
+  Maximize2Icon,
   PlusIcon,
   Redo2Icon,
   SaveIcon,
@@ -30,8 +24,6 @@ import {
   Trash2Icon,
   Undo2Icon,
 } from "lucide-react";
-
-import type { PagebldrClipboard, PageElement } from "@pagebldr/core";
 
 import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
@@ -71,14 +63,22 @@ import {
 } from "../components/ui/tooltip.js";
 import { cn } from "../lib/utils.js";
 
-import { PagebldrRenderer, type PagebldrEditorProps } from "../index.js";
-import { PagebldrRuntimeInteractions } from "../runtime-interactions.js";
+import type { PageElement } from "@pagebldr/core";
+import type { PagebldrEditorProps } from "../index.js";
 import {
   EditorProvider,
   usePagebldrEditor,
   type EditorViewport,
 } from "./context.js";
 import { standardEditorPreset } from "./presets.js";
+import { IsolatedCanvas } from "./isolated-canvas.js";
+import {
+  pagebldrElementDragType,
+  pagebldrExistingDragType,
+  createElementClipboard,
+  resolveClickInsertion,
+  resolveKeyboardMove,
+} from "./canvas-placement.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -105,7 +105,7 @@ function EditorWorkspace({
   const editor = usePagebldrEditor();
   const [pending, setPending] = useState<"save" | "publish" | null>(null);
   const [status, setStatus] = useState("Ready");
-  const readOnly = editor.mode !== "edit";
+  const readOnly = editor.mode !== "edit" || editor.previewing;
 
   const perform = useCallback(
     async (kind: "save" | "publish") => {
@@ -135,6 +135,39 @@ function EditorWorkspace({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const modifier = event.ctrlKey || event.metaKey;
+      if (event.key === "Escape" && editor.previewing) {
+        event.preventDefault();
+        editor.setPreviewing(false);
+        return;
+      }
+      if (editor.previewing) return;
+      if (
+        event.altKey &&
+        !modifier &&
+        editor.selectedId &&
+        !readOnly &&
+        !isEditableTarget(event.target)
+      ) {
+        const direction = keyboardMoveDirection(event.key);
+        const placement = direction
+          ? resolveKeyboardMove({
+              document: editor.document,
+              definitions: editor.builder.elements,
+              elementId: editor.selectedId,
+              direction,
+            })
+          : null;
+        if (placement) {
+          event.preventDefault();
+          editor.dispatch({
+            type: "move",
+            elementId: editor.selectedId,
+            parentId: placement.parentId,
+            index: placement.index,
+          });
+          return;
+        }
+      }
       if (modifier && event.key.toLowerCase() === "z") {
         event.preventDefault();
         if (event.shiftKey) editor.redo();
@@ -193,28 +226,52 @@ function EditorWorkspace({
       data-pagebldr-mode={editor.mode}
     >
       <EditorToolbar
-        start={composition.render("toolbar.leading", contributionContext)}
-        end={composition.render("toolbar.trailing", contributionContext)}
+        start={
+          editor.previewing ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => editor.setPreviewing(false)}
+            >
+              Return to editor
+            </Button>
+          ) : (
+            composition.render("toolbar.leading", contributionContext)
+          )
+        }
+        end={
+          editor.previewing
+            ? null
+            : composition.render("toolbar.trailing", contributionContext)
+        }
       />
       <Separator />
-      <ResizablePanelGroup orientation="horizontal">
-        <ResizablePanel defaultSize={22} minSize={16}>
-          {composition.render("sidebar.start", contributionContext)}
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={56} minSize={32}>
-          <Canvas>
-            {composition.render("canvas.overlay", contributionContext)}
-          </Canvas>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={22} minSize={18}>
-          {composition.render("sidebar.end", contributionContext)}
-        </ResizablePanel>
-      </ResizablePanelGroup>
-      <div className="flex h-8 items-center justify-between gap-2 border-t px-3 text-xs text-muted-foreground">
-        {composition.render("status", contributionContext)}
-      </div>
+      {editor.previewing ? (
+        <div className="min-h-0 flex-1">
+          <IsolatedCanvas />
+        </div>
+      ) : (
+        <>
+          <ResizablePanelGroup orientation="horizontal">
+            <ResizablePanel defaultSize={22} minSize={16}>
+              {composition.render("sidebar.start", contributionContext)}
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={56} minSize={32}>
+              <IsolatedCanvas>
+                {composition.render("canvas.overlay", contributionContext)}
+              </IsolatedCanvas>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={22} minSize={18}>
+              {composition.render("sidebar.end", contributionContext)}
+            </ResizablePanel>
+          </ResizablePanelGroup>
+          <div className="flex h-8 items-center justify-between gap-2 border-t px-3 text-xs text-muted-foreground">
+            {composition.render("status", contributionContext)}
+          </div>
+        </>
+      )}
     </section>
   );
 }
@@ -287,7 +344,9 @@ function EditorToolbar({
   return (
     <header className="flex h-12 items-center gap-2 px-2">
       <strong className="truncate px-2 text-sm">{editor.document.title}</strong>
-      <Badge variant="secondary">{editor.mode}</Badge>
+      <Badge variant="secondary">
+        {editor.previewing ? "preview" : editor.mode}
+      </Badge>
       {start}
       <div className="flex-1" />
       {end}
@@ -305,6 +364,11 @@ function HistoryControls() {
         disabled={!editor.canUndo}
         onClick={editor.undo}
         icon={Undo2Icon}
+      />
+      <ToolButton
+        label="Preview"
+        onClick={() => editor.setPreviewing(true)}
+        icon={EyeIcon}
       />
       <ToolButton
         label="Redo"
@@ -385,6 +449,7 @@ function ViewportToggle() {
   const editor = usePagebldrEditor();
   const items: readonly [EditorViewport, string, typeof LaptopIcon][] = [
     ["desktop", "Desktop", LaptopIcon],
+    ["desktop-fill", "Desktop fill", Maximize2Icon],
     ["tablet", "Tablet", TabletIcon],
     ["mobile", "Mobile", SmartphoneIcon],
   ];
@@ -440,6 +505,15 @@ function StructureTree() {
           className="w-full justify-start"
           style={{ paddingLeft: `${8 + depth * 14}px` }}
           onClick={() => editor.select(id)}
+          draggable={
+            editor.mode === "edit" &&
+            id !== editor.document.rootId &&
+            !element.locked
+          }
+          onDragStart={(event) => {
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData(pagebldrExistingDragType, id);
+          }}
         >
           {element.hidden ? (
             <EyeIcon data-icon="inline-start" />
@@ -466,38 +540,18 @@ function StructureTree() {
 function ElementLibrary() {
   const editor = usePagebldrEditor();
   const add = (type: string) => {
-    const definition = editor.builder.elements.get(type)!;
-    const temporaryId = `new-${type}`;
-    const element: PageElement = {
-      id: temporaryId,
-      type,
-      elementVersion: definition.version,
-      name: definition.label,
-      props: definition.defaults() as Readonly<Record<string, unknown>>,
-      children: [],
-      classIds: [],
-      styles: {},
-      locked: false,
-      hidden: false,
-    };
-    const clipboard: PagebldrClipboard = {
-      format: "pagebldr-clipboard",
-      schemaVersion: 1,
-      rootId: temporaryId,
-      elements: { [temporaryId]: element },
-      classes: {},
-      classOrder: [],
-      variables: {},
-      variableOrder: [],
-    };
-    const parentId = editor.selected?.children
-      ? editor.selected.id
-      : editor.document.rootId;
+    const placement = resolveClickInsertion({
+      document: editor.document,
+      definitions: editor.builder.elements,
+      elementType: type,
+      selectedId: editor.selectedId,
+    });
+    if (!placement) return;
     editor.dispatch({
       type: "insert",
-      parentId,
-      index: editor.document.elements[parentId]!.children.length,
-      clipboard,
+      parentId: placement.parentId,
+      index: placement.index,
+      clipboard: createElementClipboard(editor.builder.elements.get(type)!),
     });
   };
   return (
@@ -509,45 +563,19 @@ function ElementLibrary() {
           className="h-auto min-h-16 flex-col"
           disabled={editor.mode !== "edit"}
           onClick={() => add(definition.type)}
+          draggable={editor.mode === "edit"}
+          onDragStart={(event) => {
+            event.dataTransfer.effectAllowed = "copy";
+            event.dataTransfer.setData(
+              pagebldrElementDragType,
+              definition.type,
+            );
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           {definition.label}
         </Button>
       ))}
-    </div>
-  );
-}
-
-function Canvas({ children }: { readonly children?: ReactNode }) {
-  const editor = usePagebldrEditor();
-  const widths = { desktop: "100%", tablet: "768px", mobile: "390px" } as const;
-  const select = (event: MouseEvent<HTMLDivElement>) => {
-    const target =
-      event.target instanceof Element
-        ? event.target.closest<HTMLElement>("[data-pagebldr-element]")
-        : null;
-    if (target?.dataset.pagebldrElement)
-      editor.select(target.dataset.pagebldrElement);
-  };
-  return (
-    <div
-      className="relative h-full overflow-auto bg-muted p-4"
-      onClick={select}
-    >
-      {children ? (
-        <div className="pointer-events-none absolute inset-0">{children}</div>
-      ) : null}
-      <div
-        className="mx-auto min-h-full overflow-hidden rounded-md border bg-background shadow-sm transition-[width]"
-        style={{ width: widths[editor.viewport], maxWidth: "100%" }}
-      >
-        <PagebldrRuntimeInteractions />
-        <PagebldrRenderer
-          builder={editor.builder}
-          document={editor.document}
-          mode={editor.mode === "edit" ? "edit" : "preview"}
-        />
-      </div>
     </div>
   );
 }
@@ -777,5 +805,21 @@ function ElementActions() {
         </Button>
       </div>
     </Field>
+  );
+}
+
+function keyboardMoveDirection(key: string) {
+  if (key === "ArrowUp") return "up" as const;
+  if (key === "ArrowDown") return "down" as const;
+  if (key === "ArrowRight") return "in" as const;
+  if (key === "ArrowLeft") return "out" as const;
+  return null;
+}
+
+function isEditableTarget(target: EventTarget | null) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable ||
+      target.matches("input, textarea, select, [role='textbox']"))
   );
 }

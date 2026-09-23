@@ -21,7 +21,7 @@ import type {
 } from "@pagebldr/core";
 
 export type EditorMode = "edit" | "preview" | "readOnly";
-export type EditorViewport = "desktop" | "tablet" | "mobile";
+export type EditorViewport = "desktop" | "desktop-fill" | "tablet" | "mobile";
 
 export interface EditorContextValue {
   readonly builder: Pagebldr;
@@ -30,12 +30,16 @@ export interface EditorContextValue {
   readonly viewport: EditorViewport;
   readonly selectedId: string | null;
   readonly selected: PageElement | null;
+  readonly hoveredId: string | null;
+  readonly previewing: boolean;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
   readonly dispatch: (command: EditorCommand, coalesceKey?: string) => void;
   readonly undo: () => void;
   readonly redo: () => void;
   readonly select: (elementId: string | null) => void;
+  readonly hover: (elementId: string | null) => void;
+  readonly setPreviewing: (previewing: boolean) => void;
   readonly setViewport: (viewport: EditorViewport) => void;
 }
 
@@ -60,6 +64,8 @@ export function EditorProvider({
     builder.editor.history.create(document),
   );
   const [selectedId, setSelectedId] = useState<string | null>(document.rootId);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [previewing, setPreviewing] = useState(mode === "preview");
   const [viewport, setViewport] = useState<EditorViewport>("desktop");
   const emitted = useRef<PageDocument | null>(null);
 
@@ -73,6 +79,8 @@ export function EditorProvider({
       current && document.elements[current] ? current : document.rootId,
     );
   }, [builder, document]);
+
+  useEffect(() => setPreviewing(mode === "preview"), [mode]);
 
   const emit = useCallback(
     (next: LocalHistory, event: Omit<DocumentChangeEvent, "document">) => {
@@ -129,15 +137,30 @@ export function EditorProvider({
       selected: selectedId
         ? (history.present.elements[selectedId] ?? null)
         : null,
+      hoveredId,
+      previewing,
       canUndo: builder.editor.selectors.canUndo(history),
       canRedo: builder.editor.selectors.canRedo(history),
       dispatch,
       undo,
       redo,
       select: setSelectedId,
+      hover: setHoveredId,
+      setPreviewing,
       setViewport,
     }),
-    [builder, dispatch, history, mode, redo, selectedId, undo, viewport],
+    [
+      builder,
+      dispatch,
+      history,
+      hoveredId,
+      mode,
+      previewing,
+      redo,
+      selectedId,
+      undo,
+      viewport,
+    ],
   );
 
   return (
