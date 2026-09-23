@@ -43,7 +43,7 @@ export function PagebldrRuntimeInteractions() {
     };
 
     const onClick = (event: Event) => {
-      const target = event.target instanceof Element ? event.target : null;
+      const target = isDomElement(event.target) ? event.target : null;
       const menuToggle = target?.closest<HTMLElement>(".pagebldr-menu-toggle");
       if (menuToggle) {
         const menu = menuToggle.closest<HTMLElement>(
@@ -73,10 +73,9 @@ export function PagebldrRuntimeInteractions() {
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
-      const tab =
-        event.target instanceof Element
-          ? event.target.closest<HTMLElement>('[role="tab"]')
-          : null;
+      const tab = isDomElement(event.target)
+        ? event.target.closest<HTMLElement>('[role="tab"]')
+        : null;
       if (
         !tab ||
         !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
@@ -131,4 +130,8 @@ export function PagebldrRuntimeInteractions() {
   }, []);
 
   return <span ref={marker} hidden data-pagebldr-interactions />;
+}
+
+function isDomElement(value: EventTarget | null): value is Element {
+  return !!value && "nodeType" in value && value.nodeType === 1;
 }

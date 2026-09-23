@@ -54,6 +54,7 @@ export type {
   ElementControl,
   ElementDefinition,
   ElementRenderContext,
+  ElementInlineEditing,
   RenderElement,
   RenderNode,
 } from "./element.js";

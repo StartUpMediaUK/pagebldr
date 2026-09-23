@@ -65,6 +65,64 @@
 }
 
 @layer components {
+  [data-pagebldr-canvas-workspace] {
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--pagebldr-muted-foreground) 28%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 16px 16px;
+  }
+
+  [data-pagebldr-canvas-workspace] iframe:focus-visible {
+    outline: 2px solid var(--pagebldr-focus);
+    outline-offset: 2px;
+  }
+
+  [data-pagebldr-selection-outline],
+  [data-pagebldr-hover-outline],
+  [data-pagebldr-drop-target] {
+    border: 2px solid var(--pagebldr-focus, #2563eb);
+  }
+
+  [data-pagebldr-drop-target] {
+    background: color-mix(
+      in srgb,
+      var(--pagebldr-focus, #2563eb) 14%,
+      transparent
+    );
+  }
+
+  [data-pagebldr-hover-outline] {
+    border-style: dashed;
+    opacity: 0.7;
+  }
+
+  [data-pagebldr-selection-outline] > span {
+    position: absolute;
+    top: 0;
+    left: -2px;
+    max-width: 16rem;
+    padding: 0.2rem 0.45rem;
+    transform: translateY(-100%);
+    overflow: hidden;
+    border-radius: 0.25rem 0.25rem 0 0;
+    background: var(--pagebldr-focus, #2563eb);
+    color: var(--pagebldr-primary-foreground, #ffffff);
+    font:
+      600 0.75rem/1.25 ui-sans-serif,
+      system-ui,
+      sans-serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-pagebldr-inline-editing="true"] {
+    cursor: text;
+    outline: 2px solid var(--pagebldr-focus, #2563eb) !important;
+    outline-offset: 2px;
+  }
+
   [data-pagebldr-renderer] [data-pagebldr-hidden="true"] {
     opacity: 0.45;
     outline: 1px dashed currentColor;

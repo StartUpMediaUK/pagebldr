@@ -62,6 +62,34 @@ describe("standard Elements", () => {
     }
   });
 
+  it("keeps inline editing behavior with the owning Element definition", () => {
+    const heading = builder.elements.get("heading")!;
+    expect(heading.inlineEditing?.read({ content: "Original", level: 2 })).toBe(
+      "Original",
+    );
+    expect(
+      heading.inlineEditing?.update("Changed", {
+        content: "Original",
+        level: 2,
+      }),
+    ).toEqual({ content: "Changed" });
+
+    const richText = builder.elements.get("rich-text")!;
+    const props = {
+      content: [
+        { type: "heading", text: "First" },
+        { type: "paragraph", text: "Second" },
+      ],
+    };
+    expect(richText.inlineEditing?.read(props)).toBe("First\nSecond");
+    expect(richText.inlineEditing?.update("Changed\nAgain", props)).toEqual({
+      content: [
+        { type: "heading", text: "Changed" },
+        { type: "paragraph", text: "Again" },
+      ],
+    });
+  });
+
   it("migrates package-native Image, Video, Progress and Gallery v1 props", () => {
     const cases = [
       ["image", { src: "https://example.com/image.jpg", alt: "Example" }],

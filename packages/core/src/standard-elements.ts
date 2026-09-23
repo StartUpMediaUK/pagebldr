@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   defineElement,
   type ElementDefinition,
+  type ElementInlineEditing,
   type ElementRenderContext,
   type RenderElement,
   type RenderNode,
@@ -257,6 +258,7 @@ function definition(config: {
   childPolicy?: ElementDefinition["childPolicy"];
   styles?: readonly string[];
   accessibility?: ElementDefinition["accessibility"];
+  inlineEditing?: ElementInlineEditing<Props>;
   migrate?: (props: unknown, fromVersion: number) => Props;
   references?: (props: Props) => readonly ResourceReference[];
   destinations?: (props: Props) => readonly unknown[];
@@ -275,6 +277,7 @@ function definition(config: {
     childPolicy: config.childPolicy ?? none,
     styles: config.styles ?? allStyles,
     accessibility: config.accessibility ?? {},
+    ...(config.inlineEditing ? { inlineEditing: config.inlineEditing } : {}),
     render: config.render,
     ...(config.migrate ? { migrate: config.migrate } : {}),
     ...(config.references ? { references: config.references } : {}),
@@ -391,6 +394,11 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     }),
     defaults: { content: "A clear, compelling heading", level: 2 },
     accessibility: { role: "heading" },
+    inlineEditing: {
+      property: "content",
+      read: (props) => text(props, "content"),
+      update: (value) => ({ content: value }),
+    },
     render: (props) =>
       node(`h${number(props, "level", 2)}`, { tabIndex: -1 }, [
         text(props, "content"),
@@ -411,6 +419,22 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     }),
     defaults: {
       content: [{ type: "paragraph", text: "Add your supporting copy." }],
+    },
+    inlineEditing: {
+      property: "content",
+      read: (props) =>
+        array(props, "content")
+          .map((block) => text(block, "text"))
+          .join("\n"),
+      update: (value, props) => {
+        const existing = array(props, "content");
+        return {
+          content: value.split(/\r?\n/u).map((line, index) => ({
+            type: text(existing[index] ?? {}, "type", "paragraph"),
+            text: line,
+          })),
+        };
+      },
     },
     render: (props) => renderRichText(array(props, "content")),
   }),

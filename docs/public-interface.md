@@ -306,6 +306,15 @@ The editor derives `edit`, `save`, `publish`, and `resources` capabilities from
 its controlled mode, callbacks, and configured Resource adapters. See
 [editor composition](editor-composition.md) for the typed extension interface.
 
+The default editor includes its own isolated authored canvas and compiled
+presentation. Desktop fixed, Desktop fill, Tablet and Mobile select the canvas's
+authored viewport independently from the Host viewport. Zoom ranges from 25% to
+200%, with Fit and scroll-to-selection controls. Edit-mode links are
+navigation-suppressed; Preview renders the current controlled Document without
+editor chrome and returns with Escape. Canvas selection, hover, inline editing
+and placement dispatch ordinary editor commands and never mutate the Document
+directly.
+
 There is no simultaneous `document` and `initialDocument` on this module: that
 creates two state-ownership modes and synchronization ambiguity. A separate
 convenience module can be introduced only if real examples prove demand:
@@ -571,6 +580,11 @@ interface ElementDefinition<Props, Type extends string = string> {
   styles: readonly StyleCapabilityKey[];
   migrate?: ElementMigration<Props>;
   controls?: readonly ControlContribution<Props>[];
+  inlineEditing?: {
+    property: string;
+    read(props: Props): string;
+    update(value: string, props: Props): Partial<Props>;
+  };
   render(props: ElementRenderProps<Props>): React.ReactNode;
   references?: (props: Props) => readonly ResourceReference[];
   accessibility?: AccessibilityContract<Props>;
