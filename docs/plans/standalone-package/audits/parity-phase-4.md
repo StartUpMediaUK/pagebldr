@@ -113,8 +113,8 @@ The accepted follow-up pass confirmed that one Desktop icon cycles fixed and
 full-width modes, width-Fit remains active across canvas-size changes, and the
 percentage activates Fit while manual zoom exits it. The top-right dimensions
 pill is absent at rest, appears from the authored viewport or desktop zoom
-controls, remains available for a two-second pointer handoff, and hides again
-after leaving it. At a 946px full-width canvas, the conditional Tablet control
+controls, remains available for an 800ms pointer handoff, and hides again after
+leaving it. At a 946px full-width canvas, the conditional Tablet control
 reported the authored maximum width of 1024px; outside Tablet/Phone ranges no
 device control is rendered.
 
