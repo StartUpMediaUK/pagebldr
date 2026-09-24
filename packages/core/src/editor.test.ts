@@ -102,6 +102,12 @@ describe("builder.editor", () => {
         name: "No",
       }),
     ).toBe(false);
+    expect(
+      builder.editor.can(document, {
+        type: "duplicate",
+        elementId: "item",
+      }),
+    ).toBe(false);
   });
 
   it("adds, assigns, reorders, updates, and removes Classes and Variables", () => {
@@ -449,6 +455,29 @@ describe("builder.editor", () => {
     expect(
       (duplicate.props.destination as { elementId: string }).elementId,
     ).toBe(duplicate.children[0]);
+  });
+
+  it("pastes copied subtrees with fresh IDs at the requested location", () => {
+    let document = dispatch(base(), {
+      type: "insert",
+      parentId: "root",
+      index: 0,
+      clipboard: clipboard("source"),
+    });
+    const copied = builder.editor.clipboard.copy(document, "source");
+    document = dispatch(document, {
+      type: "paste",
+      parentId: "root",
+      index: 1,
+      clipboard: copied,
+      idFactory: createSequentialIdFactory("pasted"),
+    });
+
+    expect(document.elements.root!.children).toEqual([
+      "source",
+      "pasted-element-1",
+    ]);
+    expect(document.elements["pasted-element-1"]?.name).toBe("source copy");
   });
 
   it("preserves invariants through deterministic arbitrary valid command sequences", () => {

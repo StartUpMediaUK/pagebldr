@@ -17,12 +17,21 @@ import {
   Maximize2Icon,
   MinusIcon,
   PlusIcon,
+  ZoomInIcon,
 } from "lucide-react";
 
 import type { Pagebldr, PageDocument } from "@pagebldr/core";
 
 import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu.js";
 import {
   Empty,
   EmptyDescription,
@@ -783,19 +792,51 @@ function CanvasZoomControls({
   readonly onReveal: () => void;
 }) {
   return (
-    <div className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm">
-      <CanvasTool label="Zoom out" icon={MinusIcon} onClick={onDecrease} />
-      <span className="min-w-12 text-center text-xs tabular-nums">
-        {Math.round(zoom * 100)}%
-      </span>
-      <CanvasTool label="Zoom in" icon={PlusIcon} onClick={onIncrease} />
-      <CanvasTool label="Fit canvas" icon={Maximize2Icon} onClick={onFit} />
-      <CanvasTool
-        label="Scroll to selection"
-        icon={LocateFixedIcon}
-        onClick={onReveal}
-      />
-    </div>
+    <>
+      <div className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[900px]:hidden">
+        <CanvasTool label="Zoom out" icon={MinusIcon} onClick={onDecrease} />
+        <span className="min-w-12 text-center text-xs tabular-nums">
+          {Math.round(zoom * 100)}%
+        </span>
+        <CanvasTool label="Zoom in" icon={PlusIcon} onClick={onIncrease} />
+        <CanvasTool label="Fit canvas" icon={Maximize2Icon} onClick={onFit} />
+        <CanvasTool
+          label="Scroll to selection"
+          icon={LocateFixedIcon}
+          onClick={onReveal}
+        />
+      </div>
+      <div className="sticky bottom-16 mx-auto hidden w-fit @max-[900px]:block">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label={`Canvas zoom ${Math.round(zoom * 100)}%`}
+              className="h-11 shadow-sm"
+              variant="outline"
+            >
+              <ZoomInIcon data-icon="inline-start" />
+              {Math.round(zoom * 100)}%
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" side="top">
+            <DropdownMenuLabel>Canvas zoom</DropdownMenuLabel>
+            <DropdownMenuItem onSelect={onDecrease}>
+              <MinusIcon /> Zoom out
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={onIncrease}>
+              <PlusIcon /> Zoom in
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={onFit}>
+              <Maximize2Icon /> Fit canvas
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={onReveal}>
+              <LocateFixedIcon /> Scroll to selection
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </>
   );
 }
 

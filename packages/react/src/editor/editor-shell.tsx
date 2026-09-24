@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   createEditorComposition,
   defineEditorContribution,
@@ -11,10 +18,14 @@ import {
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  ChevronLeftIcon,
   EyeIcon,
+  HomeIcon,
   LaptopIcon,
-  LockIcon,
+  Layers3Icon,
   Maximize2Icon,
+  MoreHorizontalIcon,
+  PanelLeftIcon,
   PlusIcon,
   Redo2Icon,
   SaveIcon,
@@ -41,10 +52,12 @@ import {
 } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "../components/ui/resizable.js";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu.js";
 import { ScrollArea } from "../components/ui/scroll-area.js";
 import { Separator } from "../components/ui/separator.js";
 import { Switch } from "../components/ui/switch.js";
@@ -63,7 +76,11 @@ import {
 } from "../components/ui/tooltip.js";
 import { cn } from "../lib/utils.js";
 
-import type { PageElement } from "@pagebldr/core";
+import type {
+  PagebldrClipboard,
+  PagebldrStyleClipboard,
+  PageElement,
+} from "@pagebldr/core";
 import type { PagebldrEditorProps } from "../index.js";
 import {
   EditorProvider,
@@ -72,9 +89,10 @@ import {
 } from "./context.js";
 import { standardEditorPreset } from "./presets.js";
 import { IsolatedCanvas } from "./isolated-canvas.js";
+import { useMovableOverlay } from "./movable-overlay.js";
+import { StructureWindow } from "./structure-window.js";
 import {
   pagebldrElementDragType,
-  pagebldrExistingDragType,
   createElementClipboard,
   resolveClickInsertion,
   resolveKeyboardMove,
@@ -105,6 +123,20 @@ function EditorWorkspace({
   const editor = usePagebldrEditor();
   const [pending, setPending] = useState<"save" | "publish" | null>(null);
   const [status, setStatus] = useState("Ready");
+  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelMode, setPanelMode] = useState<"add" | "inspector">("add");
+  const [structureOpen, setStructureOpen] = useState(true);
+  const [clipboard, setClipboard] = useState<PagebldrClipboard | null>(null);
+  const [styleClipboard, setStyleClipboard] =
+    useState<PagebldrStyleClipboard | null>(null);
+  const editorRootRef = useRef<HTMLElement>(null);
+  const initializedLayout = useRef(false);
+  const savedDocument = useRef(editor.document);
+  const panelOverlay = useMovableOverlay<HTMLElement>({
+    enabled: (element) =>
+      (element.closest<HTMLElement>("[data-pagebldr-editor]")?.clientWidth ??
+        901) <= 900,
+  });
   const readOnly = editor.mode !== "edit" || editor.previewing;
 
   const perform = useCallback(
@@ -122,6 +154,7 @@ function EditorWorkspace({
             signal,
           });
         else await onPublish?.({ document: editor.document, signal });
+        if (kind === "save") savedDocument.current = editor.document;
         setStatus(kind === "save" ? "Saved" : "Published");
       } catch (error) {
         setStatus(error instanceof Error ? error.message : `${kind} failed`);
@@ -141,6 +174,70 @@ function EditorWorkspace({
         return;
       }
       if (editor.previewing) return;
+      if (modifier && event.key.toLowerCase() === "s" && onSave) {
+        event.preventDefault();
+        void perform("save");
+        return;
+      }
+      if (isEditableTarget(event.target)) return;
+      if (modifier && event.key.toLowerCase() === "i") {
+        event.preventDefault();
+        setStructureOpen((current) => !current);
+        return;
+      }
+      if (
+        modifier &&
+        event.key.toLowerCase() === "c" &&
+        editor.selectedId &&
+        editor.selectedId !== editor.document.rootId
+      ) {
+        event.preventDefault();
+        setClipboard(
+          editor.builder.editor.clipboard.copy(
+            editor.document,
+            editor.selectedId,
+          ),
+        );
+        return;
+      }
+      if (
+        modifier &&
+        event.key.toLowerCase() === "v" &&
+        clipboard &&
+        !readOnly
+      ) {
+        const copied = clipboard.elements[clipboard.rootId];
+        const placement = copied
+          ? resolveClickInsertion({
+              document: editor.document,
+              definitions: editor.builder.elements,
+              elementType: copied.type,
+              selectedId: editor.selectedId,
+            })
+          : null;
+        if (placement) {
+          event.preventDefault();
+          editor.dispatch({
+            type: "paste",
+            parentId: placement.parentId,
+            index: placement.index,
+            clipboard,
+          });
+        }
+        return;
+      }
+      if (
+        modifier &&
+        event.key.toLowerCase() === "d" &&
+        editor.selectedId &&
+        editor.selectedId !== editor.document.rootId &&
+        !readOnly &&
+        !editor.selected?.locked
+      ) {
+        event.preventDefault();
+        editor.dispatch({ type: "duplicate", elementId: editor.selectedId });
+        return;
+      }
       if (
         event.altKey &&
         !modifier &&
@@ -173,12 +270,12 @@ function EditorWorkspace({
         if (event.shiftKey) editor.redo();
         else editor.undo();
       }
-      if (modifier && event.key.toLowerCase() === "s" && onSave) {
+      if (modifier && event.key.toLowerCase() === "y") {
         event.preventDefault();
-        void perform("save");
+        editor.redo();
       }
       if (
-        event.key === "Delete" &&
+        (event.key === "Delete" || event.key === "Backspace") &&
         editor.selectedId &&
         editor.selectedId !== editor.document.rootId &&
         !readOnly
@@ -187,10 +284,37 @@ function EditorWorkspace({
         editor.dispatch({ type: "remove", elementId: editor.selectedId });
         editor.select(editor.document.rootId);
       }
+      if (event.key === "Escape") {
+        editor.select(editor.document.rootId);
+        setPanelMode("add");
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [editor, onSave, perform, readOnly]);
+  }, [clipboard, editor, onSave, perform, readOnly]);
+
+  useEffect(() => {
+    const root = editorRootRef.current;
+    if (!root) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry || initializedLayout.current) return;
+      initializedLayout.current = true;
+      if (entry.contentRect.width < 901) setPanelOpen(false);
+    });
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (editor.selectedId && editor.selectedId !== editor.document.rootId) {
+      setPanelMode("inspector");
+      setPanelOpen(true);
+    }
+  }, [editor.document.rootId, editor.selectedId]);
+
+  useEffect(() => {
+    if (editor.document !== savedDocument.current) setStatus("Unsaved");
+  }, [editor.document]);
 
   const capabilities = new Set<EditorCapability>([
     ...(editor.mode === "edit" ? (["edit"] as const) : []),
@@ -216,9 +340,10 @@ function EditorWorkspace({
 
   return (
     <section
+      ref={editorRootRef}
       aria-label="Page builder"
       className={cn(
-        "flex h-[min(900px,100vh)] min-h-[640px] flex-col overflow-hidden rounded-lg border bg-background text-foreground",
+        "@container flex h-[min(900px,100vh)] min-h-[640px] flex-col overflow-hidden rounded-lg border bg-background text-foreground",
         className,
       )}
       data-pagebldr-editor={editor.builder.namespace}
@@ -226,6 +351,13 @@ function EditorWorkspace({
       data-pagebldr-mode={editor.mode}
     >
       <EditorToolbar
+        canSave={!!onSave && pending === null}
+        onSave={() => void perform("save")}
+        panelOpen={panelOpen}
+        onPanelOpenChange={setPanelOpen}
+        structureOpen={structureOpen}
+        onStructureOpenChange={setStructureOpen}
+        status={status}
         start={
           editor.previewing ? (
             <Button
@@ -252,23 +384,79 @@ function EditorWorkspace({
         </div>
       ) : (
         <>
-          <ResizablePanelGroup orientation="horizontal">
-            <ResizablePanel defaultSize={22} minSize={16}>
-              {composition.render("sidebar.start", contributionContext)}
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={56} minSize={32}>
+          <div className="relative flex min-h-0 flex-1 overflow-hidden">
+            {panelOpen ? (
+              <aside
+                ref={panelOverlay.ref}
+                style={panelOverlay.style}
+                className="z-20 flex w-[22rem] shrink-0 flex-col border-r bg-background @max-[900px]:absolute @max-[900px]:bottom-14 @max-[900px]:left-3 @max-[900px]:top-3 @max-[900px]:w-[min(22rem,calc(100%-1.5rem))] @max-[900px]:rounded-xl @max-[900px]:border @max-[900px]:shadow-xl"
+                aria-label={
+                  panelMode === "add" ? "Add to page" : "Element inspector"
+                }
+              >
+                <div
+                  className="flex min-h-16 items-center gap-2 border-b px-4 py-3 @max-[900px]:cursor-move @max-[900px]:touch-none"
+                  onDoubleClick={panelOverlay.reset}
+                  onPointerDown={panelOverlay.beginMove}
+                >
+                  {panelMode === "inspector" ? (
+                    <Button
+                      aria-label="Back to Add to page"
+                      size="icon-sm"
+                      variant="ghost"
+                      onClick={() => setPanelMode("add")}
+                    >
+                      <ChevronLeftIcon />
+                    </Button>
+                  ) : null}
+                  <div className="min-w-0 flex-1">
+                    <h2 className="truncate text-sm font-semibold">
+                      {panelMode === "add"
+                        ? "Add to page"
+                        : (editor.selected?.name ?? "Inspector")}
+                    </h2>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {panelMode === "add"
+                        ? "Choose an element, block, or template"
+                        : `${
+                            editor.selected
+                              ? (editor.builder.elements.get(
+                                  editor.selected.type,
+                                )?.label ?? editor.selected.type)
+                              : "Element"
+                          } · Content, style, and advanced`}
+                    </p>
+                  </div>
+                </div>
+                <div className="min-h-0 flex-1">
+                  {panelMode === "add"
+                    ? composition.render("sidebar.start", contributionContext)
+                    : composition.render("sidebar.end", contributionContext)}
+                </div>
+              </aside>
+            ) : null}
+            <main className="relative min-w-0 flex-1">
               <IsolatedCanvas>
                 {composition.render("canvas.overlay", contributionContext)}
               </IsolatedCanvas>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={22} minSize={18}>
-              {composition.render("sidebar.end", contributionContext)}
-            </ResizablePanel>
-          </ResizablePanelGroup>
-          <div className="flex h-8 items-center justify-between gap-2 border-t px-3 text-xs text-muted-foreground">
-            {composition.render("status", contributionContext)}
+              <StructureWindow
+                clipboard={clipboard}
+                open={structureOpen}
+                onClipboardChange={setClipboard}
+                onOpenChange={setStructureOpen}
+                onStyleClipboardChange={setStyleClipboard}
+                styleClipboard={styleClipboard}
+              />
+            </main>
+            <CompactToolbar
+              panelOpen={panelOpen}
+              onPanelOpenChange={setPanelOpen}
+              structureOpen={structureOpen}
+              onStructureOpenChange={setStructureOpen}
+            />
+            <div className="sr-only" aria-live="polite">
+              {composition.render("status", contributionContext)}
+            </div>
           </div>
         </>
       )}
@@ -334,22 +522,124 @@ function builtInContributions(input: {
 }
 
 function EditorToolbar({
+  canSave,
+  onPanelOpenChange,
+  onSave,
+  onStructureOpenChange,
+  panelOpen,
   start,
   end,
+  status,
+  structureOpen,
 }: {
+  readonly canSave: boolean;
+  readonly onPanelOpenChange: (open: boolean) => void;
+  readonly onSave: () => void;
+  readonly onStructureOpenChange: (open: boolean) => void;
+  readonly panelOpen: boolean;
   readonly start: ReactNode;
   readonly end: ReactNode;
+  readonly status: string;
+  readonly structureOpen: boolean;
 }) {
   const editor = usePagebldrEditor();
   return (
-    <header className="flex h-12 items-center gap-2 px-2">
-      <strong className="truncate px-2 text-sm">{editor.document.title}</strong>
-      <Badge variant="secondary">
-        {editor.previewing ? "preview" : editor.mode}
+    <header className="flex min-h-14 items-center gap-2 px-2">
+      {!editor.previewing ? (
+        <div className="@max-[900px]:hidden">
+          <ToolButton
+            label={panelOpen ? "Close Add panel" : "Open Add panel"}
+            onClick={() => onPanelOpenChange(!panelOpen)}
+            icon={PanelLeftIcon}
+          />
+        </div>
+      ) : null}
+      <div className="min-w-0 max-w-64 px-1 @max-[720px]:max-w-36">
+        <Input
+          aria-label="Page title"
+          className="h-6 border-0 bg-transparent p-0 text-sm font-semibold shadow-none focus-visible:ring-1"
+          disabled={editor.mode !== "edit"}
+          value={editor.document.title}
+          onChange={(event) => {
+            const title = event.currentTarget.value;
+            if (title.trim())
+              editor.dispatch({ type: "update-page", title }, "page-title");
+          }}
+        />
+        <span className="flex items-center gap-1 truncate text-[11px] text-muted-foreground @max-[720px]:hidden">
+          <HomeIcon className="size-3" /> Home · {status}
+        </span>
+      </div>
+      <Badge className="@max-[900px]:hidden" variant="secondary">
+        {editor.previewing ? "Preview" : editor.mode}
       </Badge>
-      {start}
-      <div className="flex-1" />
-      {end}
+      <div
+        className={cn(
+          "flex flex-1 items-center justify-center",
+          !editor.previewing && "@max-[900px]:hidden",
+        )}
+      >
+        {start}
+      </div>
+      {!editor.previewing ? (
+        <>
+          <Button
+            className="@max-[900px]:hidden"
+            size="sm"
+            variant={structureOpen ? "secondary" : "ghost"}
+            onClick={() => onStructureOpenChange(!structureOpen)}
+          >
+            <Layers3Icon data-icon="inline-start" />
+            Structure
+          </Button>
+          <Button
+            className="@max-[900px]:hidden"
+            size="sm"
+            variant="ghost"
+            onClick={() => editor.setPreviewing(true)}
+          >
+            <EyeIcon data-icon="inline-start" />
+            Preview
+          </Button>
+        </>
+      ) : null}
+      <div className="ml-auto">{end}</div>
+      {!editor.previewing ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label="More editor actions"
+              size="icon-sm"
+              variant="ghost"
+            >
+              <MoreHorizontalIcon />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem disabled={!editor.canUndo} onSelect={editor.undo}>
+              <Undo2Icon /> Undo
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled={!editor.canRedo} onSelect={editor.redo}>
+              <Redo2Icon /> Redo
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => editor.setPreviewing(true)}>
+              <EyeIcon /> Preview
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => onStructureOpenChange(!structureOpen)}
+            >
+              <Layers3Icon /> {structureOpen ? "Hide" : "Show"} Structure
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem disabled={!canSave} onSelect={onSave}>
+              <SaveIcon /> Save draft
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled>History</DropdownMenuItem>
+            <DropdownMenuItem disabled>Page design</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
     </header>
   );
 }
@@ -364,11 +654,6 @@ function HistoryControls() {
         disabled={!editor.canUndo}
         onClick={editor.undo}
         icon={Undo2Icon}
-      />
-      <ToolButton
-        label="Preview"
-        onClick={() => editor.setPreviewing(true)}
-        icon={EyeIcon}
       />
       <ToolButton
         label="Redo"
@@ -396,6 +681,7 @@ function PersistenceControls({
   return (
     <div className="flex items-center gap-2">
       <Button
+        className="@max-[720px]:hidden"
         size="sm"
         variant="outline"
         disabled={!canSave || pending !== null}
@@ -405,6 +691,7 @@ function PersistenceControls({
         {pending === "save" ? "Saving…" : "Save"}
       </Button>
       <Button
+        className="@max-[900px]:h-11"
         size="sm"
         disabled={!canPublish || pending !== null}
         onClick={onPublish}
@@ -416,14 +703,67 @@ function PersistenceControls({
   );
 }
 
+function CompactToolbar({
+  onPanelOpenChange,
+  onStructureOpenChange,
+  panelOpen,
+  structureOpen,
+}: {
+  readonly onPanelOpenChange: (open: boolean) => void;
+  readonly onStructureOpenChange: (open: boolean) => void;
+  readonly panelOpen: boolean;
+  readonly structureOpen: boolean;
+}) {
+  const editor = usePagebldrEditor();
+  return (
+    <div className="absolute inset-x-0 bottom-0 z-40 hidden h-14 items-center justify-around border-t bg-background/95 px-2 backdrop-blur @max-[900px]:flex">
+      <Button
+        aria-label={panelOpen ? "Close Add panel" : "Open Add panel"}
+        className="size-11"
+        size="icon-lg"
+        variant={panelOpen ? "secondary" : "ghost"}
+        onClick={() => onPanelOpenChange(!panelOpen)}
+      >
+        <PlusIcon />
+      </Button>
+      <ToolButton
+        large
+        label="Undo"
+        disabled={!editor.canUndo}
+        onClick={editor.undo}
+        icon={Undo2Icon}
+      />
+      <ViewportToggle compact />
+      <Button
+        aria-label={structureOpen ? "Close Structure" : "Open Structure"}
+        className="size-11"
+        size="icon-lg"
+        variant={structureOpen ? "secondary" : "ghost"}
+        onClick={() => onStructureOpenChange(!structureOpen)}
+      >
+        <Layers3Icon />
+      </Button>
+      <ToolButton
+        large
+        label="Redo"
+        disabled={!editor.canRedo}
+        onClick={editor.redo}
+        icon={Redo2Icon}
+      />
+    </div>
+  );
+}
+
 function ToolButton({
   label,
   disabled,
+  large = false,
   onClick,
   icon: Icon,
 }: {
   readonly label: string;
   readonly disabled?: boolean;
+  readonly large?: boolean;
   readonly onClick: () => void;
   readonly icon: typeof Undo2Icon;
 }) {
@@ -432,7 +772,8 @@ function ToolButton({
       <TooltipTrigger asChild>
         <Button
           aria-label={label}
-          size="icon-sm"
+          className={large ? "size-11" : undefined}
+          size={large ? "icon-lg" : "icon-sm"}
           variant="ghost"
           disabled={disabled}
           onClick={onClick}
@@ -445,7 +786,7 @@ function ToolButton({
   );
 }
 
-function ViewportToggle() {
+function ViewportToggle({ compact = false }: { readonly compact?: boolean }) {
   const editor = usePagebldrEditor();
   const items: readonly [EditorViewport, string, typeof LaptopIcon][] = [
     ["desktop", "Desktop", LaptopIcon],
@@ -464,7 +805,12 @@ function ViewportToggle() {
       size="sm"
     >
       {items.map(([value, label, Icon]) => (
-        <ToggleGroupItem key={value} value={value} aria-label={label}>
+        <ToggleGroupItem
+          key={value}
+          value={value}
+          aria-label={label}
+          className={compact ? "size-11" : undefined}
+        >
           <Icon />
           <span className="sr-only">{label}</span>
         </ToggleGroupItem>
@@ -475,70 +821,44 @@ function ViewportToggle() {
 
 function LeftPanel() {
   return (
-    <Tabs defaultValue="structure" className="h-full gap-0">
-      <TabsList className="m-2 grid w-auto grid-cols-2">
-        <TabsTrigger value="structure">Structure</TabsTrigger>
-        <TabsTrigger value="add">Add</TabsTrigger>
+    <Tabs defaultValue="elements" className="h-full gap-0">
+      <TabsList className="mx-3 mt-3 grid w-auto grid-cols-3">
+        <TabsTrigger value="elements">Elements</TabsTrigger>
+        <TabsTrigger value="blocks">Blocks</TabsTrigger>
+        <TabsTrigger value="templates">Templates</TabsTrigger>
       </TabsList>
-      <TabsContent value="structure" className="min-h-0">
-        <ScrollArea className="h-full px-2">
-          <StructureTree />
-        </ScrollArea>
-      </TabsContent>
-      <TabsContent value="add" className="min-h-0">
+      <TabsContent value="elements" className="min-h-0">
         <ScrollArea className="h-full px-2">
           <ElementLibrary />
         </ScrollArea>
+      </TabsContent>
+      <TabsContent value="blocks" className="min-h-0 p-4">
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>Blocks</EmptyTitle>
+            <EmptyDescription>
+              Registered Blocks will appear here ready to insert.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </TabsContent>
+      <TabsContent value="templates" className="min-h-0 p-4">
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>Templates</EmptyTitle>
+            <EmptyDescription>
+              Registered Templates will appear here ready to apply.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </TabsContent>
     </Tabs>
   );
 }
 
-function StructureTree() {
-  const editor = usePagebldrEditor();
-  const render = (id: string, depth: number): React.ReactNode => {
-    const element = editor.document.elements[id]!;
-    return (
-      <div key={id} className="flex flex-col gap-1">
-        <Button
-          variant={editor.selectedId === id ? "secondary" : "ghost"}
-          className="w-full justify-start"
-          style={{ paddingLeft: `${8 + depth * 14}px` }}
-          onClick={() => editor.select(id)}
-          draggable={
-            editor.mode === "edit" &&
-            id !== editor.document.rootId &&
-            !element.locked
-          }
-          onDragStart={(event) => {
-            event.dataTransfer.effectAllowed = "move";
-            event.dataTransfer.setData(pagebldrExistingDragType, id);
-          }}
-        >
-          {element.hidden ? (
-            <EyeIcon data-icon="inline-start" />
-          ) : element.locked ? (
-            <LockIcon data-icon="inline-start" />
-          ) : null}
-          <span className="truncate">{element.name}</span>
-        </Button>
-        {element.children.map((child) => render(child, depth + 1))}
-      </div>
-    );
-  };
-  return (
-    <div
-      className="flex flex-col gap-1 pb-4"
-      role="tree"
-      aria-label="Page structure"
-    >
-      {render(editor.document.rootId, 0)}
-    </div>
-  );
-}
-
 function ElementLibrary() {
   const editor = usePagebldrEditor();
+  const [query, setQuery] = useState("");
   const add = (type: string) => {
     const placement = resolveClickInsertion({
       document: editor.document,
@@ -555,27 +875,41 @@ function ElementLibrary() {
     });
   };
   return (
-    <div className="grid grid-cols-2 gap-2 pb-4">
-      {[...editor.builder.elements.values()].map((definition) => (
-        <Button
-          key={definition.type}
-          variant="outline"
-          className="h-auto min-h-16 flex-col"
-          disabled={editor.mode !== "edit"}
-          onClick={() => add(definition.type)}
-          draggable={editor.mode === "edit"}
-          onDragStart={(event) => {
-            event.dataTransfer.effectAllowed = "copy";
-            event.dataTransfer.setData(
-              pagebldrElementDragType,
-              definition.type,
-            );
-          }}
-        >
-          <PlusIcon data-icon="inline-start" />
-          {definition.label}
-        </Button>
-      ))}
+    <div className="p-2">
+      <div className="relative mb-3">
+        <Input
+          aria-label="Search elements"
+          placeholder="Search elements..."
+          value={query}
+          onChange={(event) => setQuery(event.currentTarget.value)}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2 pb-4">
+        {[...editor.builder.elements.values()]
+          .filter((definition) =>
+            definition.label.toLowerCase().includes(query.trim().toLowerCase()),
+          )
+          .map((definition) => (
+            <Button
+              key={definition.type}
+              variant="outline"
+              className="h-auto min-h-16 flex-col"
+              disabled={editor.mode !== "edit"}
+              onClick={() => add(definition.type)}
+              draggable={editor.mode === "edit"}
+              onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = "copy";
+                event.dataTransfer.setData(
+                  pagebldrElementDragType,
+                  definition.type,
+                );
+              }}
+            >
+              <PlusIcon data-icon="inline-start" />
+              {definition.label}
+            </Button>
+          ))}
+      </div>
     </div>
   );
 }
@@ -598,9 +932,10 @@ function Inspector() {
   const readOnly = editor.mode !== "edit";
   return (
     <Tabs defaultValue="properties" className="h-full gap-0">
-      <TabsList className="m-2 grid w-auto grid-cols-2">
-        <TabsTrigger value="properties">Properties</TabsTrigger>
-        <TabsTrigger value="styles">Styles</TabsTrigger>
+      <TabsList className="m-2 grid w-auto grid-cols-3">
+        <TabsTrigger value="properties">Content</TabsTrigger>
+        <TabsTrigger value="styles">Style</TabsTrigger>
+        <TabsTrigger value="advanced">Advanced</TabsTrigger>
       </TabsList>
       <TabsContent value="properties" className="min-h-0">
         <ScrollArea className="h-full px-3">
@@ -697,6 +1032,20 @@ function Inspector() {
                 available.
               </FieldDescription>
             </Field>
+          </FieldGroup>
+        </ScrollArea>
+      </TabsContent>
+      <TabsContent value="advanced" className="min-h-0">
+        <ScrollArea className="h-full px-3">
+          <FieldGroup className="pb-6">
+            <Field>
+              <FieldLabel>Layout and visibility</FieldLabel>
+              <FieldDescription>
+                Advanced controls are provided by the selected Element
+                definition.
+              </FieldDescription>
+            </Field>
+            <ElementActions />
           </FieldGroup>
         </ScrollArea>
       </TabsContent>
