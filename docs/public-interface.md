@@ -307,13 +307,15 @@ its controlled mode, callbacks, and configured Resource adapters. See
 [editor composition](editor-composition.md) for the typed extension interface.
 
 The default editor includes its own isolated authored canvas and compiled
-presentation. Desktop fixed, Desktop fill, Tablet and Mobile select the canvas's
-authored viewport independently from the Host viewport. Zoom ranges from 25% to
-200%, with Fit and scroll-to-selection controls. Edit-mode links are
-navigation-suppressed; Preview renders the current controlled Document without
-editor chrome and returns with Escape. Canvas selection, hover, inline editing
-and placement dispatch ordinary editor commands and never mutate the Document
-directly.
+presentation. One Desktop control toggles fixed and full-width modes; Tablet and
+Mobile select their authored viewport independently from the Host viewport. A
+canvas indicator reports the visible dimensions and active responsive range.
+Zoom ranges from 25% to 200%. Fit is a persistent width-fit mode: the percentage
+activates it and manual zoom disables it. Scroll-to-selection remains a separate
+control. Edit-mode links are navigation-suppressed; Preview renders the current
+controlled Document without editor chrome and returns with Escape. Canvas
+selection, hover, inline editing and placement dispatch ordinary editor commands
+and never mutate the Document directly.
 
 There is no simultaneous `document` and `initialDocument` on this module: that
 creates two state-ownership modes and synchronization ambiguity. A separate

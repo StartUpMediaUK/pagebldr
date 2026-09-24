@@ -2,7 +2,8 @@
 
 Status: approved for execution. Parity Phases 0 through 2 were accepted by the
 product owner on 22 September 2026. Parity Phase 3 was accepted on 23
-September 2026. Parity Phase 4 is complete and awaiting product-owner review.
+September 2026. Parity Phase 4 was accepted on 24 September 2026. Parity Phase 5
+has not started.
 
 Baseline: Quizr Page Builder V2 at commit
 `7dec26465c454b25545664e84d8e1e91b97ae9d1`
@@ -397,6 +398,8 @@ Work:
 - Tune tokens, spacing, density, cards, dialogs, sheets, overlays and selection
   chrome against the captured evidence.
 - Complete tablet and phone authoring, not only preview.
+- Add overflow-canvas navigation: hold Space and drag to pan; use Alt+wheel to
+  zoom while preserving the persistent width-Fit mode contract.
 - Run automated accessibility checks in every revealed state.
 - Complete a documented manual keyboard, focus, screen-reader announcement,
   forced-colors and reduced-motion review.

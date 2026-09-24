@@ -23,7 +23,6 @@ import {
   HomeIcon,
   LaptopIcon,
   Layers3Icon,
-  Maximize2Icon,
   MoreHorizontalIcon,
   PanelLeftIcon,
   PlusIcon,
@@ -788,9 +787,16 @@ function ToolButton({
 
 function ViewportToggle({ compact = false }: { readonly compact?: boolean }) {
   const editor = usePagebldrEditor();
+  const desktopViewport =
+    editor.viewport === "desktop-fill" ? "desktop-fill" : "desktop";
   const items: readonly [EditorViewport, string, typeof LaptopIcon][] = [
-    ["desktop", "Desktop", LaptopIcon],
-    ["desktop-fill", "Desktop fill", Maximize2Icon],
+    [
+      desktopViewport,
+      desktopViewport === "desktop"
+        ? "Desktop fixed; press again for full width"
+        : "Desktop full width; press again for fixed width",
+      LaptopIcon,
+    ],
     ["tablet", "Tablet", TabletIcon],
     ["mobile", "Mobile", SmartphoneIcon],
   ];
@@ -798,9 +804,13 @@ function ViewportToggle({ compact = false }: { readonly compact?: boolean }) {
     <ToggleGroup
       type="single"
       value={editor.viewport}
-      onValueChange={(value) =>
-        value && editor.setViewport(value as EditorViewport)
-      }
+      onValueChange={(value) => {
+        if (!value && editor.viewport === "desktop")
+          editor.setViewport("desktop-fill");
+        else if (!value && editor.viewport === "desktop-fill")
+          editor.setViewport("desktop");
+        else if (value) editor.setViewport(value as EditorViewport);
+      }}
       variant="outline"
       size="sm"
     >

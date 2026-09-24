@@ -1,8 +1,9 @@
 # Parity Phase 4 audit — editor shell and Structure
 
-Status: complete and awaiting product-owner review. Browser verification was
-limited to visual and interaction checks at the product owner's direction;
-accessibility, console and network testing were intentionally omitted.
+Status: complete and accepted by the product owner on 24 September 2026. Browser
+verification was limited to visual and interaction checks at the product owner's
+direction; accessibility, console and network testing were intentionally
+omitted.
 
 Source baseline: Quizr Page Builder V2 commit
 `7dec26465c454b25545664e84d8e1e91b97ae9d1`.
@@ -59,15 +60,15 @@ provenance is recorded in `docs/attributions/ui.md`. ReUI was not available in
 this runtime. Portal-safe root tokens ensure menus retain the compiled package
 theme outside the editor root.
 
-The packed React entry is 728,548 bytes and the compiled stylesheet is 64,744
-bytes. Their explicit uncompressed guardrails were raised to 730,000 and 66,000
-bytes respectively; compressed, tree-shaken and other entry budgets remain
-unchanged.
+After the accepted canvas-control correction, the packed React entry is 733,241
+bytes and the compiled stylesheet is 64,854 bytes. Their explicit uncompressed
+guardrails are 740,000 and 66,000 bytes respectively; compressed, tree-shaken
+and other entry budgets remain unchanged.
 
 ## Acceptance coverage
 
 - Implemented acceptance cases: `SHELL-02` through `SHELL-04`, `ZOOM-01`,
-  `VIEW-01`, `PREVIEW-01` and `STRUCT-01` through `STRUCT-05`.
+  `VIEW-01`, `VIEW-02`, `PREVIEW-01` and `STRUCT-01` through `STRUCT-05`.
 - `SHELL-01` is implemented except for Exit: package code deliberately does not
   own Host navigation, and the standard contribution seam is the neutral place
   for a Host-provided exit action.
@@ -98,18 +99,25 @@ using the built aggregate package:
 - [Desktop shell interaction recording](evidence/parity-phase-4/desktop-shell-flow.mp4)
 - [Desktop action-menu recording](evidence/parity-phase-4/desktop-more-menu-flow.mp4)
 - [Phone shell recording](evidence/parity-phase-4/phone-shell-flow.mp4)
+- [Desktop width-Fit and viewport indicator](evidence/parity-phase-4/desktop-canvas-controls.png)
+- [Desktop canvas-control recording](evidence/parity-phase-4/desktop-canvas-controls-flow.mp4)
 
 The T3 snapshot bridge returned `PreviewAutomationExecutionError`, so the still
 images were extracted from T3's transferred recordings. Visual inspection
 confirmed the rendered desktop and phone layouts, opaque portal menus, movable
 Structure/Add surfaces and compact mobile zoom control.
 
+The accepted follow-up pass confirmed that one Desktop icon cycles fixed and
+full-width modes, width-Fit remains active across canvas-size changes, the
+percentage activates Fit, manual zoom exits it, and the viewport indicator
+switches to Tablet or Phone status when full width enters those ranges.
+
 ## Verification performed
 
 - All workspace formatting, ESLint and TypeScript checks pass.
 - Core tests: 55 passing across nine files, including paste ID remapping and
   locked duplicate refusal.
-- React tests: 26 passing across seven files, including Structure expansion,
+- React tests: 27 passing across seven files, including Structure expansion,
   tree navigation, responsive-hidden and broken-anchor indicators.
 - Runtime, server and adapter tests pass; documentation content and spelling
   checks pass.
@@ -138,6 +146,9 @@ testing was run for this gate.
 - Package shell responsiveness is based on its own container width. The phone
   evidence uses a 390px editor container because the T3 viewport resize call
   timed out; this exercises the same shipping container-query rules.
+- Space+drag canvas panning and Alt+wheel zoom are recorded as `ZOOM-02` for the
+  Phase 8 canvas interaction pass; they were explicitly deferred by the product
+  owner and are not part of this correction.
 
 ## Commit
 

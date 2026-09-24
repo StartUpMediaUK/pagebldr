@@ -17,6 +17,9 @@ import {
   Maximize2Icon,
   MinusIcon,
   PlusIcon,
+  ScanIcon,
+  SmartphoneIcon,
+  TabletIcon,
   ZoomInIcon,
 } from "lucide-react";
 
@@ -26,6 +29,7 @@ import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -46,6 +50,8 @@ import {
 import { PagebldrRenderer } from "../renderer.js";
 import { PagebldrRuntimeInteractions } from "../runtime-interactions.js";
 import {
+  canvasBreakpointRange,
+  canvasViewportHeight,
   canvasViewportWidth,
   fitCanvasZoom,
   stepCanvasZoom,
@@ -90,6 +96,7 @@ export function IsolatedCanvas({
     height: 700,
   });
   const [zoom, setZoom] = useState(1);
+  const [fitEnabled, setFitEnabled] = useState(false);
   const zoomRef = useRef(zoom);
   const [geometry, setGeometry] = useState<{
     readonly elementId: string;
@@ -276,15 +283,27 @@ export function IsolatedCanvas({
   );
   const scaledWidth = canvasWidth * zoom;
   const scaledHeight = contentHeight * zoom;
-  const fit = () =>
-    setZoom(
-      fitCanvasZoom({
-        canvasWidth,
-        canvasHeight: contentHeight,
-        availableWidth: workspaceSize.width,
-        availableHeight: workspaceSize.height,
-      }),
-    );
+  const fitZoom = fitCanvasZoom({
+    canvasWidth,
+    availableWidth: workspaceSize.width,
+  });
+  const visibleCanvasHeight = canvasViewportHeight(workspaceSize.height, zoom);
+  const enableFit = () => {
+    setFitEnabled(true);
+    setZoom(fitZoom);
+  };
+  const toggleFit = () => {
+    if (fitEnabled) setFitEnabled(false);
+    else enableFit();
+  };
+  const changeZoom = (direction: -1 | 1) => {
+    setFitEnabled(false);
+    setZoom((current) => stepCanvasZoom(current, direction));
+  };
+
+  useEffect(() => {
+    if (fitEnabled) setZoom(fitZoom);
+  }, [fitEnabled, fitZoom]);
 
   const loadFrame = () => {
     const document = frameRef.current?.contentDocument;
@@ -307,6 +326,11 @@ export function IsolatedCanvas({
       {children ? (
         <div className="pointer-events-none absolute inset-0">{children}</div>
       ) : null}
+      <CanvasViewportIndicator
+        height={visibleCanvasHeight}
+        settings={editor.document.settings}
+        width={canvasWidth}
+      />
       <div
         className="relative mx-auto origin-top overflow-visible transition-[width,height]"
         style={{ width: scaledWidth, height: scaledHeight }}
@@ -345,10 +369,12 @@ export function IsolatedCanvas({
         </div>
       ) : null}
       <CanvasZoomControls
+        fitEnabled={fitEnabled}
         zoom={zoom}
-        onDecrease={() => setZoom((value) => stepCanvasZoom(value, -1))}
-        onIncrease={() => setZoom((value) => stepCanvasZoom(value, 1))}
-        onFit={fit}
+        onDecrease={() => changeZoom(-1)}
+        onIncrease={() => changeZoom(1)}
+        onFit={enableFit}
+        onToggleFit={toggleFit}
         onReveal={() => {
           if (geometry?.elementId === editor.selectedId)
             revealRect(workspaceRef.current, geometry.rect, zoom);
@@ -779,27 +805,42 @@ function CanvasChrome({
 }
 
 function CanvasZoomControls({
+  fitEnabled,
   zoom,
   onDecrease,
   onIncrease,
   onFit,
+  onToggleFit,
   onReveal,
 }: {
+  readonly fitEnabled: boolean;
   readonly zoom: number;
   readonly onDecrease: () => void;
   readonly onIncrease: () => void;
   readonly onFit: () => void;
+  readonly onToggleFit: () => void;
   readonly onReveal: () => void;
 }) {
   return (
     <>
       <div className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[900px]:hidden">
         <CanvasTool label="Zoom out" icon={MinusIcon} onClick={onDecrease} />
-        <span className="min-w-12 text-center text-xs tabular-nums">
+        <Button
+          aria-label="Fit canvas width"
+          className="min-w-12 px-1 text-xs tabular-nums"
+          size="sm"
+          variant="ghost"
+          onClick={onFit}
+        >
           {Math.round(zoom * 100)}%
-        </span>
+        </Button>
         <CanvasTool label="Zoom in" icon={PlusIcon} onClick={onIncrease} />
-        <CanvasTool label="Fit canvas" icon={Maximize2Icon} onClick={onFit} />
+        <CanvasTool
+          label={fitEnabled ? "Stop fitting canvas" : "Fit canvas width"}
+          icon={Maximize2Icon}
+          pressed={fitEnabled}
+          onClick={onToggleFit}
+        />
         <CanvasTool
           label="Scroll to selection"
           icon={LocateFixedIcon}
@@ -827,9 +868,12 @@ function CanvasZoomControls({
               <PlusIcon /> Zoom in
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={onFit}>
+            <DropdownMenuCheckboxItem
+              checked={fitEnabled}
+              onSelect={onToggleFit}
+            >
               <Maximize2Icon /> Fit canvas
-            </DropdownMenuItem>
+            </DropdownMenuCheckboxItem>
             <DropdownMenuItem onSelect={onReveal}>
               <LocateFixedIcon /> Scroll to selection
             </DropdownMenuItem>
@@ -844,21 +888,74 @@ function CanvasTool({
   label,
   icon: Icon,
   onClick,
+  pressed,
 }: {
   readonly label: string;
   readonly icon: typeof MinusIcon;
   readonly onClick: () => void;
+  readonly pressed?: boolean;
 }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button type="button" size="icon-sm" variant="ghost" onClick={onClick}>
+        <Button
+          type="button"
+          aria-pressed={pressed}
+          size="icon-sm"
+          variant={pressed ? "secondary" : "ghost"}
+          onClick={onClick}
+        >
           <Icon />
           <span className="sr-only">{label}</span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
+  );
+}
+
+function CanvasViewportIndicator({
+  height,
+  settings,
+  width,
+}: {
+  readonly height: number;
+  readonly settings: PageDocument["settings"];
+  readonly width: number;
+}) {
+  const range = canvasBreakpointRange(width, settings);
+  const Icon =
+    range === "mobile"
+      ? SmartphoneIcon
+      : range === "tablet"
+        ? TabletIcon
+        : ScanIcon;
+  const breakpoint =
+    range === "mobile"
+      ? ` · Phone max ${settings.breakpoints.mobileMax}px`
+      : range === "tablet"
+        ? ` · Tablet max ${settings.breakpoints.tabletMax}px`
+        : "";
+
+  return (
+    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            aria-label={`Canvas viewport ${Math.round(width)} by ${height} pixels${breakpoint}`}
+            className="pointer-events-auto shadow-sm"
+            size="icon-sm"
+            variant="outline"
+          >
+            <Icon />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent className="whitespace-nowrap">
+          {Math.round(width)}px × {height}px{breakpoint}
+        </TooltipContent>
+      </Tooltip>
+    </div>
   );
 }
 

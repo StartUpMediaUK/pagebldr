@@ -16,20 +16,33 @@ export function stepCanvasZoom(value: number, direction: -1 | 1): number {
 
 export function fitCanvasZoom(input: {
   readonly canvasWidth: number;
-  readonly canvasHeight: number;
   readonly availableWidth: number;
-  readonly availableHeight: number;
   readonly gutter?: number;
 }): number {
   const gutter = input.gutter ?? 32;
   const width = Math.max(1, input.availableWidth - gutter * 2);
-  const height = Math.max(1, input.availableHeight - gutter * 2);
   const scale = Math.min(
     width / Math.max(1, input.canvasWidth),
-    height / Math.max(1, input.canvasHeight),
     maximumFitZoom,
   );
   return Math.max(minimumCanvasZoom, scale);
+}
+
+export function canvasViewportHeight(
+  availableHeight: number,
+  zoom: number,
+  gutter = 32,
+): number {
+  return Math.max(1, Math.floor((availableHeight - gutter * 2) / zoom));
+}
+
+export function canvasBreakpointRange(
+  width: number,
+  settings: PageSettings,
+): "desktop" | "tablet" | "mobile" {
+  if (width <= settings.breakpoints.mobileMax) return "mobile";
+  if (width <= settings.breakpoints.tabletMax) return "tablet";
+  return "desktop";
 }
 
 export function canvasViewportWidth(
