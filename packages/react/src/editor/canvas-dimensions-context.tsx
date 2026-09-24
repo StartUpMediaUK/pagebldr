@@ -39,7 +39,7 @@ export function CanvasDimensionsProvider({
     timer.current = setTimeout(() => {
       timer.current = null;
       setVisible(false);
-    }, 2_000);
+    }, 800);
   }, []);
 
   useEffect(
