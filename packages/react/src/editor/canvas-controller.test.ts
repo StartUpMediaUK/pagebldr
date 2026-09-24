@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  canvasBreakpointRange,
+  canvasViewportHeight,
   canvasViewportWidth,
   clampCanvasZoom,
   fitCanvasZoom,
@@ -29,23 +31,26 @@ describe("canvas controller", () => {
     expect(stepCanvasZoom(1.95, 1)).toBe(2);
   });
 
-  it("fits within both workspace axes and never enlarges past 100%", () => {
+  it("fits the page width and never enlarges past 100%", () => {
     expect(
       fitCanvasZoom({
         canvasWidth: 1_280,
-        canvasHeight: 1_600,
         availableWidth: 960,
-        availableHeight: 800,
       }),
-    ).toBe(0.46);
+    ).toBe(0.7);
     expect(
       fitCanvasZoom({
         canvasWidth: 390,
-        canvasHeight: 600,
         availableWidth: 1_200,
-        availableHeight: 900,
       }),
     ).toBe(1);
+  });
+
+  it("reports the visible canvas height and active responsive range", () => {
+    expect(canvasViewportHeight(844, 0.5)).toBe(1_560);
+    expect(canvasBreakpointRange(1_200, settings)).toBe("desktop");
+    expect(canvasBreakpointRange(820, settings)).toBe("tablet");
+    expect(canvasBreakpointRange(390, settings)).toBe("mobile");
   });
 
   it("keeps authored viewport sizes independent from shell width", () => {
