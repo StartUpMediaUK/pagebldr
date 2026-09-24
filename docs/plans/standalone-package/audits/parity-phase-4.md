@@ -60,8 +60,8 @@ provenance is recorded in `docs/attributions/ui.md`. ReUI was not available in
 this runtime. Portal-safe root tokens ensure menus retain the compiled package
 theme outside the editor root.
 
-After the accepted canvas-control correction, the packed React entry is 733,241
-bytes and the compiled stylesheet is 64,854 bytes. Their explicit uncompressed
+After the accepted canvas-control correction, the packed React entry is 735,111
+bytes and the compiled stylesheet is 64,095 bytes. Their explicit uncompressed
 guardrails are 740,000 and 66,000 bytes respectively; compressed, tree-shaken
 and other entry budgets remain unchanged.
 
@@ -101,6 +101,8 @@ using the built aggregate package:
 - [Phone shell recording](evidence/parity-phase-4/phone-shell-flow.mp4)
 - [Desktop width-Fit and viewport indicator](evidence/parity-phase-4/desktop-canvas-controls.png)
 - [Desktop canvas-control recording](evidence/parity-phase-4/desktop-canvas-controls-flow.mp4)
+- [Transient dimensions pill and Tablet range](evidence/parity-phase-4/desktop-transient-dimensions.png)
+- [Transient dimensions interaction recording](evidence/parity-phase-4/desktop-transient-dimensions-flow.mp4)
 
 The T3 snapshot bridge returned `PreviewAutomationExecutionError`, so the still
 images were extracted from T3's transferred recordings. Visual inspection
@@ -108,9 +110,13 @@ confirmed the rendered desktop and phone layouts, opaque portal menus, movable
 Structure/Add surfaces and compact mobile zoom control.
 
 The accepted follow-up pass confirmed that one Desktop icon cycles fixed and
-full-width modes, width-Fit remains active across canvas-size changes, the
-percentage activates Fit, manual zoom exits it, and the viewport indicator
-switches to Tablet or Phone status when full width enters those ranges.
+full-width modes, width-Fit remains active across canvas-size changes, and the
+percentage activates Fit while manual zoom exits it. The top-right dimensions
+pill is absent at rest, appears from the authored viewport or desktop zoom
+controls, remains available for a two-second pointer handoff, and hides again
+after leaving it. At a 946px full-width canvas, the conditional Tablet control
+reported the authored maximum width of 1024px; outside Tablet/Phone ranges no
+device control is rendered.
 
 ## Verification performed
 
@@ -127,7 +133,8 @@ switches to Tablet or Phone status when full width enters those ranges.
   size, tree-shaking, stylesheet and Vite consumer gates.
 - License inventory and `git diff --check` pass.
 - T3 visual interaction covered desktop shell panels, Structure manipulation,
-  preview/return, secondary actions, and narrow canvas/Add/Structure states.
+  preview/return, secondary actions, narrow canvas/Add/Structure states, and the
+  transient dimensions pill's cooldown, handoff and breakpoint tooltip.
 
 ## Checks intentionally omitted
 

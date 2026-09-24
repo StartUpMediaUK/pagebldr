@@ -96,6 +96,7 @@ import {
   resolveClickInsertion,
   resolveKeyboardMove,
 } from "./canvas-placement.js";
+import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -787,6 +788,7 @@ function ToolButton({
 
 function ViewportToggle({ compact = false }: { readonly compact?: boolean }) {
   const editor = usePagebldrEditor();
+  const dimensions = useCanvasDimensions();
   const desktopViewport =
     editor.viewport === "desktop-fill" ? "desktop-fill" : "desktop";
   const items: readonly [EditorViewport, string, typeof LaptopIcon][] = [
@@ -804,6 +806,10 @@ function ViewportToggle({ compact = false }: { readonly compact?: boolean }) {
     <ToggleGroup
       type="single"
       value={editor.viewport}
+      onPointerEnter={dimensions.show}
+      onPointerLeave={dimensions.hideSoon}
+      onFocusCapture={dimensions.show}
+      onBlurCapture={dimensions.hideSoon}
       onValueChange={(value) => {
         if (!value && editor.viewport === "desktop")
           editor.setViewport("desktop-fill");

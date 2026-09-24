@@ -17,7 +17,6 @@ import {
   Maximize2Icon,
   MinusIcon,
   PlusIcon,
-  ScanIcon,
   SmartphoneIcon,
   TabletIcon,
   ZoomInIcon,
@@ -56,6 +55,7 @@ import {
   fitCanvasZoom,
   stepCanvasZoom,
 } from "./canvas-controller.js";
+import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 import {
   createElementClipboard,
   pagebldrElementDragType,
@@ -821,9 +821,16 @@ function CanvasZoomControls({
   readonly onToggleFit: () => void;
   readonly onReveal: () => void;
 }) {
+  const dimensions = useCanvasDimensions();
   return (
     <>
-      <div className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[900px]:hidden">
+      <div
+        className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[900px]:hidden"
+        onPointerEnter={dimensions.show}
+        onPointerLeave={dimensions.hideSoon}
+        onFocusCapture={dimensions.show}
+        onBlurCapture={dimensions.hideSoon}
+      >
         <CanvasTool label="Zoom out" icon={MinusIcon} onClick={onDecrease} />
         <Button
           aria-label="Fit canvas width"
@@ -923,38 +930,53 @@ function CanvasViewportIndicator({
   readonly settings: PageDocument["settings"];
   readonly width: number;
 }) {
+  const dimensions = useCanvasDimensions();
   const range = canvasBreakpointRange(width, settings);
   const Icon =
     range === "mobile"
       ? SmartphoneIcon
       : range === "tablet"
         ? TabletIcon
-        : ScanIcon;
-  const breakpoint =
+        : null;
+  const breakpointLabel =
     range === "mobile"
-      ? ` · Phone max ${settings.breakpoints.mobileMax}px`
+      ? `Phone · max width ${settings.breakpoints.mobileMax}px`
       : range === "tablet"
-        ? ` · Tablet max ${settings.breakpoints.tabletMax}px`
-        : "";
+        ? `Tablet · max width ${settings.breakpoints.tabletMax}px`
+        : null;
+
+  if (!dimensions.visible) return null;
 
   return (
-    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            aria-label={`Canvas viewport ${Math.round(width)} by ${height} pixels${breakpoint}`}
-            className="pointer-events-auto shadow-sm"
-            size="icon-sm"
-            variant="outline"
-          >
-            <Icon />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent className="whitespace-nowrap">
-          {Math.round(width)}px × {height}px{breakpoint}
-        </TooltipContent>
-      </Tooltip>
+    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit @max-[900px]:hidden">
+      <div
+        className="pointer-events-auto flex h-9 items-center gap-1 rounded-lg border bg-background px-3 text-xs tabular-nums shadow-sm"
+        onPointerEnter={dimensions.show}
+        onPointerLeave={dimensions.hideSoon}
+        onFocusCapture={dimensions.show}
+        onBlurCapture={dimensions.hideSoon}
+      >
+        <span>
+          {Math.round(width)}px × {height}px
+        </span>
+        {Icon && breakpointLabel ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                aria-label={breakpointLabel}
+                size="icon-xs"
+                variant="ghost"
+              >
+                <Icon data-icon="inline-end" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="whitespace-nowrap">
+              {breakpointLabel}
+            </TooltipContent>
+          </Tooltip>
+        ) : null}
+      </div>
     </div>
   );
 }
