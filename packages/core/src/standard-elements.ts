@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   defineElement,
+  type ElementControl,
   type ElementDefinition,
   type ElementInlineEditing,
   type ElementRenderContext,
@@ -256,6 +257,7 @@ function definition(config: {
   defaults: Props;
   render: (props: Props, context: ElementRenderContext) => RenderNode;
   childPolicy?: ElementDefinition["childPolicy"];
+  controls?: readonly ElementControl<Props>[];
   styles?: readonly string[];
   accessibility?: ElementDefinition["accessibility"];
   inlineEditing?: ElementInlineEditing<Props>;
@@ -270,10 +272,7 @@ function definition(config: {
     label: config.label,
     props: schema,
     defaults: () => structuredClone(config.defaults),
-    controls: Object.keys(config.defaults).map((key) => ({
-      key,
-      label: label(key),
-    })),
+    controls: config.controls ?? scalarControls(config.defaults),
     childPolicy: config.childPolicy ?? none,
     styles: config.styles ?? allStyles,
     accessibility: config.accessibility ?? {},
@@ -283,6 +282,17 @@ function definition(config: {
     ...(config.references ? { references: config.references } : {}),
     ...(config.destinations ? { destinations: config.destinations } : {}),
   });
+}
+
+function scalarControls(defaults: Props): readonly ElementControl<Props>[] {
+  const controls: ElementControl<Props>[] = [];
+  for (const [key, value] of Object.entries(defaults)) {
+    const base = { key, label: label(key) };
+    if (typeof value === "string") controls.push({ ...base, kind: "text" });
+    if (typeof value === "number") controls.push({ ...base, kind: "number" });
+    if (typeof value === "boolean") controls.push({ ...base, kind: "boolean" });
+  }
+  return controls;
 }
 
 const text = (props: Props, key: string, fallback = "") =>
@@ -393,6 +403,18 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       level: z.number().int().min(1).max(6),
     }),
     defaults: { content: "A clear, compelling heading", level: 2 },
+    controls: [
+      { kind: "text", key: "content", label: "Content" },
+      {
+        kind: "select",
+        key: "level",
+        label: "Level",
+        options: [1, 2, 3, 4, 5, 6].map((value) => ({
+          label: `Heading ${value}`,
+          value,
+        })),
+      },
+    ],
     accessibility: { role: "heading" },
     inlineEditing: {
       property: "content",

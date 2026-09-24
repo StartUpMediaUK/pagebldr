@@ -11,8 +11,8 @@ test("a Standard Schema compatible Zod schema infers element props", () => {
     props: z.object({ text: z.string(), level: z.number().int() }),
     defaults: () => ({ text: "Heading", level: 2 }),
     controls: [
-      { key: "text", label: "Text" },
-      { key: "level", label: "Level" },
+      { kind: "text", key: "text", label: "Text" },
+      { kind: "number", key: "level", label: "Level", min: 1, max: 6 },
     ],
     migrate: () => ({ text: "Migrated", level: 2 }),
     references: (props) => {

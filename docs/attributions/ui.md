@@ -9,8 +9,8 @@ shadcn/ui is MIT licensed. Registry source was reviewed after installation;
 package-local modifications and compositions are maintained as pagebldr source.
 
 Installed primitives: Badge, Button, Dialog, Empty, Field, Input, Label,
-Dropdown Menu, Resizable, Scroll Area, Select, Separator, Switch, Tabs,
-Textarea, Toggle, Toggle Group, and Tooltip.
+Dropdown Menu, Native Select, Resizable, Scroll Area, Select, Separator, Switch,
+Tabs, Textarea, Toggle, Toggle Group, and Tooltip.
 
 ReUI was not used in this phase because its skill/registry integration was not
 available in the active runtime.

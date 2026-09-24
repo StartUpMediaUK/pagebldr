@@ -37,10 +37,33 @@ export interface ElementRenderContext {
   readonly destination: (value: unknown) => ResolvedDestination;
 }
 
-export interface ElementControl<Props> {
+interface ElementControlBase<Props> {
   readonly key: keyof Props & string;
   readonly label: string;
+  readonly description?: string;
 }
+
+export type ElementControl<Props> =
+  | (ElementControlBase<Props> & {
+      readonly kind: "text";
+      readonly placeholder?: string;
+    })
+  | (ElementControlBase<Props> & {
+      readonly kind: "number";
+      readonly min?: number;
+      readonly max?: number;
+      readonly step?: number;
+    })
+  | (ElementControlBase<Props> & {
+      readonly kind: "boolean";
+    })
+  | (ElementControlBase<Props> & {
+      readonly kind: "select";
+      readonly options: readonly {
+        readonly label: string;
+        readonly value: string | number;
+      }[];
+    });
 
 export interface ElementInlineEditing<Props> {
   readonly property: keyof Props & string;

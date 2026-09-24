@@ -3,7 +3,7 @@
 Status: approved for execution. Parity Phases 0 through 2 were accepted by the
 product owner on 22 September 2026. Parity Phase 3 was accepted on 23
 September 2026. Parity Phase 4 was accepted on 24 September 2026. Parity Phase 5
-has not started.
+is in progress.
 
 Baseline: Quizr Page Builder V2 at commit
 `7dec26465c454b25545664e84d8e1e91b97ae9d1`

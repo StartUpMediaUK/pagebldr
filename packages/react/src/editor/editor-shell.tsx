@@ -51,6 +51,10 @@ import {
 } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
 import {
+  NativeSelect,
+  NativeSelectOption,
+} from "../components/ui/native-select.js";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -78,6 +82,7 @@ import { cn } from "../lib/utils.js";
 import type {
   PagebldrClipboard,
   PagebldrStyleClipboard,
+  ElementControl,
   PageElement,
 } from "@pagebldr/core";
 import type { PagebldrEditorProps } from "../index.js";
@@ -1074,35 +1079,99 @@ function PropertyField({
   control,
 }: {
   readonly element: PageElement;
-  readonly control: { readonly key: string; readonly label: string };
+  readonly control: ElementControl<Record<string, unknown>>;
 }) {
   const editor = usePagebldrEditor();
   const id = useId();
   const value = element.props[control.key];
+  const description = control.description ? (
+    <FieldDescription>{control.description}</FieldDescription>
+  ) : null;
+  const update = (nextValue: unknown) =>
+    editor.dispatch(
+      {
+        type: "update-props",
+        elementId: element.id,
+        patch: { [control.key]: nextValue },
+      },
+      `prop:${element.id}:${control.key}`,
+    );
+
+  if (control.kind === "boolean")
+    return (
+      <Field orientation="horizontal">
+        <div className="flex flex-1 flex-col gap-1">
+          <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
+          {description}
+        </div>
+        <Switch
+          id={id}
+          checked={value === true}
+          disabled={editor.mode !== "edit"}
+          onCheckedChange={update}
+        />
+      </Field>
+    );
+
+  if (control.kind === "select") {
+    const selected = control.options.find(
+      ({ value: option }) => option === value,
+    );
+    return (
+      <Field>
+        <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
+        <NativeSelect
+          id={id}
+          value={selected ? String(selected.value) : ""}
+          disabled={editor.mode !== "edit"}
+          onChange={(event) => {
+            const nextValue = event.currentTarget.value;
+            const option = control.options.find(
+              ({ value: candidate }) => String(candidate) === nextValue,
+            );
+            if (option) update(option.value);
+          }}
+        >
+          {!selected ? (
+            <NativeSelectOption value="" disabled>
+              Select {control.label.toLowerCase()}
+            </NativeSelectOption>
+          ) : null}
+          {control.options.map((option) => (
+            <NativeSelectOption
+              key={`${typeof option.value}:${option.value}`}
+              value={String(option.value)}
+            >
+              {option.label}
+            </NativeSelectOption>
+          ))}
+        </NativeSelect>
+        {description}
+      </Field>
+    );
+  }
+
   if (typeof value !== "string" && typeof value !== "number") return null;
   return (
     <Field>
       <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
       <Input
         id={id}
+        type={control.kind === "number" ? "number" : "text"}
+        min={control.kind === "number" ? control.min : undefined}
+        max={control.kind === "number" ? control.max : undefined}
+        step={control.kind === "number" ? control.step : undefined}
+        placeholder={control.kind === "text" ? control.placeholder : undefined}
         value={String(value)}
         disabled={editor.mode !== "edit"}
-        onChange={(event) =>
-          editor.dispatch(
-            {
-              type: "update-props",
-              elementId: element.id,
-              patch: {
-                [control.key]:
-                  typeof value === "number"
-                    ? Number(event.currentTarget.value)
-                    : event.currentTarget.value,
-              },
-            },
-            `prop:${element.id}:${control.key}`,
-          )
-        }
+        onChange={(event) => {
+          if (control.kind === "number") {
+            const nextValue = event.currentTarget.valueAsNumber;
+            if (!Number.isNaN(nextValue)) update(nextValue);
+          } else update(event.currentTarget.value);
+        }}
       />
+      {description}
     </Field>
   );
 }

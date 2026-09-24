@@ -12,3 +12,9 @@ configuration and keep project-specific services behind Resource adapters.
 
 Use stable, namespaced type identifiers. Changing an existing persisted shape
 requires an Element migration; changing only the renderer does not.
+
+Content controls are definition-owned descriptors. Use `kind: "text"`,
+`"number"`, `"boolean"`, or `"select"` for scalar properties so the standard
+inspector supplies the complete labelled control without Host UI. Select options
+carry both their stored value and user-facing label; numeric controls may
+declare `min`, `max`, and `step`.

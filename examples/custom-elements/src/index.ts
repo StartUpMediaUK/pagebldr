@@ -38,8 +38,8 @@ export const cardElement = defineElement({
   props: cardSchema,
   defaults: () => ({ title: "Card title", assetId: "hero.jpg" }),
   controls: [
-    { key: "title", label: "Title" },
-    { key: "assetId", label: "Asset" },
+    { kind: "text", key: "title", label: "Title" },
+    { kind: "text", key: "assetId", label: "Asset" },
   ],
   childPolicy: { kind: "none" },
   styles: [emphasisStyle.key],
