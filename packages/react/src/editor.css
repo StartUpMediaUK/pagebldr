@@ -28,6 +28,21 @@
 }
 
 @layer base {
+  :root {
+    --pagebldr-background: #ffffff;
+    --pagebldr-foreground: #18181b;
+    --pagebldr-card: #ffffff;
+    --pagebldr-primary: #18181b;
+    --pagebldr-primary-foreground: #fafafa;
+    --pagebldr-muted: #f4f4f5;
+    --pagebldr-muted-foreground: #71717a;
+    --pagebldr-accent: #f4f4f5;
+    --pagebldr-destructive: #dc2626;
+    --pagebldr-border: #e4e4e7;
+    --pagebldr-focus: #2563eb;
+    --pagebldr-radius: 0.625rem;
+  }
+
   [data-pagebldr-editor],
   [data-pagebldr-renderer] {
     --pagebldr-background: #ffffff;

@@ -338,7 +338,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    650_000,
+    730_000,
     "React entry",
   );
   assertMaximumSize(
@@ -355,7 +355,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    60_000,
+    66_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

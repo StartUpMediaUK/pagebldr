@@ -211,9 +211,9 @@ anchor targets must reference existing Elements.
 All mutations use `builder.editor.dispatch()`. Alongside structural, content,
 Class, Variable and settings commands, the public command union includes atomic
 create-and-assign Class, assigned-Class reordering, Class style replacement,
-style clipboard paste and whole-Template application. Template application
-preserves Document ID, title, slug, root identity and SEO while replacing the
-design as one reversible Action.
+subtree paste with fresh IDs, style clipboard paste and whole-Template
+application. Template application preserves Document ID, title, slug, root
+identity and SEO while replacing the design as one reversible Action.
 
 `builder.editor.history` defaults to 100 Actions, coalesces the same non-null
 key through the inclusive 750ms boundary, and exposes undo, redo and clamped

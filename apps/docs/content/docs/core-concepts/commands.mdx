@@ -5,3 +5,7 @@ description: Command-only mutation, patches, undo, and redo.
 
 Dispatch commands through the editor context or core engine. Local history is
 session-only undo and redo state; it never represents a durable Revision.
+
+`insert` accepts a package-native subtree whose IDs are already unique. `paste`
+accepts a copied subtree and remaps its Element IDs and internal references
+before insertion, so copy and paste remains a single reversible Action.

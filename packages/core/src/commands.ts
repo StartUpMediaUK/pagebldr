@@ -35,6 +35,13 @@ export type EditorCommand =
       readonly clipboard: PagebldrClipboard;
     }
   | {
+      readonly type: "paste";
+      readonly parentId: string;
+      readonly index: number;
+      readonly clipboard: PagebldrClipboard;
+      readonly idFactory?: IdFactory;
+    }
+  | {
       readonly type: "move";
       readonly elementId: string;
       readonly parentId: string;
@@ -216,9 +223,18 @@ function mutate(
 ): void {
   if (command.type === "insert")
     return insert(document, command.parentId, command.index, command.clipboard);
+  if (command.type === "paste")
+    return insert(
+      document,
+      command.parentId,
+      command.index,
+      remapClipboard(command.clipboard, command.idFactory ?? createId),
+    );
   if (command.type === "duplicate") {
     if (command.elementId === document.rootId) rootRefusal("duplicated");
     const location = parentOf(document, command.elementId);
+    assertUnlocked(element(document, command.elementId));
+    assertUnlocked(location.parent);
     const clipboard = remapClipboard(
       serializeSubtree(document, command.elementId),
       command.idFactory ?? createId,
@@ -627,6 +643,7 @@ function rootRefusal(action: string): never {
 
 const labels: Record<EditorCommand["type"], string> = {
   insert: "Add element",
+  paste: "Paste element",
   move: "Move element",
   duplicate: "Duplicate element",
   remove: "Delete element",
