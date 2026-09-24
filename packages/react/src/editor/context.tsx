@@ -20,6 +20,8 @@ import type {
   PageElement,
 } from "@pagebldr/core";
 
+import { CanvasDimensionsProvider } from "./canvas-dimensions-context.js";
+
 export type EditorMode = "edit" | "preview" | "readOnly";
 export type EditorViewport = "desktop" | "desktop-fill" | "tablet" | "mobile";
 
@@ -164,7 +166,9 @@ export function EditorProvider({
   );
 
   return (
-    <EditorContext.Provider value={value}>{children}</EditorContext.Provider>
+    <EditorContext.Provider value={value}>
+      <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
+    </EditorContext.Provider>
   );
 }
 
