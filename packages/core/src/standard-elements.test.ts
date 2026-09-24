@@ -46,10 +46,40 @@ describe("standard Elements", () => {
       const defaults = definition.defaults() as Record<string, unknown>;
       const result = definition.props["~standard"].validate(defaults);
       expect(result).toHaveProperty("value");
-      expect(definition.controls?.map(({ key }) => key)).toEqual(
-        Object.keys(defaults),
-      );
+      const controls = definition.controls ?? [];
+      expect(controls.every(({ key }) => key in defaults)).toBe(true);
+      expect(
+        Object.entries(defaults)
+          .filter(([, value]) =>
+            ["string", "number", "boolean"].includes(typeof value),
+          )
+          .every(([key]) => controls.some((control) => control.key === key)),
+      ).toBe(true);
     }
+  });
+
+  it("owns typed Content control presentation in each definition", () => {
+    expect(builder.elements.get("heading")?.controls).toEqual([
+      { kind: "text", key: "content", label: "Content" },
+      {
+        kind: "select",
+        key: "level",
+        label: "Level",
+        options: [
+          { label: "Heading 1", value: 1 },
+          { label: "Heading 2", value: 2 },
+          { label: "Heading 3", value: 3 },
+          { label: "Heading 4", value: 4 },
+          { label: "Heading 5", value: 5 },
+          { label: "Heading 6", value: 6 },
+        ],
+      },
+    ]);
+    expect(
+      builder.elements
+        .get("copyright")
+        ?.controls?.find(({ key }) => key === "showYear"),
+    ).toEqual({ kind: "boolean", key: "showYear", label: "Show Year" });
   });
 
   it("rejects unknown properties instead of accepting generic records", () => {

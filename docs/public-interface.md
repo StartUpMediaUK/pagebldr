@@ -581,7 +581,7 @@ interface ElementDefinition<Props, Type extends string = string> {
   children: ChildPolicy;
   styles: readonly StyleCapabilityKey[];
   migrate?: ElementMigration<Props>;
-  controls?: readonly ControlContribution<Props>[];
+  controls?: readonly ElementControl<Props>[];
   inlineEditing?: {
     property: string;
     read(props: Props): string;
@@ -598,6 +598,14 @@ that a Zod schema can be passed directly while retaining inference for defaults,
 migrations, controls, and reference extraction. This keeps Zod ergonomic for
 Hosts that already use it without making Zod a public runtime dependency or
 preventing other Standard Schema-compatible validators.
+
+Content controls are serializable definition metadata rather than React
+components. The initial scalar contract is discriminated by `kind`: `text`
+supports an optional placeholder, `number` supports minimum, maximum and step,
+`boolean` renders as a switch, and `select` owns its labelled string or numeric
+options. Complex destination, Resource and ordered-item descriptors extend this
+same definition-owned contract; they are not inferred by the inspector from
+runtime values.
 
 ## Errors and compatibility
 
