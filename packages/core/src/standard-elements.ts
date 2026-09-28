@@ -475,6 +475,10 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         newTab: false,
       },
     },
+    controls: [
+      { kind: "text", key: "label", label: "Label" },
+      { kind: "destination", key: "destination", label: "Destination" },
+    ],
     accessibility: { keyboardInteractive: true, requiresLabel: true },
     destinations: (props) => [props.destination],
     references: (props) => destinationReferences([props.destination]),

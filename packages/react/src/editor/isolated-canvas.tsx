@@ -22,7 +22,7 @@ import {
   ZoomInIcon,
 } from "lucide-react";
 
-import type { Pagebldr, PageDocument } from "@pagebldr/core";
+import type { Pagebldr, PageDocument, ResourceReference } from "@pagebldr/core";
 
 import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
@@ -400,6 +400,9 @@ export function IsolatedCanvas({
                   ? "edit"
                   : "preview"
               }
+              resolveApplicationDestination={
+                editor.resolveApplicationDestination
+              }
             />,
             frameDocument.getElementById("pagebldr-canvas-root")!,
           )
@@ -413,11 +416,14 @@ function CanvasRuntime({
   canvasId,
   frameWindow,
   mode,
+  resolveApplicationDestination,
 }: {
   readonly builder: Pagebldr;
   readonly canvasId: string;
   readonly frameWindow: Window;
   readonly mode: "edit" | "preview";
+  readonly resolveApplicationDestination:
+    ((reference: ResourceReference) => string | null) | undefined;
 }) {
   const [document, setDocument] = useState<PageDocument | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -689,6 +695,9 @@ function CanvasRuntime({
         builder={builder}
         document={document}
         mode={mode}
+        {...(resolveApplicationDestination
+          ? { resolveApplicationDestination }
+          : {})}
       />
       {mode === "edit" ? (
         <CanvasChrome

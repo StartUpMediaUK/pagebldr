@@ -63,6 +63,10 @@ export type ElementControl<Props> =
         readonly label: string;
         readonly value: string | number;
       }[];
+    })
+  | (ElementControlBase<Props> & {
+      readonly kind: "destination";
+      readonly nullable?: boolean;
     });
 
 export interface ElementInlineEditing<Props> {

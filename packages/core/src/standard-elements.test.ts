@@ -80,6 +80,10 @@ describe("standard Elements", () => {
         .get("copyright")
         ?.controls?.find(({ key }) => key === "showYear"),
     ).toEqual({ kind: "boolean", key: "showYear", label: "Show Year" });
+    expect(builder.elements.get("button")?.controls).toEqual([
+      { kind: "text", key: "label", label: "Label" },
+      { kind: "destination", key: "destination", label: "Destination" },
+    ]);
   });
 
   it("rejects unknown properties instead of accepting generic records", () => {
