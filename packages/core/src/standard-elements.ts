@@ -17,7 +17,7 @@ type Props = Readonly<Record<string, unknown>>;
 const anchorId = z
   .string()
   .min(1)
-  .max(128)
+  .max(80)
   .regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u)
   .optional();
 const authoredId = z.string().min(1).max(128);

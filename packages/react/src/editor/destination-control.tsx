@@ -9,7 +9,7 @@ import {
   type PageDocument,
   type PageElement,
 } from "@pagebldr/core";
-import type { ApplicationDestinationOption } from "../index.js";
+import type { ApplicationDestinationOption } from "./context.js";
 import { Field, FieldDescription, FieldLabel } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
 import {

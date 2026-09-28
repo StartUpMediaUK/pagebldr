@@ -18,6 +18,7 @@ import type {
 } from "@pagebldr/runtime";
 import { EditorShell } from "./editor/editor-shell.js";
 import type { EditorContribution, EditorPreset } from "./editor/composition.js";
+import type { ApplicationDestinationOption } from "./editor/context.js";
 import { PagebldrRenderer } from "./renderer.js";
 import { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
 
@@ -28,6 +29,7 @@ export type { PagebldrRendererProps } from "./renderer.js";
 export type { DocumentChangeEvent } from "@pagebldr/core";
 export { usePagebldrEditor } from "./editor/context.js";
 export type {
+  ApplicationDestinationOption,
   EditorContextValue,
   EditorMode,
   EditorViewport,
@@ -59,12 +61,6 @@ export interface SaveRequest {
 export interface PublishRequest {
   readonly document: PageDocument;
   readonly signal: AbortSignal;
-}
-
-export interface ApplicationDestinationOption {
-  readonly label: string;
-  readonly reference: ResourceReference;
-  readonly description?: string;
 }
 
 export interface PagebldrEditorProps {
