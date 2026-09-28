@@ -13,6 +13,7 @@ export {
   resolveElementStyles,
 } from "./styles.js";
 export { assertUniqueId, createId, createSequentialIdFactory } from "./ids.js";
+export { isAnchorIdDuplicate, normalizeAnchorId } from "./anchors.js";
 export { findStandardFontFamily, standardFontFamilies } from "./fonts.js";
 export { PagebldrError } from "./types.js";
 export { resolveDocumentResources, resourceKey } from "./resources.js";
@@ -59,6 +60,7 @@ export type {
   RenderNode,
 } from "./element.js";
 export type { IdFactory } from "./ids.js";
+export type { AuthoredAnchor } from "./anchors.js";
 export type { FontFamilyOption } from "./fonts.js";
 export type { CommitOptions, HistoryEntry, LocalHistory } from "./history.js";
 export type { DocumentPatch } from "./patches.js";

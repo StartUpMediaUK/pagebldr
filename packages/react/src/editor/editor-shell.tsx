@@ -86,10 +86,10 @@ import type {
   PageElement,
 } from "@pagebldr/core";
 import type { PagebldrEditorProps } from "../index.js";
-import type { ApplicationDestinationOption } from "../index.js";
 import {
   EditorProvider,
   usePagebldrEditor,
+  type ApplicationDestinationOption,
   type EditorViewport,
 } from "./context.js";
 import { standardEditorPreset } from "./presets.js";
@@ -104,10 +104,12 @@ import {
 } from "./canvas-placement.js";
 import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 import { DestinationControl } from "./destination-control.js";
+import { AnchorControl } from "./anchor-control.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
     <EditorProvider
+      applicationDestinations={props.applicationDestinations ?? []}
       builder={props.builder}
       document={props.document}
       mode={props.mode ?? "edit"}
@@ -126,7 +128,6 @@ export function EditorShell(props: PagebldrEditorProps) {
 }
 
 function EditorWorkspace({
-  applicationDestinations = [],
   className,
   contributions = [],
   onPublish,
@@ -347,7 +348,6 @@ function EditorWorkspace({
       status,
       onSave: () => void perform("save"),
       onPublish: () => void perform("publish"),
-      applicationDestinations,
     }),
     ...contributions,
   ]);
@@ -485,7 +485,6 @@ function builtInContributions(input: {
   readonly status: string;
   readonly onSave: () => void;
   readonly onPublish: () => void;
-  readonly applicationDestinations: readonly ApplicationDestinationOption[];
 }): readonly EditorContribution[] {
   return [
     defineEditorContribution({
@@ -510,9 +509,7 @@ function builtInContributions(input: {
       id: "pagebldr.inspector",
       kind: "panel",
       label: "Inspector",
-      render: () => (
-        <Inspector applicationDestinations={input.applicationDestinations} />
-      ),
+      render: Inspector,
     }),
     defineEditorContribution({
       id: "pagebldr.selection",
@@ -947,11 +944,7 @@ function ElementLibrary() {
   );
 }
 
-function Inspector({
-  applicationDestinations,
-}: {
-  readonly applicationDestinations: readonly ApplicationDestinationOption[];
-}) {
+function Inspector() {
   const editor = usePagebldrEditor();
   if (!editor.selected)
     return (
@@ -1030,7 +1023,7 @@ function Inspector({
                 key={control.key}
                 element={element}
                 control={control}
-                applicationDestinations={applicationDestinations}
+                applicationDestinations={editor.applicationDestinations}
               />
             ))}
             <ElementActions />
@@ -1076,6 +1069,8 @@ function Inspector({
       <TabsContent value="advanced" className="min-h-0">
         <ScrollArea className="h-full px-3">
           <FieldGroup className="pb-6">
+            <AnchorControl element={element} />
+            <Separator />
             <Field>
               <FieldLabel>Layout and visibility</FieldLabel>
               <FieldDescription>

@@ -21,6 +21,9 @@ Source baseline: Quizr Page Builder V2 commit
   anchor choices include only Elements with authored anchor IDs.
 - The Vite Reference Host supplies application-page choices through the public
   editor prop so the installed package surface exercises that Host seam.
+- Advanced now owns authored anchor-ID editing. Input normalizes to an 80
+  character lowercase ASCII slug, duplicate drafts remain visible with an inline
+  error, and valid changes immediately update Destination choices.
 - shadcn Native Select source was reviewed and adapted to the package import and
   full-width inspector layout. The lightweight native primitive keeps the
   aggregate React entry within its current 760,000-byte guardrail.
@@ -31,6 +34,7 @@ Source baseline: Quizr Page Builder V2 commit
 - [Definition-owned Heading level](evidence/parity-phase-5/typed-heading-control.png)
 - [Typed Content-control flow](evidence/parity-phase-5/typed-content-controls-flow.mp4)
 - [Typed Destination flow](evidence/parity-phase-5/typed-destinations-flow.mp4)
+- [Anchor authoring flow](evidence/parity-phase-5/anchor-authoring-flow.mp4)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -43,12 +47,18 @@ Welcome and Pricing application choices, and editor Preview resolved Welcome to
 `#/preview/welcome`. The still-snapshot endpoint failed during this checkpoint;
 the linked T3 recording is the visual evidence.
 
+The anchor-authoring recording shows a valid value normalize from `About Us` to
+`about-us` without leaving Advanced, followed by a duplicate `FAQ` draft that
+stays visible with its inline error while the canvas retains the last valid ID.
+This check also caught and corrected an Inspector component-identity regression
+before the checkpoint was committed.
+
 ## Verification
 
 - `pnpm check` passed: formatting, lint, type checking, all package tests,
   parity fixtures, all 11 builds, docs checks, public-export checks, packed
   consumer tests, size budgets and license inventory.
-- Core: 56 tests passed across 9 files. React: 30 tests passed across 8 files.
+- Core: 58 tests passed across 10 files. React: 30 tests passed across 8 files.
   Runtime, server and adapter suites also passed.
 - The packed aggregate React entry is 739,918 bytes and the compiled stylesheet
   is 64,555 bytes, within the current 740,000-byte and 66,000-byte guardrails.
@@ -56,12 +66,14 @@ the linked T3 recording is the visual evidence.
   React entry to 751,943 bytes and the stylesheet to 65,314 bytes. The React
   guardrail was deliberately rebased to 760,000 bytes for this new package-owned
   capability; the stylesheet remains within its 66,000-byte guardrail.
+- Anchor authoring brings the React entry to 755,039 bytes; the stylesheet is
+  unchanged at 65,314 bytes and both remain inside those guardrails.
 - The T3 embedded browser exercised the built aggregate package through the Vite
   Reference Host and supplied the linked visual evidence.
 
 ## Remaining phase gate
 
 Nullable Image destinations, Resource/media and ordered-item Content editors;
-the complete Style and Advanced surfaces; anchor management; Page design and
-Variables; validation presentation; packed-browser visual assertions; and the
-full Phase 5 verification matrix remain open.
+the complete Style and remaining Advanced surfaces; Page design and Variables;
+broader validation presentation; packed-browser visual assertions; and the full
+Phase 5 verification matrix remain open.

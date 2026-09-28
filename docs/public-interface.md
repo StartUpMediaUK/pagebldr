@@ -620,6 +620,11 @@ application destinations, and may opt into a no-destination state. Resource and
 ordered-item descriptors extend this same definition-owned contract; they are
 not inferred by the inspector from runtime values.
 
+Every standard Element accepts an optional authored anchor ID. The Advanced
+inspector normalizes input to a unique lowercase ASCII slug of at most 80
+characters, preserves duplicate drafts for correction, and makes valid anchors
+immediately available to Destination controls.
+
 ## Errors and compatibility
 
 All package errors carry a stable code, human message, optional location, and

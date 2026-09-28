@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createPagebldr } from "@pagebldr/core";
+import type { ApplicationDestinationOption } from "./context.js";
 import { anchoredElements, destinationForType } from "./destination-control.js";
 
 describe("destination Content control", () => {
@@ -30,7 +31,7 @@ describe("destination Content control", () => {
 
   it("creates neutral defaults for every destination type", () => {
     const anchors = [{ id: "section", anchorId: "section", name: "Section" }];
-    const applications = [
+    const applications: ApplicationDestinationOption[] = [
       {
         label: "Pricing",
         reference: { kind: "route", value: "/pricing" },

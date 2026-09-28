@@ -26,6 +26,12 @@ import { CanvasDimensionsProvider } from "./canvas-dimensions-context.js";
 export type EditorMode = "edit" | "preview" | "readOnly";
 export type EditorViewport = "desktop" | "desktop-fill" | "tablet" | "mobile";
 
+export interface ApplicationDestinationOption {
+  readonly label: string;
+  readonly reference: ResourceReference;
+  readonly description?: string;
+}
+
 export interface EditorContextValue {
   readonly builder: Pagebldr;
   readonly document: PageDocument;
@@ -37,6 +43,7 @@ export interface EditorContextValue {
   readonly previewing: boolean;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
+  readonly applicationDestinations: readonly ApplicationDestinationOption[];
   readonly dispatch: (command: EditorCommand, coalesceKey?: string) => void;
   readonly undo: () => void;
   readonly redo: () => void;
@@ -56,6 +63,7 @@ export interface EditorProviderProps {
   readonly document: PageDocument;
   readonly mode: EditorMode;
   readonly onChange: (event: DocumentChangeEvent) => void;
+  readonly applicationDestinations: readonly ApplicationDestinationOption[];
   readonly resolveApplicationDestination?: (
     reference: ResourceReference,
   ) => string | null;
@@ -63,6 +71,7 @@ export interface EditorProviderProps {
 }
 
 export function EditorProvider({
+  applicationDestinations,
   builder,
   children,
   document,
@@ -151,6 +160,7 @@ export function EditorProvider({
       previewing,
       canUndo: builder.editor.selectors.canUndo(history),
       canRedo: builder.editor.selectors.canRedo(history),
+      applicationDestinations,
       dispatch,
       undo,
       redo,
@@ -164,6 +174,7 @@ export function EditorProvider({
     }),
     [
       builder,
+      applicationDestinations,
       dispatch,
       history,
       hoveredId,
