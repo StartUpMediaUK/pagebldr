@@ -84,6 +84,49 @@ describe("standard Elements", () => {
       { kind: "text", key: "label", label: "Label" },
       { kind: "destination", key: "destination", label: "Destination" },
     ]);
+    expect(builder.elements.get("image")?.controls).toEqual([
+      { kind: "text", key: "alt", label: "Alternative text" },
+      {
+        kind: "boolean",
+        key: "altConfirmed",
+        label: "Alternative text confirmed",
+      },
+      { kind: "boolean", key: "decorative", label: "Decorative" },
+      {
+        kind: "destination",
+        key: "destination",
+        label: "Destination",
+        nullable: true,
+      },
+      {
+        kind: "select",
+        key: "fit",
+        label: "Fit",
+        options: [
+          { label: "Contain", value: "contain" },
+          { label: "Cover", value: "cover" },
+          { label: "Fill", value: "fill" },
+          { label: "None", value: "none" },
+          { label: "Scale down", value: "scale-down" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "position",
+        label: "Position",
+        options: [
+          { label: "Top left", value: "top-left" },
+          { label: "Top", value: "top" },
+          { label: "Top right", value: "top-right" },
+          { label: "Left", value: "left" },
+          { label: "Centre", value: "center" },
+          { label: "Right", value: "right" },
+          { label: "Bottom left", value: "bottom-left" },
+          { label: "Bottom", value: "bottom" },
+          { label: "Bottom right", value: "bottom-right" },
+        ],
+      },
+    ]);
   });
 
   it("rejects unknown properties instead of accepting generic records", () => {

@@ -24,6 +24,9 @@ Source baseline: Quizr Page Builder V2 commit
 - Advanced now owns authored anchor-ID editing. Input normalizes to an 80
   character lowercase ASCII slug, duplicate drafts remain visible with an inline
   error, and valid changes immediately update Destination choices.
+- Image now owns labelled alternative-text, confirmation, decorative, nullable
+  Destination, fit and focal-position controls. Its Resource source stays out of
+  the generic inspector until the shared Phase 6 media picker is available.
 - shadcn Native Select source was reviewed and adapted to the package import and
   full-width inspector layout. The lightweight native primitive keeps the
   aggregate React entry within its current 760,000-byte guardrail.
@@ -35,6 +38,7 @@ Source baseline: Quizr Page Builder V2 commit
 - [Typed Content-control flow](evidence/parity-phase-5/typed-content-controls-flow.mp4)
 - [Typed Destination flow](evidence/parity-phase-5/typed-destinations-flow.mp4)
 - [Anchor authoring flow](evidence/parity-phase-5/anchor-authoring-flow.mp4)
+- [Image Content flow](evidence/parity-phase-5/image-content-flow.mp4)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -68,12 +72,14 @@ before the checkpoint was committed.
   capability; the stylesheet remains within its 66,000-byte guardrail.
 - Anchor authoring brings the React entry to 755,039 bytes; the stylesheet is
   unchanged at 65,314 bytes and both remain inside those guardrails.
+- Definition-owned Image controls bring the React entry to 756,175 bytes; the
+  stylesheet remains unchanged and both budgets continue to pass.
 - The T3 embedded browser exercised the built aggregate package through the Vite
   Reference Host and supplied the linked visual evidence.
 
 ## Remaining phase gate
 
-Nullable Image destinations, Resource/media and ordered-item Content editors;
-the complete Style and remaining Advanced surfaces; Page design and Variables;
-broader validation presentation; packed-browser visual assertions; and the full
-Phase 5 verification matrix remain open.
+Resource/media and ordered-item Content editors; the complete Style and
+remaining Advanced surfaces; Page design and Variables; broader validation
+presentation; packed-browser visual assertions; and the full Phase 5
+verification matrix remain open.
