@@ -634,6 +634,51 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       fit: "cover",
       position: "center",
     },
+    controls: [
+      { kind: "text", key: "alt", label: "Alternative text" },
+      {
+        kind: "boolean",
+        key: "altConfirmed",
+        label: "Alternative text confirmed",
+      },
+      { kind: "boolean", key: "decorative", label: "Decorative" },
+      {
+        kind: "destination",
+        key: "destination",
+        label: "Destination",
+        nullable: true,
+      },
+      {
+        kind: "select",
+        key: "fit",
+        label: "Fit",
+        options: ["contain", "cover", "fill", "none", "scale-down"].map(
+          (value) => ({
+            label: value === "scale-down" ? "Scale down" : label(value),
+            value,
+          }),
+        ),
+      },
+      {
+        kind: "select",
+        key: "position",
+        label: "Position",
+        options: [
+          "top-left",
+          "top",
+          "top-right",
+          "left",
+          "center",
+          "right",
+          "bottom-left",
+          "bottom",
+          "bottom-right",
+        ].map((value) => ({
+          label: value === "center" ? "Centre" : label(value.replace("-", " ")),
+          value,
+        })),
+      },
+    ],
     references: (props) => [
       ...sourceReferences([props.source]),
       ...destinationReferences([props.destination]),
