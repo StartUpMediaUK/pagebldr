@@ -105,6 +105,7 @@ import {
 import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 import { DestinationControl } from "./destination-control.js";
 import { AnchorControl } from "./anchor-control.js";
+import { CollectionControl } from "./collection-control.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -1098,6 +1099,17 @@ function PropertyField({
   const editor = usePagebldrEditor();
   const id = useId();
   const value = element.props[control.key];
+  const visibilityValue = control.visibleWhen
+    ? element.props[control.visibleWhen.key]
+    : undefined;
+  if (
+    control.visibleWhen &&
+    ((control.visibleWhen.equals !== undefined &&
+      visibilityValue !== control.visibleWhen.equals) ||
+      (control.visibleWhen.notEquals !== undefined &&
+        visibilityValue === control.visibleWhen.notEquals))
+  )
+    return null;
   const description = control.description ? (
     <FieldDescription>{control.description}</FieldDescription>
   ) : null;
@@ -1111,6 +1123,19 @@ function PropertyField({
       `prop:${element.id}:${control.key}`,
     );
 
+  if (control.kind === "collection")
+    return (
+      <CollectionControl
+        applicationDestinations={applicationDestinations}
+        control={control}
+        disabled={editor.mode !== "edit"}
+        document={editor.document}
+        elementId={element.id}
+        value={value}
+        onChange={update}
+      />
+    );
+
   if (control.kind === "destination")
     return (
       <DestinationControl
@@ -1118,7 +1143,7 @@ function PropertyField({
         control={control}
         disabled={editor.mode !== "edit"}
         document={editor.document}
-        element={element}
+        elementId={element.id}
         value={value}
         onChange={update}
       />

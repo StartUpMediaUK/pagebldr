@@ -48,13 +48,7 @@ describe("standard Elements", () => {
       expect(result).toHaveProperty("value");
       const controls = definition.controls ?? [];
       expect(controls.every(({ key }) => key in defaults)).toBe(true);
-      expect(
-        Object.entries(defaults)
-          .filter(([, value]) =>
-            ["string", "number", "boolean"].includes(typeof value),
-          )
-          .every(([key]) => controls.some((control) => control.key === key)),
-      ).toBe(true);
+      expect(JSON.parse(JSON.stringify(controls))).toEqual(controls);
     }
   });
 
@@ -124,6 +118,68 @@ describe("standard Elements", () => {
           { label: "Bottom left", value: "bottom-left" },
           { label: "Bottom", value: "bottom" },
           { label: "Bottom right", value: "bottom-right" },
+        ],
+      },
+    ]);
+    expect(builder.elements.get("menu")?.controls).toEqual([
+      {
+        kind: "select",
+        key: "collapseAt",
+        label: "Menu breakpoint",
+        options: [
+          { label: "Desktop", value: "desktop" },
+          { label: "Tablet", value: "tablet" },
+          { label: "Mobile", value: "mobile" },
+          { label: "No breakpoint", value: "never" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "presentation",
+        label: "Collapse style",
+        visibleWhen: { key: "collapseAt", notEquals: "never" },
+        options: [
+          { label: "Full-width dropdown", value: "dropdown" },
+          { label: "Full screen", value: "fullscreen" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "breakpointPosition",
+        label: "On breakpoint",
+        visibleWhen: { key: "collapseAt", notEquals: "never" },
+        options: [
+          { label: "Leave in place", value: "none" },
+          { label: "Move to start", value: "start" },
+          { label: "Move to center", value: "center" },
+          { label: "Move to end", value: "end" },
+        ],
+      },
+      {
+        kind: "collection",
+        key: "items",
+        label: "Links",
+        itemLabel: "Link",
+        minItems: 1,
+        maxItems: 30,
+        idKey: "id",
+        idPrefix: "menu-item",
+        defaultItem: {
+          label: "New link",
+          destination: {
+            type: "external",
+            url: "https://example.com",
+            newTab: false,
+          },
+        },
+        itemControls: [
+          { kind: "text", key: "label", label: "Label" },
+          {
+            kind: "destination",
+            key: "destination",
+            label: "Destination",
+            preferFirstAnchor: true,
+          },
         ],
       },
     ]);

@@ -63,9 +63,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // The complete 24-Element runtime and its source maps raise the intentional
-  // package baseline while keeping the archive comfortably below 1.25 MB.
-  assertMaximumSize(archivePath, 1_250_000, "Packed archive");
+  // Definition-owned ordered-item editing and its source maps raise the
+  // intentional package baseline while keeping the archive below 1.265 MB.
+  assertMaximumSize(archivePath, 1_265_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -338,7 +338,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    760_000,
+    770_000,
     "React entry",
   );
   assertMaximumSize(

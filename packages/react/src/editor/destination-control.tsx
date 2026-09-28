@@ -5,9 +5,7 @@ import { useId } from "react";
 import {
   resourceKey,
   type Destination,
-  type ElementControl,
   type PageDocument,
-  type PageElement,
 } from "@pagebldr/core";
 import type { ApplicationDestinationOption } from "./context.js";
 import { Field, FieldDescription, FieldLabel } from "../components/ui/field.js";
@@ -18,10 +16,11 @@ import {
 } from "../components/ui/native-select.js";
 import { Switch } from "../components/ui/switch.js";
 
-type DestinationElementControl = Extract<
-  ElementControl<Record<string, unknown>>,
-  { readonly kind: "destination" }
->;
+interface DestinationControlDefinition {
+  readonly label: string;
+  readonly description?: string;
+  readonly nullable?: boolean;
+}
 
 interface AnchoredElement {
   readonly id: string;
@@ -59,15 +58,15 @@ export function DestinationControl({
   control,
   disabled,
   document,
-  element,
+  elementId,
   onChange,
   value,
 }: {
   readonly applicationDestinations: readonly ApplicationDestinationOption[];
-  readonly control: DestinationElementControl;
+  readonly control: DestinationControlDefinition;
   readonly disabled: boolean;
   readonly document: PageDocument;
-  readonly element: PageElement;
+  readonly elementId: string;
   readonly onChange: (value: Destination | null) => void;
   readonly value: unknown;
 }) {
@@ -121,7 +120,7 @@ export function DestinationControl({
           destination={destination}
           disabled={disabled}
           id={id}
-          elementId={element.id}
+          elementId={elementId}
           onChange={onChange}
         />
       ) : null}
@@ -140,7 +139,7 @@ export function DestinationControl({
           destination={destination}
           disabled={disabled}
           id={id}
-          elementId={element.id}
+          elementId={elementId}
           onChange={onChange}
         />
       ) : null}
@@ -149,7 +148,7 @@ export function DestinationControl({
           destination={destination}
           disabled={disabled}
           id={id}
-          elementId={element.id}
+          elementId={elementId}
           onChange={onChange}
         />
       ) : null}

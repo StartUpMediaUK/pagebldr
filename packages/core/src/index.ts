@@ -53,6 +53,7 @@ export type {
   ElementAccessibility,
   ElementChildPolicy,
   ElementControl,
+  CollectionItemControl,
   ElementDefinition,
   ElementRenderContext,
   ElementInlineEditing,
