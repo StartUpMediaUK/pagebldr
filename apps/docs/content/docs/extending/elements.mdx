@@ -18,3 +18,8 @@ Content controls are definition-owned descriptors. Use `kind: "text"`,
 inspector supplies the complete labelled control without Host UI. Select options
 carry both their stored value and user-facing label; numeric controls may
 declare `min`, `max`, and `step`.
+
+Use `kind: "destination"` for typed navigation rather than storing an href
+string. The installed editor supplies External URL, Anchor, Email, Telephone,
+and Host-provided Application page forms. Set `nullable: true` when an Element,
+such as an Image, may have no destination.

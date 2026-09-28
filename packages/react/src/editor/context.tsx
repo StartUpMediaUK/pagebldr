@@ -18,6 +18,7 @@ import type {
   Pagebldr,
   PageDocument,
   PageElement,
+  ResourceReference,
 } from "@pagebldr/core";
 
 import { CanvasDimensionsProvider } from "./canvas-dimensions-context.js";
@@ -43,6 +44,9 @@ export interface EditorContextValue {
   readonly hover: (elementId: string | null) => void;
   readonly setPreviewing: (previewing: boolean) => void;
   readonly setViewport: (viewport: EditorViewport) => void;
+  readonly resolveApplicationDestination?: (
+    reference: ResourceReference,
+  ) => string | null;
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null);
@@ -52,6 +56,9 @@ export interface EditorProviderProps {
   readonly document: PageDocument;
   readonly mode: EditorMode;
   readonly onChange: (event: DocumentChangeEvent) => void;
+  readonly resolveApplicationDestination?: (
+    reference: ResourceReference,
+  ) => string | null;
   readonly children: ReactNode;
 }
 
@@ -61,6 +68,7 @@ export function EditorProvider({
   document,
   mode,
   onChange,
+  resolveApplicationDestination,
 }: EditorProviderProps) {
   const [history, setHistory] = useState<LocalHistory>(() =>
     builder.editor.history.create(document),
@@ -150,6 +158,9 @@ export function EditorProvider({
       hover: setHoveredId,
       setPreviewing,
       setViewport,
+      ...(resolveApplicationDestination
+        ? { resolveApplicationDestination }
+        : {}),
     }),
     [
       builder,
@@ -159,6 +170,7 @@ export function EditorProvider({
       mode,
       previewing,
       redo,
+      resolveApplicationDestination,
       selectedId,
       undo,
       viewport,

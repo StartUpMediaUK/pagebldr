@@ -295,12 +295,24 @@ interface PagebldrEditorProps {
     request: PublishRequest,
   ) => void | PublishResult | Promise<void | PublishResult>;
   mode?: "edit" | "preview" | "readOnly";
+  applicationDestinations?: readonly ApplicationDestinationOption[];
+  resolveApplicationDestination?: (
+    reference: ResourceReference,
+  ) => string | null;
   preset?: EditorPreset;
   contributions?: readonly EditorContribution[];
   className?: string;
   children?: ReactNode;
 }
 ```
+
+`applicationDestinations` supplies the neutral Host-owned pages or records that
+can be selected by a definition-owned `destination` Content control. Each option
+has a user-facing `label`, a `ResourceReference`, and an optional description.
+External URL, anchor, email and telephone destinations are package-owned; anchor
+choices include only Elements with authored anchor IDs. The Host supplies
+`resolveApplicationDestination` when application links should resolve inside
+editor Preview as well as in the published renderer.
 
 The editor derives `edit`, `save`, `publish`, and `resources` capabilities from
 its controlled mode, callbacks, and configured Resource adapters. See
@@ -600,12 +612,13 @@ Hosts that already use it without making Zod a public runtime dependency or
 preventing other Standard Schema-compatible validators.
 
 Content controls are serializable definition metadata rather than React
-components. The initial scalar contract is discriminated by `kind`: `text`
-supports an optional placeholder, `number` supports minimum, maximum and step,
-`boolean` renders as a switch, and `select` owns its labelled string or numeric
-options. Complex destination, Resource and ordered-item descriptors extend this
-same definition-owned contract; they are not inferred by the inspector from
-runtime values.
+components. The scalar contract is discriminated by `kind`: `text` supports an
+optional placeholder, `number` supports minimum, maximum and step, `boolean`
+renders as a switch, and `select` owns its labelled string or numeric options.
+`destination` authors external, anchor, email, telephone and neutral Host
+application destinations, and may opt into a no-destination state. Resource and
+ordered-item descriptors extend this same definition-owned contract; they are
+not inferred by the inspector from runtime values.
 
 ## Errors and compatibility
 

@@ -86,6 +86,7 @@ import type {
   PageElement,
 } from "@pagebldr/core";
 import type { PagebldrEditorProps } from "../index.js";
+import type { ApplicationDestinationOption } from "../index.js";
 import {
   EditorProvider,
   usePagebldrEditor,
@@ -102,6 +103,7 @@ import {
   resolveKeyboardMove,
 } from "./canvas-placement.js";
 import { useCanvasDimensions } from "./canvas-dimensions-context.js";
+import { DestinationControl } from "./destination-control.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -110,6 +112,11 @@ export function EditorShell(props: PagebldrEditorProps) {
       document={props.document}
       mode={props.mode ?? "edit"}
       onChange={props.onChange}
+      {...(props.resolveApplicationDestination
+        ? {
+            resolveApplicationDestination: props.resolveApplicationDestination,
+          }
+        : {})}
     >
       <TooltipProvider>
         <EditorWorkspace {...props} />
@@ -119,6 +126,7 @@ export function EditorShell(props: PagebldrEditorProps) {
 }
 
 function EditorWorkspace({
+  applicationDestinations = [],
   className,
   contributions = [],
   onPublish,
@@ -339,6 +347,7 @@ function EditorWorkspace({
       status,
       onSave: () => void perform("save"),
       onPublish: () => void perform("publish"),
+      applicationDestinations,
     }),
     ...contributions,
   ]);
@@ -476,6 +485,7 @@ function builtInContributions(input: {
   readonly status: string;
   readonly onSave: () => void;
   readonly onPublish: () => void;
+  readonly applicationDestinations: readonly ApplicationDestinationOption[];
 }): readonly EditorContribution[] {
   return [
     defineEditorContribution({
@@ -500,7 +510,9 @@ function builtInContributions(input: {
       id: "pagebldr.inspector",
       kind: "panel",
       label: "Inspector",
-      render: Inspector,
+      render: () => (
+        <Inspector applicationDestinations={input.applicationDestinations} />
+      ),
     }),
     defineEditorContribution({
       id: "pagebldr.selection",
@@ -935,7 +947,11 @@ function ElementLibrary() {
   );
 }
 
-function Inspector() {
+function Inspector({
+  applicationDestinations,
+}: {
+  readonly applicationDestinations: readonly ApplicationDestinationOption[];
+}) {
   const editor = usePagebldrEditor();
   if (!editor.selected)
     return (
@@ -1014,6 +1030,7 @@ function Inspector() {
                 key={control.key}
                 element={element}
                 control={control}
+                applicationDestinations={applicationDestinations}
               />
             ))}
             <ElementActions />
@@ -1075,9 +1092,11 @@ function Inspector() {
 }
 
 function PropertyField({
+  applicationDestinations,
   element,
   control,
 }: {
+  readonly applicationDestinations: readonly ApplicationDestinationOption[];
   readonly element: PageElement;
   readonly control: ElementControl<Record<string, unknown>>;
 }) {
@@ -1095,6 +1114,19 @@ function PropertyField({
         patch: { [control.key]: nextValue },
       },
       `prop:${element.id}:${control.key}`,
+    );
+
+  if (control.kind === "destination")
+    return (
+      <DestinationControl
+        applicationDestinations={applicationDestinations}
+        control={control}
+        disabled={editor.mode !== "edit"}
+        document={editor.document}
+        element={element}
+        value={value}
+        onChange={update}
+      />
     );
 
   if (control.kind === "boolean")

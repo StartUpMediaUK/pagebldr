@@ -9,6 +9,7 @@ import type {
   DocumentChangeEvent,
   Pagebldr,
   PageDocument,
+  ResourceReference,
 } from "@pagebldr/core";
 import type {
   AnalyticsEvent,
@@ -60,6 +61,12 @@ export interface PublishRequest {
   readonly signal: AbortSignal;
 }
 
+export interface ApplicationDestinationOption {
+  readonly label: string;
+  readonly reference: ResourceReference;
+  readonly description?: string;
+}
+
 export interface PagebldrEditorProps {
   readonly builder: Pagebldr;
   readonly document: PageDocument;
@@ -71,6 +78,10 @@ export interface PagebldrEditorProps {
   readonly className?: string;
   readonly preset?: EditorPreset;
   readonly contributions?: readonly EditorContribution[];
+  readonly applicationDestinations?: readonly ApplicationDestinationOption[];
+  readonly resolveApplicationDestination?: (
+    reference: ResourceReference,
+  ) => string | null;
 }
 
 export function PagebldrEditor(props: PagebldrEditorProps): ReactElement {

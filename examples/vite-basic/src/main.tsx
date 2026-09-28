@@ -115,6 +115,16 @@ function App() {
         </a>
       </nav>
       <PagebldrEditor
+        applicationDestinations={[
+          {
+            label: "Welcome",
+            reference: { kind: "application-link", value: "welcome" },
+          },
+          {
+            label: "Pricing",
+            reference: { kind: "application-link", value: "pricing" },
+          },
+        ]}
         builder={builder}
         document={document}
         mode={route === "#/readonly" ? "readOnly" : "edit"}
@@ -127,6 +137,12 @@ function App() {
           );
         }}
         onPublish={async () => pause()}
+        resolveApplicationDestination={(reference) =>
+          reference.kind === "application-link" &&
+          typeof reference.value === "string"
+            ? `#/preview/${reference.value}`
+            : null
+        }
         {...(route === "#/extensions" && extensionOptions
           ? extensionOptions
           : {})}
