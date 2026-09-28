@@ -27,6 +27,13 @@ Source baseline: Quizr Page Builder V2 commit
 - Image now owns labelled alternative-text, confirmation, decorative, nullable
   Destination, fit and focal-position controls. Its Resource source stays out of
   the generic inspector until the shared Phase 6 media picker is available.
+- Menu now owns its breakpoint controls and reusable ordered Links editor. Link
+  cards support blur-validated labels, all typed Destination branches, fresh-ID
+  add, minimum-safe remove, and explicit up/down reordering. New links prefer
+  the first authored anchor and fall back to a neutral external destination.
+- Collection controls remain serializable definition metadata: item defaults, ID
+  policy, limits, nested controls and dependent-field visibility are all
+  described without shipping Element-specific React components.
 - shadcn Native Select source was reviewed and adapted to the package import and
   full-width inspector layout. The lightweight native primitive keeps the
   aggregate React entry within its current 760,000-byte guardrail.
@@ -57,12 +64,16 @@ stays visible with its inline error while the canvas retains the last valid ID.
 This check also caught and corrected an Inspector component-identity regression
 before the checkpoint was committed.
 
+The ordered-Menu browser flow is still pending. During this checkpoint both T3
+preview status and preview open reported that no preview automation host was
+available; no alternative browser system was used.
+
 ## Verification
 
 - `pnpm check` passed: formatting, lint, type checking, all package tests,
   parity fixtures, all 11 builds, docs checks, public-export checks, packed
   consumer tests, size budgets and license inventory.
-- Core: 58 tests passed across 10 files. React: 30 tests passed across 8 files.
+- Core: 58 tests passed across 10 files. React: 33 tests passed across 9 files.
   Runtime, server and adapter suites also passed.
 - The packed aggregate React entry is 739,918 bytes and the compiled stylesheet
   is 64,555 bytes, within the current 740,000-byte and 66,000-byte guardrails.
@@ -74,6 +85,10 @@ before the checkpoint was committed.
   unchanged at 65,314 bytes and both remain inside those guardrails.
 - Definition-owned Image controls bring the React entry to 756,175 bytes; the
   stylesheet remains unchanged and both budgets continue to pass.
+- Reusable ordered-item controls bring the React entry to 765,372 bytes and the
+  stylesheet to 65,349 bytes. The React guardrail was narrowly rebased to
+  770,000 bytes and the packed-archive guardrail to 1,265,000 bytes for this
+  package-owned capability; the 66,000-byte stylesheet guardrail is unchanged.
 - The T3 embedded browser exercised the built aggregate package through the Vite
   Reference Host and supplied the linked visual evidence.
 

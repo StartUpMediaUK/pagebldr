@@ -41,7 +41,27 @@ interface ElementControlBase<Props> {
   readonly key: keyof Props & string;
   readonly label: string;
   readonly description?: string;
+  readonly visibleWhen?: {
+    readonly key: keyof Props & string;
+    readonly equals?: string | number | boolean;
+    readonly notEquals?: string | number | boolean;
+  };
 }
+
+export type CollectionItemControl =
+  | {
+      readonly kind: "text";
+      readonly key: string;
+      readonly label: string;
+      readonly placeholder?: string;
+    }
+  | {
+      readonly kind: "destination";
+      readonly key: string;
+      readonly label: string;
+      readonly nullable?: boolean;
+      readonly preferFirstAnchor?: boolean;
+    };
 
 export type ElementControl<Props> =
   | (ElementControlBase<Props> & {
@@ -67,6 +87,16 @@ export type ElementControl<Props> =
   | (ElementControlBase<Props> & {
       readonly kind: "destination";
       readonly nullable?: boolean;
+    })
+  | (ElementControlBase<Props> & {
+      readonly kind: "collection";
+      readonly itemLabel: string;
+      readonly minItems?: number;
+      readonly maxItems?: number;
+      readonly idKey: string;
+      readonly idPrefix: string;
+      readonly defaultItem: Readonly<Record<string, unknown>>;
+      readonly itemControls: readonly CollectionItemControl[];
     });
 
 export interface ElementInlineEditing<Props> {
