@@ -20,6 +20,11 @@ import {
   FieldSet,
 } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "../components/ui/native-select.js";
+import { Textarea } from "../components/ui/textarea.js";
 import { anchoredElements, DestinationControl } from "./destination-control.js";
 
 type CollectionControlDefinition = Extract<
@@ -179,26 +184,93 @@ export function CollectionControl({
                       }
                     />
                   );
+                if (itemControl.kind === "select") {
+                  const selected = itemControl.options.find(
+                    ({ value: option }) => option === itemValue,
+                  );
+                  return (
+                    <Field key={itemControl.key}>
+                      <FieldLabel
+                        htmlFor={`${id}-${itemId}-${itemControl.key}`}
+                      >
+                        {itemControl.label}
+                      </FieldLabel>
+                      <NativeSelect
+                        disabled={disabled}
+                        id={`${id}-${itemId}-${itemControl.key}`}
+                        value={selected ? String(selected.value) : ""}
+                        onChange={(event) => {
+                          const nextValue = event.currentTarget.value;
+                          const option = itemControl.options.find(
+                            ({ value: candidate }) =>
+                              String(candidate) === nextValue,
+                          );
+                          if (option)
+                            updateItem(index, itemControl.key, option.value);
+                        }}
+                      >
+                        {!selected ? (
+                          <NativeSelectOption value="" disabled>
+                            Select {itemControl.label.toLowerCase()}
+                          </NativeSelectOption>
+                        ) : null}
+                        {itemControl.options.map((option) => (
+                          <NativeSelectOption
+                            key={`${typeof option.value}:${option.value}`}
+                            value={String(option.value)}
+                          >
+                            {option.label}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
+                    </Field>
+                  );
+                }
                 const textValue =
                   typeof itemValue === "string" ? itemValue : "";
+                const commitText = (nextValue: string) => {
+                  const trimmed = nextValue.trim();
+                  if (
+                    (trimmed || itemControl.allowEmpty) &&
+                    trimmed !== itemValue
+                  )
+                    updateItem(index, itemControl.key, trimmed);
+                  return trimmed || itemControl.allowEmpty
+                    ? trimmed
+                    : textValue;
+                };
                 return (
                   <Field key={itemControl.key}>
                     <FieldLabel htmlFor={`${id}-${itemId}-${itemControl.key}`}>
                       {itemControl.label}
                     </FieldLabel>
-                    <Input
-                      defaultValue={textValue}
-                      disabled={disabled}
-                      id={`${id}-${itemId}-${itemControl.key}`}
-                      key={`${itemId}:${itemControl.key}:${textValue}`}
-                      placeholder={itemControl.placeholder}
-                      onBlur={(event) => {
-                        const nextValue = event.currentTarget.value.trim();
-                        if (nextValue && nextValue !== itemValue)
-                          updateItem(index, itemControl.key, nextValue);
-                        else event.currentTarget.value = textValue;
-                      }}
-                    />
+                    {itemControl.kind === "textarea" ? (
+                      <Textarea
+                        defaultValue={textValue}
+                        disabled={disabled}
+                        id={`${id}-${itemId}-${itemControl.key}`}
+                        key={`${itemId}:${itemControl.key}:${textValue}`}
+                        placeholder={itemControl.placeholder}
+                        onBlur={(event) => {
+                          event.currentTarget.value = commitText(
+                            event.currentTarget.value,
+                          );
+                        }}
+                      />
+                    ) : (
+                      <Input
+                        defaultValue={textValue}
+                        disabled={disabled}
+                        id={`${id}-${itemId}-${itemControl.key}`}
+                        key={`${itemId}:${itemControl.key}:${textValue}`}
+                        placeholder={itemControl.placeholder}
+                        onBlur={(event) => {
+                          event.currentTarget.value = commitText(
+                            event.currentTarget.value,
+                          );
+                        }}
+                      />
+                    )}
                   </Field>
                 );
               })}

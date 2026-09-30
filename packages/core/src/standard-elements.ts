@@ -78,7 +78,7 @@ const destinationSchema = z.discriminatedUnion("type", [
     })
     .strict(),
 ]);
-const iconName = z.enum([
+const iconNames = [
   "sparkles",
   "activity",
   "check",
@@ -92,7 +92,16 @@ const iconName = z.enum([
   "clock",
   "mail",
   "play",
-]);
+] as const;
+const iconName = z.enum(iconNames);
+const socialPlatforms = [
+  "linkedin",
+  "instagram",
+  "facebook",
+  "youtube",
+  "x",
+  "website",
+] as const;
 const colorValue = z.union([
   z.string().regex(/^#[0-9a-fA-F]{6}$/u),
   z
@@ -820,6 +829,19 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         { id: "item-2", text: "Second benefit" },
       ],
     },
+    controls: [
+      { kind: "boolean", key: "ordered", label: "Numbered list" },
+      {
+        kind: "collection",
+        key: "items",
+        label: "Items",
+        itemLabel: "Item",
+        idKey: "id",
+        idPrefix: "list-item",
+        defaultItem: { text: "New list item" },
+        itemControls: [{ kind: "text", key: "text", label: "Text" }],
+      },
+    ],
     render: (props) =>
       node(
         boolean(props, "ordered") ? "ol" : "ul",
@@ -853,6 +875,31 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         { id: "item-3", icon: "check", text: "A practical next step" },
       ],
     },
+    controls: [
+      {
+        kind: "collection",
+        key: "items",
+        label: "Items",
+        itemLabel: "Item",
+        minItems: 1,
+        maxItems: 50,
+        idKey: "id",
+        idPrefix: "icon-list-item",
+        defaultItem: { icon: "check", text: "New list item" },
+        itemControls: [
+          {
+            kind: "select",
+            key: "icon",
+            label: "Icon",
+            options: iconNames.map((value) => ({
+              label: label(value.replace("-", " ")),
+              value,
+            })),
+          },
+          { kind: "text", key: "text", label: "Text" },
+        ],
+      },
+    ],
     render: (props) =>
       node(
         "ul",
@@ -902,6 +949,33 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         },
       ],
     },
+    controls: [
+      {
+        kind: "boolean",
+        key: "allowMultiple",
+        label: "Allow multiple open",
+      },
+      {
+        kind: "collection",
+        key: "items",
+        label: "Items",
+        itemLabel: "Item",
+        minItems: 1,
+        maxItems: 30,
+        idKey: "id",
+        idPrefix: "accordion-item",
+        defaultItem: { question: "New question", answer: "" },
+        itemControls: [
+          { kind: "text", key: "question", label: "Question" },
+          {
+            kind: "textarea",
+            key: "answer",
+            label: "Answer",
+            allowEmpty: true,
+          },
+        ],
+      },
+    ],
     render: (props) =>
       node(
         "div",
@@ -955,6 +1029,28 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         { id: "tab-3", label: "Act", content: "Move forward with confidence." },
       ],
     },
+    controls: [
+      {
+        kind: "collection",
+        key: "items",
+        label: "Tabs",
+        itemLabel: "Tab",
+        minItems: 1,
+        maxItems: 12,
+        idKey: "id",
+        idPrefix: "tab",
+        defaultItem: { label: "New tab", content: "" },
+        itemControls: [
+          { kind: "text", key: "label", label: "Label" },
+          {
+            kind: "textarea",
+            key: "content",
+            label: "Content",
+            allowEmpty: true,
+          },
+        ],
+      },
+    ],
     accessibility: { role: "tablist", keyboardInteractive: true },
     render: renderTabs,
   }),
@@ -1070,14 +1166,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
           z
             .object({
               id: authoredId,
-              platform: z.enum([
-                "linkedin",
-                "instagram",
-                "facebook",
-                "youtube",
-                "x",
-                "website",
-              ]),
+              platform: z.enum(socialPlatforms),
               label: z.string().min(1).max(120),
               url: safeHttpUrl,
             })
@@ -1104,6 +1193,42 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       ],
       newTab: true,
     },
+    controls: [
+      { kind: "boolean", key: "newTab", label: "Open in new tab" },
+      {
+        kind: "collection",
+        key: "links",
+        label: "Links",
+        itemLabel: "Link",
+        minItems: 1,
+        maxItems: 20,
+        idKey: "id",
+        idPrefix: "social-link",
+        defaultItem: {
+          platform: "website",
+          label: "Website",
+          url: "https://example.com",
+        },
+        itemControls: [
+          {
+            kind: "select",
+            key: "platform",
+            label: "Platform",
+            options: socialPlatforms.map((value) => ({
+              label: value === "x" ? "X" : label(value),
+              value,
+            })),
+          },
+          { kind: "text", key: "label", label: "Label" },
+          {
+            kind: "text",
+            key: "url",
+            label: "URL",
+            placeholder: "https://example.com",
+          },
+        ],
+      },
+    ],
     render: renderSocialLinks,
   }),
   definition({

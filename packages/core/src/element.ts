@@ -54,6 +54,23 @@ export type CollectionItemControl =
       readonly key: string;
       readonly label: string;
       readonly placeholder?: string;
+      readonly allowEmpty?: boolean;
+    }
+  | {
+      readonly kind: "textarea";
+      readonly key: string;
+      readonly label: string;
+      readonly placeholder?: string;
+      readonly allowEmpty?: boolean;
+    }
+  | {
+      readonly kind: "select";
+      readonly key: string;
+      readonly label: string;
+      readonly options: readonly {
+        readonly label: string;
+        readonly value: string | number;
+      }[];
     }
   | {
       readonly kind: "destination";
