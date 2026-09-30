@@ -64,9 +64,16 @@ stays visible with its inline error while the canvas retains the last valid ID.
 This check also caught and corrected an Inspector component-identity regression
 before the checkpoint was committed.
 
-The ordered-Menu browser flow is still pending. During this checkpoint both T3
-preview status and preview open reported that no preview automation host was
-available; no alternative browser system was used.
+The T3 embedded browser subsequently exercised the ordered Menu through the Vite
+Reference Host. It confirmed dependent collapse fields hide for `No breakpoint`
+and return for Tablet, a blurred label edit updates the isolated canvas,
+down-arrow reordering updates both inspector and canvas order, and a new fifth
+link receives a fresh ID and the first authored anchor. Its nested Destination
+control also switched to the Host-supplied application choices Welcome and
+Pricing. The screenshot endpoint then timed out and detached the preview host
+before the recording could be transferred, so this pass has verified state
+observations but no new evidence artifact; no alternative browser system was
+used.
 
 ## Verification
 
