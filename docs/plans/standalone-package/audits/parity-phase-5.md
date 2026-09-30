@@ -54,6 +54,8 @@ Source baseline: Quizr Page Builder V2 commit
 - [Typed Destination flow](evidence/parity-phase-5/typed-destinations-flow.mp4)
 - [Anchor authoring flow](evidence/parity-phase-5/anchor-authoring-flow.mp4)
 - [Image Content flow](evidence/parity-phase-5/image-content-flow.mp4)
+- [Structured Rich Text controls](evidence/parity-phase-5/structured-rich-text-controls.png)
+- [Structured Rich Text flow](evidence/parity-phase-5/structured-rich-text-flow.mp4)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -82,6 +84,13 @@ Pricing. The screenshot endpoint then timed out and detached the preview host
 before the recording could be transferred, so this pass has verified state
 observations but no new evidence artifact; no alternative browser system was
 used.
+
+After the T3 preview was restarted, the embedded browser exercised Structured
+Rich Text through the Vite Reference Host. It replaced the first block's text,
+focused and activated Add block with the keyboard, changed the new block to a
+Heading with the keyboard, and moved it above the paragraph with the keyboard.
+The inspector and isolated canvas both retained the resulting heading-first
+order. The linked screenshot and recording are the visual evidence.
 
 ## Verification
 
@@ -119,9 +128,10 @@ used.
   preview host detached before a transferable screenshot or the remaining
   Element variants could be captured, so this is not counted as packed-browser
   visual evidence.
-- The T3 preview subsequently reported no automation host for the Rich Text
-  checkpoint, including after an explicit reopen attempt. No substitute browser
-  system was used, so its browser and keyboard evidence remains open.
+- The restarted T3 preview completed the Rich Text browser and keyboard
+  checkpoint. Keyboard activation added a block, changed its native select to
+  Heading and moved it upward; the isolated canvas rendered the edited text and
+  heading-first order. No substitute browser system was used.
 - The T3 embedded browser exercised the built aggregate package through the Vite
   Reference Host and supplied the linked visual evidence.
 
