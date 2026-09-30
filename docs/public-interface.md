@@ -620,10 +620,10 @@ application destinations, and may opt into a no-destination state. Resource and
 ordered-item descriptors extend this same definition-owned contract; they are
 not inferred by the inspector from runtime values. A `collection` descriptor
 owns its item label, limits, fresh-ID policy, serializable default item and
-nested controls. The standard editor supplies add, remove and keyboard-operable
-reorder actions, while preserving the Element schema's minimum and maximum.
-Controls may declare a serializable `visibleWhen` condition for dependent fields
-such as Menu collapse settings.
+nested text, textarea, select and Destination controls. The standard editor
+supplies add, remove and keyboard-operable reorder actions, while preserving the
+Element schema's minimum and maximum. Controls may declare a serializable
+`visibleWhen` condition for dependent fields such as Menu collapse settings.
 
 Every standard Element accepts an optional authored anchor ID. The Advanced
 inspector normalizes input to a unique lowercase ASCII slug of at most 80

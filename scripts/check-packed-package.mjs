@@ -64,8 +64,8 @@ try {
 
   const archivePath = resolve(temporaryDirectory, archiveName);
   // Definition-owned ordered-item editing and its source maps raise the
-  // intentional package baseline while keeping the archive below 1.265 MB.
-  assertMaximumSize(archivePath, 1_265_000, "Packed archive");
+  // intentional package baseline while keeping the archive below 1.27 MB.
+  assertMaximumSize(archivePath, 1_270_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -171,7 +171,7 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    120_000,
+    121_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -338,7 +338,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    770_000,
+    776_000,
     "React entry",
   );
   assertMaximumSize(

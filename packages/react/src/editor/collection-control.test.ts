@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { createPagebldr, type ElementControl } from "@pagebldr/core";
+import {
+  createPagebldr,
+  standardElements,
+  standardStyleCapabilities,
+  type ElementControl,
+} from "@pagebldr/core";
 import {
   createCollectionItem,
   moveCollectionItem,
@@ -84,5 +89,43 @@ describe("ordered collection Content control", () => {
         newTab: false,
       },
     });
+  });
+
+  it("creates schema-valid items for the standard ordered Content editors", () => {
+    const builder = createPagebldr({
+      namespace: "collection-control-test",
+      elements: standardElements,
+      styleCapabilities: standardStyleCapabilities,
+    });
+    const document = builder.documents.create({ id: "page", title: "Page" });
+    const cases = [
+      ["list", "items"],
+      ["icon-list", "items"],
+      ["accordion", "items"],
+      ["tabs", "items"],
+      ["social-links", "links"],
+    ] as const;
+
+    for (const [type, key] of cases) {
+      const definition = builder.elements.get(type)!;
+      const controls = definition.controls as readonly ElementControl<
+        Record<string, unknown>
+      >[];
+      const control = controls.find(
+        (candidate) => candidate.kind === "collection" && candidate.key === key,
+      );
+      expect(control).toBeDefined();
+      expect(control?.kind).toBe("collection");
+      if (control?.kind !== "collection") continue;
+      const item = createCollectionItem(control, document, () => "new-id");
+      const props = {
+        ...(definition.defaults() as Record<string, unknown>),
+        [key]: [item],
+      };
+
+      expect(definition.props["~standard"].validate(props)).toHaveProperty(
+        "value",
+      );
+    }
   });
 });
