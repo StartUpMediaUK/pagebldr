@@ -106,6 +106,16 @@ export type ElementControl<Props> =
       readonly nullable?: boolean;
     })
   | (ElementControlBase<Props> & {
+      readonly kind: "rich-text";
+      readonly blockTypes: readonly {
+        readonly label: string;
+        readonly value: string;
+      }[];
+      readonly defaultBlock: Readonly<Record<string, unknown>>;
+      readonly minBlocks?: number;
+      readonly maxBlocks?: number;
+    })
+  | (ElementControlBase<Props> & {
       readonly kind: "collection";
       readonly itemLabel: string;
       readonly minItems?: number;

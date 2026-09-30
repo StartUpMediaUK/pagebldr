@@ -451,6 +451,20 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     defaults: {
       content: [{ type: "paragraph", text: "Add your supporting copy." }],
     },
+    controls: [
+      {
+        kind: "rich-text",
+        key: "content",
+        label: "Content",
+        defaultBlock: { type: "paragraph", text: "" },
+        blockTypes: [
+          { label: "Paragraph", value: "paragraph" },
+          { label: "Heading", value: "heading" },
+          { label: "Bulleted list", value: "bullet" },
+          { label: "Numbered list", value: "numbered" },
+        ],
+      },
+    ],
     inlineEditing: {
       property: "content",
       read: (props) =>
