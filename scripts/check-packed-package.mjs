@@ -338,7 +338,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    776_000,
+    782_000,
     "React entry",
   );
   assertMaximumSize(

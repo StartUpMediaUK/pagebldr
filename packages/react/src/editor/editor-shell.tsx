@@ -106,6 +106,7 @@ import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 import { DestinationControl } from "./destination-control.js";
 import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
+import { RichTextControl } from "./rich-text-control.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -1131,6 +1132,16 @@ function PropertyField({
         disabled={editor.mode !== "edit"}
         document={editor.document}
         elementId={element.id}
+        value={value}
+        onChange={update}
+      />
+    );
+
+  if (control.kind === "rich-text")
+    return (
+      <RichTextControl
+        control={control}
+        disabled={editor.mode !== "edit"}
         value={value}
         onChange={update}
       />

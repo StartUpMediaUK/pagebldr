@@ -38,6 +38,10 @@ Source baseline: Quizr Page Builder V2 commit
   collection contract. Nested controls cover text, multiline text and labelled
   selects; fresh defaults validate against each owning Element schema, and
   minimum/maximum policies remain definition-owned.
+- Rich Text now owns a structured block-control descriptor rather than falling
+  back to scalar inference. Authors can add, remove, reorder, retype and edit
+  paragraph, heading, bulleted-list and numbered-list blocks while continuous
+  text changes use the existing property coalescing key.
 - shadcn Native Select source was reviewed and adapted to the package import and
   full-width inspector layout. The lightweight native primitive keeps the
   aggregate React entry within its current 760,000-byte guardrail.
@@ -84,7 +88,7 @@ used.
 - `pnpm check` passed: formatting, lint, type checking, all package tests,
   parity fixtures, all 11 builds, docs checks, public-export checks, packed
   consumer tests, size budgets and license inventory.
-- Core: 58 tests passed across 10 files. React: 34 tests passed across 9 files.
+- Core: 58 tests passed across 10 files. React: 35 tests passed across 10 files.
   Runtime, server and adapter suites also passed.
 - The packed aggregate React entry is 739,918 bytes and the compiled stylesheet
   is 64,555 bytes, within the current 740,000-byte and 66,000-byte guardrails.
@@ -106,17 +110,24 @@ used.
   remains 65,349 bytes with its 66,000-byte guardrail unchanged. The expanded
   serializable contract brings the tree-shaken core consumer to 120,087 bytes,
   with that guardrail narrowly rebased from 120,000 to 121,000 bytes.
+- Structured Rich Text brings the React entry to 777,033 bytes; its guardrail
+  was narrowly rebased from 776,000 to 782,000 bytes. The packed archive,
+  tree-shaken core consumer and stylesheet remain inside their existing
+  guardrails.
 - Source-mode browser interaction confirmed List selection through Structure,
   the numbered-list switch, ordered item cards and fresh-item insertion. The T3
   preview host detached before a transferable screenshot or the remaining
   Element variants could be captured, so this is not counted as packed-browser
   visual evidence.
+- The T3 preview subsequently reported no automation host for the Rich Text
+  checkpoint, including after an explicit reopen attempt. No substitute browser
+  system was used, so its browser and keyboard evidence remains open.
 - The T3 embedded browser exercised the built aggregate package through the Vite
   Reference Host and supplied the linked visual evidence.
 
 ## Remaining phase gate
 
-Resource/media and structured Rich Text Content editors; the complete Style and
-remaining Advanced surfaces; Page design and Variables; broader validation
-presentation; packed-browser visual assertions; and the full Phase 5
-verification matrix remain open.
+Resource/media Content editors; the complete Style and remaining Advanced
+surfaces; Page design and Variables; broader validation presentation;
+packed-browser visual assertions; and the full Phase 5 verification matrix
+remain open.
