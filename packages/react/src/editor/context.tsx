@@ -19,6 +19,7 @@ import type {
   PageDocument,
   PageElement,
   ResourceReference,
+  StyleState,
 } from "@pagebldr/core";
 
 import { CanvasDimensionsProvider } from "./canvas-dimensions-context.js";
@@ -41,6 +42,7 @@ export interface EditorContextValue {
   readonly selected: PageElement | null;
   readonly hoveredId: string | null;
   readonly previewing: boolean;
+  readonly styleState: StyleState;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
   readonly applicationDestinations: readonly ApplicationDestinationOption[];
@@ -50,6 +52,7 @@ export interface EditorContextValue {
   readonly select: (elementId: string | null) => void;
   readonly hover: (elementId: string | null) => void;
   readonly setPreviewing: (previewing: boolean) => void;
+  readonly setStyleState: (state: StyleState) => void;
   readonly setViewport: (viewport: EditorViewport) => void;
   readonly resolveApplicationDestination?: (
     reference: ResourceReference,
@@ -85,6 +88,7 @@ export function EditorProvider({
   const [selectedId, setSelectedId] = useState<string | null>(document.rootId);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState(mode === "preview");
+  const [styleState, setStyleState] = useState<StyleState>("normal");
   const [viewport, setViewport] = useState<EditorViewport>("desktop");
   const emitted = useRef<PageDocument | null>(null);
 
@@ -158,6 +162,7 @@ export function EditorProvider({
         : null,
       hoveredId,
       previewing,
+      styleState,
       canUndo: builder.editor.selectors.canUndo(history),
       canRedo: builder.editor.selectors.canRedo(history),
       applicationDestinations,
@@ -167,6 +172,7 @@ export function EditorProvider({
       select: setSelectedId,
       hover: setHoveredId,
       setPreviewing,
+      setStyleState,
       setViewport,
       ...(resolveApplicationDestination
         ? { resolveApplicationDestination }
@@ -183,6 +189,7 @@ export function EditorProvider({
       redo,
       resolveApplicationDestination,
       selectedId,
+      styleState,
       undo,
       viewport,
     ],

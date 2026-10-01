@@ -13,6 +13,7 @@ import type {
   RenderElement,
   RenderNode,
   ResourceReference,
+  StyleState,
 } from "@pagebldr/core";
 
 export interface PagebldrRendererProps {
@@ -25,6 +26,10 @@ export interface PagebldrRendererProps {
     reference: ResourceReference,
   ) => string | null;
   readonly styleNonce?: string;
+  readonly forcedStyleState?: {
+    readonly elementId: string;
+    readonly state: Exclude<StyleState, "normal">;
+  };
 }
 
 export function PagebldrRenderer({
@@ -35,6 +40,7 @@ export function PagebldrRenderer({
   now = new Date(),
   resolveApplicationDestination,
   styleNonce,
+  forcedStyleState,
 }: PagebldrRendererProps): ReactElement {
   const compiled = builder.styles.compile(document);
   const renderElement = (id: string): ReactNode => {
@@ -75,6 +81,9 @@ export function PagebldrRenderer({
       ...(element.hidden ? { "data-pagebldr-hidden": "true" } : {}),
       ...(element.classIds.length > 0
         ? { "data-pagebldr-class": element.classIds.join(" ") }
+        : {}),
+      ...(mode === "edit" && forcedStyleState?.elementId === id
+        ? { "data-pagebldr-force-state": forcedStyleState.state }
         : {}),
     });
   };

@@ -5,6 +5,7 @@ import type {
   StyleDeclarations,
   StyleState,
   StyleValue,
+  VariableKind,
 } from "./document-types.js";
 import { PagebldrError } from "./types.js";
 
@@ -32,6 +33,9 @@ export interface StyleEngine {
     breakpoint: Breakpoint,
     state?: StyleState,
   ) => ResolvedStyles;
+  readonly variableKindsForProperty: (
+    property: string,
+  ) => readonly VariableKind[];
 }
 
 export interface ResolvedStyleSource {
@@ -55,6 +59,41 @@ const unsafeValuePattern =
   /[;{}<>]|\/\*|\*\/|javascript\s*:|expression\s*\(|@import/iu;
 const breakpoints: readonly Breakpoint[] = ["desktop", "tablet", "mobile"];
 const states: readonly StyleState[] = ["normal", "hover", "focusVisible"];
+
+const variableProperties: Readonly<Record<VariableKind, readonly string[]>> = {
+  color: ["color", "backgroundColor", "borderColor"],
+  typography: ["fontFamily"],
+  spacing: [
+    "gap",
+    "columnGap",
+    "rowGap",
+    "margin",
+    "marginTop",
+    "marginRight",
+    "marginBottom",
+    "marginLeft",
+    "padding",
+    "paddingTop",
+    "paddingRight",
+    "paddingBottom",
+    "paddingLeft",
+    "top",
+    "right",
+    "bottom",
+    "left",
+  ],
+  radius: ["borderRadius"],
+  shadow: ["boxShadow"],
+  contentWidth: ["width", "minWidth", "maxWidth"],
+};
+
+export function styleVariableKindsForProperty(
+  property: string,
+): readonly VariableKind[] {
+  return (Object.keys(variableProperties) as VariableKind[]).filter((kind) =>
+    variableProperties[kind].includes(property),
+  );
+}
 
 export function defineStyleCapability(
   definition: StyleCapabilityDefinition,
@@ -103,6 +142,7 @@ export function createStyleEngine(
       breakpoint: Breakpoint,
       state: StyleState = "normal",
     ) => resolveElementStyles(document, elementId, breakpoint, state),
+    variableKindsForProperty: styleVariableKindsForProperty,
   });
 }
 

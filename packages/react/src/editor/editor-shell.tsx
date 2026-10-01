@@ -107,6 +107,7 @@ import { DestinationControl } from "./destination-control.js";
 import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
+import { StyleControls } from "./style-control.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -1034,38 +1035,7 @@ function Inspector() {
       </TabsContent>
       <TabsContent value="styles" className="min-h-0">
         <ScrollArea className="h-full px-3">
-          <FieldGroup className="pb-6">
-            <Field>
-              <FieldLabel>Breakpoint</FieldLabel>
-              <FieldDescription>
-                Styles are edited at the active {editor.viewport} breakpoint.
-              </FieldDescription>
-            </Field>
-            {(definition?.styles ?? []).map((capability) => (
-              <div key={capability} className="rounded-md border p-3">
-                <strong className="text-sm">
-                  {editor.builder.styles.capabilities.get(capability)?.label ??
-                    capability}
-                </strong>
-              </div>
-            ))}
-            <Separator />
-            <Field>
-              <FieldLabel>Classes</FieldLabel>
-              <FieldDescription>
-                {element.classIds.length
-                  ? element.classIds.join(", ")
-                  : "No reusable Classes assigned."}
-              </FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Variables</FieldLabel>
-              <FieldDescription>
-                {editor.document.variableOrder.length} design Variables
-                available.
-              </FieldDescription>
-            </Field>
-          </FieldGroup>
+          <StyleControls element={element} section="style" />
         </ScrollArea>
       </TabsContent>
       <TabsContent value="advanced" className="min-h-0">
@@ -1073,13 +1043,7 @@ function Inspector() {
           <FieldGroup className="pb-6">
             <AnchorControl element={element} />
             <Separator />
-            <Field>
-              <FieldLabel>Layout and visibility</FieldLabel>
-              <FieldDescription>
-                Advanced controls are provided by the selected Element
-                definition.
-              </FieldDescription>
-            </Field>
+            <StyleControls element={element} section="advanced" />
             <ElementActions />
           </FieldGroup>
         </ScrollArea>

@@ -44,7 +44,16 @@ Source baseline: Quizr Page Builder V2 commit
   text changes use the existing property coalescing key.
 - shadcn Native Select source was reviewed and adapted to the package import and
   full-width inspector layout. The lightweight native primitive keeps the
-  aggregate React entry within its current 760,000-byte guardrail.
+  aggregate React entry within its then-current 760,000-byte guardrail.
+- Style now authors Typography and Background while Advanced authors only the
+  selected Element's registered Layout, Spacing, Size, Position, Border, Effects
+  and Responsive visibility capabilities. Desktop, Tablet and Mobile controls
+  follow the authored canvas viewport; Normal, Hover and Focus Visible share a
+  forced edit-canvas preview state.
+- Each Style field reports its resolved local/Class, breakpoint, state and
+  inherited origin. Applicable typed Variables come from the same engine policy
+  used by validation. Every property has a reset action, and reset-all clears
+  the Element's local responsive styles through the existing command.
 
 ## Evidence
 
@@ -56,6 +65,9 @@ Source baseline: Quizr Page Builder V2 commit
 - [Image Content flow](evidence/parity-phase-5/image-content-flow.mp4)
 - [Structured Rich Text controls](evidence/parity-phase-5/structured-rich-text-controls.png)
 - [Structured Rich Text flow](evidence/parity-phase-5/structured-rich-text-flow.mp4)
+- [Responsive Style controls](evidence/parity-phase-5/style-responsive-state-controls.png)
+- [Advanced capability controls](evidence/parity-phase-5/advanced-capability-controls.png)
+- [Responsive Style flow](evidence/parity-phase-5/style-responsive-state-flow.mp4)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -91,6 +103,14 @@ focused and activated Add block with the keyboard, changed the new block to a
 Heading with the keyboard, and moved it above the paragraph with the keyboard.
 The inspector and isolated canvas both retained the resulting heading-first
 order. The linked screenshot and recording are the visual evidence.
+
+The T3 embedded browser then exercised a selected Container's Style and Advanced
+surfaces. Keyboard activation changed the authored viewport to Tablet, forced
+Hover on the isolated canvas, applied an applicable color Variable to a
+Tablet/Hover declaration, and reset that declaration. The origin display changed
+from local to inherited after reset. The browser also confirmed that Advanced
+exposes the registered structural capability groups rather than the former
+placeholder.
 
 ## Verification
 
@@ -134,10 +154,19 @@ order. The linked screenshot and recording are the visual evidence.
   heading-first order. No substitute browser system was used.
 - The T3 embedded browser exercised the built aggregate package through the Vite
   Reference Host and supplied the linked visual evidence.
+- Core has 59 passing tests across 10 files and React has 39 across 11 files
+  after adding typed Variable applicability, Style-section partitioning, origin
+  presentation, and edit-only forced-state coverage. Both focused TypeScript
+  checks pass.
+- Responsive/stateful Style controls bring the aggregate React entry to 784,786
+  bytes and the packed archive to 1,278,079 bytes. Their guardrails were
+  narrowly rebased from 782,000 to 790,000 bytes and from 1,270,000 to 1,285,000
+  bytes respectively. The stylesheet remains 65,349 bytes within its unchanged
+  66,000-byte guardrail.
 
 ## Remaining phase gate
 
-Resource/media Content editors; the complete Style and remaining Advanced
-surfaces; Page design and Variables; broader validation presentation;
-packed-browser visual assertions; and the full Phase 5 verification matrix
-remain open.
+Element-specific inspector refinements; Page design, settings, SEO and Variable
+management; broader validation presentation; phone and packed-browser visual
+assertions; and the full Phase 5 verification matrix remain open. The shared
+media picker and Resource selection stay assigned to Parity Phase 6.

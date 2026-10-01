@@ -400,6 +400,14 @@ export function IsolatedCanvas({
                   ? "edit"
                   : "preview"
               }
+              forcedStyleState={
+                editor.styleState === "normal" || !editor.selectedId
+                  ? null
+                  : {
+                      elementId: editor.selectedId,
+                      state: editor.styleState,
+                    }
+              }
               resolveApplicationDestination={
                 editor.resolveApplicationDestination
               }
@@ -416,12 +424,17 @@ function CanvasRuntime({
   canvasId,
   frameWindow,
   mode,
+  forcedStyleState,
   resolveApplicationDestination,
 }: {
   readonly builder: Pagebldr;
   readonly canvasId: string;
   readonly frameWindow: Window;
   readonly mode: "edit" | "preview";
+  readonly forcedStyleState: {
+    readonly elementId: string;
+    readonly state: "hover" | "focusVisible";
+  } | null;
   readonly resolveApplicationDestination:
     ((reference: ResourceReference) => string | null) | undefined;
 }) {
@@ -695,6 +708,7 @@ function CanvasRuntime({
         builder={builder}
         document={document}
         mode={mode}
+        {...(forcedStyleState ? { forcedStyleState } : {})}
         {...(resolveApplicationDestination
           ? { resolveApplicationDestination }
           : {})}
