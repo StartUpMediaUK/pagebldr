@@ -54,6 +54,12 @@ Source baseline: Quizr Page Builder V2 commit
   inherited origin. Applicable typed Variables come from the same engine policy
   used by validation. Every property has a reset action, and reset-all clears
   the Element's local responsive styles through the existing command.
+- Page design now stages and validates content width and authored tablet/mobile
+  boundaries before applying them as one controlled `update-settings` command.
+  Settings records default Host-header intent without rendering Host chrome. SEO
+  & social authors the complete bounded copy and `noIndex` contract, and can
+  inspect or clear an existing social-image Resource. Selecting a new image
+  stays with the shared Phase 6 media picker.
 
 ## Evidence
 
@@ -68,6 +74,9 @@ Source baseline: Quizr Page Builder V2 commit
 - [Responsive Style controls](evidence/parity-phase-5/style-responsive-state-controls.png)
 - [Advanced capability controls](evidence/parity-phase-5/advanced-capability-controls.png)
 - [Responsive Style flow](evidence/parity-phase-5/style-responsive-state-flow.mp4)
+- [Page design controls](evidence/parity-phase-5/page-design-controls.png)
+- [Page SEO and social controls](evidence/parity-phase-5/page-design-seo-controls.png)
+- [Page design flow](evidence/parity-phase-5/page-design-flow.mp4)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -111,6 +120,12 @@ Tablet/Hover declaration, and reset that declaration. The origin display changed
 from local to inherited after reset. The browser also confirmed that Advanced
 exposes the registered structural capability groups rather than the former
 placeholder.
+
+The same built Reference Host exercised Page design end to end. It confirmed an
+out-of-range content width produces an inline error and disables Apply, then
+saved a valid 1100px width, toggled the Host-header intent, and authored social
+copy using keyboard activation. Reopening the dialog retained the applied
+values. The linked stills and recording show the Design and SEO & social states.
 
 ## Verification
 
@@ -163,10 +178,18 @@ placeholder.
   narrowly rebased from 782,000 to 790,000 bytes and from 1,270,000 to 1,285,000
   bytes respectively. The stylesheet remains 65,349 bytes within its unchanged
   66,000-byte guardrail.
+- Page design validation adds two focused cases; React has 41 passing tests
+  across 12 files and its focused TypeScript check passes. The complete
+  repository gate also passes after the narrow size-budget update below.
+- Page design brings the aggregate React entry to 813,599 bytes and the packed
+  archive to 1,295,788 bytes. Their guardrails were narrowly rebased from
+  790,000 to 820,000 bytes and from 1,285,000 to 1,302,000 bytes respectively.
+  The stylesheet remains 65,349 bytes within its unchanged 66,000-byte
+  guardrail.
 
 ## Remaining phase gate
 
-Element-specific inspector refinements; Page design, settings, SEO and Variable
-management; broader validation presentation; phone and packed-browser visual
-assertions; and the full Phase 5 verification matrix remain open. The shared
-media picker and Resource selection stay assigned to Parity Phase 6.
+Element-specific inspector refinements; Variable management; broader validation
+presentation; phone and packed-browser visual assertions; and the full Phase 5
+verification matrix remain open. Social-image selection, the shared media picker
+and other Resource selection stay assigned to Parity Phase 6.
