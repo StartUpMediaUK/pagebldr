@@ -4,8 +4,8 @@ import type {
   DocumentIndex,
   PageDocument,
   StyleValue,
-  VariableKind,
 } from "./document-types.js";
+import { styleVariableKindsForProperty } from "./styles.js";
 import type { ElementDefinition } from "./element.js";
 import type { StyleEngine } from "./styles.js";
 import { PagebldrError } from "./types.js";
@@ -239,40 +239,13 @@ function assertVariableReference(
     );
   }
   const variable = document.variables[value.variableId]!;
-  if (!variableProperties[variable.kind].includes(property)) {
+  if (!styleVariableKindsForProperty(property).includes(variable.kind)) {
     throw new PagebldrError(
       "INVALID_ELEMENT",
       `${variable.kind} Variable ${variable.id} cannot be used for ${property}.`,
     );
   }
 }
-
-const variableProperties: Readonly<Record<VariableKind, readonly string[]>> = {
-  color: ["color", "backgroundColor", "borderColor"],
-  typography: ["fontFamily"],
-  spacing: [
-    "gap",
-    "columnGap",
-    "rowGap",
-    "margin",
-    "marginTop",
-    "marginRight",
-    "marginBottom",
-    "marginLeft",
-    "padding",
-    "paddingTop",
-    "paddingRight",
-    "paddingBottom",
-    "paddingLeft",
-    "top",
-    "right",
-    "bottom",
-    "left",
-  ],
-  radius: ["borderRadius"],
-  shadow: ["boxShadow"],
-  contentWidth: ["width", "minWidth", "maxWidth"],
-};
 
 function assertSupportedStyleProperty(
   definition: ElementDefinition,

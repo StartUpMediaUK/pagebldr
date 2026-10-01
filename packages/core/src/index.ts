@@ -11,6 +11,7 @@ export {
   compileDocumentStyles,
   defineStyleCapability,
   resolveElementStyles,
+  styleVariableKindsForProperty,
 } from "./styles.js";
 export { assertUniqueId, createId, createSequentialIdFactory } from "./ids.js";
 export { isAnchorIdDuplicate, normalizeAnchorId } from "./anchors.js";

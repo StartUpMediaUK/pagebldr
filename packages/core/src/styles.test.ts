@@ -7,7 +7,10 @@ import {
   createFiveHundredElementFixture,
   createShallowFixture,
 } from "./fixtures.js";
-import { defineStyleCapability } from "./styles.js";
+import {
+  defineStyleCapability,
+  styleVariableKindsForProperty,
+} from "./styles.js";
 import {
   standardElements,
   standardStyleCapabilities,
@@ -38,6 +41,14 @@ function withStyles(
 }
 
 describe("Style engine", () => {
+  it("exposes the Variable kinds applicable to each authored property", () => {
+    expect(styleVariableKindsForProperty("color")).toEqual(["color"]);
+    expect(styleVariableKindsForProperty("width")).toEqual(["contentWidth"]);
+    expect(styleVariableKindsForProperty("marginTop")).toEqual(["spacing"]);
+    expect(styleVariableKindsForProperty("transform")).toEqual([]);
+    expect(builder.styles.variableKindsForProperty("gap")).toEqual(["spacing"]);
+  });
+
   it("ships the nine Quizr capability groups and complete safe property grammar", () => {
     expect(standardStyleCapabilities.map(({ key }) => key)).toEqual([
       "layout",

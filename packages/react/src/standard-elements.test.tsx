@@ -93,6 +93,34 @@ describe("standard Element renderer", () => {
     ).not.toContain("Unknown Element");
   });
 
+  it("can force the selected Element's authored interaction state in edit mode", () => {
+    const document = standardDocument();
+    const html = renderToString(
+      <PagebldrRenderer
+        builder={builder}
+        document={document}
+        mode="edit"
+        forcedStyleState={{ elementId: "heading", state: "hover" }}
+      />,
+    );
+    expect(html).toContain(
+      'data-pagebldr-element="heading" id="pagebldr-heading" data-pagebldr-force-state="hover"',
+    );
+    expect(html).not.toContain(
+      'data-pagebldr-element="button" id="pagebldr-button" data-pagebldr-force-state',
+    );
+    expect(
+      renderToString(
+        <PagebldrRenderer
+          builder={builder}
+          document={document}
+          mode="published"
+          forcedStyleState={{ elementId: "heading", state: "hover" }}
+        />,
+      ),
+    ).not.toContain("data-pagebldr-force-state");
+  });
+
   it("keeps hidden Elements discoverable only while editing", () => {
     const document = standardDocument();
     const hidden = {

@@ -99,6 +99,7 @@ const builder = createPagebldr({
 
 const compiled = builder.styles.compile(document);
 const resolved = builder.styles.resolve(document, elementId, "tablet", "hover");
+const applicableKinds = builder.styles.variableKindsForProperty("padding");
 ```
 
 `compiled.css` is authored page CSS only. It is byte-stable for the same
@@ -113,7 +114,9 @@ accepts the 91-property Quizr-derived allowlist, resolves Desktop → Tablet →
 Mobile inheritance and Normal-state fallback, and reports each winning value's
 Class/local, breakpoint, state, and inherited origin. CSS includes editor-only
 forced-state selectors and rejects rule delimiters, comments, script/expression
-syntax, imports, and unsafe URL values.
+syntax, imports, and unsafe URL values. `variableKindsForProperty()` exposes the
+same typed-Variable applicability policy enforced during Document validation, so
+editor integrations do not need to duplicate it.
 
 The renderer applies the returned `data-pagebldr` and `data-pagebldr-document`
 scope attributes. Element and Class selectors use package-owned data attributes
@@ -328,6 +331,16 @@ control. Edit-mode links are navigation-suppressed; Preview renders the current
 controlled Document without editor chrome and returns with Escape. Canvas
 selection, hover, inline editing and placement dispatch ordinary editor commands
 and never mutate the Document directly.
+
+The standard inspector authors registered styles through the same controlled
+command path. Style contains presentation capabilities such as Typography and
+Background; Advanced contains Layout, Spacing, Size, Position, Border, Effects,
+and Responsive visibility. Desktop, Tablet, and Mobile authoring follows the
+canvas viewport. Normal, Hover, and Focus Visible are keyboard-operable states;
+the latter two are forced only on the selected edit-mode canvas Element. Fields
+show their winning local/Class, breakpoint, state, and inherited origin, filter
+Variables by property applicability, and provide per-property and reset-all
+actions.
 
 There is no simultaneous `document` and `initialDocument` on this module: that
 creates two state-ownership modes and synchronization ambiguity. A separate
