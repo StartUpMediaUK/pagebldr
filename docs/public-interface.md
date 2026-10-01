@@ -342,6 +342,16 @@ show their winning local/Class, breakpoint, state, and inherited origin, filter
 Variables by property applicability, and provide per-property and reset-all
 actions.
 
+The toolbar's Page design dialog stages page-wide changes until Apply dispatches
+one `update-settings` command. Design validates content width (320–2400px),
+tablet maximum (768–1200px), mobile maximum (320–767px), and requires the mobile
+boundary to remain below the tablet boundary. Settings records whether the Host
+should show its default header; it does not cause pagebldr to render Host
+chrome. SEO & social authors bounded search and social copy plus `noIndex`. An
+existing social-image Resource can be inspected or cleared here; choosing a new
+Resource remains part of the shared media picker rather than a second,
+page-specific Resource browser.
+
 There is no simultaneous `document` and `initialDocument` on this module: that
 creates two state-ownership modes and synchronization ambiguity. A separate
 convenience module can be introduced only if real examples prove demand:

@@ -24,6 +24,7 @@ import {
   LaptopIcon,
   Layers3Icon,
   MoreHorizontalIcon,
+  PaletteIcon,
   PanelLeftIcon,
   PlusIcon,
   Redo2Icon,
@@ -108,6 +109,7 @@ import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
 import { StyleControls } from "./style-control.js";
+import { PageDesignDialog } from "./page-design-dialog.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -143,6 +145,7 @@ function EditorWorkspace({
   const [panelOpen, setPanelOpen] = useState(true);
   const [panelMode, setPanelMode] = useState<"add" | "inspector">("add");
   const [structureOpen, setStructureOpen] = useState(true);
+  const [pageDesignOpen, setPageDesignOpen] = useState(false);
   const [clipboard, setClipboard] = useState<PagebldrClipboard | null>(null);
   const [styleClipboard, setStyleClipboard] =
     useState<PagebldrStyleClipboard | null>(null);
@@ -372,6 +375,7 @@ function EditorWorkspace({
         onSave={() => void perform("save")}
         panelOpen={panelOpen}
         onPanelOpenChange={setPanelOpen}
+        onPageDesign={() => setPageDesignOpen(true)}
         structureOpen={structureOpen}
         onStructureOpenChange={setStructureOpen}
         status={status}
@@ -477,6 +481,10 @@ function EditorWorkspace({
           </div>
         </>
       )}
+      <PageDesignDialog
+        open={pageDesignOpen}
+        onOpenChange={setPageDesignOpen}
+      />
     </section>
   );
 }
@@ -541,6 +549,7 @@ function builtInContributions(input: {
 function EditorToolbar({
   canSave,
   onPanelOpenChange,
+  onPageDesign,
   onSave,
   onStructureOpenChange,
   panelOpen,
@@ -551,6 +560,7 @@ function EditorToolbar({
 }: {
   readonly canSave: boolean;
   readonly onPanelOpenChange: (open: boolean) => void;
+  readonly onPageDesign: () => void;
   readonly onSave: () => void;
   readonly onStructureOpenChange: (open: boolean) => void;
   readonly panelOpen: boolean;
@@ -653,7 +663,9 @@ function EditorToolbar({
               <SaveIcon /> Save draft
             </DropdownMenuItem>
             <DropdownMenuItem disabled>History</DropdownMenuItem>
-            <DropdownMenuItem disabled>Page design</DropdownMenuItem>
+            <DropdownMenuItem onSelect={onPageDesign}>
+              <PaletteIcon /> Page design
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}
