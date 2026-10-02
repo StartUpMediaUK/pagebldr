@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { RotateCcwIcon, Trash2Icon } from "lucide-react";
 
 import { resourceKey, type PageSettings } from "@pagebldr/core";
@@ -32,6 +32,9 @@ import {
 } from "../components/ui/tabs.js";
 import { Textarea } from "../components/ui/textarea.js";
 import { usePagebldrEditor } from "./context.js";
+import { VariableManager } from "./variable-manager.js";
+
+type PageDesignTab = "design" | "settings" | "seo" | "variables";
 
 export const defaultPageDesign = Object.freeze({
   contentWidth: 1_200,
@@ -70,6 +73,14 @@ export function validatePageDesign(settings: PageSettings): readonly string[] {
   return errors;
 }
 
+export function validatePageTitle(title: string): string | null {
+  const trimmed = title.trim();
+  if (!trimmed) return "Page title is required.";
+  if (trimmed.length > 160)
+    return "Page title must use 160 characters or fewer.";
+  return null;
+}
+
 export function PageDesignDialog({
   open,
   onOpenChange,
@@ -79,12 +90,21 @@ export function PageDesignDialog({
 }) {
   const editor = usePagebldrEditor();
   const [draft, setDraft] = useState<PageSettings>(editor.document.settings);
+  const [activeTab, setActiveTab] = useState<PageDesignTab>("design");
+  const [pageTitle, setPageTitle] = useState(editor.document.title);
+  const [pageTitleError, setPageTitleError] = useState<string | null>(null);
+  const wasOpen = useRef(false);
   const readOnly = editor.mode !== "edit";
   const errors = validatePageDesign(draft);
 
   useEffect(() => {
-    if (open) setDraft(structuredClone(editor.document.settings));
-  }, [editor.document.settings, open]);
+    if (open && !wasOpen.current) {
+      setDraft(structuredClone(editor.document.settings));
+      setPageTitle(editor.document.title);
+      setPageTitleError(null);
+    }
+    wasOpen.current = open;
+  }, [editor.document.settings, editor.document.title, open]);
 
   const update = (patch: Partial<PageSettings>) =>
     setDraft((current) => ({ ...current, ...patch }));
@@ -109,11 +129,16 @@ export function PageDesignDialog({
             metadata.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="design" className="min-h-0 gap-0">
-          <TabsList className="mx-6 grid w-auto grid-cols-3">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as PageDesignTab)}
+          className="min-h-0 gap-0"
+        >
+          <TabsList className="mx-6 grid w-auto grid-cols-4">
             <TabsTrigger value="design">Design</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="seo">SEO &amp; social</TabsTrigger>
+            <TabsTrigger value="variables">Variables</TabsTrigger>
           </TabsList>
           <div className="max-h-[32rem] overflow-y-auto px-6 py-5">
             <TabsContent value="design">
@@ -187,6 +212,34 @@ export function PageDesignDialog({
             </TabsContent>
             <TabsContent value="seo">
               <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="pb-page-title">Page title</FieldLabel>
+                  <Input
+                    id="pb-page-title"
+                    value={pageTitle}
+                    maxLength={160}
+                    disabled={readOnly}
+                    aria-invalid={Boolean(pageTitleError)}
+                    onChange={(event) => {
+                      setPageTitle(event.currentTarget.value);
+                      setPageTitleError(null);
+                    }}
+                    onBlur={() => {
+                      const next = pageTitle.trim();
+                      const error = validatePageTitle(next);
+                      setPageTitleError(error);
+                      if (!error && next !== editor.document.title)
+                        editor.dispatch({ type: "update-page", title: next });
+                    }}
+                  />
+                  {pageTitleError ? (
+                    <FieldError>{pageTitleError}</FieldError>
+                  ) : (
+                    <FieldDescription>
+                      Applies on blur as its own undoable page command.
+                    </FieldDescription>
+                  )}
+                </Field>
                 <TextField
                   label="Search title"
                   value={draft.seo.title}
@@ -256,6 +309,9 @@ export function PageDesignDialog({
                 </Field>
               </FieldGroup>
             </TabsContent>
+            <TabsContent value="variables">
+              <VariableManager />
+            </TabsContent>
           </div>
         </Tabs>
         <DialogFooter className="border-t px-6 py-4">
@@ -266,7 +322,7 @@ export function PageDesignDialog({
           </DialogClose>
           <Button
             type="button"
-            disabled={readOnly || errors.length > 0}
+            disabled={readOnly || errors.length > 0 || Boolean(pageTitleError)}
             onClick={() => {
               editor.dispatch({ type: "update-settings", settings: draft });
               onOpenChange(false);
