@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { createPagebldr, type PageSettings } from "@pagebldr/core";
-import { defaultPageDesign, validatePageDesign } from "./page-design-dialog.js";
+import {
+  defaultPageDesign,
+  validatePageDesign,
+  validatePageTitle,
+} from "./page-design-dialog.js";
 
 describe("Page design dialog", () => {
   const settings = createPagebldr({
@@ -28,5 +32,13 @@ describe("Page design dialog", () => {
       "Tablet maximum must be a whole number from 768 to 1200 pixels.",
       "Mobile maximum must be smaller than tablet maximum.",
     ]);
+  });
+
+  it("requires a bounded page title", () => {
+    expect(validatePageTitle("  Project page  ")).toBeNull();
+    expect(validatePageTitle("  ")).toBe("Page title is required.");
+    expect(validatePageTitle("x".repeat(161))).toBe(
+      "Page title must use 160 characters or fewer.",
+    );
   });
 });

@@ -57,9 +57,18 @@ Source baseline: Quizr Page Builder V2 commit
 - Page design now stages and validates content width and authored tablet/mobile
   boundaries before applying them as one controlled `update-settings` command.
   Settings records default Host-header intent without rendering Host chrome. SEO
-  & social authors the complete bounded copy and `noIndex` contract, and can
+  & social authors the required bounded page title as its own undoable page
+  command, the complete bounded metadata copy and `noIndex` contract, and can
   inspect or clear an existing social-image Resource. Selecting a new image
   stays with the shared Phase 6 media picker.
+- Variables now supports all six kinds with safe kind-specific defaults and
+  validation, unique add/rename, value editing, per-kind reordering, usage
+  counts, unused deletion and explicit guarded deletion when declarations use a
+  Variable. Changes use the existing public commands immediately and remain in
+  Local history; Style continues to filter choices by engine applicability.
+- The current shadcn Alert Dialog registry source was reviewed and adapted to
+  package imports for the destructive used-Variable confirmation. ReUI was not
+  available in this runtime.
 
 ## Evidence
 
@@ -77,6 +86,10 @@ Source baseline: Quizr Page Builder V2 commit
 - [Page design controls](evidence/parity-phase-5/page-design-controls.png)
 - [Page SEO and social controls](evidence/parity-phase-5/page-design-seo-controls.png)
 - [Page design flow](evidence/parity-phase-5/page-design-flow.mp4)
+- [Variable manager](evidence/parity-phase-5/variable-manager.png)
+- [Edited and reordered Variable](evidence/parity-phase-5/variable-manager-updated.png)
+- [Used-Variable deletion guard](evidence/parity-phase-5/variable-delete-guard.png)
+- [Variable manager flow](evidence/parity-phase-5/variable-manager-flow.mp4)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -126,6 +139,17 @@ out-of-range content width produces an inline error and disables Apply, then
 saved a valid 1100px width, toggled the Host-header intent, and authored social
 copy using keyboard activation. Reopening the dialog retained the applied
 values. The linked stills and recording show the Design and SEO & social states.
+
+The rebuilt aggregate package then exercised Variables in the same Host. It
+added a Colour Variable, edited its value, reordered it with Space from the
+keyboard, and immediately deleted it while unused. Existing fixture usage counts
+matched the researched baseline. Deleting used Deep olive opened the titled
+destructive alert with the five-source consequence and keyboard-focused Cancel.
+The SEO tab also retained an invalid blank page-title draft with an inline error
+and disabled Apply, then committed a valid title on blur to both dialog and Host
+toolbar. The linked stills and short replacement recording are the visual
+evidence; an earlier recording crossed an overnight pause and exceeded T3's
+transfer limit, so it was discarded rather than cited.
 
 ## Verification
 
@@ -186,10 +210,18 @@ values. The linked stills and recording show the Design and SEO & social states.
   790,000 to 820,000 bytes and from 1,285,000 to 1,302,000 bytes respectively.
   The stylesheet remains 65,349 bytes within its unchanged 66,000-byte
   guardrail.
+- Variable management adds four focused cases (including page-title bounds,
+  six-kind defaults and validation, unsafe values, and per-source usage counts);
+  React has 45 passing tests across 13 files and its focused TypeScript and lint
+  checks pass.
+- Variable management brings the aggregate React entry to 842,466 bytes, the
+  stylesheet to 67,558 bytes, and the packed archive to 1,311,664 bytes. Their
+  guardrails were narrowly rebased from 820,000 to 850,000 bytes, from 66,000 to
+  68,000 bytes, and from 1,302,000 to 1,318,000 bytes respectively.
 
 ## Remaining phase gate
 
-Element-specific inspector refinements; Variable management; broader validation
-presentation; phone and packed-browser visual assertions; and the full Phase 5
-verification matrix remain open. Social-image selection, the shared media picker
-and other Resource selection stay assigned to Parity Phase 6.
+Element-specific inspector refinements; broader validation presentation; phone
+and packed-browser visual assertions; and the full Phase 5 verification matrix
+remain open. Social-image selection, the shared media picker and other Resource
+selection stay assigned to Parity Phase 6.
