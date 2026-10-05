@@ -1,0 +1,174 @@
+{
+  "artifact": {
+    "package": "pagebldr",
+    "version": "0.0.0-alpha.0",
+    "archive": "pagebldr-0.0.0-alpha.0.tgz",
+    "sha256": "109cc01879893b607224fba84daa0a82adfa8d9d63222aebce14ab58ee337e5b",
+    "reactVersion": "19.2.8"
+  },
+  "browser": "147.0.7727.15",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "results": [
+    {
+      "name": "Menu Centre alignment reaches canvas",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\n'normal' !== 'center'\n"
+    },
+    {
+      "name": "Menu item gap reaches canvas",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\n'12px' !== '40px'\n"
+    },
+    {
+      "name": "Numeric rejection preserves draft with associated error",
+      "status": "pass"
+    },
+    {
+      "name": "Keyboard Escape restores last valid numeric value",
+      "status": "pass"
+    },
+    {
+      "name": "Unsafe responsive Style draft is rejected and Escape clears it",
+      "status": "pass"
+    },
+    {
+      "name": "Menu Style accessibility",
+      "status": "fail",
+      "error": "button-name (3), color-contrast (20)\n\n2 !== 0\n"
+    },
+    {
+      "name": "Menu edits reach controlled Host state",
+      "status": "pass"
+    },
+    {
+      "name": "Menu fullscreen uses a viewport-fixed panel",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\n'static' !== 'fixed'\n"
+    },
+    {
+      "name": "Menu fullscreen vertical alignment reaches rendering",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\nnull !== 'end'\n"
+    },
+    {
+      "name": "Menu collapsed position reaches rendering",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\nnull !== 'end'\n"
+    },
+    {
+      "name": "Menu item background reaches rendering",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'rgba(0, 0, 0, 0)'\n- 'rgb(18, 52, 86)'\n      ^\n"
+    },
+    {
+      "name": "Menu item hover background reaches rendering",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'rgba(0, 0, 0, 0)'\n- 'rgb(101, 67, 33)'\n      ^\n"
+    },
+    {
+      "name": "Menu disclosure controls its panel",
+      "status": "fail",
+      "error": "Toggle must identify its panel"
+    },
+    {
+      "name": "Keyboard Escape closes Menu and restores focus",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\n'true' !== 'false'\n"
+    },
+    {
+      "name": "Open Menu accessibility",
+      "status": "fail",
+      "error": "color-contrast (18)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Menu fullscreen locks background scrolling",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'visible'\n- 'hidden'\n"
+    },
+    {
+      "name": "Menu outside pointer closes the panel",
+      "status": "fail",
+      "error": "Expected values to be strictly equal:\n\n'true' !== 'false'\n"
+    },
+    {
+      "name": "Heading Content journey desktop",
+      "status": "pass"
+    },
+    {
+      "name": "Heading Content accessibility desktop",
+      "status": "fail",
+      "error": "button-name (5), color-contrast (20)\n\n2 !== 0\n"
+    },
+    {
+      "name": "Container Advanced journey desktop",
+      "status": "pass"
+    },
+    {
+      "name": "Container Advanced accessibility desktop",
+      "status": "fail",
+      "error": "button-name (5), color-contrast (20)\n\n2 !== 0\n"
+    },
+    {
+      "name": "Page design Variables journey desktop",
+      "status": "pass"
+    },
+    {
+      "name": "Page design Variables accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (5)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Heading Content journey phone",
+      "status": "pass"
+    },
+    {
+      "name": "Heading Content accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (20)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Container Advanced journey phone",
+      "status": "pass"
+    },
+    {
+      "name": "Container Advanced accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (20)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Page design Variables journey phone",
+      "status": "pass"
+    },
+    {
+      "name": "Page design Variables accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (5)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Container Tablet Hover Style and per-property reset",
+      "status": "pass"
+    },
+    {
+      "name": "Container Tablet Hover accessibility",
+      "status": "fail",
+      "error": "color-contrast (20)\n\n1 !== 0\n"
+    }
+  ],
+  "diagnostics": {
+    "pageErrors": [],
+    "failedRequests": [],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "httpErrors": []
+  }
+}

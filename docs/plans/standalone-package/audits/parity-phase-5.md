@@ -302,3 +302,118 @@ Phase 6.
 - This checkpoint does not close Phase 5. Broader collection/rich-text
   validation feedback, required desktop/phone visual comparisons, keyboard/a11y
   review and the acceptance matrix remain outstanding. Phase 6 has not begun.
+
+## 5 October 2026 packed Chromium acceptance and Menu gap audit
+
+The product owner authorized Playwright/Chromium as a fallback. T3 status and
+snapshot initially succeeded, but focused evaluation failed again. The fallback
+used Playwright 1.63.0, Chromium 147.0.7727.15 and axe-core 4.13.0, against the
+same isolated packed artifact and SHA-256 recorded above. Desktop was 1440 ×
+900; phone was 390 × 844. No Host styling repairs, Contributions or
+package-source aliases were added. No package behavior was changed during this
+testing pass.
+
+The repeatable browser suite is
+[`scripts/check-parity-phase5-browser.mjs`](../../../../scripts/check-parity-phase5-browser.mjs).
+Install `playwright` and `@axe-core/playwright` only in the retained isolated
+consumer, then run the script from the repository root with that consumer path
+and a Chromium executable path. It deliberately exits nonzero while any
+acceptance assertion fails; it is not added to the normal repository gate yet.
+
+- [Machine-readable results](evidence/parity-phase-5/browser-2026-10-05/results.json):
+  **11 of 31 checks pass; 20 fail**. These counts include separate accessibility
+  checks, not 20 distinct product defects.
+- [Action trace](evidence/parity-phase-5/browser-2026-10-05/phase5-browser-trace.zip).
+  Screenshots are retained separately. The earlier 65 MB full-DOM trace remains
+  recoverable in the isolated consumer as `phase5-full-dom-trace.zip`; it was
+  moved out of repository evidence to avoid committing redundant frame data.
+- [Rejected numeric draft](evidence/parity-phase-5/browser-2026-10-05/menu-invalid-draft-desktop.png),
+  [configured Menu controls](evidence/parity-phase-5/browser-2026-10-05/menu-style-configured-desktop.png),
+  [actual fullscreen result](evidence/parity-phase-5/browser-2026-10-05/menu-fullscreen-actual-phone.png).
+- Heading Content:
+  [desktop](evidence/parity-phase-5/browser-2026-10-05/heading-content-desktop.png)
+  and
+  [phone](evidence/parity-phase-5/browser-2026-10-05/heading-content-phone.png).
+- Container Advanced:
+  [desktop](evidence/parity-phase-5/browser-2026-10-05/container-advanced-desktop.png)
+  and
+  [phone](evidence/parity-phase-5/browser-2026-10-05/container-advanced-phone.png).
+- [Container Tablet/Hover](evidence/parity-phase-5/browser-2026-10-05/container-style-tablet-hover-desktop.png).
+- Variables:
+  [desktop](evidence/parity-phase-5/browser-2026-10-05/page-variables-desktop.png)
+  and
+  [phone](evidence/parity-phase-5/browser-2026-10-05/page-variables-phone.png).
+
+Passing behavior: rejected numeric text remains associated with its error;
+keyboard Escape restores the last valid value; unsafe Style text is rejected and
+discarded with Escape; Menu edits reach controlled Host state and Save; Heading
+level changes update the isolated canvas to H2 at both viewports; Container
+padding edits and keyboard Enter-to-add Variables work at both viewports;
+Tablet/Hover styling reaches the forced canvas state and resets. These are
+interaction checks, not a claim of complete keyboard-only acceptance or visual
+fidelity to the source screenshots.
+
+### Menu defects: not intentionally deferred
+
+The first minimized check failed deterministically: Centre was selected, but the
+canvas list computed `justify-content: normal`, not `center`. The second
+computed 12px item spacing after authoring 40px. Save confirmed both authored
+values are in Host state, ruling out failed command dispatch or lost Host
+updates as the explanation.
+
+Source inspection then confirmed the main cause: `renderMenu` uses only a subset
+of its schema, applies gap to the outer navigation rather than its list, and
+does not emit alignment/appearance/position metadata. Compiled base CSS has
+ordinary list-collapse rules, not dropdown/fullscreen panel behavior. Runtime
+interactions only toggle `data-open` and `aria-expanded`; they omit the source
+Menu's close/focus/scroll lifecycle.
+
+| Required Menu behavior                         | Observed packed result                                                         | Phase ownership                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------- |
+| Horizontal alignment and authored item gap     | Centre has no effect; 40px still renders 12px list spacing.                    | Phase 5 controls; Phase 2 rendering reopened. |
+| Item background and hover treatment            | Both computed backgrounds remain transparent after authoring explicit colours. | Phase 5 / Phase 2 rendering.                  |
+| Fullscreen presentation and vertical alignment | Open list remains static in the header; vertical alignment metadata is absent. | Phase 2 widget; blocks Phase 5 parity.        |
+| Collapsed breakpoint positioning               | Authored position is not emitted or applied by the renderer.                   | Phase 5 / Phase 2 rendering.                  |
+| Toggle-to-panel association                    | No `aria-controls` identifies the panel.                                       | Phase 2 widget accessibility.                 |
+| Escape and outside-pointer dismissal           | Menu remains expanded.                                                         | Phase 2 widget; blocks current keyboard gate. |
+| Fullscreen background scroll lock              | Body overflow remains visible.                                                 | Phase 2 widget.                               |
+
+Pinned source inspection also identifies outstanding UI fidelity: Menu
+breakpoints use icon segments rather than the current native select; spacing
+uses a slider; colours use picker compositions rather than plain text inputs;
+fullscreen horizontal alignment changes its label. The source widget also
+includes full-width dropdown header-boundary positioning, fullscreen Logo
+treatment, initial focus/focus wrapping and link-selection dismissal. These last
+widget behaviors have not all received independent browser assertions in this
+pass; they must be added to the follow-up acceptance suite rather than silently
+assumed complete.
+
+These are not Phase 6 library/media additions. Controls remain Phase 5 work;
+previously accepted Phase 2 runtime coverage must be reopened where these tests
+contradict it. Phase 8's cross-product visual/accessibility hardening is not
+permission to waive this phase's own interaction and accessibility gate.
+
+### Accessibility and diagnostics
+
+All nine revealed-state axe checks fail. The retained `*-axe.json` files report
+WCAG A/AA violations: unnamed disabled leaf-placeholder buttons in Structure and
+contrast failures in inspector tabs, Variable usage copy and fixture content.
+The leaf buttons are confirmed by their captured DOM; this is not a
+missing-label claim about the new scalar inputs. Reports include the specific
+targets, not just aggregate counts.
+
+The final run records no page exceptions and no failed transport requests. One
+browser console entry reports an HTTP 404; its URL was not supplied by the
+console event and was not captured by the response listener, so it remains an
+unattributed diagnostic rather than a claimed clean console.
+
+Proportional repository verification for this test/documentation-only change:
+Core 61/61 tests, React 51/51 tests, repository formatting and lint, and
+`git diff --check` pass. The browser suite intentionally fails on the recorded
+defects. TypeScript, builds and package gates were not repeated in this pass;
+they passed for the unchanged package code in the preceding validation
+checkpoint. No runtime fix or release action is included in this audit commit.
+
+Phase 5 remains **incomplete**. The new screenshots cover the requested named
+states, but the Menu comparison is a fail and the broader source-visual,
+keyboard-only, collection validation and accessibility gate remains open.
