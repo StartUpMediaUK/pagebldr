@@ -109,6 +109,11 @@ import { DestinationControl } from "./destination-control.js";
 import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
+import { SliderField } from "./slider-field.js";
+import {
+  propertyControlLabel,
+  propertyOptionIcon,
+} from "./property-presentation.js";
 import { StyleControls } from "./style-control.js";
 import { PageDesignDialog } from "./page-design-dialog.js";
 import {
@@ -1102,6 +1107,7 @@ function PropertyField({
   const editor = usePagebldrEditor();
   const id = useId();
   const value = element.props[control.key];
+  const label = propertyControlLabel(control, element.props);
   if (!isPropertyControlVisible(control, element.props)) return null;
   const description = control.description ? (
     <FieldDescription>{control.description}</FieldDescription>
@@ -1122,7 +1128,7 @@ function PropertyField({
     return (
       <CollectionControl
         applicationDestinations={applicationDestinations}
-        control={control}
+        control={{ ...control, label }}
         disabled={editor.mode !== "edit" || element.locked}
         document={editor.document}
         elementId={element.id}
@@ -1134,7 +1140,7 @@ function PropertyField({
   if (control.kind === "rich-text")
     return (
       <RichTextControl
-        control={control}
+        control={{ ...control, label }}
         disabled={editor.mode !== "edit" || element.locked}
         value={value}
         onChange={update}
@@ -1145,7 +1151,7 @@ function PropertyField({
     return (
       <DestinationControl
         applicationDestinations={applicationDestinations}
-        control={control}
+        control={{ ...control, label }}
         disabled={editor.mode !== "edit" || element.locked}
         document={editor.document}
         elementId={element.id}
@@ -1158,7 +1164,7 @@ function PropertyField({
     return (
       <Field orientation="horizontal">
         <div className="flex flex-1 flex-col gap-1">
-          <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
+          <FieldLabel htmlFor={id}>{label}</FieldLabel>
           {description}
         </div>
         <Switch
@@ -1174,10 +1180,10 @@ function PropertyField({
     const selected = control.options.find(
       ({ value: option }) => option === value,
     );
-    if (control.presentation === "segmented")
+    if (control.presentation && control.presentation !== "select")
       return (
         <Field>
-          <FieldLabel id={id}>{control.label}</FieldLabel>
+          <FieldLabel id={id}>{label}</FieldLabel>
           <ToggleGroup
             type="single"
             variant="outline"
@@ -1192,22 +1198,30 @@ function PropertyField({
             aria-labelledby={id}
             className="w-full"
           >
-            {control.options.map((option) => (
-              <ToggleGroupItem
-                key={`${typeof option.value}:${option.value}`}
-                value={String(option.value)}
-                className="flex-1"
-              >
-                {option.label}
-              </ToggleGroupItem>
-            ))}
+            {control.options.map((option) => {
+              const Icon = propertyOptionIcon(
+                control.presentation,
+                option.value,
+              );
+              return (
+                <ToggleGroupItem
+                  key={`${typeof option.value}:${option.value}`}
+                  value={String(option.value)}
+                  className="flex-1"
+                  aria-label={option.label}
+                  title={option.label}
+                >
+                  {Icon ? <Icon data-icon="inline-start" /> : option.label}
+                </ToggleGroupItem>
+              );
+            })}
           </ToggleGroup>
           {description}
         </Field>
       );
     return (
       <Field>
-        <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
         <NativeSelect
           id={id}
           value={selected ? String(selected.value) : ""}
@@ -1240,10 +1254,32 @@ function PropertyField({
   }
 
   if (typeof value !== "string" && typeof value !== "number") return null;
+  if (
+    control.kind === "number" &&
+    control.presentation === "slider" &&
+    typeof value === "number" &&
+    control.min !== undefined &&
+    control.max !== undefined
+  )
+    return (
+      <SliderField
+        key={`${element.id}:${control.key}`}
+        label={label}
+        value={value}
+        min={control.min}
+        max={control.max}
+        {...(control.step !== undefined ? { step: control.step } : {})}
+        {...(control.unit !== undefined ? { unit: control.unit } : {})}
+        disabled={editor.mode !== "edit" || element.locked}
+        onCommit={update}
+      >
+        {description}
+      </SliderField>
+    );
   return (
     <ValidatedInputField
       key={`${element.id}:${control.key}`}
-      label={control.label}
+      label={label}
       value={String(value)}
       inputProps={{
         type: control.kind === "number" ? "number" : "text",

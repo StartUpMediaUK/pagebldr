@@ -49,6 +49,11 @@ interface ElementControlBase<Props> {
   readonly key: keyof Props & string;
   readonly label: string;
   readonly description?: string;
+  /** First matching override wins; labels remain definition-owned and serializable. */
+  readonly labelWhen?: readonly {
+    readonly label: string;
+    readonly conditions: readonly ElementControlVisibilityCondition<Props>[];
+  }[];
   readonly visibleWhen?:
     | ElementControlVisibilityCondition<Props>
     | readonly ElementControlVisibilityCondition<Props>[];
@@ -96,13 +101,20 @@ export type ElementControl<Props> =
       readonly min?: number;
       readonly max?: number;
       readonly step?: number;
+      readonly presentation?: "input" | "slider";
+      readonly unit?: string;
     })
   | (ElementControlBase<Props> & {
       readonly kind: "boolean";
     })
   | (ElementControlBase<Props> & {
       readonly kind: "select";
-      readonly presentation?: "select" | "segmented";
+      readonly presentation?:
+        | "select"
+        | "segmented"
+        | "viewport"
+        | "horizontal-alignment"
+        | "vertical-alignment";
       readonly options: readonly {
         readonly label: string;
         readonly value: string | number;

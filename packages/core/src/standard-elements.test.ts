@@ -161,6 +161,7 @@ describe("standard Elements", () => {
         kind: "select",
         key: "collapseAt",
         label: "Menu breakpoint",
+        presentation: "viewport",
         options: [
           { label: "Desktop", value: "desktop" },
           { label: "Tablet", value: "tablet" },

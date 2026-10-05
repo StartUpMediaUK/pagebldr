@@ -1,10 +1,18 @@
 "use client";
 
-import { useId, useState, type ComponentProps, type ReactNode } from "react";
+import {
+  useId,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from "react";
 import { PagebldrError } from "@pagebldr/core";
 
 import { Field, FieldError, FieldLabel } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
+import { Textarea } from "../components/ui/textarea.js";
 
 type InputOptions = Omit<
   ComponentProps<typeof Input>,
@@ -19,6 +27,8 @@ export function ValidatedInputField({
   inputProps,
   labelAction,
   children,
+  multiline = false,
+  commitOnBlur = false,
 }: {
   readonly value: string;
   readonly label: string;
@@ -26,6 +36,8 @@ export function ValidatedInputField({
   readonly inputProps?: InputOptions;
   readonly labelAction?: ReactNode;
   readonly children?: ReactNode;
+  readonly multiline?: boolean;
+  readonly commitOnBlur?: boolean;
 }) {
   const id = useId();
   const [draft, setDraft] = useState<{
@@ -41,6 +53,39 @@ export function ValidatedInputField({
   if (draft.source !== value) setDraft({ source: value, value, error: null });
   const current = draft.source === value ? draft : { value, error: null };
   const errorId = `${id}-error`;
+  const commit = (next: string) => {
+    const error = next === value ? null : commitInputDraft(next, onCommit);
+    setDraft({ source: value, value: next, error });
+  };
+  const draftProps = {
+    id,
+    value: current.value,
+    "aria-invalid": Boolean(current.error) || undefined,
+    "aria-describedby": current.error ? errorId : undefined,
+    onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const next = event.currentTarget.value;
+      if (commitOnBlur) setDraft({ source: value, value: next, error: null });
+      else commit(next);
+    },
+    onBlur: () => {
+      if (commitOnBlur) commit(current.value);
+    },
+    onKeyDown: (
+      event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+      if (
+        event.key === "Escape" &&
+        (current.error || current.value !== value)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        setDraft({ source: value, value, error: null });
+      } else if (event.key === "Enter" && commitOnBlur && !multiline) {
+        event.preventDefault();
+        commit(current.value);
+      }
+    },
+  };
 
   return (
     <Field
@@ -53,26 +98,16 @@ export function ValidatedInputField({
         </FieldLabel>
         {labelAction}
       </div>
-      <Input
-        {...inputProps}
-        id={id}
-        value={current.value}
-        aria-invalid={Boolean(current.error) || undefined}
-        aria-describedby={current.error ? errorId : undefined}
-        onChange={(event) => {
-          const next = event.currentTarget.value;
-          const error =
-            next === value ? null : commitInputDraft(next, onCommit);
-          setDraft({ source: value, value: next, error });
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "Escape" && current.error) {
-            event.preventDefault();
-            event.stopPropagation();
-            setDraft({ source: value, value, error: null });
-          }
-        }}
-      />
+      {multiline ? (
+        <Textarea
+          disabled={inputProps?.disabled}
+          placeholder={inputProps?.placeholder}
+          className={inputProps?.className}
+          {...draftProps}
+        />
+      ) : (
+        <Input {...inputProps} {...draftProps} />
+      )}
       {current.error ? (
         <FieldError id={errorId}>{current.error}</FieldError>
       ) : null}

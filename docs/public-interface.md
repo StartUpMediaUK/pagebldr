@@ -674,13 +674,30 @@ textarea, select and Destination controls. The standard editor supplies add,
 remove and keyboard-operable reorder actions, while preserving the Element
 schema's minimum and maximum. Controls may declare one or more serializable
 `visibleWhen` conditions for dependent fields such as Menu collapse settings.
+The optional `labelWhen` array provides ordered contextual labels; the first
+entry whose `conditions` all match wins, otherwise the base label is used.
+Conditions use the same typed keys and equality rules as `visibleWhen`.
 
 Element-specific visual options use the same contract through `styleControls`.
 They render before the registered responsive Style capabilities and update
 ordinary Element props through controlled commands. A `select` may request the
 `segmented` presentation for short visual choices while retaining a labelled
 keyboard-operable group. The standard Logo, Menu and Gallery definitions use
-this seam; custom definitions receive no privileged component path.
+this seam; custom definitions receive no privileged component path. Semantic
+`viewport`, `horizontal-alignment` and `vertical-alignment` presentations supply
+package-owned icon choices for the standard values
+(`desktop`/`tablet`/`mobile`/`never` or `start`/`center`/`end`). Other options
+retain their text labels; core metadata contains no React icons. A bounded
+`number` may request `presentation: "slider"` with optional display `unit`.
+Sliders use the same prop commands and coalescing policy as numeric inputs and
+support arrow keys, Page Up/Down and Home/End. Without both bounds, the editor
+keeps the numeric input. Units are presentation only, not stored values.
+
+Collection text/textarea controls commit on blur (single-line controls also on
+Enter); structured Rich Text commits as it is edited. Rejected drafts retain
+their text and an associated validation error without changing the Document.
+Escape restores the accepted value, and Undo or a controlled Host replacement
+clears stale drafts. Schemas remain the authority for accepted values.
 
 The React renderer supplies `ElementRenderContext.elementId`, an optional stable
 Document Element identity, so definitions can give interactive descendants

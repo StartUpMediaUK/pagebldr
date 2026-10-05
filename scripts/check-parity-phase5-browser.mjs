@@ -207,7 +207,16 @@ try {
     );
   });
   await check("Menu item gap reaches canvas", async () => {
-    await page.getByLabel("Space between", { exact: true }).fill("40");
+    const slider = page.getByRole("slider", {
+      name: "Space between",
+      exact: true,
+    });
+    await slider.press("Home");
+    await slider.press("PageUp");
+    await slider.press("PageUp");
+    await slider.press("PageUp");
+    await slider.press("PageUp");
+    assert.equal(await slider.getAttribute("aria-valuenow"), "40");
     assert.equal(
       await menu()
         .locator("ul")
@@ -218,10 +227,21 @@ try {
       "40px",
     );
   });
+  await check("Slider changes coalesce into one undoable command", async () => {
+    const slider = page.getByRole("slider", {
+      name: "Space between",
+      exact: true,
+    });
+    await page.getByRole("button", { name: "Undo", exact: true }).click();
+    assert.equal(await slider.getAttribute("aria-valuenow"), "32");
+    await page.getByRole("button", { name: "Redo", exact: true }).click();
+    assert.equal(await slider.getAttribute("aria-valuenow"), "40");
+    await page.getByLabel("Open panel padding", { exact: true }).fill("40");
+  });
   await check(
     "Numeric rejection preserves draft with associated error",
     async () => {
-      const input = page.getByLabel("Space between", { exact: true });
+      const input = page.getByLabel("Open panel padding", { exact: true });
       await input.fill("-1");
       assert.equal(await input.inputValue(), "-1");
       assert.equal(await input.getAttribute("aria-invalid"), "true");
@@ -234,14 +254,16 @@ try {
     },
   );
   await check("Keyboard Escape restores last valid numeric value", async () => {
-    await page.getByLabel("Space between", { exact: true }).press("Escape");
+    await page
+      .getByLabel("Open panel padding", { exact: true })
+      .press("Escape");
     assert.equal(
-      await page.getByLabel("Space between", { exact: true }).inputValue(),
+      await page.getByLabel("Open panel padding", { exact: true }).inputValue(),
       "40",
     );
     assert.equal(
       await page
-        .getByLabel("Space between", { exact: true })
+        .getByLabel("Open panel padding", { exact: true })
         .getAttribute("aria-invalid"),
       null,
     );
@@ -263,15 +285,29 @@ try {
     "Reselecting a scalar option produces no command exception",
     async () => {
       const errorsBefore = diagnostics.pageErrors.length;
-      const breakpoint = page.getByLabel("Menu breakpoint", { exact: true });
-      await breakpoint.selectOption(await breakpoint.inputValue());
+      const presentation = page.getByLabel("Collapse style", { exact: true });
+      await presentation.selectOption(await presentation.inputValue());
       await page.waitForTimeout(50);
       assert.equal(diagnostics.pageErrors.length, errorsBefore);
     },
   );
-  await page
-    .getByLabel("Menu breakpoint", { exact: true })
-    .selectOption("desktop");
+  await check(
+    "Menu breakpoint icons are named and keyboard-operable",
+    async () => {
+      const group = page.getByRole("radiogroup", {
+        name: "Menu breakpoint",
+        exact: true,
+      });
+      assert.equal(await group.getByRole("radio").count(), 4);
+      const desktop = group.getByRole("radio", {
+        name: "Desktop",
+        exact: true,
+      });
+      await desktop.focus();
+      await desktop.press("Space");
+      assert.equal(await desktop.getAttribute("aria-checked"), "true");
+    },
+  );
   await page
     .getByLabel("Collapse style", { exact: true })
     .selectOption("fullscreen");
@@ -281,6 +317,20 @@ try {
   )
     await page.getByLabel("On breakpoint", { exact: true }).selectOption("end");
   await page.getByRole("tab", { name: "Style", exact: true }).click();
+  await check(
+    "Fullscreen uses its source contextual alignment label",
+    async () => {
+      assert.equal(
+        await page
+          .getByRole("radiogroup", {
+            name: "Horizontal alignment",
+            exact: true,
+          })
+          .count(),
+        1,
+      );
+    },
+  );
   await page.getByRole("radio", { name: "Bottom", exact: true }).click();
   await page.getByRole("radio", { name: "Background", exact: true }).click();
   await page.getByLabel("Item background", { exact: true }).fill("#123456");
@@ -494,8 +544,9 @@ try {
   await select("Project enquiry navigation", "Header content");
   await page.getByRole("tab", { name: "Content", exact: true }).click();
   await page
-    .getByLabel("Menu breakpoint", { exact: true })
-    .selectOption("tablet");
+    .getByRole("radiogroup", { name: "Menu breakpoint", exact: true })
+    .getByRole("radio", { name: "Tablet", exact: true })
+    .click();
   await page
     .getByLabel("Collapse style", { exact: true })
     .selectOption("dropdown");
@@ -578,6 +629,153 @@ try {
       );
     },
   );
+
+  for (const [name, width, height] of [
+    ["desktop", 1440, 900],
+    ["tablet", 820, 1000],
+    ["phone", 390, 844],
+  ]) {
+    await check(
+      `Collection invalid drafts and keyboard recovery ${name}`,
+      async () => {
+        await fresh(width, height);
+        await select("Project enquiry navigation", "Header content");
+        await page.getByRole("tab", { name: "Content", exact: true }).click();
+        await screenshot(`menu-content-icons-${name}`);
+        const input = page.getByLabel("Label", { exact: true }).first();
+        const original = await input.inputValue();
+        await input.fill("");
+        await input.press("Enter");
+        assert.equal(await input.inputValue(), "");
+        assert.equal(await input.getAttribute("aria-invalid"), "true");
+        const errorId = await input.getAttribute("aria-describedby");
+        assert.match(
+          await page.locator(`[id="${errorId}"]`).innerText(),
+          /Enter label/,
+        );
+        await page.locator(`[id="${errorId}"]`).scrollIntoViewIfNeeded();
+        await screenshot(`collection-invalid-${name}`);
+        await check(`Collection revealed error accessibility ${name}`, () =>
+          a11y(`collection-invalid-${name}`),
+        );
+        await input.press("Escape");
+        assert.equal(await input.inputValue(), original);
+        await input.fill("x".repeat(201));
+        await input.press("Tab");
+        assert.equal(await input.getAttribute("aria-invalid"), "true");
+        assert.equal(await input.inputValue(), "x".repeat(201));
+        await input.press("Escape");
+        await input.fill("Browser navigation");
+        await input.press("Enter");
+        assert.equal(
+          await page
+            .frameLocator("iframe")
+            .getByRole("navigation", {
+              name: "Primary navigation",
+              exact: true,
+            })
+            .locator(".pagebldr-menu-list a")
+            .first()
+            .innerText(),
+          "Browser navigation",
+        );
+        // Menu item drafts use their parent collection's prop coalescing policy.
+        await page.keyboard.press("Control+z");
+        assert.equal(await input.inputValue(), original);
+        assert.equal(await input.getAttribute("aria-invalid"), null);
+        await check(
+          `Menu slider keyboard bounds and undo ${name}`,
+          async () => {
+            await page.getByRole("tab", { name: "Style", exact: true }).click();
+            const slider = page.getByRole("slider", {
+              name: "Space between",
+              exact: true,
+            });
+            await slider.press("End");
+            assert.equal(await slider.getAttribute("aria-valuenow"), "96");
+            await slider.press("Home");
+            assert.equal(await slider.getAttribute("aria-valuenow"), "0");
+            await slider.press("ArrowRight");
+            assert.equal(await slider.getAttribute("aria-valuenow"), "1");
+            await screenshot(`menu-slider-keyboard-${name}`);
+            await page.keyboard.press("Control+z");
+            assert.equal(await slider.getAttribute("aria-valuenow"), "32");
+            await page
+              .getByRole("tab", { name: "Content", exact: true })
+              .click();
+          },
+        );
+        await check(
+          `Locked definition controls cannot mutate props ${name}`,
+          async () => {
+            await page
+              .getByRole("switch", { name: "Locked", exact: true })
+              .click();
+            assert.equal(await input.isDisabled(), true);
+            const breakpoint = page.getByRole("radiogroup", {
+              name: "Menu breakpoint",
+              exact: true,
+            });
+            assert.equal(
+              await breakpoint
+                .getByRole("radio", { name: "Desktop", exact: true })
+                .isDisabled(),
+              true,
+            );
+            await page.getByRole("tab", { name: "Style", exact: true }).click();
+            const slider = page.getByRole("slider", {
+              name: "Space between",
+              exact: true,
+            });
+            assert.equal(await slider.getAttribute("tabindex"), null);
+            assert.notEqual(await slider.getAttribute("data-disabled"), null);
+            await page
+              .getByRole("tab", { name: "Content", exact: true })
+              .click();
+            await page
+              .getByRole("switch", { name: "Locked", exact: true })
+              .click();
+          },
+        );
+      },
+    );
+    await check(`Collection validation accessibility ${name}`, () =>
+      a11y(`collection-validation-${name}`),
+    );
+    await check(
+      `Rich Text rejected drafts never change rendered content ${name}`,
+      async () => {
+        await select("Hero enquiry promise", ["Hero content", "Hero message"]);
+        await page.getByRole("tab", { name: "Content", exact: true }).click();
+        const input = page.getByLabel("Text", { exact: true }).first();
+        const original = await input.inputValue();
+        await input.fill("x".repeat(10001));
+        assert.equal(await input.getAttribute("aria-invalid"), "true");
+        assert.equal((await input.inputValue()).length, 10001);
+        const rendered = page
+          .frameLocator("iframe")
+          .locator('[data-pagebldr-element="reference-rich-text-9"]');
+        assert.equal(await rendered.innerText(), original);
+        await page
+          .locator(`[id="${await input.getAttribute("aria-describedby")}"]`)
+          .scrollIntoViewIfNeeded();
+        await screenshot(`rich-text-invalid-${name}`);
+        await check(`Rich Text revealed error accessibility ${name}`, () =>
+          a11y(`rich-text-invalid-${name}`),
+        );
+        await input.press("Escape");
+        assert.equal(await input.inputValue(), original);
+        await input.fill("Browser rich text");
+        assert.equal(await rendered.innerText(), "Browser rich text");
+        await page.keyboard.press("Control+z");
+        assert.equal(await input.inputValue(), original);
+        assert.equal(await input.getAttribute("aria-invalid"), null);
+      },
+    );
+    await check(`Rich Text validation accessibility ${name}`, () =>
+      a11y(`rich-text-validation-${name}`),
+    );
+  }
 
   for (const [name, width, height] of [
     ["desktop", 1440, 900],
