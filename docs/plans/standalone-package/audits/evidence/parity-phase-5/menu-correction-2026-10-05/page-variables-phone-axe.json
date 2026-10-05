@@ -1,0 +1,203 @@
+{
+  "violations": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT",
+        "RGAAv4",
+        "RGAA-3.2.1"
+      ],
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#707072",
+                "bgColor": "#f4f4f5",
+                "contrastRatio": 4.49,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div role=\"tablist\" aria-orientation=\"horizontal\" data-slot=\"tabs-list\" data-variant=\"default\" class=\"group/tabs-list item...\" tabindex=\"0\" data-orientation=\"horizontal\" style=\"outline: none;\">",
+                  "target": [".m-2"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_2q_-content...\" data-state=\"inactive\" id=\"radix-_r_2q_-trigger...\" data-slot=\"tabs-trigger\" class=\"relative inline-flex...\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collectio...=\"\">",
+          "target": ["#radix-_r_2q_-trigger-properties"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#707072",
+                "bgColor": "#f4f4f5",
+                "contrastRatio": 4.49,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div role=\"tablist\" aria-orientation=\"horizontal\" data-slot=\"tabs-list\" data-variant=\"default\" class=\"group/tabs-list item...\" tabindex=\"0\" data-orientation=\"horizontal\" style=\"outline: none;\">",
+                  "target": [".m-2"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_2q_-content...\" data-state=\"inactive\" id=\"radix-_r_2q_-trigger...\" data-slot=\"tabs-trigger\" class=\"relative inline-flex...\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collectio...=\"\">",
+          "target": ["#radix-_r_2q_-trigger-styles"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#707072",
+                "bgColor": "#f4f4f5",
+                "contrastRatio": 4.49,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div role=\"tablist\" aria-orientation=\"horizontal\" data-slot=\"tabs-list\" data-variant=\"default\" class=\"group/tabs-list item...\" tabindex=\"0\" data-orientation=\"horizontal\" style=\"outline: none;\">",
+                  "target": [".mx-6"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_a3_-content...\" data-state=\"inactive\" id=\"radix-_r_a3_-trigger...\" data-slot=\"tabs-trigger\" class=\"relative inline-flex...\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collectio...=\"\">",
+          "target": ["#radix-_r_a3_-trigger-design"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#707072",
+                "bgColor": "#f4f4f5",
+                "contrastRatio": 4.49,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div role=\"tablist\" aria-orientation=\"horizontal\" data-slot=\"tabs-list\" data-variant=\"default\" class=\"group/tabs-list item...\" tabindex=\"0\" data-orientation=\"horizontal\" style=\"outline: none;\">",
+                  "target": [".mx-6"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_a3_-content...\" data-state=\"inactive\" id=\"radix-_r_a3_-trigger...\" data-slot=\"tabs-trigger\" class=\"relative inline-flex...\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collectio...=\"\">",
+          "target": ["#radix-_r_a3_-trigger-settings"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#707072",
+                "bgColor": "#f4f4f5",
+                "contrastRatio": 4.49,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div role=\"tablist\" aria-orientation=\"horizontal\" data-slot=\"tabs-list\" data-variant=\"default\" class=\"group/tabs-list item...\" tabindex=\"0\" data-orientation=\"horizontal\" style=\"outline: none;\">",
+                  "target": [".mx-6"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_a3_-content...\" data-state=\"inactive\" id=\"radix-_r_a3_-trigger...\" data-slot=\"tabs-trigger\" class=\"relative inline-flex...\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collectio...=\"\">",
+          "target": ["#radix-_r_a3_-trigger-seo"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #707072, background color: #f4f4f5, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        }
+      ]
+    }
+  ],
+  "passes": [
+    "aria-allowed-attr",
+    "aria-conditional-attr",
+    "aria-deprecated-role",
+    "aria-hidden-body",
+    "aria-hidden-focus",
+    "aria-prohibited-attr",
+    "aria-required-attr",
+    "aria-required-children",
+    "aria-required-parent",
+    "aria-roles",
+    "aria-valid-attr-value",
+    "aria-valid-attr",
+    "avoid-inline-spacing",
+    "button-name",
+    "bypass",
+    "color-contrast",
+    "document-title",
+    "duplicate-id-aria",
+    "form-field-multiple-labels",
+    "html-has-lang",
+    "html-lang-valid",
+    "label",
+    "meta-viewport",
+    "nested-interactive",
+    "scrollable-region-focusable",
+    "select-name"
+  ]
+}

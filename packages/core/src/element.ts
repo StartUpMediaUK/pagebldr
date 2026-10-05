@@ -30,6 +30,8 @@ export interface RenderElement {
 }
 
 export interface ElementRenderContext {
+  /** Stable Element identity for definition-owned descendant IDs. */
+  readonly elementId?: string;
   readonly children: readonly RenderNode[];
   readonly mode: "edit" | "preview" | "published";
   readonly now: Date;

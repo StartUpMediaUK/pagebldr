@@ -15,6 +15,7 @@ import type {
   ResourceReference,
   StyleState,
 } from "@pagebldr/core";
+import { menuResponsiveStyles } from "./menu-styles.js";
 
 export interface PagebldrRendererProps {
   readonly builder: Pagebldr;
@@ -62,6 +63,7 @@ export function PagebldrRenderer({
         : null;
     }
     const rendered = definition.render(element.props, {
+      elementId: id,
       children: element.children.map(
         (childId) => renderElement(childId) as RenderNode,
       ),
@@ -90,6 +92,13 @@ export function PagebldrRenderer({
   return createElement(
     Fragment,
     null,
+    Object.values(document.elements).some((element) => element.type === "menu")
+      ? createElement(
+          "style",
+          { nonce: styleNonce, "data-pagebldr-menu-styles": document.id },
+          menuResponsiveStyles(builder.namespace, document),
+        )
+      : null,
     compiled.css
       ? createElement(
           "style",

@@ -1569,6 +1569,9 @@ function menuDefaults(): Props {
 }
 
 function renderMenu(props: Props, context: ElementRenderContext) {
+  const panelId = context.elementId
+    ? `pagebldr-${context.elementId}-panel`
+    : undefined;
   return node(
     "nav",
     {
@@ -1577,6 +1580,16 @@ function renderMenu(props: Props, context: ElementRenderContext) {
       "data-pagebldr-widget": "menu",
       "data-collapse-at": text(props, "collapseAt", "mobile"),
       "data-presentation": text(props, "presentation", "dropdown"),
+      "data-breakpoint-position": text(props, "breakpointPosition", "end"),
+      "data-item-alignment": text(props, "itemAlignment", "start"),
+      "data-fullscreen-vertical-alignment": text(
+        props,
+        "fullscreenVerticalAlignment",
+        "start",
+      ),
+      "data-item-appearance": text(props, "itemAppearance", "underline"),
+      "data-open": "false",
+      "data-render-mode": context.mode,
     },
     [
       node(
@@ -1585,30 +1598,72 @@ function renderMenu(props: Props, context: ElementRenderContext) {
           type: "button",
           className: "pagebldr-menu-toggle",
           "aria-expanded": false,
+          "aria-controls": panelId,
+          "aria-label": text(props, "toggleLabel", "Open navigation"),
         },
-        [text(props, "toggleLabel", "Open navigation")],
+        [
+          node(
+            "svg",
+            {
+              viewBox: "0 0 24 24",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: 2,
+              "aria-hidden": true,
+            },
+            [
+              node("path", {
+                className: "pagebldr-menu-open-icon",
+                d: "M4 6h16M4 12h16M4 18h16",
+              }),
+              node("path", {
+                className: "pagebldr-menu-close-icon",
+                d: "m6 6 12 12M6 18 18 6",
+              }),
+            ],
+          ),
+        ],
       ),
-      node(
-        "ul",
-        { className: "pagebldr-menu-list" },
-        array(props, "items").map((item) =>
-          node("li", {}, [
-            node(
-              "a",
-              {
-                ...linkAttributes(context, item.destination),
-                className: "pagebldr-menu-link",
-              },
-              [text(item, "label")],
-            ),
-          ]),
+      node("div", { className: "pagebldr-menu-panel", id: panelId }, [
+        node("div", { className: "pagebldr-menu-fullscreen-header" }, [
+          node("div", { className: "pagebldr-menu-fullscreen-logo" }),
+        ]),
+        node(
+          "ul",
+          { className: "pagebldr-menu-list" },
+          array(props, "items").map((item) =>
+            node("li", {}, [
+              node(
+                "a",
+                {
+                  ...linkAttributes(context, item.destination),
+                  className: "pagebldr-menu-link",
+                },
+                [text(item, "label")],
+              ),
+            ]),
+          ),
         ),
-      ),
+      ]),
     ],
     {
-      backgroundColor: text(props, "panelBackground", "#ffffff"),
-      padding: `${number(props, "panelPadding", 24)}px`,
-      gap: `${number(props, "itemGap", 24)}px`,
+      "--pagebldr-menu-panel-background": text(
+        props,
+        "panelBackground",
+        "#ffffff",
+      ),
+      "--pagebldr-menu-panel-padding": `${number(props, "panelPadding", 24)}px`,
+      "--pagebldr-menu-item-gap": `${number(props, "itemGap", 24)}px`,
+      "--pagebldr-menu-item-background": text(
+        props,
+        "itemBackground",
+        "#f4f4f5",
+      ),
+      "--pagebldr-menu-item-hover-background": text(
+        props,
+        "itemHoverBackground",
+        "#e4e4e7",
+      ),
     },
   );
 }

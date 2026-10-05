@@ -49,6 +49,84 @@ function standardDocument(): PageDocument {
 }
 
 describe("standard Element renderer", () => {
+  it("renders Menu appearance and accessible panel identity with Document breakpoints", () => {
+    const base = standardDocument();
+    const document = {
+      ...base,
+      settings: {
+        ...base.settings,
+        breakpoints: { tabletMax: 1100, mobileMax: 700 },
+      },
+      elements: {
+        ...base.elements,
+        menu: {
+          ...base.elements.menu!,
+          props: {
+            ...base.elements.menu!.props,
+            collapseAt: "tablet",
+            presentation: "fullscreen",
+            itemAlignment: "center",
+            fullscreenVerticalAlignment: "end",
+            breakpointPosition: "start",
+            itemAppearance: "background",
+            itemGap: 40,
+            itemBackground: "#123456",
+            itemHoverBackground: "#654321",
+          },
+        },
+      },
+    };
+    const html = renderToString(
+      <PagebldrRenderer builder={builder} document={document} />,
+    );
+    expect(html).toContain('aria-controls="pagebldr-menu-panel"');
+    expect(html).toContain('id="pagebldr-menu-panel"');
+    expect(html).toContain('data-item-alignment="center"');
+    expect(html).toContain('data-fullscreen-vertical-alignment="end"');
+    expect(html).toContain('data-breakpoint-position="start"');
+    expect(html).toContain('data-item-appearance="background"');
+    expect(html).toContain("--pagebldr-menu-item-gap:40px");
+    expect(html).toContain("--pagebldr-menu-item-background:#123456");
+    expect(html).toContain("--pagebldr-menu-item-hover-background:#654321");
+    expect(html).toContain(
+      `@media (max-width:${document.settings.breakpoints.tabletMax}px)`,
+    );
+    expect(html).toContain("data-pagebldr-menu-styles");
+    expect(html).toContain("@media (max-width:700px)");
+    expect(html).not.toContain("@media (max-width:1024px)");
+  });
+
+  it("keeps Menu panel identity independent of editable anchors and honors a style nonce", () => {
+    const base = standardDocument();
+    const document = {
+      ...base,
+      elements: {
+        ...base.elements,
+        menu: {
+          ...base.elements.menu!,
+          props: {
+            ...base.elements.menu!.props,
+            anchorId: "primary-navigation",
+          },
+        },
+      },
+    };
+    const html = renderToString(
+      <PagebldrRenderer
+        builder={builder}
+        document={document}
+        styleNonce="test-nonce"
+      />,
+    );
+    expect(html).toContain('id="primary-navigation"');
+    expect(html).toContain('aria-controls="pagebldr-menu-panel"');
+    expect(html).toContain(
+      '<style nonce="test-nonce" data-pagebldr-menu-styles="standard">',
+    );
+    expect(html).not.toContain('role="dialog"');
+    expect(html).not.toContain('aria-modal="true"');
+  });
+
   it("renders every standard Element through its definition during SSR", () => {
     const document = standardDocument();
     expect(builder.documents.validate(document)).toMatchObject({ valid: true });

@@ -170,25 +170,96 @@
 
   [data-pagebldr-renderer] .pagebldr-menu-toggle {
     display: none;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid currentColor;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    padding: 0.625rem;
+    cursor: pointer;
   }
-
-  [data-pagebldr-renderer]
-    .pagebldr-menu[data-collapse-at="desktop"]
-    .pagebldr-menu-toggle {
-    display: inline-flex;
+  [data-pagebldr-renderer] .pagebldr-menu {
+    position: relative;
   }
-
+  [data-pagebldr-renderer] .pagebldr-menu-toggle svg {
+    width: 1.25em;
+    height: 1.25em;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-close-icon,
   [data-pagebldr-renderer]
-    .pagebldr-menu[data-collapse-at="desktop"]
-    .pagebldr-menu-list {
+    .pagebldr-menu[data-open="true"]
+    .pagebldr-menu-open-icon,
+  [data-pagebldr-renderer] .pagebldr-menu-fullscreen-header {
     display: none;
   }
-
   [data-pagebldr-renderer]
-    .pagebldr-menu[data-collapse-at="desktop"][data-open="true"]
-    .pagebldr-menu-list {
-    display: flex;
-    flex-direction: column;
+    .pagebldr-menu[data-open="true"]
+    .pagebldr-menu-close-icon {
+    display: block;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-panel {
+    background: transparent;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-fullscreen-logo:empty {
+    display: none;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-fullscreen-logo .pagebldr-logo {
+    margin: 0;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-list {
+    gap: var(--pagebldr-menu-item-gap, 24px);
+  }
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-alignment="start"]
+    .pagebldr-menu-list,
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-alignment="start"]
+    .pagebldr-menu-link {
+    justify-content: flex-start;
+    text-align: start;
+  }
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-alignment="center"]
+    .pagebldr-menu-list,
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-alignment="center"]
+    .pagebldr-menu-link {
+    justify-content: center;
+    text-align: center;
+  }
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-alignment="end"]
+    .pagebldr-menu-list,
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-alignment="end"]
+    .pagebldr-menu-link {
+    justify-content: flex-end;
+    text-align: end;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-link {
+    color: inherit;
+    font: inherit;
+    text-decoration: inherit;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  [data-pagebldr-renderer]
+    .pagebldr-menu[data-item-appearance="underline"]
+    .pagebldr-menu-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  [data-pagebldr-renderer] .pagebldr-menu-link:focus-visible,
+  [data-pagebldr-renderer] .pagebldr-menu-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 0.25em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-pagebldr-renderer] .pagebldr-menu-link {
+      transition: none;
+    }
   }
 
   [data-pagebldr-renderer] .pagebldr-menu-list,
@@ -196,7 +267,7 @@
   [data-pagebldr-renderer] .pagebldr-social-links {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--pagebldr-menu-item-gap, 0.75rem);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -315,47 +386,5 @@
 
   [data-pagebldr-renderer] .pagebldr-gallery[data-layout="carousel"] {
     display: block;
-  }
-
-  @media (max-width: 1024px) {
-    [data-pagebldr-renderer]
-      .pagebldr-menu[data-collapse-at="tablet"]
-      .pagebldr-menu-toggle {
-      display: inline-flex;
-    }
-
-    [data-pagebldr-renderer]
-      .pagebldr-menu[data-collapse-at="tablet"]
-      .pagebldr-menu-list {
-      display: none;
-    }
-
-    [data-pagebldr-renderer]
-      .pagebldr-menu[data-collapse-at="tablet"][data-open="true"]
-      .pagebldr-menu-list {
-      display: flex;
-      flex-direction: column;
-    }
-  }
-
-  @media (max-width: 767px) {
-    [data-pagebldr-renderer]
-      .pagebldr-menu[data-collapse-at="mobile"]
-      .pagebldr-menu-toggle {
-      display: inline-flex;
-    }
-
-    [data-pagebldr-renderer]
-      .pagebldr-menu[data-collapse-at="mobile"]
-      .pagebldr-menu-list {
-      display: none;
-    }
-
-    [data-pagebldr-renderer]
-      .pagebldr-menu[data-collapse-at="mobile"][data-open="true"]
-      .pagebldr-menu-list {
-      display: flex;
-      flex-direction: column;
-    }
   }
 }

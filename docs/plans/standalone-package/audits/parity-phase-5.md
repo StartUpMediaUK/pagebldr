@@ -417,3 +417,101 @@ checkpoint. No runtime fix or release action is included in this audit commit.
 Phase 5 remains **incomplete**. The new screenshots cover the requested named
 states, but the Menu comparison is a fail and the broader source-visual,
 keyboard-only, collection validation and accessibility gate remains open.
+
+## 5 October 2026 Menu runtime correction
+
+The saved-props regression was reproduced at the public renderer seam before
+implementation: SSR lacked the disclosure's `aria-controls` and panel identity.
+The preceding packed Chromium run had already shown that commands and Host Save
+preserved the values, ruling out controlled-state loss. The renderer, static CSS
+and minimal click handler were the cause. The diagnosing-bugs skill's red/green
+loop guided this correction; no temporary instrumentation was added.
+
+### Implemented behavior and interface
+
+- Definition-owned Menu markup now renders item alignment, fullscreen vertical
+  alignment, breakpoint positioning, item appearance, panel padding/background,
+  item gap and item normal/hover backgrounds.
+- Dropdown panels position beneath the nearest semantic header/container and
+  update on resize/scroll. Fullscreen panels fill the viewport, retain a close
+  disclosure and arrange their links according to the saved alignment.
+- Client Menu controllers own Escape/outside-pointer/link dismissal, initial
+  focus, fullscreen Tab wrapping, focus restoration and reference-counted body
+  scroll locking with cleanup on closure/removal. Editor navigation remains
+  suppressed. Published anchor navigation respects reduced motion and focuses
+  the target.
+- Fullscreen navigation clones the nearest Logo without duplicate IDs or Element
+  markers. Text paint is preserved from the original computed styles because
+  removing Element identity would otherwise lose its local authored styles;
+  layout is not frozen to the original header dimensions.
+- The optional `ElementRenderContext.elementId` is supplied by the React
+  renderer for stable descendant IDs independent of editable anchors. Existing
+  callers can omit it. No Document schema change is required.
+- Responsive Menu CSS is SSR-generated with Document-scoped selectors, the
+  Document's actual tablet/mobile boundaries and the renderer's style nonce.
+  Static 1024/767px widget assumptions were removed. Renderer paths remain
+  presentation-only and SSR-safe; browser behavior stays in the client module.
+
+### Acceptance scope and remaining work
+
+The expanded packed-browser loop verifies alignment/gap/appearance propagation,
+fullscreen layout, panel identity, cloned-logo styling, initial focus, two-way
+keyboard wrapping, Escape/outside dismissal, scroll cleanup, dropdown boundary
+positioning, anchor selection and transition back to inline navigation above the
+collapse breakpoint. Historical red evidence under `browser-2026-10-05` remains
+unchanged. New evidence is captured under
+[`menu-correction-2026-10-05`](evidence/parity-phase-5/menu-correction-2026-10-05/).
+
+This does not complete Phase 5. Menu breakpoint icon segments, source-equivalent
+slider/color-picker composition and dynamic alignment labels remain inspector
+work in this phase, not Phase 6. Collection validation and the broader keyboard
+and source-visual matrix remain open. The fixture's authored contrast failures
+and unnamed Structure leaf placeholders must still be corrected and verified; no
+accessibility rule has been disabled to obtain a green result. ReUI was
+unavailable; no registry component or Host presentation repair was introduced.
+
+### Verification and retained evidence
+
+Packed artifact: `pagebldr@0.0.0-alpha.0`, SHA-256
+`1f3ba149ad6093c90cdf008d5c7a154fb0caf42e1c16cfe0f53971ccc82a9ff0`, React
+19.2.8, Chromium 147.0.7727.15. The Reference Host ran its installed, immutable
+build with no Host presentation changes. Browser-only dependencies were
+installed in the isolated temporary consumer, not this workspace.
+
+- [Results and diagnostics](evidence/parity-phase-5/menu-correction-2026-10-05/results.json):
+  **29/38 pass**. All 29 functional checks pass; the nine revealed-state axe
+  checks still fail on contrast and/or unnamed Structure placeholders. The open
+  fullscreen report now has 14 contrast failures rather than the intermediate
+  run's 15; preserving the Logo's authored text color removed the clone-specific
+  failure. These remaining failures are not a waived phase gate.
+- [Fullscreen phone screenshot](evidence/parity-phase-5/menu-correction-2026-10-05/menu-fullscreen-actual-phone.png)
+  and
+  [dropdown tablet screenshot](evidence/parity-phase-5/menu-correction-2026-10-05/menu-dropdown-tablet.png)
+  were visually inspected. Desktop/phone authoring screenshots and raw axe JSON
+  are retained in the same directory, with an
+  [action trace](evidence/parity-phase-5/menu-correction-2026-10-05/phase5-browser-trace.zip).
+- T3 status, navigation and simple evaluation worked, but snapshot failed twice,
+  including after reopening the tab. The user-authorized Playwright/Chromium
+  fallback provided the reproducible acceptance loop. No page exceptions or
+  failed transport requests occurred. One unattributed console 404 remains in
+  diagnostics; the HTTP response listener did not capture its URL.
+- `pnpm check` passes: formatting, lint, all-workspace TypeScript/tests, fixture
+  checks, builds including Next.js/docs, export checks, packed consumer, size
+  guardrails and license inventory. Core tests: 61/61; React: 53/53. Generated
+  browser JSON was formatted after capture, and repository formatting, lint and
+  `git diff --check` were rerun for the final documentation/harness changes.
+  Next.js's generated `next-env.d.ts` change was restored.
+- The original public-renderer regression was red before implementation and is
+  now green; a second SSR regression covers anchor-independent panel identity
+  and style nonce propagation. The Logo color browser assertion also failed
+  before the computed-text-style correction and passed after it.
+- Measured sizes: React entry 865,904 bytes; core 246,492 bytes; stylesheet
+  68,728 bytes; archive 1,348,028 bytes; tree-shaken core consumer 124,327
+  bytes. Menu markup/layout/controller narrowly rebase React's guardrail from
+  856,000 to 870,000 bytes, CSS from 68,000 to 69,500, and archive from
+  1,331,000 to 1,355,000. Core and tree-shaken consumer budgets are unchanged.
+
+This checkpoint does not claim a complete manual keyboard/screen-reader review,
+React 18 packed acceptance, Next.js browser acceptance, or a complete source
+visual comparison. Those checks were not run here. Phase 5 remains incomplete
+and Phase 6 has not begun.

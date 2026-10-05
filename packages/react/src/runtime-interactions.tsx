@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { attachMenuInteractions } from "./menu-interactions.js";
 
 export function PagebldrRuntimeInteractions() {
   const marker = useRef<HTMLSpanElement>(null);
@@ -8,6 +9,7 @@ export function PagebldrRuntimeInteractions() {
   useEffect(() => {
     const root = marker.current?.parentElement;
     if (!root) return;
+    const cleanupMenus = attachMenuInteractions(root);
 
     const activateTab = (tab: HTMLElement) => {
       const widget = tab.closest<HTMLElement>('[data-pagebldr-widget="tabs"]');
@@ -44,16 +46,6 @@ export function PagebldrRuntimeInteractions() {
 
     const onClick = (event: Event) => {
       const target = isDomElement(event.target) ? event.target : null;
-      const menuToggle = target?.closest<HTMLElement>(".pagebldr-menu-toggle");
-      if (menuToggle) {
-        const menu = menuToggle.closest<HTMLElement>(
-          '[data-pagebldr-widget="menu"]',
-        );
-        const open = menu?.dataset.open !== "true";
-        if (menu) menu.dataset.open = String(open);
-        menuToggle.setAttribute("aria-expanded", String(open));
-        return;
-      }
       const tab = target?.closest<HTMLElement>('[role="tab"]');
       if (tab) {
         activateTab(tab);
@@ -123,6 +115,7 @@ export function PagebldrRuntimeInteractions() {
     updateCountdowns();
     const timer = window.setInterval(updateCountdowns, 1_000);
     return () => {
+      cleanupMenus();
       root.removeEventListener("click", onClick);
       root.removeEventListener("keydown", onKeyDown);
       window.clearInterval(timer);
