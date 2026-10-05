@@ -132,6 +132,11 @@ Hosts may theme it with `--pagebldr-background`, `--pagebldr-foreground`,
 `--pagebldr-focus`, and `--pagebldr-font-sans`. Consumers do not need Tailwind
 or access to package source classes.
 
+Secondary editor text and inactive tabs use `--pagebldr-muted-foreground`
+(default `#62626b`) without compositing foreground opacity. Host themes should
+maintain readable contrast against both background and muted surfaces. This
+editor token does not rewrite authored Document colors.
+
 ## Elements, Resources, Blocks, and Templates
 
 An Element definition owns its property schema and defaults, child policy, Style

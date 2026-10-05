@@ -225,27 +225,24 @@ export function StructureWindow({
                     style={{ width: row.depth * 14 }}
                     className="shrink-0"
                   />
-                  <Button
-                    aria-label={
-                      row.hasChildren
-                        ? `${expanded.has(row.id) ? "Collapse" : "Expand"} ${element.name}`
-                        : undefined
-                    }
-                    className="size-6 shrink-0"
-                    size="icon-xs"
-                    variant="ghost"
-                    disabled={!row.hasChildren}
-                    onClick={() => toggleExpanded(row.id)}
-                    tabIndex={-1}
-                  >
-                    {row.hasChildren ? (
-                      expanded.has(row.id) ? (
+                  {row.hasChildren ? (
+                    <Button
+                      aria-label={`${expanded.has(row.id) ? "Collapse" : "Expand"} ${element.name}`}
+                      className="size-6 shrink-0"
+                      size="icon-xs"
+                      variant="ghost"
+                      onClick={() => toggleExpanded(row.id)}
+                      tabIndex={-1}
+                    >
+                      {expanded.has(row.id) ? (
                         <ChevronDownIcon />
                       ) : (
                         <ChevronRightIcon />
-                      )
-                    ) : null}
-                  </Button>
+                      )}
+                    </Button>
+                  ) : (
+                    <span aria-hidden="true" className="size-6 shrink-0" />
+                  )}
                   <button
                     type="button"
                     className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded px-1.5 text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"

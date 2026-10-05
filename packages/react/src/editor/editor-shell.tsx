@@ -1106,7 +1106,8 @@ function PropertyField({
   const description = control.description ? (
     <FieldDescription>{control.description}</FieldDescription>
   ) : null;
-  const update = (nextValue: unknown) =>
+  const update = (nextValue: unknown) => {
+    if (Object.is(value, nextValue)) return;
     editor.dispatch(
       {
         type: "update-props",
@@ -1115,6 +1116,7 @@ function PropertyField({
       },
       `prop:${element.id}:${control.key}`,
     );
+  };
 
   if (control.kind === "collection")
     return (
