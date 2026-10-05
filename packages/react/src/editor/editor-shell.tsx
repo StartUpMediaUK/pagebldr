@@ -84,6 +84,7 @@ import type {
   PagebldrClipboard,
   PagebldrStyleClipboard,
   ElementControl,
+  ElementControlVisibilityCondition,
   PageElement,
 } from "@pagebldr/core";
 import type { PagebldrEditorProps } from "../index.js";
@@ -974,6 +975,9 @@ function Inspector() {
     );
   const element = editor.selected;
   const definition = editor.builder.elements.get(element.type);
+  const elementStyleControls = (definition?.styleControls ?? []).filter(
+    (control) => isPropertyControlVisible(control, element.props),
+  );
   const readOnly = editor.mode !== "edit";
   return (
     <Tabs defaultValue="properties" className="h-full gap-0">
@@ -1047,6 +1051,24 @@ function Inspector() {
       </TabsContent>
       <TabsContent value="styles" className="min-h-0">
         <ScrollArea className="h-full px-3">
+          {elementStyleControls.length ? (
+            <>
+              <FieldGroup className="pb-5">
+                <FieldDescription>
+                  Visual options specific to this Element.
+                </FieldDescription>
+                {elementStyleControls.map((control) => (
+                  <PropertyField
+                    key={control.key}
+                    element={element}
+                    control={control}
+                    applicationDestinations={editor.applicationDestinations}
+                  />
+                ))}
+              </FieldGroup>
+              <Separator className="mb-5" />
+            </>
+          ) : null}
           <StyleControls element={element} section="style" />
         </ScrollArea>
       </TabsContent>
@@ -1076,17 +1098,7 @@ function PropertyField({
   const editor = usePagebldrEditor();
   const id = useId();
   const value = element.props[control.key];
-  const visibilityValue = control.visibleWhen
-    ? element.props[control.visibleWhen.key]
-    : undefined;
-  if (
-    control.visibleWhen &&
-    ((control.visibleWhen.equals !== undefined &&
-      visibilityValue !== control.visibleWhen.equals) ||
-      (control.visibleWhen.notEquals !== undefined &&
-        visibilityValue === control.visibleWhen.notEquals))
-  )
-    return null;
+  if (!isPropertyControlVisible(control, element.props)) return null;
   const description = control.description ? (
     <FieldDescription>{control.description}</FieldDescription>
   ) : null;
@@ -1156,6 +1168,37 @@ function PropertyField({
     const selected = control.options.find(
       ({ value: option }) => option === value,
     );
+    if (control.presentation === "segmented")
+      return (
+        <Field>
+          <FieldLabel id={id}>{control.label}</FieldLabel>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            value={selected ? String(selected.value) : ""}
+            onValueChange={(nextValue) => {
+              const option = control.options.find(
+                ({ value: candidate }) => String(candidate) === nextValue,
+              );
+              if (option) update(option.value);
+            }}
+            disabled={editor.mode !== "edit"}
+            aria-labelledby={id}
+            className="w-full"
+          >
+            {control.options.map((option) => (
+              <ToggleGroupItem
+                key={`${typeof option.value}:${option.value}`}
+                value={String(option.value)}
+                className="flex-1"
+              >
+                {option.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+          {description}
+        </Field>
+      );
     return (
       <Field>
         <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
@@ -1213,6 +1256,33 @@ function PropertyField({
       {description}
     </Field>
   );
+}
+
+export function isPropertyControlVisible(
+  control: ElementControl<Record<string, unknown>>,
+  props: Readonly<Record<string, unknown>>,
+): boolean {
+  if (!control.visibleWhen) return true;
+  const conditions = isVisibilityConditionArray(control.visibleWhen)
+    ? control.visibleWhen
+    : [control.visibleWhen];
+  return conditions.every(
+    (condition) =>
+      (condition.equals === undefined ||
+        props[condition.key] === condition.equals) &&
+      (condition.notEquals === undefined ||
+        props[condition.key] !== condition.notEquals),
+  );
+}
+
+function isVisibilityConditionArray(
+  value:
+    | ElementControlVisibilityCondition<Record<string, unknown>>
+    | readonly ElementControlVisibilityCondition<Record<string, unknown>>[],
+): value is readonly ElementControlVisibilityCondition<
+  Record<string, unknown>
+>[] {
+  return Array.isArray(value);
 }
 
 function ElementActions() {

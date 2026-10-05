@@ -49,7 +49,42 @@ describe("standard Elements", () => {
       const controls = definition.controls ?? [];
       expect(controls.every(({ key }) => key in defaults)).toBe(true);
       expect(JSON.parse(JSON.stringify(controls))).toEqual(controls);
+      const styleControls = definition.styleControls ?? [];
+      expect(styleControls.every(({ key }) => key in defaults)).toBe(true);
+      expect(JSON.parse(JSON.stringify(styleControls))).toEqual(styleControls);
     }
+  });
+
+  it("owns element-specific visual controls in serializable definitions", () => {
+    expect(
+      builder.elements.get("logo")?.styleControls?.map(({ key }) => key),
+    ).toEqual(["imageWidth", "imageFit", "imagePosition", "gap", "alignment"]);
+    expect(
+      builder.elements.get("menu")?.styleControls?.map(({ key }) => key),
+    ).toEqual([
+      "itemAlignment",
+      "fullscreenVerticalAlignment",
+      "itemAppearance",
+      "itemBackground",
+      "itemHoverBackground",
+      "itemGap",
+      "panelBackground",
+      "panelPadding",
+    ]);
+    expect(builder.elements.get("gallery-carousel")?.styleControls).toEqual([
+      {
+        kind: "select",
+        key: "layout",
+        label: "Gallery layout",
+        presentation: "segmented",
+        options: [
+          { label: "Square", value: "square" },
+          { label: "Masonry", value: "masonry" },
+          { label: "Carousel", value: "carousel" },
+        ],
+      },
+    ]);
+    expect(builder.elements.get("gallery-carousel")?.controls).toEqual([]);
   });
 
   it("owns typed Content control presentation in each definition", () => {

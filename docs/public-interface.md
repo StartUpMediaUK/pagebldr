@@ -627,6 +627,7 @@ interface ElementDefinition<Props, Type extends string = string> {
   styles: readonly StyleCapabilityKey[];
   migrate?: ElementMigration<Props>;
   controls?: readonly ElementControl<Props>[];
+  styleControls?: readonly ElementControl<Props>[];
   inlineEditing?: {
     property: string;
     read(props: Props): string;
@@ -656,8 +657,15 @@ structured block types and new-block default. A `collection` descriptor owns its
 item label, limits, fresh-ID policy, serializable default item and nested text,
 textarea, select and Destination controls. The standard editor supplies add,
 remove and keyboard-operable reorder actions, while preserving the Element
-schema's minimum and maximum. Controls may declare a serializable `visibleWhen`
-condition for dependent fields such as Menu collapse settings.
+schema's minimum and maximum. Controls may declare one or more serializable
+`visibleWhen` conditions for dependent fields such as Menu collapse settings.
+
+Element-specific visual options use the same contract through `styleControls`.
+They render before the registered responsive Style capabilities and update
+ordinary Element props through controlled commands. A `select` may request the
+`segmented` presentation for short visual choices while retaining a labelled
+keyboard-operable group. The standard Logo, Menu and Gallery definitions use
+this seam; custom definitions receive no privileged component path.
 
 Every standard Element accepts an optional authored anchor ID. The Advanced
 inspector normalizes input to a unique lowercase ASCII slug of at most 80
