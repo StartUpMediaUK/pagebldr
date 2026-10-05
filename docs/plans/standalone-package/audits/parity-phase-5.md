@@ -515,3 +515,85 @@ This checkpoint does not claim a complete manual keyboard/screen-reader review,
 React 18 packed acceptance, Next.js browser acceptance, or a complete source
 visual comparison. Those checks were not run here. Phase 5 remains incomplete
 and Phase 6 has not begun.
+
+## 5 October 2026 editor accessibility correction
+
+The retained browser loop reproduced the unnamed Structure buttons and inactive
+tab contrast failures before implementation. A public `PagebldrEditor` SSR test
+using the all-Elements fixture also failed on empty disabled leaf buttons before
+the fix and now passes. Structure leaves now use `aria-hidden` noninteractive
+spacing; parents retain their labelled disclosure controls and keyboard arrow
+behavior.
+
+Inactive shadcn Tabs now use the semantic muted-foreground token rather than a
+60%-opacity foreground. The default token is darkened from `#71717a` to
+`#62626b` so it remains readable on muted surfaces while retaining a distinct
+secondary-text hierarchy. Existing package-owned primitives were reused; no new
+dependency, registry source, Host override or public interface was introduced.
+The shadcn skill guided token-based styling after consulting current
+[Button](https://ui.shadcn.com/docs/components/radix/button) and
+[Tabs](https://ui.shadcn.com/docs/components/radix/tabs) documentation. ReUI
+remains unavailable. The diagnosing-bugs skill guided the red/green regressions.
+
+The browser harness now reports editor-UI accessibility separately from the
+authored page in the iframe, while still running and retaining the full-page
+checks. The additional scoped checks exclude only the iframe; no axe rule is
+disabled and the full-page suite still returns a failing exit status when
+authored content fails. Original screenshots and failure reports remain intact.
+
+Two corrections to the preceding audit's interpretation:
+
+- The Variables report's five failures were inactive tab text, not Variable
+  usage-count copy. Its full-page check passes after the tab correction.
+- The retained Menu correction JSON contains two no-op command page exceptions,
+  contrary to the earlier prose claiming none. Reselecting native options for
+  already-current Menu values reproduced these errors. The scalar inspector now
+  skips `Object.is`-equal values before dispatch, preserving core's no-op
+  rejection contract. A browser assertion failed against the previous artifact
+  before this guard was added.
+
+Authored fixture colors have not been silently changed to improve the score. The
+remaining full-page failures concern 14 content nodes using the fixture's accent
+colors or muted copy on its cream background. These require an explicit
+source-parity/accessibility decision and remain phase-gate failures.
+
+### Final verification
+
+Installed artifact: `pagebldr@0.0.0-alpha.0`, React 19.2.8, SHA-256
+`eca598c2a80c3636619c67b6922b35bd2d48af7f3750d55086ac81925ef6cb06`. Chromium
+147.0.7727.15 exercised desktop 1440×900, tablet 820×1000 and phone 390×844. The
+same packed public Reference Host and its immutable build were used, without
+Host presentation changes.
+
+- [Results](evidence/parity-phase-5/editor-a11y-2026-10-05/results.json):
+  **41/48 checks pass**. All 31 functional assertions, all eight editor-UI
+  accessibility checks and both full-page Variables-dialog checks pass. The
+  remaining seven full-page checks fail only on authored-content contrast. Their
+  raw reports remain alongside the eight `*-editor-axe.json` reports.
+- [Desktop Menu/Structure](evidence/parity-phase-5/editor-a11y-2026-10-05/menu-style-configured-desktop.png)
+  and
+  [phone Variables](evidence/parity-phase-5/editor-a11y-2026-10-05/page-variables-phone.png)
+  screenshots were inspected, and the
+  [action trace](evidence/parity-phase-5/editor-a11y-2026-10-05/phase5-browser-trace.zip)
+  retains the keyboard parent expansion/collapse and scalar-option regression.
+- Final diagnostics contain no page exceptions and no failed transport requests.
+  The unattributed console 404 remains. T3 status/open/navigation worked, but
+  its snapshot again failed; the authorized Chromium fallback was used. An
+  intermediate isolated npm install reported a locked temporary Vite cleanup
+  warning; the final installation was completed before starting its preview and
+  had no such warning.
+- `pnpm check` passes: formatting, lint, all-workspace types/tests, fixture
+  checks, builds including Next.js/docs, export checks, packed consumers, size
+  guardrails and licenses. After the late scalar guard, React TypeScript, 54/54
+  tests, build and the packed-consumer gate were rerun; final lint, formatting
+  and `git diff --check` cover the guard, harness and documentation. Core
+  remains 61/61. Generated Next.js environment imports were restored.
+- Final sizes: React 865,978 bytes; core 246,492; CSS 68,571; packed archive
+  1,348,048; tree-shaken core consumer 124,327. No budget was raised in this
+  checkpoint.
+
+No complete manual screen-reader/keyboard review, React 18 packed browser run,
+Next.js browser run or full source-visual comparison was performed here. Phase 5
+remains open for richer inspector controls, collection validation, the
+authored-content contrast decision and the broader visual/keyboard gate. Phase 6
+has not begun.

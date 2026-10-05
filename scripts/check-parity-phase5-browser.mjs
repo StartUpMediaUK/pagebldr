@@ -1,5 +1,5 @@
 // Run against an isolated installed Reference Host, never workspace aliases.
-// Usage: node scripts/check-parity-phase5-browser.mjs <consumer-dir> <chromium-executable>
+// Usage: node scripts/check-parity-phase5-browser.mjs <consumer-dir> <chromium-executable> [evidence-dir]
 import assert from "node:assert/strict";
 import console from "node:console";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -18,7 +18,7 @@ const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 const output = resolve(
   evidenceDirectory ??
-    "docs/plans/standalone-package/audits/evidence/parity-phase-5/menu-correction-2026-10-05",
+    "docs/plans/standalone-package/audits/evidence/parity-phase-5/editor-a11y-2026-10-05",
 );
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath, headless: true });
@@ -74,6 +74,25 @@ async function screenshot(name) {
   await page.screenshot({ path: join(output, `${name}.png`) });
 }
 async function a11y(name) {
+  if (await page.locator("[data-pagebldr-editor]").count()) {
+    await check(`${name} editor UI accessibility`, async () => {
+      const editorResult = await new AxeBuilder({ page })
+        .exclude("iframe")
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .analyze();
+      await writeFile(
+        join(output, `${name}-editor-axe.json`),
+        JSON.stringify({ violations: editorResult.violations }, null, 2),
+      );
+      assert.equal(
+        editorResult.violations.length,
+        0,
+        editorResult.violations
+          .map((item) => `${item.id} (${item.nodes.length})`)
+          .join(", "),
+      );
+    });
+  }
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
@@ -134,6 +153,41 @@ try {
   ).json();
   await fresh();
   await select("Project enquiry navigation", "Header content");
+  await check(
+    "Structure leaf spacing is noninteractive and parent arrows remain keyboard-operable",
+    async () => {
+      const tree = page.getByRole("tree", { name: "Page structure" });
+      assert.equal(
+        await tree.locator('button[disabled][tabindex="-1"]').count(),
+        0,
+      );
+      const parent = tree.getByRole("button", {
+        name: "Header content",
+        exact: true,
+      });
+      await parent.click();
+      await parent.press("ArrowLeft");
+      assert.equal(
+        await tree
+          .getByRole("button", { name: "Expand Header content", exact: true })
+          .count(),
+        1,
+      );
+      await parent.press("ArrowRight");
+      assert.equal(
+        await tree
+          .getByRole("button", { name: "Collapse Header content", exact: true })
+          .count(),
+        1,
+      );
+      await tree
+        .getByRole("button", {
+          name: "Project enquiry navigation",
+          exact: true,
+        })
+        .click();
+    },
+  );
   await page.getByRole("tab", { name: "Style", exact: true }).click();
   const menu = () =>
     page
@@ -205,6 +259,16 @@ try {
   );
   await check("Menu Style accessibility", () => a11y("menu-style-desktop"));
   await page.getByRole("tab", { name: "Content", exact: true }).click();
+  await check(
+    "Reselecting a scalar option produces no command exception",
+    async () => {
+      const errorsBefore = diagnostics.pageErrors.length;
+      const breakpoint = page.getByLabel("Menu breakpoint", { exact: true });
+      await breakpoint.selectOption(await breakpoint.inputValue());
+      await page.waitForTimeout(50);
+      assert.equal(diagnostics.pageErrors.length, errorsBefore);
+    },
+  );
   await page
     .getByLabel("Menu breakpoint", { exact: true })
     .selectOption("desktop");
