@@ -270,6 +270,13 @@ function serializeValue(
   return serializePrimitive(value, property);
 }
 
+export function assertSafeStylePrimitive(
+  value: string | number,
+  property?: string,
+): void {
+  serializePrimitive(value, property);
+}
+
 function serializePrimitive(value: string | number, property?: string): string {
   const serialized = String(value);
   const urls = [...serialized.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/giu)];

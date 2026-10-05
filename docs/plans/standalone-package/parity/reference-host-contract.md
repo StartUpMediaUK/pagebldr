@@ -34,6 +34,15 @@ Packed mode is authoritative:
 Packed mode fails if the app imports an internal workspace path, reaches source
 files outside the installed package or requires consumer Tailwind processing.
 
+For local browser acceptance, build the package, then run
+`scripts/check-packed-package.mjs` with `PAGEBLDR_KEEP_PACKED_REFERENCE_HOST=1`.
+The checker reports and retains its isolated workspace instead of deleting it.
+Run the installed Vite CLI with `preview` from the reported Reference Host
+directory. Its built `/packed-artifact.json` audit surface exposes the installed
+package and React versions, tarball name and SHA-256. Normal checks still clean
+up automatically; retained workspaces are temporary local evidence and are not
+repository source.
+
 ## Default-route purity
 
 The default route proves what every developer receives. It may contain only:

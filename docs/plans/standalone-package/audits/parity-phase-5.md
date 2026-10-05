@@ -75,6 +75,18 @@ Source baseline: Quizr Page Builder V2 commit
   item treatment, spacing and open-panel treatment; Gallery layout is a labelled
   segmented Square/Masonry/Carousel choice instead of an invalid free-text
   Content field. Custom Elements use the same public `styleControls` contract.
+- Scalar Content and responsive Style inputs now retain command-rejected drafts
+  with associated accessible errors. Escape discards a rejected draft; external
+  controlled updates and Undo replace stale drafts. Empty/non-finite numbers and
+  definition-declared bounds are validated before dispatch. Valid edits keep the
+  existing per-property 750ms history coalescing policy. Locked Elements disable
+  all Content control variants.
+- Command validation now rejects unsafe CSS in local styles, Classes and
+  Variables before a history entry can be created, using the compilation policy.
+  A new rejection test exposed the previous compile-only validation gap.
+- The packed checker has an opt-in retained Reference Host mode and a built
+  `/packed-artifact.json` audit surface, without changes to default editor
+  wiring.
 
 ## Evidence
 
@@ -261,3 +273,32 @@ Broader validation presentation; phone and packed-browser visual assertions; and
 the full Phase 5 verification matrix remain open. Social-image selection, the
 shared media picker and other Resource selection stay assigned to Parity
 Phase 6.
+
+## 5 October 2026 validation checkpoint
+
+- Core: 61 passing tests across 10 files; React: 51 across 15 files. New
+  coverage checks numeric bounds, schema error presentation, rejected Style
+  history, successful correction/coalescing, and unsafe local/Class/Variable
+  commands.
+- The isolated packed consumer gate passes with React 19.2.8. Measurements:
+  React entry 851,815 bytes; core 244,756 bytes; CSS 67,645 bytes; archive
+  1,328,317 bytes; tree-shaken core consumer 123,329 bytes. Only the React
+  guardrail changed, from 850,000 to 856,000 bytes for validation presentation.
+- Package `pagebldr@0.0.0-alpha.0`, archive `pagebldr-0.0.0-alpha.0.tgz`;
+  SHA-256 `109cc01879893b607224fba84daa0a82adfa8d9d63222aebce14ab58ee337e5b`.
+  The built isolated Reference Host was started at `http://localhost:5173`.
+- T3 `preview_open` attached `tab_2`, navigation loaded the packed editor and an
+  evaluation returned its page title. Snapshot failed twice; after reattachment
+  the resize call timed out and the tools reported no connected automation host.
+  No screenshot, keyboard result or automated accessibility pass is claimed for
+  this checkpoint. Browser acceptance remains open; no substitute browser ran.
+- An initial full repository run passed tests/builds but its export check raced
+  against the concurrent packing prepack rebuild. Verification was rerun
+  serially.
+- The serial `pnpm check` passed formatting, lint, all workspace TypeScript and
+  tests, immutable parity fixtures, all 11 builds, docs checks, export checks,
+  packed consumers, size budgets and licenses. `git diff --check` also passed.
+  The generated Next.js type-import churn was restored before commit.
+- This checkpoint does not close Phase 5. Broader collection/rich-text
+  validation feedback, required desktop/phone visual comparisons, keyboard/a11y
+  review and the acceptance matrix remain outstanding. Phase 6 has not begun.

@@ -342,6 +342,16 @@ show their winning local/Class, breakpoint, state, and inherited origin, filter
 Variables by property applicability, and provide per-property and reset-all
 actions.
 
+Scalar Content and Style inputs retain rejected drafts locally, mark the input
+invalid, and associate the command/schema error with it for assistive
+technology. Correcting the value commits through the existing per-field
+coalescing key; Escape discards a rejected draft without changing the Document.
+Undo and controlled Host updates replace stale drafts. Empty numeric drafts are
+not coerced to zero, and definition-declared numeric bounds are enforced before
+dispatch. Locked Elements disable Content controls as well as Style controls.
+Document validation rejects unsafe CSS in local styles, Classes and Variables,
+using the same safety policy as CSS compilation.
+
 The toolbar's Page design dialog stages page settings until Apply dispatches one
 `update-settings` command. Design validates content width (320–2400px), tablet
 maximum (768–1200px), mobile maximum (320–767px), and requires the mobile

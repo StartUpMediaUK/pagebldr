@@ -1,4 +1,6 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import console from "node:console";
 import {
   existsSync,
   cpSync,
@@ -19,6 +21,9 @@ import { fileURLToPath, URL } from "node:url";
 const workspace = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const packageDirectory = join(workspace, "packages", "pagebldr");
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "pagebldr-pack-"));
+// Opt-in browser acceptance mode; normal CI continues to clean up its consumer.
+const keepReferenceHost =
+  process.env.PAGEBLDR_KEEP_PACKED_REFERENCE_HOST === "1";
 const npmCli = join(
   dirname(process.execPath),
   "node_modules",
@@ -38,6 +43,7 @@ const reactTypes = reactVersion.startsWith("18.")
 
 function assertMaximumSize(file, maximumBytes, label) {
   const bytes = statSync(file).size;
+  if (keepReferenceHost) console.log(`${label}: ${bytes} bytes`);
   if (bytes > maximumBytes)
     throw new Error(`${label} is ${bytes} bytes; budget is ${maximumBytes}.`);
 }
@@ -296,6 +302,25 @@ if (errors.length > 0) throw errors[0];
   if (installedManifest.name !== "pagebldr") {
     throw new Error("The packed package has the wrong name.");
   }
+  if (keepReferenceHost) {
+    writeFileSync(
+      join(referenceHostDirectory, "dist", "packed-artifact.json"),
+      JSON.stringify(
+        {
+          package: installedManifest.name,
+          version: installedManifest.version,
+          archive: archiveName,
+          sha256: createHash("sha256")
+            .update(readFileSync(archivePath))
+            .digest("hex"),
+          reactVersion,
+        },
+        null,
+        2,
+      ),
+    );
+    console.log(`Packed Reference Host: ${referenceHostDirectory}`);
+  }
   const installedPackage = join(consumerDirectory, "node_modules", "pagebldr");
   for (const [subpath, target] of Object.entries(installedManifest.exports)) {
     const targets =
@@ -338,7 +363,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    850_000,
+    856_000,
     "React entry",
   );
   assertMaximumSize(
@@ -364,5 +389,7 @@ if (errors.length > 0) throw errors[0];
     );
   }
 } finally {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+  if (keepReferenceHost)
+    console.log(`Retained packed acceptance workspace: ${temporaryDirectory}`);
+  else rmSync(temporaryDirectory, { recursive: true, force: true });
 }

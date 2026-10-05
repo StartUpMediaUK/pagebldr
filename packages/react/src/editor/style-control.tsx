@@ -23,13 +23,13 @@ import {
   FieldLegend,
   FieldSet,
 } from "../components/ui/field.js";
-import { Input } from "../components/ui/input.js";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "../components/ui/native-select.js";
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group.js";
 import { usePagebldrEditor, type EditorViewport } from "./context.js";
+import { ValidatedInputField } from "./validated-input-field.js";
 
 const advancedCapabilities = new Set([
   "layout",
@@ -249,11 +249,16 @@ function StylePropertyField({
     );
 
   return (
-    <Field>
-      <div className="flex items-center gap-2">
-        <FieldLabel htmlFor={id} className="flex-1">
-          {label}
-        </FieldLabel>
+    <ValidatedInputField
+      key={`${element.id}:${breakpoint}:${state}:${property}`}
+      label={label}
+      value={isPrimitiveStyleValue(local) ? String(local) : ""}
+      inputProps={{
+        placeholder: formatStyleValue(resolved?.value),
+        disabled: readOnly,
+      }}
+      onCommit={(draft) => setValue(draft === "" ? null : draft)}
+      labelAction={
         <Button
           type="button"
           size="icon-sm"
@@ -264,18 +269,8 @@ function StylePropertyField({
         >
           <RotateCcwIcon />
         </Button>
-      </div>
-      <Input
-        id={id}
-        value={isPrimitiveStyleValue(local) ? String(local) : ""}
-        placeholder={formatStyleValue(resolved?.value)}
-        disabled={readOnly}
-        onChange={(event) =>
-          setValue(
-            event.currentTarget.value === "" ? null : event.currentTarget.value,
-          )
-        }
-      />
+      }
+    >
       {variables.length > 0 || localVariable ? (
         <Field>
           <FieldLabel htmlFor={sourceId} className="sr-only">
@@ -307,7 +302,7 @@ function StylePropertyField({
       <FieldDescription>
         {describeStyleOrigin(editor.document, resolved)}
       </FieldDescription>
-    </Field>
+    </ValidatedInputField>
   );
 }
 
