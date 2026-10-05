@@ -69,9 +69,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Element-specific Style controls and their source maps raise the intentional
-  // package baseline while keeping the archive below 1.331 MB.
-  assertMaximumSize(archivePath, 1_331_000, "Packed archive");
+  // Complete Menu markup, responsive layout and interaction controller account
+  // for this narrowly rebased baseline; retain an explicit archive guardrail.
+  assertMaximumSize(archivePath, 1_355_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -363,7 +363,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    856_000,
+    870_000,
     "React entry",
   );
   assertMaximumSize(
@@ -380,7 +380,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    68_000,
+    69_500,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

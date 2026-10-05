@@ -7,7 +7,8 @@ import { createRequire } from "node:module";
 import { resolve, join } from "node:path";
 import process from "node:process";
 
-const [consumerDirectory, executablePath] = process.argv.slice(2);
+const [consumerDirectory, executablePath, evidenceDirectory] =
+  process.argv.slice(2);
 if (!consumerDirectory || !executablePath)
   throw new Error(
     "Supply the isolated consumer directory and Chromium executable.",
@@ -16,7 +17,8 @@ const require = createRequire(join(resolve(consumerDirectory), "package.json"));
 const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 const output = resolve(
-  "docs/plans/standalone-package/audits/evidence/parity-phase-5/browser-2026-10-05",
+  evidenceDirectory ??
+    "docs/plans/standalone-package/audits/evidence/parity-phase-5/menu-correction-2026-10-05",
 );
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath, headless: true });
@@ -252,11 +254,11 @@ try {
     name: "Primary navigation",
     exact: true,
   });
-  const toggle = publishedMenu.getByRole("button");
+  const toggle = publishedMenu.getByRole("button", { includeHidden: true });
   await toggle.click();
   await screenshot("menu-fullscreen-actual-phone");
   await check("Menu fullscreen uses a viewport-fixed panel", async () => {
-    const panel = publishedMenu.locator("ul");
+    const panel = publishedMenu.locator(".pagebldr-menu-panel");
     assert.equal(
       await panel.evaluate(
         (element) =>
@@ -282,7 +284,7 @@ try {
   await check("Menu item background reaches rendering", async () =>
     assert.equal(
       await publishedMenu
-        .locator("a")
+        .locator(".pagebldr-menu-list a")
         .first()
         .evaluate(
           (element) =>
@@ -293,10 +295,11 @@ try {
     ),
   );
   await check("Menu item hover background reaches rendering", async () => {
-    await publishedMenu.locator("a").first().hover();
+    await publishedMenu.locator(".pagebldr-menu-list a").first().hover();
+    await page.waitForTimeout(250);
     assert.equal(
       await publishedMenu
-        .locator("a")
+        .locator(".pagebldr-menu-list a")
         .first()
         .evaluate(
           (element) =>
@@ -311,6 +314,60 @@ try {
     assert.ok(id, "Toggle must identify its panel");
     assert.equal(await page.locator(`[id="${id}"]`).count(), 1);
   });
+  await check(
+    "Fullscreen Menu clones the header logo without duplicate Element IDs",
+    async () => {
+      const clone = publishedMenu.locator(
+        ".pagebldr-menu-fullscreen-logo .pagebldr-logo",
+      );
+      assert.equal(await clone.count(), 1);
+      assert.equal(
+        await clone.locator("[id], [data-pagebldr-element]").count(),
+        0,
+      );
+      assert.equal(await clone.getAttribute("id"), null);
+      assert.equal(await clone.getAttribute("data-pagebldr-element"), null);
+      const originalColor = await page
+        .locator("[data-pagebldr-element] > .pagebldr-logo-text")
+        .first()
+        .evaluate(
+          (element) =>
+            element.ownerDocument.defaultView.getComputedStyle(element).color,
+        );
+      assert.equal(
+        await clone
+          .locator(".pagebldr-logo-text")
+          .evaluate(
+            (element) =>
+              element.ownerDocument.defaultView.getComputedStyle(element).color,
+          ),
+        originalColor,
+      );
+    },
+  );
+  await check(
+    "Fullscreen Menu keyboard focus wraps in both directions",
+    async () => {
+      const links = publishedMenu.locator(".pagebldr-menu-list a[href]");
+      await links.last().focus();
+      await page.keyboard.press("Tab");
+      assert.equal(
+        await toggle.evaluate(
+          (element) => element === element.ownerDocument.activeElement,
+        ),
+        true,
+      );
+      await page.keyboard.press("Shift+Tab");
+      assert.equal(
+        await links
+          .last()
+          .evaluate(
+            (element) => element === element.ownerDocument.activeElement,
+          ),
+        true,
+      );
+    },
+  );
   await check("Keyboard Escape closes Menu and restores focus", async () => {
     await toggle.press("Escape");
     assert.equal(await toggle.getAttribute("aria-expanded"), "false");
@@ -318,6 +375,17 @@ try {
       await toggle.evaluate(
         (element) => element === element.ownerDocument.activeElement,
       ),
+      true,
+    );
+  });
+  await toggle.click();
+  await check("Opening Menu focuses the first navigation link", async () => {
+    await page.waitForTimeout(50);
+    assert.equal(
+      await publishedMenu
+        .locator(".pagebldr-menu-list a[href]")
+        .first()
+        .evaluate((element) => element === element.ownerDocument.activeElement),
       true,
     );
   });
@@ -340,6 +408,112 @@ try {
       .dispatchEvent("pointerdown");
     assert.equal(await toggle.getAttribute("aria-expanded"), "false");
   });
+  await check(
+    "Closing fullscreen Menu restores background scrolling and clears its logo",
+    async () => {
+      assert.notEqual(
+        await page
+          .locator("body")
+          .evaluate((element) => element.style.overflow),
+        "hidden",
+      );
+      assert.equal(
+        await publishedMenu
+          .locator(".pagebldr-menu-fullscreen-logo")
+          .innerHTML(),
+        "",
+      );
+    },
+  );
+
+  await fresh();
+  await select("Project enquiry navigation", "Header content");
+  await page.getByRole("tab", { name: "Content", exact: true }).click();
+  await page
+    .getByLabel("Menu breakpoint", { exact: true })
+    .selectOption("tablet");
+  await page
+    .getByLabel("Collapse style", { exact: true })
+    .selectOption("dropdown");
+  await page
+    .getByRole("link", { name: "Open published rendering", exact: true })
+    .click();
+  await page.setViewportSize({ width: 820, height: 1000 });
+  await toggle.click();
+  await check(
+    "Dropdown opens below the nearest header boundary without locking scrolling",
+    async () => {
+      const layout = await publishedMenu.evaluate((menu) => {
+        const panel = menu.querySelector(".pagebldr-menu-panel");
+        const boundary =
+          menu.parentElement.closest("header, section, footer, article") ??
+          menu.parentElement.closest("[data-pagebldr-element]") ??
+          menu;
+        const view = menu.ownerDocument.defaultView;
+        return {
+          top: panel.getBoundingClientRect().top,
+          bottom: Math.max(0, boundary.getBoundingClientRect().bottom),
+          position: view.getComputedStyle(panel).position,
+          overflow: menu.ownerDocument.body.style.overflow,
+        };
+      });
+      assert.equal(layout.position, "fixed");
+      assert.ok(
+        Math.abs(layout.top - layout.bottom) < 2,
+        JSON.stringify(layout),
+      );
+      assert.notEqual(layout.overflow, "hidden");
+      await screenshot("menu-dropdown-tablet");
+    },
+  );
+  await check(
+    "Selecting a Menu anchor closes its panel and focuses the destination",
+    async () => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      const link = publishedMenu
+        .locator('.pagebldr-menu-list a[href^="#"]')
+        .first();
+      const href = await link.getAttribute("href");
+      await link.click();
+      assert.equal(await toggle.getAttribute("aria-expanded"), "false");
+      assert.equal(
+        await page.evaluate(() => globalThis.document.activeElement?.id),
+        decodeURIComponent(href.slice(1)),
+      );
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+    },
+  );
+  await page.evaluate(() => globalThis.window.scrollTo(0, 0));
+  await toggle.click();
+  await check(
+    "Crossing the collapse breakpoint closes Menu and restores its inline layout",
+    async () => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.waitForTimeout(100);
+      assert.equal(await toggle.getAttribute("aria-expanded"), "false");
+      assert.equal(await toggle.isVisible(), false);
+      assert.equal(
+        await publishedMenu
+          .locator(".pagebldr-menu-panel")
+          .evaluate(
+            (element) =>
+              element.ownerDocument.defaultView.getComputedStyle(element)
+                .position,
+          ),
+        "static",
+      );
+      assert.equal(
+        await publishedMenu
+          .locator("ul")
+          .evaluate(
+            (element) =>
+              element.ownerDocument.defaultView.getComputedStyle(element)
+                .flexDirection,
+          ),
+        "row",
+      );
+    },
+  );
 
   for (const [name, width, height] of [
     ["desktop", 1440, 900],
@@ -446,6 +620,7 @@ try {
         browser: browser.version(),
         viewports: [
           { width: 1440, height: 900 },
+          { width: 820, height: 1000 },
           { width: 390, height: 844 },
         ],
         results,

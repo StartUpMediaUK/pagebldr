@@ -677,6 +677,17 @@ ordinary Element props through controlled commands. A `select` may request the
 keyboard-operable group. The standard Logo, Menu and Gallery definitions use
 this seam; custom definitions receive no privileged component path.
 
+The React renderer supplies `ElementRenderContext.elementId`, an optional stable
+Document Element identity, so definitions can give interactive descendants
+deterministic IDs without depending on editable anchors. Existing render-context
+callers may omit it. The standard Menu uses it to link its disclosure to its
+panel. Menu layout honors the Document's breakpoint settings during SSR and
+receives the renderer's `styleNonce`; it needs no Host stylesheet repairs.
+`PagebldrRuntimeInteractions` activates the same markup in the isolated canvas
+and published page: dropdown boundary positioning, fullscreen layout, dismissal,
+focus management, scroll restoration and anchor navigation remain package-owned.
+The presentation-only renderer itself still requires no browser globals.
+
 Every standard Element accepts an optional authored anchor ID. The Advanced
 inspector normalizes input to a unique lowercase ASCII slug of at most 80
 characters, preserves duplicate drafts for correction, and makes valid anchors
