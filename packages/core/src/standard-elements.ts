@@ -267,6 +267,7 @@ function definition(config: {
   render: (props: Props, context: ElementRenderContext) => RenderNode;
   childPolicy?: ElementDefinition["childPolicy"];
   controls?: readonly ElementControl<Props>[];
+  styleControls?: readonly ElementControl<Props>[];
   styles?: readonly string[];
   accessibility?: ElementDefinition["accessibility"];
   inlineEditing?: ElementInlineEditing<Props>;
@@ -282,6 +283,7 @@ function definition(config: {
     props: schema,
     defaults: () => structuredClone(config.defaults),
     controls: config.controls ?? scalarControls(config.defaults),
+    ...(config.styleControls ? { styleControls: config.styleControls } : {}),
     childPolicy: config.childPolicy ?? none,
     styles: config.styles ?? allStyles,
     accessibility: config.accessibility ?? {},
@@ -543,6 +545,82 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       imageWidth: 120,
       imageFit: "contain",
     },
+    controls: [
+      {
+        kind: "select",
+        key: "display",
+        label: "Logo display",
+        options: [
+          { label: "Text", value: "text" },
+          { label: "Image", value: "image" },
+          { label: "Image and text", value: "image-text" },
+        ],
+      },
+      {
+        kind: "text",
+        key: "text",
+        label: "Logo text",
+        visibleWhen: { key: "display", notEquals: "image" },
+      },
+      {
+        kind: "text",
+        key: "alt",
+        label: "Alternative text",
+        visibleWhen: { key: "display", notEquals: "text" },
+      },
+    ],
+    styleControls: [
+      {
+        kind: "number",
+        key: "imageWidth",
+        label: "Image width",
+        min: 16,
+        max: 600,
+        step: 1,
+        visibleWhen: { key: "display", notEquals: "text" },
+      },
+      {
+        kind: "select",
+        key: "imageFit",
+        label: "Image fit",
+        visibleWhen: { key: "display", notEquals: "text" },
+        options: [
+          { label: "Contain", value: "contain" },
+          { label: "Cover", value: "cover" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "imagePosition",
+        label: "Image position",
+        visibleWhen: { key: "display", equals: "image-text" },
+        options: [
+          { label: "Before text", value: "before" },
+          { label: "After text", value: "after" },
+        ],
+      },
+      {
+        kind: "number",
+        key: "gap",
+        label: "Image gap",
+        min: 0,
+        max: 96,
+        step: 1,
+        visibleWhen: { key: "display", equals: "image-text" },
+      },
+      {
+        kind: "select",
+        key: "alignment",
+        label: "Alignment",
+        presentation: "segmented",
+        visibleWhen: { key: "display", equals: "image-text" },
+        options: [
+          { label: "Start", value: "start" },
+          { label: "Centre", value: "center" },
+          { label: "End", value: "end" },
+        ],
+      },
+    ],
     references: (props) => sourceReferences([props.source]),
     render: renderLogo,
   }),
@@ -645,6 +723,86 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
             preferFirstAnchor: true,
           },
         ],
+      },
+    ],
+    styleControls: [
+      {
+        kind: "select",
+        key: "itemAlignment",
+        label: "Menu items align",
+        presentation: "segmented",
+        options: [
+          { label: "Start", value: "start" },
+          { label: "Centre", value: "center" },
+          { label: "End", value: "end" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "fullscreenVerticalAlignment",
+        label: "Vertical alignment",
+        presentation: "segmented",
+        visibleWhen: [
+          { key: "collapseAt", notEquals: "never" },
+          { key: "presentation", equals: "fullscreen" },
+        ],
+        options: [
+          { label: "Top", value: "start" },
+          { label: "Middle", value: "center" },
+          { label: "Bottom", value: "end" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "itemAppearance",
+        label: "Item appearance",
+        presentation: "segmented",
+        visibleWhen: { key: "collapseAt", notEquals: "never" },
+        options: [
+          { label: "Underline", value: "underline" },
+          { label: "Background", value: "background" },
+        ],
+      },
+      {
+        kind: "text",
+        key: "itemBackground",
+        label: "Item background",
+        visibleWhen: [
+          { key: "collapseAt", notEquals: "never" },
+          { key: "itemAppearance", equals: "background" },
+        ],
+      },
+      {
+        kind: "text",
+        key: "itemHoverBackground",
+        label: "Item hover background",
+        visibleWhen: [
+          { key: "collapseAt", notEquals: "never" },
+          { key: "itemAppearance", equals: "background" },
+        ],
+      },
+      {
+        kind: "number",
+        key: "itemGap",
+        label: "Space between",
+        min: 0,
+        max: 96,
+        step: 1,
+      },
+      {
+        kind: "text",
+        key: "panelBackground",
+        label: "Menu background",
+        visibleWhen: { key: "collapseAt", notEquals: "never" },
+      },
+      {
+        kind: "number",
+        key: "panelPadding",
+        label: "Open panel padding",
+        min: 0,
+        max: 160,
+        step: 1,
+        visibleWhen: { key: "collapseAt", notEquals: "never" },
       },
     ],
     destinations: (props) =>
@@ -1295,6 +1453,20 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         .max(30),
     }),
     defaults: galleryDefaults(),
+    controls: [],
+    styleControls: [
+      {
+        kind: "select",
+        key: "layout",
+        label: "Gallery layout",
+        presentation: "segmented",
+        options: [
+          { label: "Square", value: "square" },
+          { label: "Masonry", value: "masonry" },
+          { label: "Carousel", value: "carousel" },
+        ],
+      },
+    ],
     references: (props) =>
       sourceReferences(array(props, "items").map((item) => item.source)),
     migrate: migrateGallery,

@@ -69,6 +69,12 @@ Source baseline: Quizr Page Builder V2 commit
 - The current shadcn Alert Dialog registry source was reviewed and adapted to
   package imports for the destructive used-Variable confirmation. ReUI was not
   available in this runtime.
+- Element-specific visual controls are now serializable definition metadata,
+  rendered before the ordinary responsive Style capabilities. Logo conditionally
+  exposes image width, fit, position, gap and alignment; Menu exposes alignment,
+  item treatment, spacing and open-panel treatment; Gallery layout is a labelled
+  segmented Square/Masonry/Carousel choice instead of an invalid free-text
+  Content field. Custom Elements use the same public `styleControls` contract.
 
 ## Evidence
 
@@ -90,6 +96,11 @@ Source baseline: Quizr Page Builder V2 commit
 - [Edited and reordered Variable](evidence/parity-phase-5/variable-manager-updated.png)
 - [Used-Variable deletion guard](evidence/parity-phase-5/variable-delete-guard.png)
 - [Variable manager flow](evidence/parity-phase-5/variable-manager-flow.mp4)
+- [Menu-specific Style controls](evidence/parity-phase-5/element-style-menu.png)
+- [Menu-specific Style flow](evidence/parity-phase-5/element-style-menu-flow.mp4)
+- [Gallery layout controls](evidence/parity-phase-5/element-style-gallery.png)
+- [Gallery layout flow](evidence/parity-phase-5/element-style-gallery-flow.mp4)
+- [Conditional Logo treatment controls](evidence/parity-phase-5/element-style-logo.png)
 
 The T3 embedded browser confirmed that changing Heading Level from 1 to 2
 updates the isolated canvas from `H1` to `H2`, and that Copyright's boolean
@@ -150,6 +161,16 @@ and disabled Apply, then committed a valid title on blur to both dialog and Host
 toolbar. The linked stills and short replacement recording are the visual
 evidence; an earlier recording crossed an overnight pause and exceeded T3's
 transfer limit, so it was discarded rather than cited.
+
+The next built-package pass selected the seeded Menu and confirmed that its
+definition-owned segmented alignment and item-appearance controls update through
+ordinary commands; choosing Background revealed the dependent colour fields. It
+then inserted the standard Gallery through the package library and changed
+Square to Masonry and Carousel, with each choice immediately changing the
+isolated canvas layout. Finally, switching the seeded text Logo to
+image-and-text revealed only the applicable width, fit, position, gap and
+alignment controls. The linked stills and recordings show these definition-owned
+Style surfaces.
 
 ## Verification
 
@@ -218,10 +239,25 @@ transfer limit, so it was discarded rather than cited.
   stylesheet to 67,558 bytes, and the packed archive to 1,311,664 bytes. Their
   guardrails were narrowly rebased from 820,000 to 850,000 bytes, from 66,000 to
   68,000 bytes, and from 1,302,000 to 1,318,000 bytes respectively.
+- Element-specific Style metadata adds one focused core case and three focused
+  React visibility cases. Core has 60 passing tests across 10 files and React
+  has 48 passing tests across 14 files; focused type checking and lint pass.
+- The initial Element-specific Style checkpoint brought the aggregate React
+  entry to 848,814 bytes, the stylesheet to 67,645 bytes and the packed archive
+  to 1,324,545 bytes. The archive guardrail was narrowly rebased from 1,318,000
+  to 1,331,000 bytes. Serializable Style metadata brings the tree-shaken core
+  consumer to 123,126 bytes, with its guardrail narrowly rebased from 121,000 to
+  125,000 bytes, and the aggregate core entry to 244,274 bytes, with its
+  guardrail rebased from 240,000 to 248,000 bytes. The existing 850,000-byte
+  React and 68,000-byte stylesheet guardrails remain unchanged.
+- The final conditional-visibility refinement passes the complete `pnpm check`
+  gate. Its aggregate React entry is 849,195 bytes and core entry is 244,499
+  bytes; CSS remains 67,645 bytes. Archive and tree-shaken consumer budgets pass
+  in that gate (the exact measurements above precede this refinement).
 
 ## Remaining phase gate
 
-Element-specific inspector refinements; broader validation presentation; phone
-and packed-browser visual assertions; and the full Phase 5 verification matrix
-remain open. Social-image selection, the shared media picker and other Resource
-selection stay assigned to Parity Phase 6.
+Broader validation presentation; phone and packed-browser visual assertions; and
+the full Phase 5 verification matrix remain open. Social-image selection, the
+shared media picker and other Resource selection stay assigned to Parity
+Phase 6.

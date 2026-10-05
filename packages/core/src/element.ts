@@ -37,15 +37,19 @@ export interface ElementRenderContext {
   readonly destination: (value: unknown) => ResolvedDestination;
 }
 
+export interface ElementControlVisibilityCondition<Props> {
+  readonly key: keyof Props & string;
+  readonly equals?: string | number | boolean;
+  readonly notEquals?: string | number | boolean;
+}
+
 interface ElementControlBase<Props> {
   readonly key: keyof Props & string;
   readonly label: string;
   readonly description?: string;
-  readonly visibleWhen?: {
-    readonly key: keyof Props & string;
-    readonly equals?: string | number | boolean;
-    readonly notEquals?: string | number | boolean;
-  };
+  readonly visibleWhen?:
+    | ElementControlVisibilityCondition<Props>
+    | readonly ElementControlVisibilityCondition<Props>[];
 }
 
 export type CollectionItemControl =
@@ -96,6 +100,7 @@ export type ElementControl<Props> =
     })
   | (ElementControlBase<Props> & {
       readonly kind: "select";
+      readonly presentation?: "select" | "segmented";
       readonly options: readonly {
         readonly label: string;
         readonly value: string | number;
@@ -146,6 +151,7 @@ export interface ElementDefinition<
     fromVersion: number,
   ) => InferSchemaOutput<Schema>;
   readonly controls?: readonly ElementControl<InferSchemaOutput<Schema>>[];
+  readonly styleControls?: readonly ElementControl<InferSchemaOutput<Schema>>[];
   readonly childPolicy?: ElementChildPolicy;
   readonly styles?: readonly StyleCapabilityDefinition["key"][];
   readonly accessibility?: ElementAccessibility;

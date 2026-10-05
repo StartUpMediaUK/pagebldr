@@ -54,6 +54,7 @@ export type {
   ElementAccessibility,
   ElementChildPolicy,
   ElementControl,
+  ElementControlVisibilityCondition,
   CollectionItemControl,
   ElementDefinition,
   ElementRenderContext,

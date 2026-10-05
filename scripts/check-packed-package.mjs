@@ -63,9 +63,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Variable management and its source maps raise the intentional package
-  // baseline while keeping the archive below 1.318 MB.
-  assertMaximumSize(archivePath, 1_318_000, "Packed archive");
+  // Element-specific Style controls and their source maps raise the intentional
+  // package baseline while keeping the archive below 1.331 MB.
+  assertMaximumSize(archivePath, 1_331_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -171,7 +171,7 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    121_000,
+    125_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -343,7 +343,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "index.js"),
-    240_000,
+    248_000,
     "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {
