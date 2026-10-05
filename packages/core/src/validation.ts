@@ -5,7 +5,10 @@ import type {
   PageDocument,
   StyleValue,
 } from "./document-types.js";
-import { styleVariableKindsForProperty } from "./styles.js";
+import {
+  assertSafeStylePrimitive,
+  styleVariableKindsForProperty,
+} from "./styles.js";
 import type { ElementDefinition } from "./element.js";
 import type { StyleEngine } from "./styles.js";
 import { PagebldrError } from "./types.js";
@@ -34,6 +37,8 @@ export function assertValidDocument(
   assertUniqueNames("Class", document.classes);
   assertUniqueNames("Variable", document.variables);
   assertUniqueAnchors(document);
+  for (const variable of Object.values(document.variables))
+    assertSafeStylePrimitive(variable.value);
 
   for (const element of Object.values(document.elements)) {
     const definition = definitions.get(element.type);
@@ -231,7 +236,10 @@ function assertVariableReference(
   value: StyleValue,
   property: string,
 ): void {
-  if (typeof value !== "object") return;
+  if (typeof value !== "object") {
+    assertSafeStylePrimitive(value, property);
+    return;
+  }
   if (!document.variables[value.variableId]) {
     throw new PagebldrError(
       "BROKEN_REFERENCE",

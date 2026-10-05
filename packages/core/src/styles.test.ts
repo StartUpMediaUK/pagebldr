@@ -260,6 +260,63 @@ describe("Style engine", () => {
     ).toContain("background-image:url(https://example.com/image.png)");
   });
 
+  it("rejects unsafe local, Class and Variable values before commands enter history", () => {
+    const builder = createPagebldr({
+      namespace: "safe-style-commands",
+      elements: standardElements,
+      styleCapabilities: standardStyleCapabilities,
+    });
+    const document = builder.documents.create({ id: "safe-styles" });
+    const unsafe = "red;}body{display:none";
+    expect(
+      builder.documents.validate(
+        withStyles(document, { desktop: { normal: { color: unsafe } } }),
+      ).valid,
+    ).toBe(false);
+    const history = builder.editor.history.create(document);
+    expect(() =>
+      builder.editor.history.commit(history, {
+        type: "set-style",
+        target: { type: "local", elementId: document.rootId },
+        breakpoint: "desktop",
+        state: "normal",
+        property: "color",
+        value: unsafe,
+      }),
+    ).toThrow(/unsafe CSS syntax/u);
+    expect(() =>
+      builder.editor.history.commit(history, {
+        type: "add-class",
+        styleClass: {
+          id: "unsafe",
+          name: "Unsafe",
+          styles: { desktop: { normal: { color: unsafe } } },
+        },
+      }),
+    ).toThrow(/unsafe CSS syntax/u);
+    expect(() =>
+      builder.editor.history.commit(history, {
+        type: "add-variable",
+        variable: {
+          id: "unsafe",
+          name: "Unsafe",
+          kind: "color",
+          value: unsafe,
+        },
+      }),
+    ).toThrow(/unsafe CSS syntax/u);
+    expect(history.past).toHaveLength(0);
+    expect(
+      builder.documents.validate(
+        withStyles(document, {
+          desktop: {
+            normal: { backgroundImage: "url(https://example.com/image.png)" },
+          },
+        }),
+      ).valid,
+    ).toBe(true);
+  });
+
   it("keeps authored CSS within the 500-Element budget", () => {
     const fixture = createFiveHundredElementFixture();
     const styles = { desktop: { normal: { display: "block" } } } as const;

@@ -111,6 +111,10 @@ import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
 import { StyleControls } from "./style-control.js";
 import { PageDesignDialog } from "./page-design-dialog.js";
+import {
+  ValidatedInputField,
+  parseNumberDraft,
+} from "./validated-input-field.js";
 
 export function EditorShell(props: PagebldrEditorProps) {
   return (
@@ -1117,7 +1121,7 @@ function PropertyField({
       <CollectionControl
         applicationDestinations={applicationDestinations}
         control={control}
-        disabled={editor.mode !== "edit"}
+        disabled={editor.mode !== "edit" || element.locked}
         document={editor.document}
         elementId={element.id}
         value={value}
@@ -1129,7 +1133,7 @@ function PropertyField({
     return (
       <RichTextControl
         control={control}
-        disabled={editor.mode !== "edit"}
+        disabled={editor.mode !== "edit" || element.locked}
         value={value}
         onChange={update}
       />
@@ -1140,7 +1144,7 @@ function PropertyField({
       <DestinationControl
         applicationDestinations={applicationDestinations}
         control={control}
-        disabled={editor.mode !== "edit"}
+        disabled={editor.mode !== "edit" || element.locked}
         document={editor.document}
         elementId={element.id}
         value={value}
@@ -1158,7 +1162,7 @@ function PropertyField({
         <Switch
           id={id}
           checked={value === true}
-          disabled={editor.mode !== "edit"}
+          disabled={editor.mode !== "edit" || element.locked}
           onCheckedChange={update}
         />
       </Field>
@@ -1182,7 +1186,7 @@ function PropertyField({
               );
               if (option) update(option.value);
             }}
-            disabled={editor.mode !== "edit"}
+            disabled={editor.mode !== "edit" || element.locked}
             aria-labelledby={id}
             className="w-full"
           >
@@ -1205,7 +1209,7 @@ function PropertyField({
         <NativeSelect
           id={id}
           value={selected ? String(selected.value) : ""}
-          disabled={editor.mode !== "edit"}
+          disabled={editor.mode !== "edit" || element.locked}
           onChange={(event) => {
             const nextValue = event.currentTarget.value;
             const option = control.options.find(
@@ -1235,26 +1239,28 @@ function PropertyField({
 
   if (typeof value !== "string" && typeof value !== "number") return null;
   return (
-    <Field>
-      <FieldLabel htmlFor={id}>{control.label}</FieldLabel>
-      <Input
-        id={id}
-        type={control.kind === "number" ? "number" : "text"}
-        min={control.kind === "number" ? control.min : undefined}
-        max={control.kind === "number" ? control.max : undefined}
-        step={control.kind === "number" ? control.step : undefined}
-        placeholder={control.kind === "text" ? control.placeholder : undefined}
-        value={String(value)}
-        disabled={editor.mode !== "edit"}
-        onChange={(event) => {
-          if (control.kind === "number") {
-            const nextValue = event.currentTarget.valueAsNumber;
-            if (!Number.isNaN(nextValue)) update(nextValue);
-          } else update(event.currentTarget.value);
-        }}
-      />
+    <ValidatedInputField
+      key={`${element.id}:${control.key}`}
+      label={control.label}
+      value={String(value)}
+      inputProps={{
+        type: control.kind === "number" ? "number" : "text",
+        min: control.kind === "number" ? control.min : undefined,
+        max: control.kind === "number" ? control.max : undefined,
+        step: control.kind === "number" ? control.step : undefined,
+        placeholder: control.kind === "text" ? control.placeholder : undefined,
+        disabled: editor.mode !== "edit" || element.locked,
+      }}
+      onCommit={(draft) =>
+        update(
+          control.kind === "number"
+            ? parseNumberDraft(draft, control.min, control.max)
+            : draft,
+        )
+      }
+    >
       {description}
-    </Field>
+    </ValidatedInputField>
   );
 }
 
