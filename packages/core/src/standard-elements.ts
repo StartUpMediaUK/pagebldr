@@ -668,6 +668,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "select",
         key: "collapseAt",
         label: "Menu breakpoint",
+        presentation: "viewport",
         options: [
           { label: "Desktop", value: "desktop" },
           { label: "Tablet", value: "tablet" },
@@ -730,7 +731,16 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "select",
         key: "itemAlignment",
         label: "Menu items align",
-        presentation: "segmented",
+        labelWhen: [
+          {
+            label: "Horizontal alignment",
+            conditions: [
+              { key: "collapseAt", notEquals: "never" },
+              { key: "presentation", equals: "fullscreen" },
+            ],
+          },
+        ],
+        presentation: "horizontal-alignment",
         options: [
           { label: "Start", value: "start" },
           { label: "Centre", value: "center" },
@@ -741,7 +751,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "select",
         key: "fullscreenVerticalAlignment",
         label: "Vertical alignment",
-        presentation: "segmented",
+        presentation: "vertical-alignment",
         visibleWhen: [
           { key: "collapseAt", notEquals: "never" },
           { key: "presentation", equals: "fullscreen" },
@@ -785,6 +795,8 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "number",
         key: "itemGap",
         label: "Space between",
+        presentation: "slider",
+        unit: "px",
         min: 0,
         max: 96,
         step: 1,

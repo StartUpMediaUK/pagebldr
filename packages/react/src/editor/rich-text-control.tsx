@@ -16,7 +16,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "../components/ui/native-select.js";
-import { Textarea } from "../components/ui/textarea.js";
+import { ValidatedInputField } from "./validated-input-field.js";
 import { moveCollectionItem } from "./collection-control.js";
 
 type RichTextControlDefinition = Extract<
@@ -50,12 +50,19 @@ export function RichTextControl({
   const atMinimum = blocks.length <= (control.minBlocks ?? 0);
   const atMaximum =
     blocks.length >= (control.maxBlocks ?? Number.POSITIVE_INFINITY);
-  const updateBlock = (index: number, patch: RichTextBlock) =>
+  const updateBlock = (index: number, patch: RichTextBlock) => {
+    if (
+      Object.entries(patch).every(([key, next]) =>
+        Object.is(blocks[index]?.[key], next),
+      )
+    )
+      return;
     onChange(
       blocks.map((block, candidateIndex) =>
         candidateIndex === index ? { ...block, ...patch } : block,
       ),
     );
+  };
 
   return (
     <FieldSet className="gap-4">
@@ -138,17 +145,13 @@ export function RichTextControl({
                   ))}
                 </NativeSelect>
               </Field>
-              <Field>
-                <FieldLabel htmlFor={`${id}-${index}-text`}>Text</FieldLabel>
-                <Textarea
-                  disabled={disabled}
-                  id={`${id}-${index}-text`}
-                  value={text}
-                  onChange={(event) =>
-                    updateBlock(index, { text: event.currentTarget.value })
-                  }
-                />
-              </Field>
+              <ValidatedInputField
+                label="Text"
+                multiline
+                inputProps={{ disabled }}
+                value={text}
+                onCommit={(text) => updateBlock(index, { text })}
+              />
             </FieldSet>
           );
         })}

@@ -597,3 +597,116 @@ Next.js browser run or full source-visual comparison was performed here. Phase 5
 remains open for richer inspector controls, collection validation, the
 authored-content contrast decision and the broader visual/keyboard gate. Phase 6
 has not begun.
+
+## 5 October 2026 source palette decision and inspector fidelity
+
+The product owner's instruction, "just leave the source color palette.
+continue", resolves the previous checkpoint's authored-color decision: retain
+the pinned source palette in the acceptance fixture. No authored palette values
+were changed. The existing 14 authored-content contrast failures remain visible
+in full-page axe reports, with no disabled rules. This is an explicit
+source-parity decision, not a claim that the authored page meets WCAG contrast.
+It does not waive accessibility requirements for package-owned editor UI or
+future regressions outside these fixture colors.
+
+This checkpoint advances `CONTENT-01`, `CONTENT-02`, `STYLE-01`, `A11Y-01`,
+`A11Y-02` and locked-control policy; it does not close the entire Phase 5 gate.
+
+### Implementation and public interface
+
+- Menu Content now has the pinned source's four named icon breakpoint choices.
+  Horizontal and fullscreen vertical alignment use icon groups. The horizontal
+  label changes to "Horizontal alignment" only for a collapsible fullscreen
+  Menu. Space between uses the source's 0–96 slider and displayed px value.
+- Definitions own these presentations through optional serializable `labelWhen`,
+  semantic select presentations, and bounded number
+  `presentation: "slider"`/`unit` metadata. Core has no React, DOM or icon
+  dependency. Unknown semantic option values retain their text labels; numbers
+  without both bounds retain their numeric input. Existing consumers need no
+  changes, and no Document schema/migration change is needed.
+- Collection text and textarea controls retain rejected drafts with associated
+  Field errors. Required empty labels and schema-rejected overlong values do not
+  dispatch accepted mutations or silently revert. Blur remains the commit
+  boundary, with Enter as a single-line keyboard alternative and Escape to
+  discard. Structured Rich Text uses the same draft/error behavior while
+  retaining its existing continuous commit behavior. Undo and controlled value
+  replacements clear stale drafts. Equal collection/select and Rich Text values
+  avoid core's no-op command rejection.
+- Controls still dispatch `update-props` through the controlled editor, using
+  `prop:<elementId>:<property>` coalescing; collection items and Rich Text
+  blocks share their parent property's history grouping. Slider keyboard changes
+  are proved to undo as one Action. Locked definitions disable the controls.
+- The shadcn skill guided reuse of Field/Input/Textarea/Toggle Group and
+  addition of the official registry Slider after consulting current
+  [Slider](https://ui.shadcn.com/docs/components/radix/slider),
+  [Field](https://ui.shadcn.com/docs/components/radix/field),
+  [Input](https://ui.shadcn.com/docs/components/radix/input) and
+  [Toggle Group](https://ui.shadcn.com/docs/components/radix/toggle-group)
+  documentation. Registry source was reviewed and adapted to existing imports,
+  semantic tokens, reduced motion and accessible thumb naming. Its unnecessary
+  new `cn` dependency was removed in favor of the existing package utility;
+  dependency manifests and the lockfile are unchanged. Provenance is recorded in
+  `docs/attributions/ui.md`. ReUI remains unavailable.
+
+### Verification
+
+The first iteration passed all functional checks but did not yet scan revealed
+error states; the final harness adds those states and locked/slider keyboard
+coverage. The first full gate caught the intentionally changed Menu descriptor
+snapshot; it was updated to assert `presentation: "viewport"`. An earlier gate
+also caught unformatted newly generated browser JSON, which was formatted before
+the successful rerun. These were test/gate corrections, not suppressed checks.
+
+Final installed artifact: `pagebldr@0.0.0-alpha.0`, React 19.2.8, SHA-256
+`a33afcb0af5fd40c75e27fee78d7a49f19027192fd92313bf3f56fb3e5229718`. Chromium
+147.0.7727.15 used desktop 1440×900, tablet 820×1000 and phone 390×844. The
+immutable packed Reference Host still imports public exports and compiled
+package styles without any Host presentation repair.
+
+- [Final results](evidence/parity-phase-5/inspector-controls-2026-10-05/results.json):
+  **68/87 checks pass**: all 46 functional assertions, all 20 editor-UI axe
+  checks (including revealed collection/Rich Text errors), and two full-page
+  Variables dialog checks. The remaining 19 full-page scans report only the
+  unchanged 14 authored contrast nodes. The browser command deliberately returns
+  exit status 1; the owner-approved palette decision is documented here, not
+  converted into a hidden passing assertion.
+- The
+  [action trace](evidence/parity-phase-5/inspector-controls-2026-10-05/phase5-browser-trace.zip)
+  retains keyboard slider bounds, coalesced undo/redo, breakpoint selection,
+  collection Enter/blur errors, Rich Text schema rejection/Escape, locked
+  controls and the existing runtime flows. Invalid edits leave rendered content
+  unchanged; corrected edits reach the canvas and undo restores the source.
+- Inspected screenshots include
+  [desktop Menu Style](evidence/parity-phase-5/inspector-controls-2026-10-05/menu-style-configured-desktop.png),
+  [tablet slider focus](evidence/parity-phase-5/inspector-controls-2026-10-05/menu-slider-keyboard-tablet.png)
+  and
+  [phone collection error](evidence/parity-phase-5/inspector-controls-2026-10-05/collection-invalid-phone.png).
+  Menu Content/icon, slider and rejected-draft captures exist at all three
+  widths.
+- T3 status/navigation/snapshot now work. Its click calls also worked after
+  correcting an invalid locator argument; the Menu Style surface was inspected
+  in the collaborative browser. The explicitly authorized Chromium runner
+  remains the repeatable packed-artifact acceptance suite.
+- No page exceptions or failed requests were recorded. The existing unattributed
+  browser console 404 remains; no corresponding HTTP failure URL was captured.
+- `pnpm check` passes formatting, lint, all-workspace TypeScript/tests, parity
+  fixtures, all builds (including Next.js/docs), package exports, packed
+  consumers, size guardrails and licenses. Core: 61/61; React: 57/57. Generated
+  Next.js environment imports were restored. Final harness/evidence/audit
+  formatting, lint and `git diff --check` were rerun after capture.
+- Sizes: React 901,183 bytes; core 246,854; CSS 70,114; archive 1,373,801;
+  tree-shaken core consumer 124,537. Reviewed Slider/icons/draft feedback add
+  about 35 KB to React and 26 KB to the compressed archive, including maps.
+  Explicit React/CSS/archive guardrails become 905,000/71,000/1,380,000 bytes;
+  core and tree-shaken guardrails are unchanged. No dependency was added.
+
+### Remaining Phase 5 work
+
+Source-composed color pickers remain outstanding: Menu color fields still use
+validated text inputs. The owner's palette instruction preserves authored
+colors; it does not defer or waive the color-picker functionality. The broader
+all-Element/all-field command, validation, keyboard and source-visual matrix
+still needs closure. This checkpoint does not claim complete manual keyboard or
+screen-reader review, React 18 packed browser verification, Next.js browser
+verification, or the full source screenshot comparison. Phase 5 remains open;
+Phase 6 has not begun.

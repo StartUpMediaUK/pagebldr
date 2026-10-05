@@ -69,9 +69,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Complete Menu markup, responsive layout and interaction controller account
-  // for this narrowly rebased baseline; retain an explicit archive guardrail.
-  assertMaximumSize(archivePath, 1_355_000, "Packed archive");
+  // Definition-owned icon controls and the reviewed Radix Slider add ~26 KB
+  // compressed including maps; keep a narrowly rebased explicit guardrail.
+  assertMaximumSize(archivePath, 1_380_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -363,7 +363,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    870_000,
+    905_000,
     "React entry",
   );
   assertMaximumSize(
@@ -380,7 +380,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    69_500,
+    71_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

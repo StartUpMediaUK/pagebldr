@@ -1,0 +1,401 @@
+{
+  "artifact": {
+    "package": "pagebldr",
+    "version": "0.0.0-alpha.0",
+    "archive": "pagebldr-0.0.0-alpha.0.tgz",
+    "sha256": "a33afcb0af5fd40c75e27fee78d7a49f19027192fd92313bf3f56fb3e5229718",
+    "reactVersion": "19.2.8"
+  },
+  "browser": "147.0.7727.15",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "results": [
+    {
+      "name": "Structure leaf spacing is noninteractive and parent arrows remain keyboard-operable",
+      "status": "pass"
+    },
+    {
+      "name": "Menu Centre alignment reaches canvas",
+      "status": "pass"
+    },
+    {
+      "name": "Menu item gap reaches canvas",
+      "status": "pass"
+    },
+    {
+      "name": "Slider changes coalesce into one undoable command",
+      "status": "pass"
+    },
+    {
+      "name": "Numeric rejection preserves draft with associated error",
+      "status": "pass"
+    },
+    {
+      "name": "Keyboard Escape restores last valid numeric value",
+      "status": "pass"
+    },
+    {
+      "name": "Unsafe responsive Style draft is rejected and Escape clears it",
+      "status": "pass"
+    },
+    {
+      "name": "menu-style-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Menu Style accessibility",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Reselecting a scalar option produces no command exception",
+      "status": "pass"
+    },
+    {
+      "name": "Menu breakpoint icons are named and keyboard-operable",
+      "status": "pass"
+    },
+    {
+      "name": "Fullscreen uses its source contextual alignment label",
+      "status": "pass"
+    },
+    {
+      "name": "Menu edits reach controlled Host state",
+      "status": "pass"
+    },
+    {
+      "name": "Menu fullscreen uses a viewport-fixed panel",
+      "status": "pass"
+    },
+    {
+      "name": "Menu fullscreen vertical alignment reaches rendering",
+      "status": "pass"
+    },
+    {
+      "name": "Menu collapsed position reaches rendering",
+      "status": "pass"
+    },
+    {
+      "name": "Menu item background reaches rendering",
+      "status": "pass"
+    },
+    {
+      "name": "Menu item hover background reaches rendering",
+      "status": "pass"
+    },
+    {
+      "name": "Menu disclosure controls its panel",
+      "status": "pass"
+    },
+    {
+      "name": "Fullscreen Menu clones the header logo without duplicate Element IDs",
+      "status": "pass"
+    },
+    {
+      "name": "Fullscreen Menu keyboard focus wraps in both directions",
+      "status": "pass"
+    },
+    {
+      "name": "Keyboard Escape closes Menu and restores focus",
+      "status": "pass"
+    },
+    {
+      "name": "Opening Menu focuses the first navigation link",
+      "status": "pass"
+    },
+    {
+      "name": "Open Menu accessibility",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Menu fullscreen locks background scrolling",
+      "status": "pass"
+    },
+    {
+      "name": "Menu outside pointer closes the panel",
+      "status": "pass"
+    },
+    {
+      "name": "Closing fullscreen Menu restores background scrolling and clears its logo",
+      "status": "pass"
+    },
+    {
+      "name": "Dropdown opens below the nearest header boundary without locking scrolling",
+      "status": "pass"
+    },
+    {
+      "name": "Selecting a Menu anchor closes its panel and focuses the destination",
+      "status": "pass"
+    },
+    {
+      "name": "Crossing the collapse breakpoint closes Menu and restores its inline layout",
+      "status": "pass"
+    },
+    {
+      "name": "collection-invalid-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Collection revealed error accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Menu slider keyboard bounds and undo desktop",
+      "status": "pass"
+    },
+    {
+      "name": "Locked definition controls cannot mutate props desktop",
+      "status": "pass"
+    },
+    {
+      "name": "Collection invalid drafts and keyboard recovery desktop",
+      "status": "pass"
+    },
+    {
+      "name": "collection-validation-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Collection validation accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "rich-text-invalid-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Rich Text revealed error accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Rich Text rejected drafts never change rendered content desktop",
+      "status": "pass"
+    },
+    {
+      "name": "rich-text-validation-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Rich Text validation accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "collection-invalid-tablet editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Collection revealed error accessibility tablet",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Menu slider keyboard bounds and undo tablet",
+      "status": "pass"
+    },
+    {
+      "name": "Locked definition controls cannot mutate props tablet",
+      "status": "pass"
+    },
+    {
+      "name": "Collection invalid drafts and keyboard recovery tablet",
+      "status": "pass"
+    },
+    {
+      "name": "collection-validation-tablet editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Collection validation accessibility tablet",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "rich-text-invalid-tablet editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Rich Text revealed error accessibility tablet",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Rich Text rejected drafts never change rendered content tablet",
+      "status": "pass"
+    },
+    {
+      "name": "rich-text-validation-tablet editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Rich Text validation accessibility tablet",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "collection-invalid-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Collection revealed error accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Menu slider keyboard bounds and undo phone",
+      "status": "pass"
+    },
+    {
+      "name": "Locked definition controls cannot mutate props phone",
+      "status": "pass"
+    },
+    {
+      "name": "Collection invalid drafts and keyboard recovery phone",
+      "status": "pass"
+    },
+    {
+      "name": "collection-validation-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Collection validation accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "rich-text-invalid-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Rich Text revealed error accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Rich Text rejected drafts never change rendered content phone",
+      "status": "pass"
+    },
+    {
+      "name": "rich-text-validation-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Rich Text validation accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Heading Content journey desktop",
+      "status": "pass"
+    },
+    {
+      "name": "heading-content-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Heading Content accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Container Advanced journey desktop",
+      "status": "pass"
+    },
+    {
+      "name": "container-advanced-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Container Advanced accessibility desktop",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Page design Variables journey desktop",
+      "status": "pass"
+    },
+    {
+      "name": "page-variables-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Page design Variables accessibility desktop",
+      "status": "pass"
+    },
+    {
+      "name": "Heading Content journey phone",
+      "status": "pass"
+    },
+    {
+      "name": "heading-content-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Heading Content accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Container Advanced journey phone",
+      "status": "pass"
+    },
+    {
+      "name": "container-advanced-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Container Advanced accessibility phone",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    },
+    {
+      "name": "Page design Variables journey phone",
+      "status": "pass"
+    },
+    {
+      "name": "page-variables-phone editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Page design Variables accessibility phone",
+      "status": "pass"
+    },
+    {
+      "name": "Container Tablet Hover Style and per-property reset",
+      "status": "pass"
+    },
+    {
+      "name": "container-style-tablet-hover-desktop editor UI accessibility",
+      "status": "pass"
+    },
+    {
+      "name": "Container Tablet Hover accessibility",
+      "status": "fail",
+      "error": "color-contrast (14)\n\n1 !== 0\n"
+    }
+  ],
+  "diagnostics": {
+    "pageErrors": [],
+    "failedRequests": [],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "httpErrors": []
+  }
+}

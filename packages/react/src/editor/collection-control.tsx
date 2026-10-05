@@ -19,12 +19,11 @@ import {
   FieldLegend,
   FieldSet,
 } from "../components/ui/field.js";
-import { Input } from "../components/ui/input.js";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "../components/ui/native-select.js";
-import { Textarea } from "../components/ui/textarea.js";
+import { ValidatedInputField } from "./validated-input-field.js";
 import { anchoredElements, DestinationControl } from "./destination-control.js";
 
 type CollectionControlDefinition = Extract<
@@ -101,12 +100,14 @@ export function CollectionControl({
   const atMinimum = items.length <= (control.minItems ?? 0);
   const atMaximum =
     items.length >= (control.maxItems ?? Number.POSITIVE_INFINITY);
-  const updateItem = (index: number, key: string, nextValue: unknown) =>
+  const updateItem = (index: number, key: string, nextValue: unknown) => {
+    if (Object.is(items[index]?.[key], nextValue)) return;
     onChange(
       items.map((item, candidateIndex) =>
         candidateIndex === index ? { ...item, [key]: nextValue } : item,
       ),
     );
+  };
 
   return (
     <FieldSet className="gap-4">
@@ -230,48 +231,26 @@ export function CollectionControl({
                   typeof itemValue === "string" ? itemValue : "";
                 const commitText = (nextValue: string) => {
                   const trimmed = nextValue.trim();
-                  if (
-                    (trimmed || itemControl.allowEmpty) &&
-                    trimmed !== itemValue
-                  )
+                  if (!trimmed && !itemControl.allowEmpty)
+                    throw new Error(
+                      `Enter ${itemControl.label.toLowerCase()}.`,
+                    );
+                  if (trimmed !== itemValue)
                     updateItem(index, itemControl.key, trimmed);
-                  return trimmed || itemControl.allowEmpty
-                    ? trimmed
-                    : textValue;
                 };
                 return (
-                  <Field key={itemControl.key}>
-                    <FieldLabel htmlFor={`${id}-${itemId}-${itemControl.key}`}>
-                      {itemControl.label}
-                    </FieldLabel>
-                    {itemControl.kind === "textarea" ? (
-                      <Textarea
-                        defaultValue={textValue}
-                        disabled={disabled}
-                        id={`${id}-${itemId}-${itemControl.key}`}
-                        key={`${itemId}:${itemControl.key}:${textValue}`}
-                        placeholder={itemControl.placeholder}
-                        onBlur={(event) => {
-                          event.currentTarget.value = commitText(
-                            event.currentTarget.value,
-                          );
-                        }}
-                      />
-                    ) : (
-                      <Input
-                        defaultValue={textValue}
-                        disabled={disabled}
-                        id={`${id}-${itemId}-${itemControl.key}`}
-                        key={`${itemId}:${itemControl.key}:${textValue}`}
-                        placeholder={itemControl.placeholder}
-                        onBlur={(event) => {
-                          event.currentTarget.value = commitText(
-                            event.currentTarget.value,
-                          );
-                        }}
-                      />
-                    )}
-                  </Field>
+                  <ValidatedInputField
+                    key={itemControl.key}
+                    label={itemControl.label}
+                    value={textValue}
+                    inputProps={{
+                      disabled,
+                      placeholder: itemControl.placeholder,
+                    }}
+                    multiline={itemControl.kind === "textarea"}
+                    commitOnBlur
+                    onCommit={commitText}
+                  />
                 );
               })}
             </FieldSet>
