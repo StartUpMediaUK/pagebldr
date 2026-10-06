@@ -777,6 +777,8 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "text",
         key: "itemBackground",
         label: "Item background",
+        presentation: "color",
+        allowAlpha: false,
         visibleWhen: [
           { key: "collapseAt", notEquals: "never" },
           { key: "itemAppearance", equals: "background" },
@@ -786,6 +788,8 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "text",
         key: "itemHoverBackground",
         label: "Item hover background",
+        presentation: "color",
+        allowAlpha: false,
         visibleWhen: [
           { key: "collapseAt", notEquals: "never" },
           { key: "itemAppearance", equals: "background" },
@@ -805,6 +809,8 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "text",
         key: "panelBackground",
         label: "Menu background",
+        presentation: "color",
+        allowAlpha: false,
         visibleWhen: { key: "collapseAt", notEquals: "never" },
       },
       {

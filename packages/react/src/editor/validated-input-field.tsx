@@ -13,6 +13,11 @@ import { PagebldrError } from "@pagebldr/core";
 import { Field, FieldError, FieldLabel } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
 import { Textarea } from "../components/ui/textarea.js";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../components/ui/input-group.js";
 
 type InputOptions = Omit<
   ComponentProps<typeof Input>,
@@ -29,6 +34,7 @@ export function ValidatedInputField({
   children,
   multiline = false,
   commitOnBlur = false,
+  inputLeading,
 }: {
   readonly value: string;
   readonly label: string;
@@ -38,6 +44,7 @@ export function ValidatedInputField({
   readonly children?: ReactNode;
   readonly multiline?: boolean;
   readonly commitOnBlur?: boolean;
+  readonly inputLeading?: ReactNode;
 }) {
   const id = useId();
   const [draft, setDraft] = useState<{
@@ -105,6 +112,11 @@ export function ValidatedInputField({
           className={inputProps?.className}
           {...draftProps}
         />
+      ) : inputLeading ? (
+        <InputGroup data-disabled={inputProps?.disabled || undefined}>
+          <InputGroupAddon>{inputLeading}</InputGroupAddon>
+          <InputGroupInput {...inputProps} {...draftProps} />
+        </InputGroup>
       ) : (
         <Input {...inputProps} {...draftProps} />
       )}
