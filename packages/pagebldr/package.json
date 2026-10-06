@@ -1,6 +1,6 @@
 {
   "name": "pagebldr",
-  "version": "0.0.0-alpha.0",
+  "version": "0.0.0",
   "description": "Embeddable visual page-building engine for React applications.",
   "license": "MIT",
   "type": "module",
