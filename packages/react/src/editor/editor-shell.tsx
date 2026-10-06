@@ -110,6 +110,7 @@ import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
 import { SliderField } from "./slider-field.js";
+import { ColorField } from "./color-field.js";
 import {
   propertyControlLabel,
   propertyOptionIcon,
@@ -197,6 +198,7 @@ function EditorWorkspace({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
       const modifier = event.ctrlKey || event.metaKey;
       if (event.key === "Escape" && editor.previewing) {
         event.preventDefault();
@@ -1254,6 +1256,22 @@ function PropertyField({
   }
 
   if (typeof value !== "string" && typeof value !== "number") return null;
+  if (
+    control.kind === "text" &&
+    control.presentation === "color" &&
+    typeof value === "string"
+  )
+    return (
+      <ColorField
+        label={label}
+        value={value}
+        disabled={editor.mode !== "edit" || element.locked}
+        allowAlpha={control.allowAlpha ?? true}
+        onCommit={update}
+      >
+        {description}
+      </ColorField>
+    );
   if (
     control.kind === "number" &&
     control.presentation === "slider" &&

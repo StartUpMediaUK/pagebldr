@@ -71,7 +71,10 @@ async function check(name, run) {
   }
 }
 async function screenshot(name) {
-  await page.screenshot({ path: join(output, `${name}.png`) });
+  await page.screenshot({
+    path: join(output, `${name}.png`),
+    animations: "disabled",
+  });
 }
 async function a11y(name) {
   if (await page.locator("[data-pagebldr-editor]").count()) {
@@ -274,7 +277,10 @@ try {
       const input = page.getByLabel("Background Color", { exact: true });
       await input.fill("red;}body{display:none");
       assert.equal(await input.getAttribute("aria-invalid"), "true");
-      assert.match(await page.getByRole("alert").innerText(), /unsafe CSS/);
+      assert.match(
+        await page.getByRole("alert").innerText(),
+        /unsafe CSS|valid colour/,
+      );
       await input.press("Escape");
       assert.equal(await input.inputValue(), "");
     },
@@ -870,6 +876,192 @@ try {
   await check("Container Tablet Hover accessibility", () =>
     a11y("container-style-tablet-hover-desktop"),
   );
+
+  for (const [name, width, height] of [
+    ["desktop", 1440, 900],
+    ["tablet", 820, 1000],
+    ["phone", 390, 844],
+  ]) {
+    await check(
+      `Menu colour picker has no opening or format-change mutation ${name}`,
+      async () => {
+        await fresh(width, height);
+        await select("Project enquiry navigation", "Header content");
+        await page.getByRole("tab", { name: "Style", exact: true }).click();
+        const input = page.getByLabel("Menu background", { exact: true });
+        const original = await input.inputValue();
+        const trigger = page.getByRole("button", {
+          name: "Choose menu background colour",
+          exact: true,
+        });
+        await trigger.focus();
+        await trigger.press("Enter");
+        const popup = page.getByRole("dialog", {
+          name: "Menu background colour",
+          exact: true,
+        });
+        await popup.waitFor();
+        assert.equal(
+          await popup
+            .getByRole("slider", { name: "Opacity", exact: true })
+            .count(),
+          0,
+        );
+        await popup
+          .getByLabel("Colour format", { exact: true })
+          .selectOption("rgb");
+        assert.equal(await input.inputValue(), original);
+        await screenshot(`menu-colour-open-${name}`);
+        await check(`Menu revealed colour popover accessibility ${name}`, () =>
+          a11y(`menu-colour-open-${name}`),
+        );
+        await popup.getByLabel("Colour value", { exact: true }).press("Escape");
+        await popup.waitFor({ state: "detached" });
+        assert.equal(await popup.count(), 0);
+        assert.equal(
+          await trigger.evaluate((el) => el === el.ownerDocument.activeElement),
+          true,
+        );
+        assert.equal(await input.inputValue(), original);
+      },
+    );
+    await check(
+      `Menu colour text and selection keyboard editing ${name}`,
+      async () => {
+        const input = page.getByLabel("Menu background", { exact: true });
+        const original = await input.inputValue();
+        await input.fill("invalid");
+        assert.equal(await input.getAttribute("aria-invalid"), "true");
+        await input.press("Escape");
+        assert.equal(await input.inputValue(), original);
+        await input.fill("rgba(18, 52, 86, 0.5)");
+        assert.equal(await input.inputValue(), "#123456");
+        await page
+          .getByRole("button", {
+            name: "Choose menu background colour",
+            exact: true,
+          })
+          .click();
+        const popup = page.getByRole("dialog", {
+          name: "Menu background colour",
+          exact: true,
+        });
+        const square = popup.getByRole("button", {
+          name: "Colour saturation and brightness",
+          exact: true,
+        });
+        await square.press("ArrowRight");
+        const changed = await input.inputValue();
+        assert.notEqual(changed, "#123456");
+        await square.press("Shift+ArrowUp");
+        assert.notEqual(await input.inputValue(), changed);
+        const keyboardColour = await input.inputValue();
+        await square.click({ position: { x: 30, y: 60 } });
+        assert.notEqual(await input.inputValue(), keyboardColour);
+        await square.press("Escape");
+        await page.keyboard.press("Control+z");
+        assert.equal(await input.inputValue(), original);
+      },
+    );
+    await check(
+      `Responsive colour opacity, reset and variable binding ${name}`,
+      async () => {
+        await select("Hero");
+        await page.getByRole("tab", { name: "Style", exact: true }).click();
+        const input = page.getByLabel("Background Color", { exact: true });
+        await page
+          .getByLabel("Background Color value source", { exact: true })
+          .selectOption("custom");
+        await input.fill("#123456");
+        await page
+          .getByRole("button", {
+            name: "Choose background color colour",
+            exact: true,
+          })
+          .click();
+        const popup = page.getByRole("dialog", {
+          name: "Background Color colour",
+          exact: true,
+        });
+        const opacity = popup.getByRole("slider", {
+          name: "Opacity",
+          exact: true,
+        });
+        await opacity.press("Home");
+        await opacity.press("PageUp");
+        assert.match(await input.inputValue(), /^rgba\(18, 52, 86, 0\.1\)$/);
+        await screenshot(`style-colour-alpha-${name}`);
+        await check(`Responsive colour opacity accessibility ${name}`, () =>
+          a11y(`style-colour-alpha-${name}`),
+        );
+        await opacity.press("Escape");
+        await page
+          .getByRole("button", { name: "Reset Background Color", exact: true })
+          .click();
+        assert.equal(await input.inputValue(), "");
+        const source = page.getByLabel("Background Color value source", {
+          exact: true,
+        });
+        const variableId = await source
+          .locator('option:not([value="custom"])')
+          .first()
+          .getAttribute("value");
+        await source.selectOption(variableId);
+        assert.equal(await input.isDisabled(), true);
+        assert.equal(
+          await page
+            .getByRole("button", {
+              name: "Choose background color colour",
+              exact: true,
+            })
+            .isDisabled(),
+          true,
+        );
+      },
+    );
+    await check(
+      `Page design colour Variable opacity and undo ${name}`,
+      async () => {
+        await page
+          .getByRole("button", { name: "More editor actions", exact: true })
+          .click();
+        await page
+          .getByRole("menuitem", { name: "Page design", exact: true })
+          .click();
+        await page.getByRole("tab", { name: "Variables", exact: true }).click();
+        await page
+          .getByLabel("Add variable", { exact: true })
+          .fill("Picker accent");
+        await page.getByLabel("Add variable", { exact: true }).press("Enter");
+        const input = page.getByLabel("Picker accent value", { exact: true });
+        const original = await input.inputValue();
+        await page
+          .getByRole("button", {
+            name: "Choose picker accent value colour",
+            exact: true,
+          })
+          .click();
+        const popup = page.getByRole("dialog", {
+          name: "Picker accent value colour",
+          exact: true,
+        });
+        const opacity = popup.getByRole("slider", {
+          name: "Opacity",
+          exact: true,
+        });
+        await opacity.press("Home");
+        assert.match(await input.inputValue(), /^#[\da-f]{6}00$/i);
+        await screenshot(`variable-colour-alpha-${name}`);
+        await check(
+          `Page design colour Variable popover accessibility ${name}`,
+          () => a11y(`variable-colour-alpha-${name}`),
+        );
+        await opacity.press("Escape");
+        await page.keyboard.press("Control+z");
+        assert.equal(await input.inputValue(), original);
+      },
+    );
+  }
 } finally {
   await context.tracing.stop({
     path: join(output, "phase5-browser-trace.zip"),

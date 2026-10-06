@@ -30,6 +30,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group.js";
 import { usePagebldrEditor, type EditorViewport } from "./context.js";
 import { ValidatedInputField } from "./validated-input-field.js";
+import { ColorField } from "./color-field.js";
 
 const advancedCapabilities = new Set([
   "layout",
@@ -235,7 +236,16 @@ function StylePropertyField({
     ? editor.document.variables[local.variableId]
     : undefined;
   const label = propertyLabel(property);
-  const setValue = (value: StyleValue | null) =>
+  const setValue = (value: StyleValue | null) => {
+    if (
+      value === local ||
+      (value === null && local === undefined) ||
+      (value !== null &&
+        isVariableReference(value) &&
+        isVariableReference(local) &&
+        value.variableId === local.variableId)
+    )
+      return;
     editor.dispatch(
       {
         type: "set-style",
@@ -247,16 +257,26 @@ function StylePropertyField({
       },
       `style:${element.id}:${breakpoint}:${state}:${property}`,
     );
+  };
 
+  const ValueField = kinds.includes("color") ? ColorField : ValidatedInputField;
   return (
-    <ValidatedInputField
+    <ValueField
       key={`${element.id}:${breakpoint}:${state}:${property}`}
       label={label}
       value={isPrimitiveStyleValue(local) ? String(local) : ""}
       inputProps={{
         placeholder: formatStyleValue(resolved?.value),
-        disabled: readOnly,
+        disabled: readOnly || Boolean(localVariable),
       }}
+      disabled={readOnly || Boolean(localVariable)}
+      resolvedValue={
+        localVariable
+          ? String(localVariable.value)
+          : isPrimitiveStyleValue(resolved?.value)
+            ? String(resolved.value)
+            : ""
+      }
       onCommit={(draft) => setValue(draft === "" ? null : draft)}
       labelAction={
         <Button
@@ -302,7 +322,7 @@ function StylePropertyField({
       <FieldDescription>
         {describeStyleOrigin(editor.document, resolved)}
       </FieldDescription>
-    </ValidatedInputField>
+    </ValueField>
   );
 }
 

@@ -710,3 +710,97 @@ still needs closure. This checkpoint does not claim complete manual keyboard or
 screen-reader review, React 18 packed browser verification, Next.js browser
 verification, or the full source screenshot comparison. Phase 5 remains open;
 Phase 6 has not begun.
+
+## Colour control checkpoint — 6 October 2026
+
+Phase 5 remains in progress. The owner's instruction to leave the source colour
+palette is preserved: no fixture colour or contrast rule has changed.
+
+### Outcome and interfaces
+
+- Text control metadata adds optional `presentation: "color"` and `allowAlpha`.
+  Standard Menu colour controls use the same public definition seam available to
+  custom Elements. There is no Document schema change or product-specific UI
+  switch. Menu schemas remain opaque six-digit HEX.
+- Menu, responsive Style colours and Page design colour Variables now share a
+  swatch/popover composition with the source-characterized HSL square, Hue,
+  optional Opacity, HEX/RGB/HSL display formats and validated text. Equivalent
+  colours and opening/format changes do not dispatch commands. Style reset and
+  Variable binding remain available; bound literal inputs/swatches are disabled.
+  Colour Variables retain their six/eight-digit HEX contract.
+- Draft errors remain outside Documents, Escape restores accepted drafts and
+  accepted changes retain existing command/coalescing/Local history paths.
+  Editor shortcuts now respect handled keyboard events so popover Escape does
+  not also deselect the Element.
+- The shadcn skill guided official Popover/Input Group installation after
+  current [Popover](https://ui.shadcn.com/docs/components/radix/popover) and
+  [Input Group](https://ui.shadcn.com/docs/components/radix/input-group)
+  documentation review. Existing primitives were not overwritten; added files
+  were inspected and adapted to package imports, heading semantics and reduced
+  motion. ReUI remains unavailable. No Kibo UI code was vendored.
+- Reviewed `color@5.0.3` and its bundled MIT transitive libraries are
+  inventoried; notices ship in `THIRD_PARTY_NOTICES.md` and packed checks
+  require each notice. Public-interface documentation records the colour
+  presentation contract.
+
+### Verification
+
+- Neutral colour characterization tests were written first, observed failing
+  without the implementation, then passed. They cover CSS parsing/normalization,
+  alpha restrictions, invalid input, semantic equality and source HSL-square
+  corners, clamps and midpoint. SSR tests verify labelled/disabled fields and no
+  render-time mutation. Core: 61/61; React: 62/62.
+- `pnpm check` passed formatting, lint, all-workspace TypeScript and tests,
+  parity fixtures, all builds (including docs/Next.js), package/export checks,
+  packed consumers, size guardrails and licence inventory. Generated Next.js
+  environment imports were restored. Final evidence/docs/harness formatting,
+  lint and `git diff --check` were rerun after capture.
+- Initial packed-size verification correctly failed the old 1,380,000-byte
+  archive budget. Reviewed parsing, Popover and Input Group costs are explicit:
+  final archive 1,425,747 bytes; React 972,742; core 247,028; CSS 76,132;
+  tree-shaken core consumer 124,642. Guardrails are now 1,430,000/980,000/77,000
+  for archive/React/CSS; core/tree-shaken budgets are unchanged. Notices are
+  required in the installed artifact, not just the repository.
+- Final `pagebldr@0.0.0-alpha.0` artifact SHA-256:
+  `ab1ddf530552976a7c12d89d1088b7bcc213c18e8def3d8669887259e4718bba`, React
+  19.2.8, Chromium 147.0.7727.15. The packed Reference Host imports public
+  exports and compiled package CSS without presentation fixes in the Host.
+- [Results](evidence/parity-phase-5/colour-controls-2026-10-06/results.json):
+  **92/117 checks pass**: all 58 functional assertions, all 29 editor-UI axe
+  scans and five full-page Variables dialog scans. The other 25 full-page scans
+  report authored-content contrast only: 22 retain the 14 source-palette nodes;
+  three temporarily edited low-opacity background states expose 17 nodes. No
+  rules were disabled or failing raw reports converted to passes. The browser
+  command therefore deliberately returns exit status 1.
+- Desktop/tablet/phone journeys verify opening/format selection without
+  mutation, rejected colour text/Escape, opaque normalization, square pointer
+  and keyboard editing, coalesced Undo, popover Escape/focus restoration,
+  responsive alpha, reset, disabled Variable bindings and Page design colour
+  Variable alpha/Undo. The first browser run exposed popover Escape bubbling
+  into editor deselection and an incorrect attempt to edit a bound literal. The
+  editor now honors handled events; the test explicitly selects Custom before
+  editing, and waits for the closing animation before asserting detachment.
+  Screenshot capture finishes animations so intermediate fade frames are not
+  treated as visual evidence.
+- Inspected final captures include
+  [phone Menu colour](evidence/parity-phase-5/colour-controls-2026-10-06/menu-colour-open-phone.png),
+  [desktop Style alpha](evidence/parity-phase-5/colour-controls-2026-10-06/style-colour-alpha-desktop.png)
+  and
+  [tablet Variable alpha](evidence/parity-phase-5/colour-controls-2026-10-06/variable-colour-alpha-tablet.png).
+  The
+  [trace](evidence/parity-phase-5/colour-controls-2026-10-06/phase5-browser-trace.zip)
+  retains interaction evidence. T3 preview status was checked; the expressly
+  authorized standalone Chromium runner provides repeatable packed verification.
+  No page exceptions, failed requests or HTTP failure URLs were recorded; the
+  existing unattributed console 404 remains visible in diagnostics.
+
+### Remaining work and risks
+
+This is a colour-control checkpoint, not a Phase 5 gate completion. The optional
+browser Eyedropper, the complete all-Element/all-field
+visual/keyboard/validation matrix, source screenshot comparisons, manual
+screen-reader review and React 18 and Next.js packed browser journeys remain
+unverified or outstanding. Pointer and keyboard coverage is representative, not
+a complete assistive-technology review. Broader source-composed inspector
+controls still need a field-by-field gate audit. Phase 6 has not begun;
+product-owner review is still required before advancing.

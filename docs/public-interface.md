@@ -693,6 +693,18 @@ Sliders use the same prop commands and coalescing policy as numeric inputs and
 support arrow keys, Page Up/Down and Home/End. Without both bounds, the editor
 keeps the numeric input. Units are presentation only, not stored values.
 
+A `text` control may request `presentation: "color"` and `allowAlpha: false` for
+opaque-only values (alpha is supported by default). The editor composes a
+labelled swatch/popover, keyboard/pointer colour square, Hue and optional
+Opacity sliders, format selection and validated text. Opening or changing
+display format does not issue commands. CSS colour input is normalized to opaque
+HEX or alpha RGB before the definition schema accepts it; equivalent colours do
+not create history entries. Responsive colour properties use this same
+composition, with reset and disabled literal editing while bound to a Variable.
+Page design colour Variables retain their six/eight-digit HEX schema. Rejected
+input remains a draft until corrected or restored with Escape; accepted changes
+use existing command coalescing and Local history.
+
 Collection text/textarea controls commit on blur (single-line controls also on
 Enter); structured Rich Text commits as it is edited. Rejected drafts retain
 their text and an associated validation error without changing the Document.

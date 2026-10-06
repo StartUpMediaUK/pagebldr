@@ -1,0 +1,583 @@
+{
+  "violations": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT",
+        "RGAAv4",
+        "RGAA-3.2.1"
+      ],
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#ffffff",
+                "bgColor": "#e4e4e2",
+                "contrastRatio": 1.27,
+                "fontSize": "52.5pt (70px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "3:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-15\" id=\"pagebldr-reference-container-15\">",
+                  "target": ["iframe", "#pagebldr-reference-container-15"]
+                },
+                {
+                  "html": "<main data-pagebldr-element=\"reference-root-2\" id=\"pagebldr-reference-root-2\">",
+                  "target": ["iframe", "#pagebldr-reference-root-2"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 1.27 (foreground color: #ffffff, background color: #e4e4e2, font size: 52.5pt (70px), font weight: normal). Expected contrast ratio of 3:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>A project shaped around your needs.</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-8 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #ffffff, background color: #e4e4e2, font size: 52.5pt (70px), font weight: normal). Expected contrast ratio of 3:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#e6e8df",
+                "bgColor": "#e4e4e2",
+                "contrastRatio": 1.02,
+                "fontSize": "15.0pt (20px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-15\" id=\"pagebldr-reference-container-15\">",
+                  "target": ["iframe", "#pagebldr-reference-container-15"]
+                },
+                {
+                  "html": "<main data-pagebldr-element=\"reference-root-2\" id=\"pagebldr-reference-root-2\">",
+                  "target": ["iframe", "#pagebldr-reference-root-2"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 1.02 (foreground color: #e6e8df, background color: #e4e4e2, font size: 15.0pt (20px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Tell us about your plans, preferences, and timing. We’ll review the details and let you know whether we’re the right fit.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-9 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.02 (foreground color: #e6e8df, background color: #e4e4e2, font size: 15.0pt (20px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#d5d9ce",
+                "bgColor": "#e4e4e2",
+                "contrastRatio": 1.12,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-15\" id=\"pagebldr-reference-container-15\">",
+                  "target": ["iframe", "#pagebldr-reference-container-15"]
+                },
+                {
+                  "html": "<main data-pagebldr-element=\"reference-root-2\" id=\"pagebldr-reference-root-2\">",
+                  "target": ["iframe", "#pagebldr-reference-root-2"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 1.12 (foreground color: #d5d9ce, background color: #e4e4e2, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Allow about five minutes · replace with the linked guided enquiry’s real duration</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-11 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.12 (foreground color: #d5d9ce, background color: #e4e4e2, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#b77255",
+                "bgColor": "#ffffff",
+                "contrastRatio": 3.78,
+                "fontSize": "9.0pt (12px)",
+                "fontWeight": "bold",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-34\" id=\"pagebldr-reference-container-34\">",
+                  "target": ["iframe", "#pagebldr-reference-container-34"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>SAMPLE FIT SUMMARY</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-31 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "12.8pt (17px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-57\" id=\"pagebldr-reference-container-57\">",
+                  "target": ["iframe", "#pagebldr-reference-container-57"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 12.8pt (17px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Make the real criteria clear before someone begins. Replace every example below with requirements your service has confirmed.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-44 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 12.8pt (17px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#667858",
+                "bgColor": "#eee9df",
+                "contrastRatio": 3.95,
+                "fontSize": "16.5pt (22px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-48\" id=\"pagebldr-reference-container-48\">",
+                  "target": ["iframe", "#pagebldr-reference-container-48"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.95 (foreground color: #667858, background color: #eee9df, font size: 16.5pt (22px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Service area</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-46 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.95 (foreground color: #667858, background color: #eee9df, font size: 16.5pt (22px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "11.3pt (15px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-48\" id=\"pagebldr-reference-container-48\">",
+                  "target": ["iframe", "#pagebldr-reference-container-48"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Replace with the exact locations or remote-delivery policy you support.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-47 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#667858",
+                "bgColor": "#eee9df",
+                "contrastRatio": 3.95,
+                "fontSize": "16.5pt (22px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-51\" id=\"pagebldr-reference-container-51\">",
+                  "target": ["iframe", "#pagebldr-reference-container-51"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.95 (foreground color: #667858, background color: #eee9df, font size: 16.5pt (22px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Minimum requirements</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-49 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.95 (foreground color: #667858, background color: #eee9df, font size: 16.5pt (22px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "11.3pt (15px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-51\" id=\"pagebldr-reference-container-51\">",
+                  "target": ["iframe", "#pagebldr-reference-container-51"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Replace with confirmed project, scope, or budget requirements.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-50 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#b77255",
+                "bgColor": "#eee9df",
+                "contrastRatio": 3.12,
+                "fontSize": "16.5pt (22px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-54\" id=\"pagebldr-reference-container-54\">",
+                  "target": ["iframe", "#pagebldr-reference-container-54"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.12 (foreground color: #b77255, background color: #eee9df, font size: 16.5pt (22px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Not the right fit</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-52 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.12 (foreground color: #b77255, background color: #eee9df, font size: 16.5pt (22px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "11.3pt (15px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-54\" id=\"pagebldr-reference-container-54\">",
+                  "target": ["iframe", "#pagebldr-reference-container-54"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Explain exclusions clearly and offer an alternative route where possible.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-53 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#b77255",
+                "bgColor": "#ffffff",
+                "contrastRatio": 3.78,
+                "fontSize": "13.5pt (18px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-99\" id=\"pagebldr-reference-container-99\">",
+                  "target": ["iframe", "#pagebldr-reference-container-99"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>01</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-82 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#b77255",
+                "bgColor": "#ffffff",
+                "contrastRatio": 3.78,
+                "fontSize": "13.5pt (18px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-99\" id=\"pagebldr-reference-container-99\">",
+                  "target": ["iframe", "#pagebldr-reference-container-99"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>02</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-87 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#b77255",
+                "bgColor": "#ffffff",
+                "contrastRatio": 3.78,
+                "fontSize": "13.5pt (18px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-99\" id=\"pagebldr-reference-container-99\">",
+                  "target": ["iframe", "#pagebldr-reference-container-99"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>03</span>",
+          "target": ["iframe", "#pagebldr-reference-heading-92 > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.78 (foreground color: #b77255, background color: #ffffff, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "11.3pt (15px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-104\" id=\"pagebldr-reference-container-104\">",
+                  "target": ["iframe", "#pagebldr-reference-container-104"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Replace with a response window your team has confirmed.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-103 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "11.3pt (15px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-108\" id=\"pagebldr-reference-container-108\">",
+                  "target": ["iframe", "#pagebldr-reference-container-108"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Explain whether the enquiry creates any obligation before promising that it does not.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-107 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#6d6b63",
+                "bgColor": "#eee9df",
+                "contrastRatio": 4.41,
+                "fontSize": "11.3pt (15px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<div data-pagebldr-element=\"reference-container-112\" id=\"pagebldr-reference-container-112\">",
+                  "target": ["iframe", "#pagebldr-reference-container-112"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span>Describe accurately how submitted information supports review and follow-up.</span>",
+          "target": ["iframe", "#pagebldr-reference-rich-text-111 > p > span"],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #6d6b63, background color: #eee9df, font size: 11.3pt (15px), font weight: normal). Expected contrast ratio of 4.5:1"
+        }
+      ]
+    }
+  ],
+  "passes": [
+    "aria-allowed-attr",
+    "aria-conditional-attr",
+    "aria-deprecated-role",
+    "aria-hidden-body",
+    "aria-hidden-focus",
+    "aria-input-field-name",
+    "aria-prohibited-attr",
+    "aria-required-attr",
+    "aria-required-children",
+    "aria-required-parent",
+    "aria-roles",
+    "aria-valid-attr-value",
+    "aria-valid-attr",
+    "avoid-inline-spacing",
+    "button-name",
+    "bypass",
+    "color-contrast",
+    "document-title",
+    "duplicate-id-aria",
+    "form-field-multiple-labels",
+    "frame-title-unique",
+    "frame-title",
+    "html-has-lang",
+    "html-lang-valid",
+    "image-alt",
+    "label",
+    "link-name",
+    "list",
+    "listitem",
+    "meta-viewport",
+    "nested-interactive",
+    "scrollable-region-focusable",
+    "select-name",
+    "summary-name"
+  ]
+}

@@ -69,9 +69,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Definition-owned icon controls and the reviewed Radix Slider add ~26 KB
-  // compressed including maps; keep a narrowly rebased explicit guardrail.
-  assertMaximumSize(archivePath, 1_380_000, "Packed archive");
+  // Colour parsing/conversion plus reviewed Popover/Input Group add ~51 KB
+  // compressed including maps; retain a measured explicit guardrail.
+  assertMaximumSize(archivePath, 1_430_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -332,11 +332,27 @@ if (errors.length > 0) throw errors[0];
   }
   const allowedTopLevel = new Set([
     "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
     "README.md",
     "dist",
     "package.json",
     "prisma",
   ]);
+  const colourNotices = readFileSync(
+    join(installedPackage, "THIRD_PARTY_NOTICES.md"),
+    "utf8",
+  );
+  for (const dependency of [
+    "color 5.0.3",
+    "color-convert 3.1.3",
+    "color-string 2.1.4",
+    "color-name 2.1.1",
+  ]) {
+    if (!colourNotices.includes(dependency))
+      throw new Error(
+        `Missing bundled colour dependency notice: ${dependency}.`,
+      );
+  }
   for (const entry of readdirSync(installedPackage)) {
     if (!allowedTopLevel.has(entry))
       throw new Error(`Unexpected packed top-level entry: ${entry}.`);
@@ -363,7 +379,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    905_000,
+    980_000,
     "React entry",
   );
   assertMaximumSize(
@@ -380,7 +396,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    71_000,
+    77_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

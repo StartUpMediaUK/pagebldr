@@ -131,3 +131,17 @@ For new dependencies and vendored source:
   redistribution rights;
 - run an automated dependency-licence inventory in CI, backed by manual review
   for vendored source.
+
+### Colour controls dependency review — 2026-10-06
+
+Reviewed installed package manifests and full licence files for `color@5.0.3`
+([source](https://github.com/Qix-/color)), `color-convert@3.1.3`
+([source](https://github.com/Qix-/color-convert)), `color-string@2.1.4`
+([source](https://github.com/Qix-/color-string)) and `color-name@2.1.1`
+([source](https://github.com/colorjs/color-name)). All are MIT and bundled into
+the editor artifact. Their copyright and permission notices are retained in
+`packages/pagebldr/THIRD_PARTY_NOTICES.md`, included in package files.
+`@types/color@4.2.1` and its DefinitelyTyped transitive types are MIT
+development dependencies, not runtime assets. Official shadcn Popover/Input
+Group source and local adaptations are recorded in `docs/attributions/ui.md`; no
+Kibo UI code, fonts, demo imagery or new product assets were copied.

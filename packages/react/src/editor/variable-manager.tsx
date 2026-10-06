@@ -43,6 +43,7 @@ import {
   NativeSelectOption,
 } from "../components/ui/native-select.js";
 import { usePagebldrEditor } from "./context.js";
+import { ColorField } from "./color-field.js";
 
 export const variableKinds = [
   "color",
@@ -398,59 +399,71 @@ function VariableRow({
         />
         {nameError ? <FieldError>{nameError}</FieldError> : null}
       </Field>
-      <Field>
-        <FieldLabel htmlFor={valueId} className="sr-only">
-          {variable.name} value
-        </FieldLabel>
-        {variable.kind === "typography" ? (
-          <NativeSelect
-            id={valueId}
-            value={findStandardFontFamily(value)?.value ?? ""}
-            disabled={readOnly}
-            aria-invalid={Boolean(valueError)}
-            onChange={(event) => {
-              const next = event.currentTarget.value;
-              setValue(next);
-              commitValue(next);
-            }}
-          >
-            {!findStandardFontFamily(value) ? (
-              <NativeSelectOption value="">Unsupported font</NativeSelectOption>
-            ) : null}
-            {standardFontFamilies.map((font) => (
-              <NativeSelectOption key={font.value} value={font.value}>
-                {font.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        ) : (
-          <div className="flex items-center gap-2">
-            {variable.kind === "color" ? (
-              <span
-                aria-hidden="true"
-                className="size-8 shrink-0 rounded-full border"
-                style={{
-                  backgroundColor: validateVariableValue("color", value)
-                    ? "transparent"
-                    : value,
-                }}
-              />
-            ) : null}
-            <Input
+      {variable.kind === "color" ? (
+        <ColorField
+          label={`${variable.name} value`}
+          value={String(variable.value)}
+          disabled={readOnly}
+          encoding="hex"
+          onCommit={(next) => {
+            const error = validateVariableValue("color", next);
+            if (error) throw new Error(error);
+            editor.dispatch(
+              {
+                type: "update-variable",
+                variableId: variable.id,
+                patch: { value: next },
+              },
+              `variable:${variable.id}:value`,
+            );
+          }}
+        />
+      ) : (
+        <Field>
+          <FieldLabel htmlFor={valueId} className="sr-only">
+            {variable.name} value
+          </FieldLabel>
+          {variable.kind === "typography" ? (
+            <NativeSelect
               id={valueId}
-              value={value}
+              value={findStandardFontFamily(value)?.value ?? ""}
               disabled={readOnly}
               aria-invalid={Boolean(valueError)}
               onChange={(event) => {
-                setValue(event.currentTarget.value);
-                setValueError(null);
+                const next = event.currentTarget.value;
+                setValue(next);
+                commitValue(next);
               }}
-              onBlur={() => commitValue()}
-            />
-          </div>
-        )}
-        {valueError ? <FieldError>{valueError}</FieldError> : null}
-      </Field>
+            >
+              {!findStandardFontFamily(value) ? (
+                <NativeSelectOption value="">
+                  Unsupported font
+                </NativeSelectOption>
+              ) : null}
+              {standardFontFamilies.map((font) => (
+                <NativeSelectOption key={font.value} value={font.value}>
+                  {font.label}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Input
+                id={valueId}
+                value={value}
+                disabled={readOnly}
+                aria-invalid={Boolean(valueError)}
+                onChange={(event) => {
+                  setValue(event.currentTarget.value);
+                  setValueError(null);
+                }}
+                onBlur={() => commitValue()}
+              />
+            </div>
+          )}
+          {valueError ? <FieldError>{valueError}</FieldError> : null}
+        </Field>
+      )}
       <div className="flex items-center justify-end gap-1">
         <Badge variant="outline">
           {usageCount} {usageCount === 1 ? "use" : "uses"}
