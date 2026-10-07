@@ -64,8 +64,9 @@ describe("inspector capability boundaries", () => {
         />
       </EditorProvider>,
     );
-    expect(html).toContain("Padding Top");
-    expect(html).not.toContain("Padding Right");
+    expect(html).toContain("Padding top");
+    expect(html).not.toContain("Padding right");
+    expect(html).not.toContain('aria-label="Reset Padding top"');
     expect(html).not.toContain("Margin (outside space)");
   });
 });

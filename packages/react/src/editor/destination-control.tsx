@@ -10,10 +10,11 @@ import {
 import type { ApplicationDestinationOption } from "./context.js";
 import { Field, FieldDescription, FieldLabel } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
+import { ValidatedInputField } from "./validated-input-field.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import { Switch } from "../components/ui/switch.js";
 
 interface DestinationControlDefinition {
@@ -168,7 +169,6 @@ export function DestinationControl({
 function ExternalDestination({
   destination,
   disabled,
-  elementId,
   id,
   onChange,
 }: {
@@ -180,21 +180,17 @@ function ExternalDestination({
 }) {
   return (
     <>
-      <Field>
-        <FieldLabel htmlFor={`${id}-url`}>URL</FieldLabel>
-        <Input
-          key={`url:${elementId}:${destination.url}`}
-          id={`${id}-url`}
-          type="url"
-          defaultValue={destination.url}
-          disabled={disabled}
-          onBlur={(event) => {
-            const url = event.currentTarget.value.trim();
-            if (isHttpUrl(url)) onChange({ ...destination, url });
-            else event.currentTarget.value = destination.url;
-          }}
-        />
-      </Field>
+      <ValidatedInputField
+        label="URL"
+        value={destination.url}
+        inputProps={{ type: "url", disabled }}
+        commitOnBlur
+        onCommit={(draft) => {
+          const url = draft.trim();
+          if (!isHttpUrl(url)) throw new Error("Enter an HTTP or HTTPS URL.");
+          onChange({ ...destination, url });
+        }}
+      />
       <BooleanField
         id={`${id}-new-tab`}
         label="Open in new tab"
@@ -255,7 +251,6 @@ function AnchorDestination({
 function EmailDestination({
   destination,
   disabled,
-  elementId,
   id,
   onChange,
 }: {
@@ -267,21 +262,17 @@ function EmailDestination({
 }) {
   return (
     <>
-      <Field>
-        <FieldLabel htmlFor={`${id}-email`}>Email address</FieldLabel>
-        <Input
-          key={`email:${elementId}:${destination.address}`}
-          id={`${id}-email`}
-          type="email"
-          defaultValue={destination.address}
-          disabled={disabled}
-          onBlur={(event) => {
-            const address = event.currentTarget.value.trim();
-            if (isEmail(address)) onChange({ ...destination, address });
-            else event.currentTarget.value = destination.address;
-          }}
-        />
-      </Field>
+      <ValidatedInputField
+        label="Email address"
+        value={destination.address}
+        inputProps={{ type: "email", disabled }}
+        commitOnBlur
+        onCommit={(draft) => {
+          const address = draft.trim();
+          if (!isEmail(address)) throw new Error("Enter an email address.");
+          onChange({ ...destination, address });
+        }}
+      />
       <Field>
         <FieldLabel htmlFor={`${id}-subject`}>Subject</FieldLabel>
         <Input
@@ -304,8 +295,6 @@ function EmailDestination({
 function TelephoneDestination({
   destination,
   disabled,
-  elementId,
-  id,
   onChange,
 }: {
   readonly destination: Extract<Destination, { type: "telephone" }>;
@@ -315,22 +304,18 @@ function TelephoneDestination({
   readonly onChange: (value: Destination) => void;
 }) {
   return (
-    <Field>
-      <FieldLabel htmlFor={`${id}-telephone`}>Telephone</FieldLabel>
-      <Input
-        key={`telephone:${elementId}:${destination.number}`}
-        id={`${id}-telephone`}
-        type="tel"
-        defaultValue={destination.number}
-        disabled={disabled}
-        onBlur={(event) => {
-          const number = event.currentTarget.value.trim();
-          if (/^\+?[0-9 ().-]{3,40}$/u.test(number))
-            onChange({ type: "telephone", number });
-          else event.currentTarget.value = destination.number;
-        }}
-      />
-    </Field>
+    <ValidatedInputField
+      label="Telephone"
+      value={destination.number}
+      inputProps={{ type: "tel", disabled }}
+      commitOnBlur
+      onCommit={(draft) => {
+        const number = draft.trim();
+        if (!/^\+?[0-9 ().-]{3,40}$/u.test(number))
+          throw new Error("Enter a telephone number of 3–40 characters.");
+        onChange({ type: "telephone", number });
+      }}
+    />
   );
 }
 

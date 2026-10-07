@@ -377,6 +377,11 @@ declarations through the guarded `delete-variable` command so they inherit
 again. Variable changes apply immediately, remain undoable, and Style fields
 offer only Variables whose kind applies to that property.
 
+Spacing values expose px/rem/% unit choices; Radius and Content width expose
+px/%. Amount and unit edits share the validated command boundary and per-value
+coalescing key. Names/raw values support Enter commit and Escape recovery, with
+associated errors for rejected or duplicate drafts.
+
 There is no simultaneous `document` and `initialDocument` on this module: that
 creates two state-ownership modes and synchronization ambiguity. A separate
 convenience module can be introduced only if real examples prove demand:
@@ -738,6 +743,11 @@ only their properties at the authored layer; reset-all removes local styles.
 Variable bindings use labelled palette popovers and disable literal editing;
 Custom copies the bound value before editing. Origins remain available to
 assistive technology without adding a description row beneath every field.
+
+Inspector choices use accessible grouped popups: Enter opens a choice, Escape
+closes it and restores trigger focus. These keys do not activate canvas inline
+editing. Typography pairs Size and Line height; property reset is present only
+for an authored local value. Empty numeric placeholders fit compact controls.
 
 Content follows definition-owned controls, with rename, visibility, locking,
 movement and removal available in Structure rather than duplicated in Content.

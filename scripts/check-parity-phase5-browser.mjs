@@ -87,6 +87,17 @@ async function screenshot(name) {
     animations: "disabled",
   });
 }
+async function choose(field, option) {
+  await field.click();
+  const item =
+    typeof option === "object"
+      ? page.getByRole("option", { name: option.label, exact: true })
+      : page.locator(
+          `[role="option"][data-value=${JSON.stringify(String(option))}]`,
+        );
+  await item.click();
+  await page.getByRole("listbox").waitFor({ state: "detached" });
+}
 async function eventually(read, expected) {
   const deadline = Date.now() + 5000;
   let value;
@@ -322,7 +333,7 @@ try {
   await check(
     "Unsafe responsive Style draft is rejected and Escape clears it",
     async () => {
-      const input = page.getByLabel("Background Color", { exact: true });
+      const input = page.getByLabel("Colour", { exact: true });
       await input.fill("red;}body{display:none");
       assert.equal(await input.getAttribute("aria-invalid"), "true");
       assert.match(
@@ -340,7 +351,7 @@ try {
     async () => {
       const errorsBefore = diagnostics.pageErrors.length;
       const presentation = page.getByLabel("Collapse style", { exact: true });
-      await presentation.selectOption(await presentation.inputValue());
+      await choose(presentation, await presentation.getAttribute("data-value"));
       await page.waitForTimeout(50);
       assert.equal(diagnostics.pageErrors.length, errorsBefore);
     },
@@ -362,14 +373,16 @@ try {
       assert.equal(await desktop.getAttribute("aria-checked"), "true");
     },
   );
-  await page
-    .getByLabel("Collapse style", { exact: true })
-    .selectOption("fullscreen");
+  await choose(
+    page.getByLabel("Collapse style", { exact: true }),
+    "fullscreen",
+  );
   if (
-    (await page.getByLabel("On breakpoint", { exact: true }).inputValue()) !==
-    "end"
+    (await page
+      .getByLabel("On breakpoint", { exact: true })
+      .getAttribute("data-value")) !== "end"
   )
-    await page.getByLabel("On breakpoint", { exact: true }).selectOption("end");
+    await choose(page.getByLabel("On breakpoint", { exact: true }), "end");
   await page.getByRole("tab", { name: "Style", exact: true }).click();
   await check(
     "Fullscreen uses its source contextual alignment label",
@@ -601,9 +614,7 @@ try {
     .getByRole("radiogroup", { name: "Menu breakpoint", exact: true })
     .getByRole("radio", { name: "Tablet", exact: true })
     .click();
-  await page
-    .getByLabel("Collapse style", { exact: true })
-    .selectOption("dropdown");
+  await choose(page.getByLabel("Collapse style", { exact: true }), "dropdown");
   await page
     .getByRole("link", { name: "Open published rendering", exact: true })
     .click();
@@ -835,7 +846,7 @@ try {
       await fresh(width, height);
       await select("Page title", ["Hero content", "Hero message"]);
       const level = page.getByLabel("HTML level", { exact: true });
-      await level.selectOption("2");
+      await choose(level, "2");
       assert.equal(
         await page
           .frameLocator("iframe")
@@ -851,9 +862,9 @@ try {
     await check(`Container Advanced journey ${name}`, async () => {
       await select("Hero");
       await page.getByRole("tab", { name: "Advanced", exact: true }).click();
-      await page.getByLabel("Padding Top", { exact: true }).fill("32");
+      await page.getByLabel("Padding top", { exact: true }).fill("32");
       assert.equal(
-        await page.getByLabel("Padding Top", { exact: true }).inputValue(),
+        await page.getByLabel("Padding top", { exact: true }).inputValue(),
         "32",
       );
       await screenshot(`container-advanced-${name}`);
@@ -887,13 +898,15 @@ try {
       await fresh();
       await select("Hero");
       await page.getByRole("tab", { name: "Style", exact: true }).click();
-      await page
-        .getByRole("combobox", { name: "Authored breakpoint", exact: true })
-        .selectOption("tablet");
+      await choose(
+        page.getByRole("combobox", {
+          name: "Authored breakpoint",
+          exact: true,
+        }),
+        "tablet",
+      );
       await page.getByRole("radio", { name: "Hover", exact: true }).click();
-      await page
-        .getByLabel("Background Color", { exact: true })
-        .fill("#112233");
+      await page.getByLabel("Colour", { exact: true }).fill("#112233");
       const selected = page
         .frameLocator("iframe")
         .locator('[data-pagebldr-force-state="hover"]');
@@ -908,10 +921,10 @@ try {
       );
       await screenshot("container-style-tablet-hover-desktop");
       await page
-        .getByRole("button", { name: "Reset Background Color", exact: true })
+        .getByRole("button", { name: "Reset Colour", exact: true })
         .click();
       assert.equal(
-        await page.getByLabel("Background Color", { exact: true }).inputValue(),
+        await page.getByLabel("Colour", { exact: true }).inputValue(),
         "",
       );
     },
@@ -950,9 +963,7 @@ try {
             .count(),
           0,
         );
-        await popup
-          .getByLabel("Colour format", { exact: true })
-          .selectOption("rgb");
+        await choose(popup.getByLabel("Colour format", { exact: true }), "rgb");
         assert.equal(await input.inputValue(), original);
         await screenshot(`menu-colour-open-${name}`);
         await check(`Menu revealed colour popover accessibility ${name}`, () =>
@@ -1011,34 +1022,35 @@ try {
       async () => {
         await select("Hero");
         await page.getByRole("tab", { name: "Style", exact: true }).click();
-        const input = page.getByLabel("Background Color", { exact: true });
+        const input = page.getByLabel("Colour", { exact: true });
         await page
           .getByRole("button", {
-            name: "Choose Background Color value source",
+            name: "Choose Colour value source",
             exact: true,
           })
           .click();
-        await page
-          .getByRole("combobox", {
-            name: "Background Color value source",
+        await choose(
+          page.getByRole("combobox", {
+            name: "Colour value source",
             exact: true,
-          })
-          .selectOption("custom");
+          }),
+          "custom",
+        );
         await page
           .getByRole("button", {
-            name: "Choose Background Color value source",
+            name: "Choose Colour value source",
             exact: true,
           })
           .click();
         await input.fill("#123456");
         await page
           .getByRole("button", {
-            name: "Choose background color colour",
+            name: "Choose colour colour",
             exact: true,
           })
           .click();
         const popup = page.getByRole("dialog", {
-          name: "Background Color colour",
+          name: "Colour colour",
           exact: true,
         });
         const opacity = popup.getByRole("slider", {
@@ -1054,27 +1066,30 @@ try {
         );
         await opacity.press("Escape");
         await page
-          .getByRole("button", { name: "Reset Background Color", exact: true })
+          .getByRole("button", { name: "Reset Colour", exact: true })
           .click();
         assert.equal(await input.inputValue(), "");
         await page
           .getByRole("button", {
-            name: "Choose Background Color value source",
+            name: "Choose Colour value source",
             exact: true,
           })
           .click();
         const source = page.getByRole("combobox", {
-          name: "Background Color value source",
+          name: "Colour value source",
           exact: true,
         });
-        const variableId = await source
-          .locator('option:not([value="custom"])')
+        await source.click();
+        const variableId = await page
+          .locator('[role="option"]:not([data-value="custom"])')
           .first()
-          .getAttribute("value");
-        await source.selectOption(variableId);
+          .getAttribute("data-value");
+        await page.getByRole("listbox").press("Escape");
+        await page.getByRole("listbox").waitFor({ state: "detached" });
+        await choose(source, variableId);
         await page
           .getByRole("button", {
-            name: "Choose Background Color value source",
+            name: "Choose Colour value source",
             exact: true,
           })
           .click();
@@ -1082,7 +1097,7 @@ try {
         assert.equal(
           await page
             .getByRole("button", {
-              name: "Choose background color colour",
+              name: "Choose colour colour",
               exact: true,
             })
             .isDisabled(),
@@ -1142,16 +1157,17 @@ try {
       await fresh(width, height);
       await select("Page title", ["Hero content", "Hero message"]);
       await page.getByRole("tab", { name: "Style", exact: true }).click();
-      const font = page.getByLabel("Font Family", { exact: true });
-      assert.ok((await font.locator("option").count()) >= 11);
-      await font.selectOption({ label: "Inter" });
+      const font = page.getByLabel("Font family", { exact: true });
+      await font.click();
+      assert.ok((await page.getByRole("option").count()) >= 11);
+      await page.getByRole("listbox").press("Escape");
+      await page.getByRole("listbox").waitFor({ state: "detached" });
+      await choose(font, { label: "Inter" });
+      await choose(page.getByLabel("Size unit", { exact: true }), "px");
+      await page.getByLabel("Size", { exact: true }).fill("32");
+      await choose(page.getByLabel("Weight", { exact: true }), "700");
       await page
-        .getByLabel("Font Size unit", { exact: true })
-        .selectOption("px");
-      await page.getByLabel("Font Size", { exact: true }).fill("32");
-      await page.getByLabel("Font Weight", { exact: true }).selectOption("700");
-      await page
-        .locator('[aria-label="Text Align"]')
+        .locator('[aria-label="Alignment"]')
         .getByRole("radio", { name: "Centre", exact: true })
         .click();
       const heading = page
@@ -1232,14 +1248,15 @@ try {
         assert.equal(await anchor.getAttribute("aria-invalid"), "true");
         await anchor.press("Escape");
         assert.equal(await anchor.inputValue(), original);
-        await page
-          .getByLabel("Padding Top unit", { exact: true })
-          .selectOption("px");
-        await page.getByLabel("Padding Top", { exact: true }).fill("24");
+        await choose(
+          page.getByLabel("Padding top unit", { exact: true }),
+          "px",
+        );
+        await page.getByLabel("Padding top", { exact: true }).fill("24");
         for (const side of ["Top", "Right", "Bottom", "Left"])
           assert.equal(
             await page
-              .getByLabel(`Padding ${side}`, { exact: true })
+              .getByLabel(`Padding ${side.toLowerCase()}`, { exact: true })
               .inputValue(),
             "24",
           );

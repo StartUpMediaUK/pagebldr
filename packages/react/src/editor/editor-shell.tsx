@@ -49,9 +49,9 @@ import {
 } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import {
   DropdownMenu,
   DropdownMenuContent,

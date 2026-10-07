@@ -69,6 +69,9 @@ function InputGroupAddon({
       data-align={align}
       className={cn(inputGroupAddonVariants({ align }), className)}
       onClick={(e) => {
+        // React portals bubble through the composition, not the addon DOM.
+        // Selecting a popup choice must not focus the outer input and dismiss it.
+        if (!e.currentTarget.contains(e.target as Node)) return;
         if (
           (e.target as HTMLElement).closest(
             "button, select, input, textarea, [role='combobox']",

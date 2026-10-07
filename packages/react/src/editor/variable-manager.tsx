@@ -39,11 +39,12 @@ import {
 import { Field, FieldError, FieldLabel } from "../components/ui/field.js";
 import { Input } from "../components/ui/input.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import { usePagebldrEditor } from "./context.js";
 import { ColorField } from "./color-field.js";
+import { UnitField } from "./style-value-field.js";
 
 export const variableKinds = [
   "color",
@@ -171,6 +172,9 @@ export function VariableManager() {
             placeholder="New variable name"
             disabled={readOnly}
             aria-invalid={duplicateNewName}
+            aria-describedby={
+              duplicateNewName ? "pb-new-variable-error" : undefined
+            }
             onChange={(event) => setNewName(event.currentTarget.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") addVariable();
@@ -200,7 +204,9 @@ export function VariableManager() {
           </Button>
         </div>
         {duplicateNewName ? (
-          <FieldError>A Variable with this name already exists.</FieldError>
+          <FieldError id="pb-new-variable-error">
+            A Variable with this name already exists.
+          </FieldError>
         ) : (
           <p className="text-xs text-muted-foreground">
             Kind controls where the Variable can be selected in Style.
@@ -342,8 +348,14 @@ function VariableRow({
   const [value, setValue] = useState(String(variable.value));
   const [valueError, setValueError] = useState<string | null>(null);
 
-  useEffect(() => setName(variable.name), [variable.name]);
-  useEffect(() => setValue(String(variable.value)), [variable.value]);
+  useEffect(() => {
+    setName(variable.name);
+    setNameError(null);
+  }, [variable.name]);
+  useEffect(() => {
+    setValue(String(variable.value));
+    setValueError(null);
+  }, [variable.value]);
 
   const commitName = () => {
     const next = name.trim();
@@ -361,27 +373,33 @@ function VariableRow({
           : null;
     setNameError(error);
     if (!error && next !== variable.name)
-      editor.dispatch({
-        type: "update-variable",
-        variableId: variable.id,
-        patch: { name: next },
-      });
+      editor.dispatch(
+        {
+          type: "update-variable",
+          variableId: variable.id,
+          patch: { name: next },
+        },
+        `variable:${variable.id}:name`,
+      );
   };
   const commitValue = (next = value) => {
     const trimmed = next.trim();
     const error = validateVariableValue(variable.kind, trimmed);
     setValueError(error);
     if (!error && trimmed !== String(variable.value))
-      editor.dispatch({
-        type: "update-variable",
-        variableId: variable.id,
-        patch: { value: trimmed },
-      });
+      editor.dispatch(
+        {
+          type: "update-variable",
+          variableId: variable.id,
+          patch: { value: trimmed },
+        },
+        `variable:${variable.id}:value`,
+      );
   };
 
   return (
     <div className="grid gap-3 rounded-lg border p-3 md:grid-cols-[minmax(8rem,0.8fr)_minmax(12rem,1.2fr)_auto] md:items-start">
-      <Field>
+      <Field data-invalid={Boolean(nameError) || undefined}>
         <FieldLabel htmlFor={nameId} className="sr-only">
           {variableKindLabels[variable.kind]} Variable name
         </FieldLabel>
@@ -391,13 +409,32 @@ function VariableRow({
           maxLength={120}
           disabled={readOnly}
           aria-invalid={Boolean(nameError)}
+          aria-describedby={nameError ? `${nameId}-error` : undefined}
+          data-draft-changed={name !== variable.name || undefined}
           onChange={(event) => {
             setName(event.currentTarget.value);
             setNameError(null);
           }}
           onBlur={commitName}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              commitName();
+            }
+            if (
+              event.key === "Escape" &&
+              (nameError || name !== variable.name)
+            ) {
+              event.preventDefault();
+              event.stopPropagation();
+              setName(variable.name);
+              setNameError(null);
+            }
+          }}
         />
-        {nameError ? <FieldError>{nameError}</FieldError> : null}
+        {nameError ? (
+          <FieldError id={`${nameId}-error`}>{nameError}</FieldError>
+        ) : null}
       </Field>
       {variable.kind === "color" ? (
         <ColorField
@@ -418,8 +455,29 @@ function VariableRow({
             );
           }}
         />
+      ) : ["spacing", "radius", "contentWidth"].includes(variable.kind) ? (
+        <UnitField
+          property={variable.kind}
+          label={`${variable.name} value`}
+          value={String(variable.value)}
+          resolvedValue={String(variable.value)}
+          units={variable.kind === "spacing" ? ["px", "rem", "%"] : ["px", "%"]}
+          disabled={readOnly}
+          onCommit={(next) => {
+            const error = validateVariableValue(variable.kind, next);
+            if (error) throw new Error(error);
+            editor.dispatch(
+              {
+                type: "update-variable",
+                variableId: variable.id,
+                patch: { value: next },
+              },
+              `variable:${variable.id}:value`,
+            );
+          }}
+        />
       ) : (
-        <Field>
+        <Field data-invalid={Boolean(valueError) || undefined}>
           <FieldLabel htmlFor={valueId} className="sr-only">
             {variable.name} value
           </FieldLabel>
@@ -429,6 +487,7 @@ function VariableRow({
               value={findStandardFontFamily(value)?.value ?? ""}
               disabled={readOnly}
               aria-invalid={Boolean(valueError)}
+              aria-describedby={valueError ? `${valueId}-error` : undefined}
               onChange={(event) => {
                 const next = event.currentTarget.value;
                 setValue(next);
@@ -453,15 +512,36 @@ function VariableRow({
                 value={value}
                 disabled={readOnly}
                 aria-invalid={Boolean(valueError)}
+                aria-describedby={valueError ? `${valueId}-error` : undefined}
+                data-draft-changed={
+                  value !== String(variable.value) || undefined
+                }
                 onChange={(event) => {
                   setValue(event.currentTarget.value);
                   setValueError(null);
                 }}
                 onBlur={() => commitValue()}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    commitValue();
+                  }
+                  if (
+                    event.key === "Escape" &&
+                    (valueError || value !== String(variable.value))
+                  ) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setValue(String(variable.value));
+                    setValueError(null);
+                  }
+                }}
               />
             </div>
           )}
-          {valueError ? <FieldError>{valueError}</FieldError> : null}
+          {valueError ? (
+            <FieldError id={`${valueId}-error`}>{valueError}</FieldError>
+          ) : null}
         </Field>
       )}
       <div className="flex items-center justify-end gap-1">

@@ -20,9 +20,9 @@ import {
   FieldSet,
 } from "../components/ui/field.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import { ValidatedInputField } from "./validated-input-field.js";
 import { anchoredElements, DestinationControl } from "./destination-control.js";
 

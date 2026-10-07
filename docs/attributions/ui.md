@@ -26,8 +26,12 @@ Collapsible was added from the official Radix shadcn registry on 2026-10-06. All
 installed source was reviewed and adapted to package-local imports and type-only
 React imports. It reuses the existing Radix dependency, adds no new dependency,
 and supplies keyboard-operable inspector section disclosures. Input Group's
-focus delegation now leaves native unit selects and other interactive children
-in control of their own focus.
+focus delegation now leaves unit selects and other interactive children in
+control of their own focus, including React portal clicks outside the addon's
+DOM. On 2026-10-07 inspector choices were composed from the existing reviewed
+Select source with SelectGroup/SelectItem, rather than installing another
+registry implementation. The private adapter preserves controlled values,
+disabled choices, labelled triggers and inherited empty choices.
 
 Installed primitives: Alert Dialog, Badge, Button, Collapsible, Dialog, Empty,
 Field, Input, Input Group, Popover, Label, Dropdown Menu, Native Select,

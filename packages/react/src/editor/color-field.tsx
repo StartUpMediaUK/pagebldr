@@ -15,9 +15,9 @@ import {
   PopoverTrigger,
 } from "../components/ui/popover.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import { Slider } from "../components/ui/slider.js";
 import {
   ValidatedInputField,

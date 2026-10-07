@@ -24,7 +24,13 @@ const authoredId = z.string().min(1).max(128);
 const safeHttpUrl = z
   .string()
   .url()
-  .refine((value) => ["http:", "https:"].includes(new URL(value).protocol));
+  .refine((value) => {
+    try {
+      return ["http:", "https:"].includes(new URL(value).protocol);
+    } catch {
+      return false;
+    }
+  });
 const referenceSchema = z
   .object({ kind: z.string().min(1), value: z.unknown() })
   .strict();

@@ -21,9 +21,9 @@ import {
 } from "../components/ui/field.js";
 import { Button } from "../components/ui/button.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group.js";
 import { Switch } from "../components/ui/switch.js";
 import { ColorField } from "./color-field.js";
@@ -343,7 +343,7 @@ function ValueFrame({
   );
 }
 
-function UnitField({
+export function UnitField({
   units,
   ...props
 }: ValueProps & { readonly units: readonly string[] }) {
@@ -373,7 +373,7 @@ function UnitField({
       labelAction={props.labelAction}
       inputProps={{
         disabled: props.disabled || keyword,
-        placeholder: resolved.amount?.toString() ?? "Default",
+        placeholder: resolved.amount?.toString() ?? "—",
         type: "number",
         step: "any",
       }}
@@ -407,7 +407,7 @@ function UnitField({
         >
           {[...new Set([...units, ...keywords])].map((option) => (
             <NativeSelectOption key={option} value={option}>
-              {option || "Unitless"}
+              {option || "Unit"}
             </NativeSelectOption>
           ))}
         </NativeSelect>

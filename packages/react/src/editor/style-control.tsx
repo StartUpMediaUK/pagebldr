@@ -29,9 +29,9 @@ import {
   FieldSet,
 } from "../components/ui/field.js";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "../components/ui/native-select.js";
+  InspectorSelect as NativeSelect,
+  InspectorSelectOption as NativeSelectOption,
+} from "./inspector-select.js";
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group.js";
 import { usePagebldrEditor, type EditorViewport } from "./context.js";
 import { StyleValueField } from "./style-value-field.js";
@@ -215,22 +215,28 @@ export function StyleControls({
   return (
     <FieldGroup className="pb-6">
       <div className="flex items-center gap-2">
-        <NativeSelect
-          size="sm"
-          value={breakpoint}
-          onChange={(event) => {
-            const value = event.currentTarget.value;
-            if (value === "desktop" || value === "tablet" || value === "mobile")
-              editor.setViewport(value);
-          }}
-          aria-label="Authored breakpoint"
-        >
-          {(Object.keys(breakpointLabels) as Breakpoint[]).map((value) => (
-            <NativeSelectOption key={value} value={value}>
-              {breakpointLabels[value]}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
+        <div className="w-26 shrink-0">
+          <NativeSelect
+            size="sm"
+            value={breakpoint}
+            onChange={(event) => {
+              const value = event.currentTarget.value;
+              if (
+                value === "desktop" ||
+                value === "tablet" ||
+                value === "mobile"
+              )
+                editor.setViewport(value);
+            }}
+            aria-label="Authored breakpoint"
+          >
+            {(Object.keys(breakpointLabels) as Breakpoint[]).map((value) => (
+              <NativeSelectOption key={value} value={value}>
+                {breakpointLabels[value]}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </div>
         <ToggleGroup
           type="single"
           variant="outline"
@@ -248,7 +254,7 @@ export function StyleControls({
           className="order-first flex-1"
         >
           {(Object.keys(stateLabels) as StyleState[]).map((value) => (
-            <ToggleGroupItem key={value} value={value}>
+            <ToggleGroupItem key={value} value={value} className="px-2">
               {stateLabels[value]}
             </ToggleGroupItem>
           ))}
@@ -332,7 +338,13 @@ export function StyleControls({
             </Button>
           </div>
           <CollapsibleContent>
-            <FieldGroup className="gap-4 px-3 pb-4">
+            <FieldGroup
+              className={
+                capability.key === "typography"
+                  ? "grid grid-cols-2 gap-4 px-3 pb-4"
+                  : "gap-4 px-3 pb-4"
+              }
+            >
               {capability.key === "spacing" ? (
                 <SpacingControls
                   element={element}
@@ -354,6 +366,12 @@ export function StyleControls({
                       breakpoint={breakpoint}
                       element={element}
                       property={property}
+                      className={
+                        capability.key === "typography" &&
+                        !["fontSize", "lineHeight"].includes(property)
+                          ? "col-span-2"
+                          : undefined
+                      }
                       readOnly={readOnly}
                       state={editor.styleState}
                     />
@@ -374,12 +392,14 @@ function StylePropertyField({
   readOnly,
   state,
   onSet,
+  className,
 }: {
   readonly breakpoint: Breakpoint;
   readonly element: PageElement;
   readonly property: string;
   readonly readOnly: boolean;
   readonly state: StyleState;
+  readonly className?: string | undefined;
   readonly onSet?:
     ((property: string, value: StyleValue | null) => void) | undefined;
 }) {
@@ -427,7 +447,11 @@ function StylePropertyField({
   };
 
   return (
-    <div title={describeStyleOrigin(editor.document, resolved)}>
+    <div
+      data-style-property={property}
+      className={className}
+      title={describeStyleOrigin(editor.document, resolved)}
+    >
       <StyleValueField
         property={property}
         key={`${element.id}:${breakpoint}:${state}:${property}`}
@@ -501,16 +525,18 @@ function StylePropertyField({
                 </PopoverContent>
               </Popover>
             ) : null}
-            <Button
-              type="button"
-              size="icon-sm"
-              variant="ghost"
-              aria-label={`Reset ${label}`}
-              disabled={readOnly || local === undefined}
-              onClick={() => setValue(null)}
-            >
-              <RotateCcwIcon data-icon="inline-start" />
-            </Button>
+            {local === undefined ? null : (
+              <Button
+                type="button"
+                size="icon-sm"
+                variant="ghost"
+                aria-label={`Reset ${label}`}
+                disabled={readOnly}
+                onClick={() => setValue(null)}
+              >
+                <RotateCcwIcon data-icon="inline-start" />
+              </Button>
+            )}
           </div>
         }
       >
@@ -669,8 +695,41 @@ function VisibilityControls({
 }
 
 function propertyLabel(property: string): string {
+  const sourceLabels: Readonly<Record<string, string>> = {
+    color: "Text colour",
+    fontFamily: "Font family",
+    fontSize: "Size",
+    lineHeight: "Line height",
+    fontWeight: "Weight",
+    textAlign: "Alignment",
+    textTransform: "Capitalisation",
+    textDecoration: "Underline",
+    letterSpacing: "Letter spacing",
+    backgroundColor: "Colour",
+    backgroundImage: "Layers",
+    backgroundSize: "Sizing",
+    backgroundPosition: "Position",
+    backgroundRepeat: "Repeat (tile) the image",
+    flexDirection: "Direction",
+    flexWrap: "Wrap onto new lines",
+    alignItems: "Cross-axis alignment",
+    justifyContent: "Distribution",
+    gridTemplateColumns: "Grid columns",
+    borderWidth: "Width",
+    borderStyle: "Style",
+    borderColor: "Border colour",
+    borderRadius: "Corner rounding",
+    boxShadow: "Shadow",
+    backdropFilter: "Backdrop filter",
+    transition: "Hover transition",
+    cursor: "Pointer",
+    position: "Position type",
+    zIndex: "Stack order",
+  };
+  if (sourceLabels[property]) return sourceLabels[property];
   return property
     .replace(/([A-Z])/gu, " $1")
+    .toLowerCase()
     .replace(/^./u, (character) => character.toUpperCase());
 }
 

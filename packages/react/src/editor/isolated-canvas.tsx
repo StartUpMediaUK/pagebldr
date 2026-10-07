@@ -257,9 +257,10 @@ export function IsolatedCanvas({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (
+        event.defaultPrevented ||
         event.key !== "Enter" ||
         !editor.selectedId ||
-        isTextEntry(event.target)
+        isInteractiveTarget(event.target)
       )
         return;
       const element = editor.document.elements[editor.selectedId];
@@ -1054,10 +1055,12 @@ function isDomElement(value: EventTarget | null): value is Element {
   return !!value && "nodeType" in value && value.nodeType === 1;
 }
 
-function isTextEntry(value: EventTarget | null) {
+function isInteractiveTarget(value: EventTarget | null) {
   return (
     isDomElement(value) &&
-    (value.matches("input, textarea, select") ||
+    (value.closest(
+      "input, textarea, select, button, a[href], [role='textbox'], [role='combobox'], [role='slider'], [role='radio'], [role='switch'], [role='menuitem'], [role='option']",
+    ) ||
       (value as HTMLElement).isContentEditable)
   );
 }

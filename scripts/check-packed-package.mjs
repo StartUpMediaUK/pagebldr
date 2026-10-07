@@ -69,9 +69,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Source-composed inputs, definition metadata and Collapsible add ~35 KB
-  // compressed including maps; retain a measured explicit guardrail.
-  assertMaximumSize(archivePath, 1_480_000, "Packed archive");
+  // Source-composed inspectors and Radix Select add ~72 KB compressed over
+  // the colour checkpoint, including maps; retain explicit measured budgets.
+  assertMaximumSize(archivePath, 1_515_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -379,7 +379,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    1_020_000,
+    1_085_000,
     "React entry",
   );
   assertMaximumSize(
