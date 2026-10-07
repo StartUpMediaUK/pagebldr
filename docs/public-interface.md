@@ -223,6 +223,21 @@ subtree paste with fresh IDs, style clipboard paste and whole-Template
 application. Template application preserves Document ID, title, slug, root
 identity and SEO while replacing the design as one reversible Action.
 
+`builder.editor.library.prepareBlock(clipboard, destination, idFactory?)`
+prepares a saved or catalogue Block with fresh Element IDs and remapped internal
+anchor references. Shared Class and Variable IDs reuse the destination's values
+so inserting another Block does not overwrite the author's customized design. It
+does not mutate either input or insert content: dispatch the result with the
+`insert` command at a valid placement. Dispatch remains the validation boundary.
+
+`builder.editor.library.cloneTemplate(template, idFactory?)` validates a
+current-schema Template and creates an independent Document with fresh Document
+and Element IDs, remapped anchors, and all its design dependencies. Apply the
+result through the `apply-template` command, which preserves the destination's
+identity and SEO. Invalid Templates and factories that reuse IDs fail
+explicitly. Host migration, Resource adaptation and navigation policy are not
+inferred by either helper.
+
 `builder.editor.history` defaults to 100 Actions, coalesces the same non-null
 key through the inclusive 750ms boundary, and exposes undo, redo and clamped
 position jumps. Local history remains unrelated to durable Revisions.

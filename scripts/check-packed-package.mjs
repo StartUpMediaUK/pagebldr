@@ -384,7 +384,8 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "index.js"),
-    251_000,
+    // Phase 6 library preparation adds ~2 KB over the 249,061-byte Phase 5 core.
+    252_000,
     "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {

@@ -9,3 +9,22 @@ session-only undo and redo state; it never represents a durable Revision.
 `insert` accepts a package-native subtree whose IDs are already unique. `paste`
 accepts a copied subtree and remaps its Element IDs and internal references
 before insertion, so copy and paste remains a single reversible Action.
+
+For saved or catalogue Blocks, first call
+`builder.editor.library.prepareBlock(clipboard, destination, idFactory?)`, then
+dispatch `insert` at a valid placement. Preparation creates fresh Element IDs
+and remaps internal anchors while reusing the destination's existing shared
+Classes and Variables. Another Block therefore adopts the author's customized
+page design instead of replacing it. Preparation does not insert content;
+command dispatch validates the resulting Document.
+
+For a current-schema Template, call
+`builder.editor.library.cloneTemplate(template, idFactory?)`, then dispatch
+`apply-template`. Cloning validates the Template and creates independent
+Document and Element IDs with remapped anchors and copied design dependencies.
+Application replaces the design while preserving the destination's Document ID,
+title, slug, root identity and SEO. It remains one undoable Action, not a
+durable Revision. Invalid Templates and ID factories that reuse IDs fail
+explicitly.
+
+These helpers do not infer Host Resource mapping or navigation policy.

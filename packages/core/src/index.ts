@@ -50,6 +50,7 @@ export type {
   EditorTransaction,
 } from "./commands.js";
 export type { EditorEngine } from "./editor.js";
+export type { LibraryPreparation } from "./library.js";
 export type {
   ElementAccessibility,
   ElementChildPolicy,

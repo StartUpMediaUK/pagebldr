@@ -18,6 +18,10 @@ import {
 import { diffDocuments, invertPatches } from "./patches.js";
 import { PagebldrError } from "./types.js";
 import {
+  createLibraryPreparation,
+  type LibraryPreparation,
+} from "./library.js";
+import {
   serializeStyles,
   serializeSubtree,
   type PagebldrClipboard,
@@ -25,6 +29,7 @@ import {
 } from "./clipboard.js";
 
 export interface EditorEngine {
+  readonly library: LibraryPreparation;
   readonly dispatch: (
     document: PageDocument,
     command: EditorCommand,
@@ -70,6 +75,7 @@ export function createEditor(
   styles: StyleEngine,
 ): EditorEngine {
   return Object.freeze({
+    library: createLibraryPreparation(definitions, styles),
     dispatch: (document: PageDocument, command: EditorCommand) =>
       executeCommand(document, command, definitions, styles),
     dispatchMany: (
