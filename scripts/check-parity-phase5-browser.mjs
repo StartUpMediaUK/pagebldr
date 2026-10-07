@@ -2,7 +2,8 @@
 // Usage: node scripts/check-parity-phase5-browser.mjs <consumer-dir> <chromium-executable> [evidence-dir]
 import assert from "node:assert/strict";
 import console from "node:console";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
 import { resolve, join } from "node:path";
 import process from "node:process";
@@ -21,6 +22,10 @@ const output = resolve(
     "docs/plans/standalone-package/audits/evidence/parity-phase-5/editor-a11y-2026-10-05",
 );
 await mkdir(output, { recursive: true });
+const traceDirectory = resolve(
+  process.env.PAGEBLDR_PHASE5_TRACE_DIRECTORY ?? output,
+);
+await mkdir(traceDirectory, { recursive: true });
 const browser = await chromium.launch({ executablePath, headless: true });
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
@@ -33,6 +38,12 @@ await context.tracing.start({
   sources: false,
 });
 const page = await context.newPage();
+await page.route("**/phase-five-background.svg", (route) =>
+  route.fulfill({
+    contentType: "image/svg+xml",
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="#7659e7"/></svg>',
+  }),
+);
 page.setDefaultTimeout(5000);
 const results = [];
 const diagnostics = {
@@ -75,6 +86,16 @@ async function screenshot(name) {
     path: join(output, `${name}.png`),
     animations: "disabled",
   });
+}
+async function eventually(read, expected) {
+  const deadline = Date.now() + 5000;
+  let value;
+  do {
+    value = await read();
+    if (value === expected) return;
+    await page.waitForTimeout(50);
+  } while (Date.now() < deadline);
+  assert.equal(value, expected);
 }
 async function a11y(name) {
   if (await page.locator("[data-pagebldr-editor]").count()) {
@@ -150,6 +171,28 @@ async function select(name, expand) {
       .first()
       .click();
 }
+async function setMenuLock(action) {
+  if (!(await page.getByRole("tree").isVisible()))
+    await page
+      .getByRole("button", { name: /^(Open )?Structure$/ })
+      .first()
+      .click();
+  await page
+    .getByRole("button", {
+      name: "Actions for Project enquiry navigation",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("menuitem", { name: action, exact: true }).click();
+  await page
+    .getByRole("menu", { includeHidden: true })
+    .waitFor({ state: "detached" });
+  if (page.viewportSize().width < 768)
+    await page
+      .getByRole("button", { name: "Close Structure", exact: true })
+      .first()
+      .click();
+}
 try {
   artifact = await (
     await page.request.get("http://localhost:5173/packed-artifact.json")
@@ -197,15 +240,19 @@ try {
       .frameLocator("iframe")
       .getByRole("navigation", { name: "Primary navigation", exact: true });
   await check("Menu Centre alignment reaches canvas", async () => {
-    await page.getByRole("radio", { name: "Centre", exact: true }).click();
-    assert.equal(
-      await menu()
-        .locator("ul")
-        .evaluate(
-          (element) =>
-            element.ownerDocument.defaultView.getComputedStyle(element)
-              .justifyContent,
-        ),
+    await page
+      .getByRole("radiogroup", { name: "Menu items align", exact: true })
+      .getByRole("radio", { name: "Centre", exact: true })
+      .click();
+    await eventually(
+      () =>
+        menu()
+          .locator("ul")
+          .evaluate(
+            (element) =>
+              element.ownerDocument.defaultView.getComputedStyle(element)
+                .justifyContent,
+          ),
       "center",
     );
   });
@@ -220,13 +267,14 @@ try {
     await slider.press("PageUp");
     await slider.press("PageUp");
     assert.equal(await slider.getAttribute("aria-valuenow"), "40");
-    assert.equal(
-      await menu()
-        .locator("ul")
-        .evaluate(
-          (element) =>
-            element.ownerDocument.defaultView.getComputedStyle(element).gap,
-        ),
+    await eventually(
+      () =>
+        menu()
+          .locator("ul")
+          .evaluate(
+            (element) =>
+              element.ownerDocument.defaultView.getComputedStyle(element).gap,
+          ),
       "40px",
     );
   });
@@ -714,9 +762,7 @@ try {
         await check(
           `Locked definition controls cannot mutate props ${name}`,
           async () => {
-            await page
-              .getByRole("switch", { name: "Locked", exact: true })
-              .click();
+            await setMenuLock("Lock");
             assert.equal(await input.isDisabled(), true);
             const breakpoint = page.getByRole("radiogroup", {
               name: "Menu breakpoint",
@@ -738,9 +784,7 @@ try {
             await page
               .getByRole("tab", { name: "Content", exact: true })
               .click();
-            await page
-              .getByRole("switch", { name: "Locked", exact: true })
-              .click();
+            await setMenuLock("Unlock");
           },
         );
       },
@@ -790,7 +834,7 @@ try {
     await check(`Heading Content journey ${name}`, async () => {
       await fresh(width, height);
       await select("Page title", ["Hero content", "Hero message"]);
-      const level = page.getByLabel("Level", { exact: true });
+      const level = page.getByLabel("HTML level", { exact: true });
       await level.selectOption("2");
       assert.equal(
         await page
@@ -807,10 +851,10 @@ try {
     await check(`Container Advanced journey ${name}`, async () => {
       await select("Hero");
       await page.getByRole("tab", { name: "Advanced", exact: true }).click();
-      await page.getByLabel("Padding", { exact: true }).fill("32px");
+      await page.getByLabel("Padding Top", { exact: true }).fill("32");
       assert.equal(
-        await page.getByLabel("Padding", { exact: true }).inputValue(),
-        "32px",
+        await page.getByLabel("Padding Top", { exact: true }).inputValue(),
+        "32",
       );
       await screenshot(`container-advanced-${name}`);
     });
@@ -844,9 +888,8 @@ try {
       await select("Hero");
       await page.getByRole("tab", { name: "Style", exact: true }).click();
       await page
-        .getByRole("radiogroup", { name: "Authored breakpoint", exact: true })
-        .getByRole("radio", { name: "Tablet", exact: true })
-        .click();
+        .getByRole("combobox", { name: "Authored breakpoint", exact: true })
+        .selectOption("tablet");
       await page.getByRole("radio", { name: "Hover", exact: true }).click();
       await page
         .getByLabel("Background Color", { exact: true })
@@ -970,8 +1013,23 @@ try {
         await page.getByRole("tab", { name: "Style", exact: true }).click();
         const input = page.getByLabel("Background Color", { exact: true });
         await page
-          .getByLabel("Background Color value source", { exact: true })
+          .getByRole("button", {
+            name: "Choose Background Color value source",
+            exact: true,
+          })
+          .click();
+        await page
+          .getByRole("combobox", {
+            name: "Background Color value source",
+            exact: true,
+          })
           .selectOption("custom");
+        await page
+          .getByRole("button", {
+            name: "Choose Background Color value source",
+            exact: true,
+          })
+          .click();
         await input.fill("#123456");
         await page
           .getByRole("button", {
@@ -999,7 +1057,14 @@ try {
           .getByRole("button", { name: "Reset Background Color", exact: true })
           .click();
         assert.equal(await input.inputValue(), "");
-        const source = page.getByLabel("Background Color value source", {
+        await page
+          .getByRole("button", {
+            name: "Choose Background Color value source",
+            exact: true,
+          })
+          .click();
+        const source = page.getByRole("combobox", {
+          name: "Background Color value source",
           exact: true,
         });
         const variableId = await source
@@ -1007,6 +1072,12 @@ try {
           .first()
           .getAttribute("value");
         await source.selectOption(variableId);
+        await page
+          .getByRole("button", {
+            name: "Choose Background Color value source",
+            exact: true,
+          })
+          .click();
         assert.equal(await input.isDisabled(), true);
         assert.equal(
           await page
@@ -1062,19 +1133,390 @@ try {
       },
     );
   }
+  for (const [name, width, height] of [
+    ["desktop", 1440, 900],
+    ["tablet", 820, 1180],
+    ["phone", 390, 844],
+  ]) {
+    await check(`Composed Typography controls ${name}`, async () => {
+      await fresh(width, height);
+      await select("Page title", ["Hero content", "Hero message"]);
+      await page.getByRole("tab", { name: "Style", exact: true }).click();
+      const font = page.getByLabel("Font Family", { exact: true });
+      assert.ok((await font.locator("option").count()) >= 11);
+      await font.selectOption({ label: "Inter" });
+      await page
+        .getByLabel("Font Size unit", { exact: true })
+        .selectOption("px");
+      await page.getByLabel("Font Size", { exact: true }).fill("32");
+      await page.getByLabel("Font Weight", { exact: true }).selectOption("700");
+      await page
+        .locator('[aria-label="Text Align"]')
+        .getByRole("radio", { name: "Centre", exact: true })
+        .click();
+      const heading = page
+        .frameLocator("iframe")
+        .locator('[data-pagebldr-element="reference-heading-8"]');
+      const style = await heading.evaluate((el) => ({
+        size: el.ownerDocument.defaultView.getComputedStyle(el).fontSize,
+        weight: el.ownerDocument.defaultView.getComputedStyle(el).fontWeight,
+        align: el.ownerDocument.defaultView.getComputedStyle(el).textAlign,
+      }));
+      assert.deepEqual(style, { size: "32px", weight: "700", align: "center" });
+      await screenshot(`composed-typography-${name}`);
+      await check(`Composed Typography accessibility ${name}`, () =>
+        a11y(`composed-typography-${name}`),
+      );
+    });
+    await check(
+      `Background layers and rejected image draft ${name}`,
+      async () => {
+        await fresh(width, height);
+        await select("Hero");
+        await page.getByRole("tab", { name: "Style", exact: true }).click();
+        const layers = page.locator('[aria-label="Background layers"]');
+        await layers
+          .getByRole("radio", { name: "Gradient", exact: true })
+          .click();
+        const angle = page.getByLabel("Gradient angle", { exact: true });
+        await angle.fill("361");
+        assert.equal(await angle.getAttribute("aria-invalid"), "true");
+        await angle.press("Escape");
+        assert.equal(await angle.inputValue(), "135");
+        await layers
+          .getByRole("radio", { name: "Overlay", exact: true })
+          .click();
+        const image = page.getByLabel("Background image URL", { exact: true });
+        await image.fill("javascript:alert(1)");
+        await image.press("Tab");
+        assert.equal(await image.getAttribute("aria-invalid"), "true");
+        await screenshot(`background-invalid-${name}`);
+        await check(`Background error accessibility ${name}`, () =>
+          a11y(`background-invalid-${name}`),
+        );
+        await image.press("Escape");
+        await image.fill("http://127.0.0.1:5173/phase-five-background.svg");
+        await image.press("Tab");
+        const background = await page
+          .frameLocator("iframe")
+          .locator('[data-pagebldr-element="reference-container-15"]')
+          .evaluate(
+            (el) =>
+              el.ownerDocument.defaultView.getComputedStyle(el).backgroundImage,
+          );
+        assert.match(background, /linear-gradient/);
+        assert.match(background, /phase-five-background\.svg/);
+        await page
+          .getByRole("button", {
+            name: "Reset Background section",
+            exact: true,
+          })
+          .click();
+        assert.equal(
+          await layers
+            .getByRole("radio", { name: "None", exact: true })
+            .getAttribute("aria-checked"),
+          "true",
+        );
+      },
+    );
+    await check(
+      `Linked spacing, effects, visibility and anchor recovery ${name}`,
+      async () => {
+        await fresh(width, height);
+        await select("Hero");
+        await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+        const anchor = page.getByLabel("ID", { exact: true });
+        const original = await anchor.inputValue();
+        await anchor.fill("approach");
+        assert.equal(await anchor.getAttribute("aria-invalid"), "true");
+        await anchor.press("Escape");
+        assert.equal(await anchor.inputValue(), original);
+        await page
+          .getByLabel("Padding Top unit", { exact: true })
+          .selectOption("px");
+        await page.getByLabel("Padding Top", { exact: true }).fill("24");
+        for (const side of ["Top", "Right", "Bottom", "Left"])
+          assert.equal(
+            await page
+              .getByLabel(`Padding ${side}`, { exact: true })
+              .inputValue(),
+            "24",
+          );
+        await page
+          .getByRole("button", { name: "Add transform", exact: true })
+          .click();
+        const scale = page.getByLabel("Transform Scale", { exact: true });
+        await scale.fill("-1");
+        await scale.press("Tab");
+        assert.equal(await scale.getAttribute("aria-invalid"), "true");
+        await scale.press("Escape");
+        assert.equal(await scale.inputValue(), "1");
+        await page
+          .getByRole("button", { name: "Add filter", exact: true })
+          .click();
+        await page.getByLabel("Filter Blur", { exact: true }).fill("2");
+        await page.getByLabel("Filter Blur", { exact: true }).press("Enter");
+        await page
+          .getByRole("button", { name: "Responsive visibility", exact: true })
+          .click();
+        await page
+          .getByRole("switch", { name: "Hide on Mobile", exact: true })
+          .click();
+        assert.equal(
+          await page
+            .getByRole("switch", { name: "Hide on Mobile", exact: true })
+            .isChecked(),
+          true,
+        );
+        await page.keyboard.press("Control+z");
+        assert.equal(
+          await page
+            .getByRole("switch", { name: "Hide on Mobile", exact: true })
+            .isChecked(),
+          false,
+        );
+        await screenshot(`composed-advanced-${name}`);
+        await check(`Composed Advanced accessibility ${name}`, () =>
+          a11y(`composed-advanced-${name}`),
+        );
+        await page
+          .getByRole("button", { name: "Reset Effects section", exact: true })
+          .click();
+        assert.equal(
+          await page
+            .getByRole("button", { name: "Add transform", exact: true })
+            .count(),
+          1,
+        );
+      },
+    );
+    await check(
+      `Page design rejected numeric drafts block Apply and recover ${name}`,
+      async () => {
+        await fresh(width, height);
+        await page
+          .getByRole("button", { name: "More editor actions", exact: true })
+          .click();
+        await page
+          .getByRole("menuitem", { name: "Page design", exact: true })
+          .click();
+        const input = page.getByLabel("Content width", { exact: true });
+        const apply = page.getByRole("button", {
+          name: "Apply page design",
+          exact: true,
+        });
+        const original = await input.inputValue();
+        await input.fill("300");
+        assert.equal(await input.getAttribute("aria-invalid"), "true");
+        assert.equal(await apply.isDisabled(), true);
+        await screenshot(`page-design-invalid-${name}`);
+        await check(`Page design error accessibility ${name}`, () =>
+          a11y(`page-design-invalid-${name}`),
+        );
+        await input.press("Escape");
+        assert.equal(await input.inputValue(), original);
+        assert.equal(await apply.isEnabled(), true);
+        assert.equal(
+          await page
+            .getByRole("dialog", { name: "Page design", exact: true })
+            .isVisible(),
+          true,
+        );
+        await input.fill("");
+        assert.equal(await apply.isDisabled(), true);
+        await page
+          .getByRole("button", { name: "Reset design defaults", exact: true })
+          .focus();
+        await page
+          .getByRole("button", { name: "Reset design defaults", exact: true })
+          .press("Enter");
+        assert.equal(await input.inputValue(), "1200");
+        assert.equal(await apply.isEnabled(), true);
+        await page
+          .getByRole("tab", { name: "SEO & social", exact: true })
+          .click();
+        const title = page
+          .getByRole("dialog", { name: "Page design", exact: true })
+          .getByLabel("Page title", { exact: true });
+        await title.fill(" ");
+        await title.press("Tab");
+        assert.equal(await title.getAttribute("aria-invalid"), "true");
+        assert.equal(await apply.isDisabled(), true);
+        await title.press("Escape");
+        assert.equal(
+          await page
+            .getByRole("dialog", { name: "Page design", exact: true })
+            .isVisible(),
+          true,
+        );
+        assert.equal(await apply.isEnabled(), true);
+        await page
+          .getByLabel("Search title", { exact: true })
+          .fill("Inspector search title");
+        await apply.click();
+      },
+    );
+  }
+  const { standardElements } = await import(
+    pathToFileURL(
+      join(resolve(consumerDirectory), "node_modules/pagebldr/dist/index.js"),
+    ).href
+  );
+  const allElements = JSON.parse(
+    await readFile(
+      join(
+        resolve(consumerDirectory),
+        "fixtures/parity/all-elements.document.json",
+      ),
+      "utf8",
+    ),
+  );
+  const fieldEvidence = [];
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("http://localhost:5173/#/editor/elements");
+  await page.reload();
+  await page
+    .frameLocator("iframe")
+    .locator("[data-pagebldr-renderer]")
+    .waitFor();
+  for (const definition of standardElements) {
+    for (const [section, controls] of [
+      ["Content", definition.controls ?? []],
+      ["Style", definition.styleControls ?? []],
+    ]) {
+      if (section === "Style" && controls.length === 0) continue;
+      await check(
+        `All-Elements ${section} field presentation ${definition.type}`,
+        async () => {
+          const element = Object.values(allElements.elements).find(
+            (element) => element.type === definition.type,
+          );
+          await select(element.name);
+          await page.getByRole("tab", { name: section, exact: true }).click();
+          for (const control of controls) {
+            const matches = (condition) =>
+              condition.equals !== undefined
+                ? element.props[condition.key] === condition.equals
+                : element.props[condition.key] !== condition.notEquals;
+            const conditions = control.visibleWhen
+              ? Array.isArray(control.visibleWhen)
+                ? control.visibleWhen
+                : [control.visibleWhen]
+              : [];
+            if (!conditions.every(matches)) continue;
+            const label =
+              control.labelWhen?.find((item) => item.conditions.every(matches))
+                ?.label ?? control.label;
+            if (
+              !["text", "number", "select", "boolean"].includes(control.kind)
+            ) {
+              fieldEvidence.push({
+                element: definition.type,
+                property: control.key,
+                kind: control.kind,
+                sharedComposition: true,
+                section,
+              });
+              continue;
+            }
+            const field =
+              control.kind === "select" &&
+              control.presentation &&
+              control.presentation !== "select"
+                ? page.getByRole("radiogroup", { name: label, exact: true })
+                : control.kind === "number" && control.presentation === "slider"
+                  ? page.getByRole("slider", { name: label, exact: true })
+                  : page.getByLabel(label, { exact: true });
+            assert.equal(
+              await field.count(),
+              1,
+              `${definition.type}.${control.key} has one named control`,
+            );
+            await field.scrollIntoViewIfNeeded();
+            const box = await field.boundingBox();
+            assert.ok(
+              box?.width > 0 && box?.height > 0,
+              `${definition.type}.${control.key} has visible geometry`,
+            );
+            if (
+              control.kind !== "select" ||
+              !control.presentation ||
+              control.presentation === "select"
+            )
+              await field.focus();
+            fieldEvidence.push({
+              element: definition.type,
+              property: control.key,
+              kind: control.kind,
+              section,
+              presentation: control.presentation ?? "default",
+              label,
+              width: box.width,
+              height: box.height,
+            });
+          }
+          const viewport = page
+            .getByRole("tabpanel", { name: section, exact: true })
+            .locator("[data-radix-scroll-area-viewport]");
+          await viewport.evaluate((el) => {
+            el.scrollTop = 0;
+          });
+          await screenshot(
+            `all-elements-${section.toLowerCase()}-${definition.type}`,
+          );
+        },
+      );
+      await check(
+        `All-Elements ${section} accessibility ${definition.type}`,
+        () => a11y(`all-elements-${section.toLowerCase()}-${definition.type}`),
+      );
+    }
+  }
+  await check("Size-only Spacer Width stays in Layout", async () => {
+    const spacer = Object.values(allElements.elements).find(
+      (element) => element.type === "spacer",
+    );
+    await select(spacer.name);
+    await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Reset Layout section", exact: true })
+        .count(),
+      1,
+    );
+    assert.equal(await page.getByLabel("Display", { exact: true }).count(), 0);
+    await page.getByLabel("Width", { exact: true }).focus();
+    await page
+      .getByRole("tabpanel", { name: "Advanced", exact: true })
+      .locator("[data-radix-scroll-area-viewport]")
+      .evaluate((el) => {
+        el.scrollTop = 0;
+      });
+    await screenshot("spacer-advanced-layout-desktop");
+  });
+  await check("Size-only Spacer accessibility", () =>
+    a11y("spacer-advanced-layout-desktop"),
+  );
+  await writeFile(
+    join(output, "content-field-matrix.json"),
+    JSON.stringify(fieldEvidence, null, 2),
+  );
 } finally {
   await context.tracing.stop({
-    path: join(output, "phase5-browser-trace.zip"),
+    path: join(traceDirectory, "phase5-browser-trace.zip"),
   });
   await writeFile(
     join(output, "results.json"),
     JSON.stringify(
       {
         artifact,
+        tracePath: join(traceDirectory, "phase5-browser-trace.zip"),
         browser: browser.version(),
         viewports: [
           { width: 1440, height: 900 },
           { width: 820, height: 1000 },
+          { width: 820, height: 1180 },
           { width: 390, height: 844 },
         ],
         results,

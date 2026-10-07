@@ -22,10 +22,17 @@ package-owned colour composition characterizes the pinned source's HSL square
 mapping without vendoring Kibo UI code. It uses `color@5.0.3` (MIT); bundled
 transitive colour-library notices ship in `THIRD_PARTY_NOTICES.md`.
 
-Installed primitives: Alert Dialog, Badge, Button, Dialog, Empty, Field, Input,
-Input Group, Popover, Label, Dropdown Menu, Native Select, Resizable, Scroll
-Area, Select, Separator, Slider, Switch, Tabs, Textarea, Toggle, Toggle Group,
-and Tooltip.
+Collapsible was added from the official Radix shadcn registry on 2026-10-06. All
+installed source was reviewed and adapted to package-local imports and type-only
+React imports. It reuses the existing Radix dependency, adds no new dependency,
+and supplies keyboard-operable inspector section disclosures. Input Group's
+focus delegation now leaves native unit selects and other interactive children
+in control of their own focus.
+
+Installed primitives: Alert Dialog, Badge, Button, Collapsible, Dialog, Empty,
+Field, Input, Input Group, Popover, Label, Dropdown Menu, Native Select,
+Resizable, Scroll Area, Select, Separator, Slider, Switch, Tabs, Textarea,
+Toggle, Toggle Group, and Tooltip.
 
 ReUI was not used in this phase because its skill/registry integration was not
 available in the active runtime.

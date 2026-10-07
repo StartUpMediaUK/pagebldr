@@ -2,6 +2,8 @@
 
 import {
   useId,
+  useEffect,
+  useRef,
   useState,
   type ComponentProps,
   type ReactNode,
@@ -35,6 +37,8 @@ export function ValidatedInputField({
   multiline = false,
   commitOnBlur = false,
   inputLeading,
+  inputTrailing,
+  onValidityChange,
 }: {
   readonly value: string;
   readonly label: string;
@@ -45,8 +49,15 @@ export function ValidatedInputField({
   readonly multiline?: boolean;
   readonly commitOnBlur?: boolean;
   readonly inputLeading?: ReactNode;
+  readonly inputTrailing?: ReactNode;
+  readonly onValidityChange?: (valid: boolean) => void;
 }) {
   const id = useId();
+  const validityCallback = useRef(onValidityChange);
+  validityCallback.current = onValidityChange;
+  useEffect(() => {
+    validityCallback.current?.(true);
+  }, [value]);
   const [draft, setDraft] = useState<{
     source: string;
     value: string;
@@ -62,11 +73,13 @@ export function ValidatedInputField({
   const errorId = `${id}-error`;
   const commit = (next: string) => {
     const error = next === value ? null : commitInputDraft(next, onCommit);
+    onValidityChange?.(error === null);
     setDraft({ source: value, value: next, error });
   };
   const draftProps = {
     id,
     value: current.value,
+    "data-draft-changed": current.value !== value || undefined,
     "aria-invalid": Boolean(current.error) || undefined,
     "aria-describedby": current.error ? errorId : undefined,
     onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -87,6 +100,7 @@ export function ValidatedInputField({
         event.preventDefault();
         event.stopPropagation();
         setDraft({ source: value, value, error: null });
+        onValidityChange?.(true);
       } else if (event.key === "Enter" && commitOnBlur && !multiline) {
         event.preventDefault();
         commit(current.value);
@@ -112,10 +126,17 @@ export function ValidatedInputField({
           className={inputProps?.className}
           {...draftProps}
         />
-      ) : inputLeading ? (
+      ) : inputLeading || inputTrailing ? (
         <InputGroup data-disabled={inputProps?.disabled || undefined}>
-          <InputGroupAddon>{inputLeading}</InputGroupAddon>
+          {inputLeading ? (
+            <InputGroupAddon>{inputLeading}</InputGroupAddon>
+          ) : null}
           <InputGroupInput {...inputProps} {...draftProps} />
+          {inputTrailing ? (
+            <InputGroupAddon align="inline-end">
+              {inputTrailing}
+            </InputGroupAddon>
+          ) : null}
         </InputGroup>
       ) : (
         <Input {...inputProps} {...draftProps} />

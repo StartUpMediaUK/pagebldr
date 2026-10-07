@@ -389,6 +389,31 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
   definition({
     type: "container",
     label: "Container",
+    controls: [
+      {
+        kind: "select",
+        key: "tag",
+        label: "HTML tag",
+        options: [
+          "div",
+          "main",
+          "section",
+          "article",
+          "header",
+          "footer",
+          "nav",
+        ].map((value) => ({ value, label: value })),
+      },
+      {
+        kind: "select",
+        key: "layout",
+        label: "Layout",
+        options: [
+          { value: "flex", label: "Flex" },
+          { value: "grid", label: "Grid" },
+        ],
+      },
+    ],
     schema: z.object({
       tag: z.enum([
         "div",
@@ -415,11 +440,11 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     }),
     defaults: { content: "A clear, compelling heading", level: 2 },
     controls: [
-      { kind: "text", key: "content", label: "Content" },
+      { kind: "text", key: "content", label: "Text" },
       {
         kind: "select",
         key: "level",
-        label: "Level",
+        label: "HTML level",
         options: [1, 2, 3, 4, 5, 6].map((value) => ({
           label: `Heading ${value}`,
           value,
@@ -973,6 +998,15 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     label: "Icon",
     schema: z.object({ name: iconName, label: z.string().max(200) }),
     defaults: { name: "sparkles", label: "" },
+    controls: [
+      {
+        kind: "select",
+        key: "name",
+        label: "Icon",
+        options: iconNames.map((value) => ({ value, label: label(value) })),
+      },
+      { kind: "text", key: "label", label: "Accessible label" },
+    ],
     render: (props) =>
       node(
         "span",
@@ -1270,6 +1304,17 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       label: z.string().min(1).max(300),
     }),
     defaults: { value: 5, label: "5 out of 5 stars" },
+    controls: [
+      {
+        kind: "number",
+        key: "value",
+        label: "Rating",
+        min: 0,
+        max: 5,
+        step: 0.5,
+      },
+      { kind: "text", key: "label", label: "Accessible label" },
+    ],
     accessibility: { role: "img", requiresLabel: true },
     render: (props) => {
       const value = number(props, "value");
@@ -1322,6 +1367,51 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       radius: 999,
     },
     migrate: migrateProgress,
+    controls: [
+      {
+        kind: "number",
+        key: "value",
+        label: "Value",
+        min: 0,
+        max: 100,
+        presentation: "slider",
+        step: 1,
+        unit: "%",
+      },
+      { kind: "text", key: "label", label: "Label" },
+      { kind: "boolean", key: "showLabel", label: "Show label" },
+      { kind: "boolean", key: "showValue", label: "Show value" },
+      {
+        kind: "text",
+        key: "trackColor",
+        label: "Track colour",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "indicatorColor",
+        label: "Indicator colour",
+        presentation: "color",
+      },
+      {
+        kind: "number",
+        key: "thickness",
+        label: "Thickness",
+        min: 1,
+        max: 64,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "number",
+        key: "radius",
+        label: "Radius",
+        min: 0,
+        max: 999,
+        step: 1,
+        unit: "px",
+      },
+    ],
     render: renderProgress,
   }),
   definition({

@@ -69,9 +69,9 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Colour parsing/conversion plus reviewed Popover/Input Group add ~51 KB
+  // Source-composed inputs, definition metadata and Collapsible add ~35 KB
   // compressed including maps; retain a measured explicit guardrail.
-  assertMaximumSize(archivePath, 1_430_000, "Packed archive");
+  assertMaximumSize(archivePath, 1_480_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -177,7 +177,7 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    125_000,
+    127_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -379,12 +379,12 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    980_000,
+    1_020_000,
     "React entry",
   );
   assertMaximumSize(
     join(distributionDirectory, "index.js"),
-    248_000,
+    251_000,
     "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {
@@ -396,7 +396,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    77_000,
+    79_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

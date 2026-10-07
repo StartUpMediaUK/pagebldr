@@ -15,6 +15,7 @@ export function SliderField({
   disabled,
   onCommit,
   children,
+  labelAction,
 }: {
   readonly value: number;
   readonly label: string;
@@ -25,6 +26,7 @@ export function SliderField({
   readonly disabled: boolean;
   readonly onCommit: (value: number) => void;
   readonly children?: ReactNode;
+  readonly labelAction?: ReactNode;
 }) {
   const id = useId();
   const [rejection, setRejection] = useState<{
@@ -45,6 +47,7 @@ export function SliderField({
           {value}
           {unit}
         </span>
+        {labelAction}
       </div>
       <Slider
         aria-labelledby={id}

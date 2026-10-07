@@ -33,6 +33,10 @@ import {
 import { Textarea } from "../components/ui/textarea.js";
 import { usePagebldrEditor } from "./context.js";
 import { VariableManager } from "./variable-manager.js";
+import {
+  ValidatedInputField,
+  parseNumberDraft,
+} from "./validated-input-field.js";
 
 type PageDesignTab = "design" | "settings" | "seo" | "variables";
 
@@ -91,8 +95,11 @@ export function PageDesignDialog({
   const editor = usePagebldrEditor();
   const [draft, setDraft] = useState<PageSettings>(editor.document.settings);
   const [activeTab, setActiveTab] = useState<PageDesignTab>("design");
-  const [pageTitle, setPageTitle] = useState(editor.document.title);
   const [pageTitleError, setPageTitleError] = useState<string | null>(null);
+  const [designReset, setDesignReset] = useState(0);
+  const [invalidFields, setInvalidFields] = useState<
+    Readonly<Record<string, boolean>>
+  >({});
   const wasOpen = useRef(false);
   const readOnly = editor.mode !== "edit";
   const errors = validatePageDesign(draft);
@@ -100,8 +107,8 @@ export function PageDesignDialog({
   useEffect(() => {
     if (open && !wasOpen.current) {
       setDraft(structuredClone(editor.document.settings));
-      setPageTitle(editor.document.title);
       setPageTitleError(null);
+      setInvalidFields({});
     }
     wasOpen.current = open;
   }, [editor.document.settings, editor.document.title, open]);
@@ -113,6 +120,10 @@ export function PageDesignDialog({
       ...current,
       breakpoints: { ...current.breakpoints, ...patch },
     }));
+  const validity = (field: string, valid: boolean) =>
+    setInvalidFields((current) =>
+      current[field] === !valid ? current : { ...current, [field]: !valid },
+    );
   const updateSeo = (patch: Partial<PageSettings["seo"]>) =>
     setDraft((current) => ({
       ...current,
@@ -121,7 +132,18 @@ export function PageDesignDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[min(48rem,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-2xl">
+      <DialogContent
+        className="max-h-[min(48rem,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-2xl"
+        onEscapeKeyDown={(event) => {
+          if (
+            event.target instanceof HTMLElement &&
+            event.target.matches(
+              '[data-draft-changed="true"], [aria-invalid="true"]',
+            )
+          )
+            event.preventDefault();
+        }}
+      >
         <DialogHeader className="px-6 pt-6">
           <DialogTitle>Page design</DialogTitle>
           <DialogDescription>
@@ -144,27 +166,33 @@ export function PageDesignDialog({
             <TabsContent value="design">
               <FieldGroup>
                 <NumberField
+                  key={`${designReset}:contentWidth`}
                   label="Content width"
                   value={draft.contentWidth}
                   min={320}
                   max={2_400}
                   disabled={readOnly}
+                  onValidityChange={(valid) => validity("contentWidth", valid)}
                   onChange={(contentWidth) => update({ contentWidth })}
                 />
                 <NumberField
+                  key={`${designReset}:tabletMax`}
                   label="Tablet maximum"
                   value={draft.breakpoints.tabletMax}
                   min={768}
                   max={1_200}
                   disabled={readOnly}
+                  onValidityChange={(valid) => validity("tabletMax", valid)}
                   onChange={(tabletMax) => updateBreakpoints({ tabletMax })}
                 />
                 <NumberField
+                  key={`${designReset}:mobileMax`}
                   label="Mobile maximum"
                   value={draft.breakpoints.mobileMax}
                   min={320}
                   max={767}
                   disabled={readOnly}
+                  onValidityChange={(valid) => validity("mobileMax", valid)}
                   onChange={(mobileMax) => updateBreakpoints({ mobileMax })}
                 />
                 {errors.map((error) => (
@@ -175,6 +203,8 @@ export function PageDesignDialog({
                   variant="outline"
                   disabled={readOnly}
                   onClick={() => {
+                    setInvalidFields({});
+                    setDesignReset((current) => current + 1);
                     update({ contentWidth: defaultPageDesign.contentWidth });
                     updateBreakpoints({
                       tabletMax: defaultPageDesign.tabletMax,
@@ -212,34 +242,26 @@ export function PageDesignDialog({
             </TabsContent>
             <TabsContent value="seo">
               <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="pb-page-title">Page title</FieldLabel>
-                  <Input
-                    id="pb-page-title"
-                    value={pageTitle}
-                    maxLength={160}
-                    disabled={readOnly}
-                    aria-invalid={Boolean(pageTitleError)}
-                    onChange={(event) => {
-                      setPageTitle(event.currentTarget.value);
-                      setPageTitleError(null);
-                    }}
-                    onBlur={() => {
-                      const next = pageTitle.trim();
-                      const error = validatePageTitle(next);
-                      setPageTitleError(error);
-                      if (!error && next !== editor.document.title)
-                        editor.dispatch({ type: "update-page", title: next });
-                    }}
-                  />
-                  {pageTitleError ? (
-                    <FieldError>{pageTitleError}</FieldError>
-                  ) : (
-                    <FieldDescription>
-                      Applies on blur as its own undoable page command.
-                    </FieldDescription>
-                  )}
-                </Field>
+                <ValidatedInputField
+                  label="Page title"
+                  value={editor.document.title}
+                  inputProps={{ maxLength: 160, disabled: readOnly }}
+                  commitOnBlur
+                  onValidityChange={(valid) =>
+                    setPageTitleError(valid ? null : "Page title is invalid.")
+                  }
+                  onCommit={(draft) => {
+                    const next = draft.trim();
+                    const error = validatePageTitle(next);
+                    if (error) throw new Error(error);
+                    if (next !== editor.document.title)
+                      editor.dispatch({ type: "update-page", title: next });
+                  }}
+                >
+                  <FieldDescription>
+                    Applies on blur as its own undoable page command.
+                  </FieldDescription>
+                </ValidatedInputField>
                 <TextField
                   label="Search title"
                   value={draft.seo.title}
@@ -322,9 +344,18 @@ export function PageDesignDialog({
           </DialogClose>
           <Button
             type="button"
-            disabled={readOnly || errors.length > 0 || Boolean(pageTitleError)}
+            disabled={
+              readOnly ||
+              errors.length > 0 ||
+              Boolean(pageTitleError) ||
+              Object.values(invalidFields).some(Boolean)
+            }
             onClick={() => {
-              editor.dispatch({ type: "update-settings", settings: draft });
+              if (
+                JSON.stringify(draft) !==
+                JSON.stringify(editor.document.settings)
+              )
+                editor.dispatch({ type: "update-settings", settings: draft });
               onOpenChange(false);
             }}
           >
@@ -343,6 +374,7 @@ function NumberField({
   max,
   disabled,
   onChange,
+  onValidityChange,
 }: {
   readonly label: string;
   readonly value: number;
@@ -350,28 +382,25 @@ function NumberField({
   readonly max: number;
   readonly disabled: boolean;
   readonly onChange: (value: number) => void;
+  readonly onValidityChange: (valid: boolean) => void;
 }) {
-  const id = `pb-page-${label.toLowerCase().replaceAll(" ", "-")}`;
   return (
-    <Field>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <Input
-        id={id}
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        step={1}
-        disabled={disabled}
-        onChange={(event) => {
-          const next = event.currentTarget.valueAsNumber;
-          if (!Number.isNaN(next)) onChange(next);
-        }}
-      />
+    <ValidatedInputField
+      label={label}
+      value={String(value)}
+      inputProps={{ type: "number", min, max, step: 1, disabled }}
+      onValidityChange={onValidityChange}
+      onCommit={(draft) => {
+        const next = parseNumberDraft(draft, min, max);
+        if (!Number.isInteger(next))
+          throw new Error("Enter a whole number of pixels.");
+        onChange(next);
+      }}
+    >
       <FieldDescription>
         {min}–{max} pixels.
       </FieldDescription>
-    </Field>
+    </ValidatedInputField>
   );
 }
 

@@ -89,11 +89,11 @@ describe("standard Elements", () => {
 
   it("owns typed Content control presentation in each definition", () => {
     expect(builder.elements.get("heading")?.controls).toEqual([
-      { kind: "text", key: "content", label: "Content" },
+      { kind: "text", key: "content", label: "Text" },
       {
         kind: "select",
         key: "level",
-        label: "Level",
+        label: "HTML level",
         options: [
           { label: "Heading 1", value: 1 },
           { label: "Heading 2", value: 2 },

@@ -62,7 +62,11 @@ type ExtensionEditorOptions = Pick<
 >;
 
 function App() {
-  const [document, setDocument] = useState<PageDocument>(initialDocument);
+  const [document, setDocument] = useState<PageDocument>(() =>
+    window.location.hash === "#/editor/elements"
+      ? allElementsDocument
+      : initialDocument,
+  );
   const [route, setRoute] = useState(window.location.hash || "#/editor");
   const [extensionOptions, setExtensionOptions] =
     useState<ExtensionEditorOptions | null>(null);

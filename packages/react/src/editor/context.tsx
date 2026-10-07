@@ -60,6 +60,11 @@ export interface EditorContextValue {
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null);
+const SelectionVersionContext = createContext(0);
+/** Private UI notification; repeated selections are not Document mutations. */
+export function useEditorSelectionVersion(): number {
+  return useContext(SelectionVersionContext);
+}
 
 export interface EditorProviderProps {
   readonly builder: Pagebldr;
@@ -86,6 +91,11 @@ export function EditorProvider({
     builder.editor.history.create(document),
   );
   const [selectedId, setSelectedId] = useState<string | null>(document.rootId);
+  const [selectionVersion, setSelectionVersion] = useState(0);
+  const select = useCallback((elementId: string | null) => {
+    setSelectedId(elementId);
+    setSelectionVersion((current) => current + 1);
+  }, []);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState(mode === "preview");
   const [styleState, setStyleState] = useState<StyleState>("normal");
@@ -169,7 +179,7 @@ export function EditorProvider({
       dispatch,
       undo,
       redo,
-      select: setSelectedId,
+      select,
       hover: setHoveredId,
       setPreviewing,
       setStyleState,
@@ -188,6 +198,7 @@ export function EditorProvider({
       previewing,
       redo,
       resolveApplicationDestination,
+      select,
       selectedId,
       styleState,
       undo,
@@ -196,9 +207,11 @@ export function EditorProvider({
   );
 
   return (
-    <EditorContext.Provider value={value}>
-      <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
-    </EditorContext.Provider>
+    <SelectionVersionContext.Provider value={selectionVersion}>
+      <EditorContext.Provider value={value}>
+        <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
+      </EditorContext.Provider>
+    </SelectionVersionContext.Provider>
   );
 }
 

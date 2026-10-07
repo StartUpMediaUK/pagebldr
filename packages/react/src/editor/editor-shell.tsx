@@ -16,8 +16,6 @@ import {
   type EditorContributionContext,
 } from "./composition.js";
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
   ChevronLeftIcon,
   EyeIcon,
   HomeIcon,
@@ -32,7 +30,6 @@ import {
   SendIcon,
   SmartphoneIcon,
   TabletIcon,
-  Trash2Icon,
   Undo2Icon,
 } from "lucide-react";
 
@@ -91,6 +88,7 @@ import type { PagebldrEditorProps } from "../index.js";
 import {
   EditorProvider,
   usePagebldrEditor,
+  useEditorSelectionVersion,
   type ApplicationDestinationOption,
   type EditorViewport,
 } from "./context.js";
@@ -151,6 +149,7 @@ function EditorWorkspace({
   preset = standardEditorPreset,
 }: PagebldrEditorProps) {
   const editor = usePagebldrEditor();
+  const selectionVersion = useEditorSelectionVersion();
   const [pending, setPending] = useState<"save" | "publish" | null>(null);
   const [status, setStatus] = useState("Ready");
   const [panelOpen, setPanelOpen] = useState(true);
@@ -338,11 +337,14 @@ function EditorWorkspace({
   }, []);
 
   useEffect(() => {
-    if (editor.selectedId && editor.selectedId !== editor.document.rootId) {
+    if (
+      editor.selectedId &&
+      (selectionVersion > 0 || editor.selectedId !== editor.document.rootId)
+    ) {
       setPanelMode("inspector");
       setPanelOpen(true);
     }
-  }, [editor.document.rootId, editor.selectedId]);
+  }, [editor.document.rootId, editor.selectedId, selectionVersion]);
 
   useEffect(() => {
     if (editor.document !== savedDocument.current) setStatus("Unsaved");
@@ -989,7 +991,6 @@ function Inspector() {
   const elementStyleControls = (definition?.styleControls ?? []).filter(
     (control) => isPropertyControlVisible(control, element.props),
   );
-  const readOnly = editor.mode !== "edit";
   return (
     <Tabs defaultValue="properties" className="h-full gap-0">
       <TabsList className="m-2 grid w-auto grid-cols-3">
@@ -1000,54 +1001,6 @@ function Inspector() {
       <TabsContent value="properties" className="min-h-0">
         <ScrollArea className="h-full px-3">
           <FieldGroup className="pb-6">
-            <Field>
-              <FieldLabel htmlFor="pb-element-name">Name</FieldLabel>
-              <Input
-                id="pb-element-name"
-                value={element.name}
-                disabled={readOnly}
-                onChange={(event) =>
-                  editor.dispatch(
-                    {
-                      type: "rename",
-                      elementId: element.id,
-                      name: event.currentTarget.value,
-                    },
-                    `name:${element.id}`,
-                  )
-                }
-              />
-            </Field>
-            <Field orientation="horizontal">
-              <FieldLabel htmlFor="pb-hidden">Hidden</FieldLabel>
-              <Switch
-                id="pb-hidden"
-                checked={element.hidden}
-                disabled={readOnly}
-                onCheckedChange={(hidden) =>
-                  editor.dispatch({
-                    type: "set-hidden",
-                    elementId: element.id,
-                    hidden,
-                  })
-                }
-              />
-            </Field>
-            <Field orientation="horizontal">
-              <FieldLabel htmlFor="pb-locked">Locked</FieldLabel>
-              <Switch
-                id="pb-locked"
-                checked={element.locked}
-                disabled={readOnly}
-                onCheckedChange={(locked) =>
-                  editor.dispatch({
-                    type: "set-locked",
-                    elementId: element.id,
-                    locked,
-                  })
-                }
-              />
-            </Field>
             {definition?.controls?.map((control) => (
               <PropertyField
                 key={control.key}
@@ -1056,7 +1009,6 @@ function Inspector() {
                 applicationDestinations={editor.applicationDestinations}
               />
             ))}
-            <ElementActions />
           </FieldGroup>
         </ScrollArea>
       </TabsContent>
@@ -1089,7 +1041,6 @@ function Inspector() {
             <AnchorControl element={element} />
             <Separator />
             <StyleControls element={element} section="advanced" />
-            <ElementActions />
           </FieldGroup>
         </ScrollArea>
       </TabsContent>
@@ -1345,72 +1296,6 @@ function isVisibilityConditionArray(
   Record<string, unknown>
 >[] {
   return Array.isArray(value);
-}
-
-function ElementActions() {
-  const editor = usePagebldrEditor();
-  const element = editor.selected!;
-  const index = editor.builder.documents.index(editor.document);
-  const parentId = index.parentById.get(element.id);
-  const position = index.indexById.get(element.id) ?? 0;
-  const siblingCount = parentId
-    ? (editor.document.elements[parentId]?.children.length ?? 0)
-    : 0;
-  const disabled = editor.mode !== "edit" || !parentId;
-  return (
-    <Field>
-      <FieldLabel>Actions</FieldLabel>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={disabled || position === 0}
-          onClick={() =>
-            editor.dispatch({
-              type: "move",
-              elementId: element.id,
-              parentId: parentId!,
-              index: position - 1,
-            })
-          }
-        >
-          <ArrowUpIcon data-icon="inline-start" />
-          Move up
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={disabled || position >= siblingCount - 1}
-          onClick={() =>
-            editor.dispatch({
-              type: "move",
-              elementId: element.id,
-              parentId: parentId!,
-              index: position + 1,
-            })
-          }
-        >
-          <ArrowDownIcon data-icon="inline-start" />
-          Move down
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="destructive"
-          disabled={disabled}
-          onClick={() => {
-            editor.dispatch({ type: "remove", elementId: element.id });
-            editor.select(editor.document.rootId);
-          }}
-        >
-          <Trash2Icon data-icon="inline-start" />
-          Delete
-        </Button>
-      </div>
-    </Field>
-  );
 }
 
 function keyboardMoveDirection(key: string) {

@@ -727,6 +727,28 @@ inspector normalizes input to a unique lowercase ASCII slug of at most 80
 characters, preserves duplicate drafts for correction, and makes valid anchors
 immediately available to Destination controls.
 
+The package composes inspector controls for the standard Style properties: unit
+inputs, font/layout selectors, alignment icons, switches, opacity and
+custom-width sliders, background image/gradient/overlay layers, transform,
+filter, backdrop-filter and shadow parameters. These private compositions still
+dispatch ordinary `set-style` commands against the active breakpoint/state.
+Linked spacing uses one `replace-styles` command and coalescing key for all
+registered sides, so one Undo restores the complete edit. Section resets affect
+only their properties at the authored layer; reset-all removes local styles.
+Variable bindings use labelled palette popovers and disable literal editing;
+Custom copies the bound value before editing. Origins remain available to
+assistive technology without adding a description row beneath every field.
+
+Content follows definition-owned controls, with rename, visibility, locking,
+movement and removal available in Structure rather than duplicated in Content.
+Heading labels are Text and HTML level. Container and Icon choices are typed
+selects; Star Rating and Progress expose schema-bounded numeric controls, and
+Progress colours use the same colour composition. The Reference Host's
+`#/editor/elements` route opens the package-native all-Elements fixture directly
+for inspection. Page design retains rejected numeric/title drafts, blocks Apply
+until corrected, and supports Escape and Reset recovery. Applying unchanged
+settings does not create a command or Local history entry.
+
 ## Errors and compatibility
 
 All package errors carry a stable code, human message, optional location, and
