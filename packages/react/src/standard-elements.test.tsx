@@ -49,6 +49,26 @@ function standardDocument(): PageDocument {
 }
 
 describe("standard Element renderer", () => {
+  it("emits hydration-safe raw CSS without permitting style-tag termination", () => {
+    const document = {
+      ...standardDocument(),
+      id: "page</style><script>alert(1)</script>",
+    };
+    const html = renderToString(
+      <PagebldrRenderer builder={builder} document={document} mode="edit" />,
+    );
+    const styles = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(
+      (match) => match[1]!,
+    );
+    expect(styles.length).toBeGreaterThan(0);
+    for (const css of styles) {
+      expect(css).not.toContain("&quot;");
+      expect(css).not.toContain("<");
+      expect(css).not.toContain("&gt;");
+    }
+    expect(html).not.toContain("<script>");
+    expect(styles.join(" ")).toContain('[data-pagebldr="standard-library"]');
+  });
   it("renders Menu appearance and accessible panel identity with Document breakpoints", () => {
     const base = standardDocument();
     const document = {

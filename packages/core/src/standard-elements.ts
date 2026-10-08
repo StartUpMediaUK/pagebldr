@@ -588,6 +588,13 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         ],
       },
       {
+        kind: "media",
+        key: "source",
+        label: "Logo image",
+        usage: "image",
+        visibleWhen: { key: "display", notEquals: "text" },
+      },
+      {
         kind: "text",
         key: "text",
         label: "Logo text",
@@ -928,6 +935,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     },
     controls: [
       { kind: "text", key: "alt", label: "Alternative text" },
+      { kind: "media", key: "source", label: "Image source", usage: "image" },
       {
         kind: "boolean",
         key: "altConfirmed",
@@ -995,6 +1003,10 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       },
       title: "Video",
     },
+    controls: [
+      { kind: "media", key: "source", label: "Video source", usage: "video" },
+      { kind: "text", key: "title", label: "Video title" },
+    ],
     references: (props) => sourceReferences([props.source]),
     migrate: migrateVideo,
     render: renderVideo,
@@ -1300,6 +1312,18 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       image: null,
     },
     references: (props) => sourceReferences([props.image]),
+    controls: [
+      { kind: "text", key: "quote", label: "Quote" },
+      { kind: "text", key: "author", label: "Author" },
+      { kind: "text", key: "role", label: "Role" },
+      {
+        kind: "media",
+        key: "image",
+        label: "Author image",
+        usage: "image",
+        nullable: true,
+      },
+    ],
     render: renderTestimonial,
   }),
   definition({
@@ -1538,6 +1562,10 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         .max(30),
     }),
     defaults: logoCloudDefaults(),
+    controls: [
+      { kind: "text", key: "label", label: "Label" },
+      { kind: "media", key: "logos", label: "Logos", usage: "logos" },
+    ],
     references: (props) =>
       sourceReferences(array(props, "logos").map((logo) => logo.source)),
     render: renderLogoCloud,
@@ -1567,7 +1595,9 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         .max(30),
     }),
     defaults: galleryDefaults(),
-    controls: [],
+    controls: [
+      { kind: "media", key: "items", label: "Gallery media", usage: "gallery" },
+    ],
     styleControls: [
       {
         kind: "select",

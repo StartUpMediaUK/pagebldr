@@ -84,7 +84,9 @@ describe("standard Elements", () => {
         ],
       },
     ]);
-    expect(builder.elements.get("gallery-carousel")?.controls).toEqual([]);
+    expect(builder.elements.get("gallery-carousel")?.controls).toEqual([
+      { kind: "media", key: "items", label: "Gallery media", usage: "gallery" },
+    ]);
   });
 
   it("owns typed Content control presentation in each definition", () => {
@@ -115,6 +117,7 @@ describe("standard Elements", () => {
     ]);
     expect(builder.elements.get("image")?.controls).toEqual([
       { kind: "text", key: "alt", label: "Alternative text" },
+      { kind: "media", key: "source", label: "Image source", usage: "image" },
       {
         kind: "boolean",
         key: "altConfirmed",

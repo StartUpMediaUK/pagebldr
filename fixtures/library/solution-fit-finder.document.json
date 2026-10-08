@@ -1,0 +1,3661 @@
+{
+  "format": "pagebldr",
+  "schemaVersion": 2,
+  "id": "catalogue-page-521",
+  "title": "Solution Fit Finder",
+  "slug": "solution-fit-finder",
+  "rootId": "catalogue-root-522",
+  "elements": {
+    "catalogue-root-522": {
+      "id": "catalogue-root-522",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Page",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-container-527",
+        "catalogue-container-562",
+        "catalogue-container-582",
+        "catalogue-container-588",
+        "catalogue-container-607",
+        "catalogue-container-626",
+        "catalogue-container-632",
+        "catalogue-container-636",
+        "catalogue-container-643",
+        "catalogue-container-648"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "display": "flex",
+            "flexDirection": "column",
+            "minHeight": "100vh",
+            "overflow": "hidden"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-logo-523": {
+      "id": "catalogue-logo-523",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Header brand",
+      "props": {
+        "display": "text",
+        "text": "YOUR BRAND",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "26px",
+            "fontWeight": 800,
+            "letterSpacing": "-.04em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-menu-524": {
+      "id": "catalogue-menu-524",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Solution Fit navigation",
+      "props": {
+        "ariaLabel": "Primary navigation",
+        "collapseAt": "tablet",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 30,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "overview",
+            "label": "Overview",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-583"
+            }
+          },
+          {
+            "id": "benefits",
+            "label": "Benefits",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-563"
+            }
+          },
+          {
+            "id": "outcomes",
+            "label": "Outcomes",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-608"
+            }
+          },
+          {
+            "id": "faq",
+            "label": "FAQ",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-633"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontSize": "14px",
+            "fontWeight": 650
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-525": {
+      "id": "catalogue-button-525",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Assessment call to action",
+      "props": {
+        "label": "Start now",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "mobile": {
+          "normal": {
+            "gridColumn": "1 / -1"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-526": {
+      "id": "catalogue-container-526",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-logo-523",
+        "catalogue-menu-524",
+        "catalogue-button-525"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "1fr auto auto",
+            "paddingBottom": "18px",
+            "paddingTop": "18px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr auto"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-527": {
+      "id": "catalogue-container-527",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header",
+      "props": {
+        "tag": "header",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-526"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderBottom": "1px solid #dce5ef"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-528": {
+      "id": "catalogue-heading-528",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Page title",
+      "props": {
+        "content": "Which solution fits you best?",
+        "level": 1
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "68px",
+            "maxWidth": "590px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "56px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "44px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-529": {
+      "id": "catalogue-rich-text-529",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Hero recommendation promise",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Answer a few focused questions and get a recommendation built around your goals, constraints, and current situation."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "21px",
+            "maxWidth": "570px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-530": {
+      "id": "catalogue-button-530",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Assessment call to action",
+      "props": {
+        "label": "Start the assessment",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-531": {
+      "id": "catalogue-icon-531",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Assessment time icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-532": {
+      "id": "catalogue-rich-text-532",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Assessment time",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Takes about two minutes"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-533": {
+      "id": "catalogue-icon-533",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Privacy reassurance icon",
+      "props": {
+        "name": "shield",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-534": {
+      "id": "catalogue-rich-text-534",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Hero privacy reassurance",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Your answers stay private"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-535": {
+      "id": "catalogue-container-535",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero reassurance",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-icon-531",
+        "catalogue-rich-text-532",
+        "catalogue-icon-533",
+        "catalogue-rich-text-534"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "14px 12px",
+            "gridTemplateColumns": "auto 1fr"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "auto 1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-536": {
+      "id": "catalogue-container-536",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-528",
+        "catalogue-rich-text-529",
+        "catalogue-button-530",
+        "catalogue-container-535"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "26px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-537": {
+      "id": "catalogue-rich-text-537",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Static question preview label",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "STATIC EXAMPLE · QUESTION 1 OF 6"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".08em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-progress-538": {
+      "id": "catalogue-progress-538",
+      "type": "progress",
+      "elementVersion": 2,
+      "name": "Static question progress",
+      "props": {
+        "value": 17,
+        "label": "Example progress",
+        "showLabel": false,
+        "showValue": false,
+        "trackColor": "#e5e7eb",
+        "indicatorColor": {
+          "type": "variable",
+          "variableId": "template-blue"
+        },
+        "thickness": 8,
+        "radius": 999
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-539": {
+      "id": "catalogue-heading-539",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Static example question",
+      "props": {
+        "content": "What’s your primary goal right now?",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "24px",
+            "letterSpacing": "-.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-540": {
+      "id": "catalogue-heading-540",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Grow my business marker",
+      "props": {
+        "content": "●",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-541": {
+      "id": "catalogue-heading-541",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Grow my business example option",
+      "props": {
+        "content": "Grow my business",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "16px",
+            "letterSpacing": "0"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-542": {
+      "id": "catalogue-rich-text-542",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Grow my business example description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Increase revenue and reach more customers"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-543": {
+      "id": "catalogue-container-543",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Grow my business option copy",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-541", "catalogue-rich-text-542"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "3px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-544": {
+      "id": "catalogue-container-544",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Grow my business static option",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-heading-540", "catalogue-container-543"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "start",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-pale-blue"
+            },
+            "border": "2px solid #1557d6",
+            "borderRadius": "9px",
+            "display": "grid",
+            "gap": "12px",
+            "gridTemplateColumns": "auto 1fr",
+            "padding": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-545": {
+      "id": "catalogue-heading-545",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Improve efficiency marker",
+      "props": {
+        "content": "○",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-546": {
+      "id": "catalogue-heading-546",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Improve efficiency example option",
+      "props": {
+        "content": "Improve efficiency",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "16px",
+            "letterSpacing": "0"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-547": {
+      "id": "catalogue-rich-text-547",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Improve efficiency example description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Streamline operations and save time"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-548": {
+      "id": "catalogue-container-548",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Improve efficiency option copy",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-546", "catalogue-rich-text-547"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "3px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-549": {
+      "id": "catalogue-container-549",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Improve efficiency static option",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-heading-545", "catalogue-container-548"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "start",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "9px",
+            "display": "grid",
+            "gap": "12px",
+            "gridTemplateColumns": "auto 1fr",
+            "padding": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-550": {
+      "id": "catalogue-heading-550",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Validate an idea marker",
+      "props": {
+        "content": "○",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-551": {
+      "id": "catalogue-heading-551",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Validate an idea example option",
+      "props": {
+        "content": "Validate an idea",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "16px",
+            "letterSpacing": "0"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-552": {
+      "id": "catalogue-rich-text-552",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Validate an idea example description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Test assumptions before investing more"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-553": {
+      "id": "catalogue-container-553",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Validate an idea option copy",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-551", "catalogue-rich-text-552"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "3px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-554": {
+      "id": "catalogue-container-554",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Validate an idea static option",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-heading-550", "catalogue-container-553"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "start",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "9px",
+            "display": "grid",
+            "gap": "12px",
+            "gridTemplateColumns": "auto 1fr",
+            "padding": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-555": {
+      "id": "catalogue-heading-555",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Solve a specific challenge marker",
+      "props": {
+        "content": "○",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-556": {
+      "id": "catalogue-heading-556",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Solve a specific challenge example option",
+      "props": {
+        "content": "Solve a specific challenge",
+        "level": 4
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "16px",
+            "letterSpacing": "0"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-557": {
+      "id": "catalogue-rich-text-557",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Solve a specific challenge example description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Find the right solution to a pressing problem"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-558": {
+      "id": "catalogue-container-558",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Solve a specific challenge option copy",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-556", "catalogue-rich-text-557"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "3px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-559": {
+      "id": "catalogue-container-559",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Solve a specific challenge static option",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-heading-555", "catalogue-container-558"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "start",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "9px",
+            "display": "grid",
+            "gap": "12px",
+            "gridTemplateColumns": "auto 1fr",
+            "padding": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-560": {
+      "id": "catalogue-container-560",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Static question preview",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-537",
+        "catalogue-progress-538",
+        "catalogue-heading-539",
+        "catalogue-container-544",
+        "catalogue-container-549",
+        "catalogue-container-554",
+        "catalogue-container-559"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "12px",
+            "boxShadow": "0 18px 50px rgba(30,64,175,.12)",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "padding": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-561": {
+      "id": "catalogue-container-561",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-container-536", "catalogue-container-560"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "64px",
+            "gridTemplateColumns": "1fr 1fr"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "1fr",
+            "maxWidth": "760px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-562": {
+      "id": "catalogue-container-562",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-561"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-pale-blue"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-563": {
+      "id": "catalogue-heading-563",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Benefits heading",
+      "props": {
+        "content": "A clearer route to the right solution",
+        "level": 2,
+        "anchorId": "benefits"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-564": {
+      "id": "catalogue-icon-564",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Personalised recommendation icon",
+      "props": {
+        "name": "target",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-565": {
+      "id": "catalogue-heading-565",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Personalised recommendation heading",
+      "props": {
+        "content": "Personalised recommendation",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-566": {
+      "id": "catalogue-rich-text-566",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Personalised recommendation description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "A solution matched to your needs and goals."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-567": {
+      "id": "catalogue-container-567",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Personalised recommendation benefit",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-564",
+        "catalogue-heading-565",
+        "catalogue-rich-text-566"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-568": {
+      "id": "catalogue-icon-568",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Fast and easy icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-569": {
+      "id": "catalogue-heading-569",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Fast and easy heading",
+      "props": {
+        "content": "Fast and easy",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-570": {
+      "id": "catalogue-rich-text-570",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Fast and easy description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "A focused assessment that delivers clarity without guesswork."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-571": {
+      "id": "catalogue-container-571",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Fast and easy benefit",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-568",
+        "catalogue-heading-569",
+        "catalogue-rich-text-570"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-572": {
+      "id": "catalogue-icon-572",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Actionable guidance icon",
+      "props": {
+        "name": "shield",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-573": {
+      "id": "catalogue-heading-573",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Actionable guidance heading",
+      "props": {
+        "content": "Actionable guidance",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-574": {
+      "id": "catalogue-rich-text-574",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Actionable guidance description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Understand your options and the next steps to move forward."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-575": {
+      "id": "catalogue-container-575",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Actionable guidance benefit",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-572",
+        "catalogue-heading-573",
+        "catalogue-rich-text-574"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-576": {
+      "id": "catalogue-icon-576",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Built for you icon",
+      "props": {
+        "name": "users",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-577": {
+      "id": "catalogue-heading-577",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Built for you heading",
+      "props": {
+        "content": "Built for you",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-578": {
+      "id": "catalogue-rich-text-578",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Built for you description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Adapt the journey for your customers, clients, or learners."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-579": {
+      "id": "catalogue-container-579",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Built for you benefit",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-576",
+        "catalogue-heading-577",
+        "catalogue-rich-text-578"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-580": {
+      "id": "catalogue-container-580",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Solution benefits grid",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-567",
+        "catalogue-container-571",
+        "catalogue-container-575",
+        "catalogue-container-579"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "34px",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-581": {
+      "id": "catalogue-container-581",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Benefits content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-563", "catalogue-container-580"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-582": {
+      "id": "catalogue-container-582",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Benefits",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-581"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-583": {
+      "id": "catalogue-heading-583",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Problem statement heading",
+      "props": {
+        "content": "Why finding the right fit matters.",
+        "level": 2,
+        "anchorId": "overview"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "600px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-584": {
+      "id": "catalogue-rich-text-584",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Problem statement copy",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Choosing the right solution can save time, money, and frustration. A focused assessment cuts through the noise to recommend the best path based on real goals, resources, and constraints."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "19px",
+            "maxWidth": "620px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-585": {
+      "id": "catalogue-container-585",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Problem statement message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-583", "catalogue-rich-text-584"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-image-586": {
+      "id": "catalogue-image-586",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Clipboard checklist illustration",
+      "props": {
+        "source": {
+          "type": "resource",
+          "reference": {
+            "kind": "template-media",
+            "value": "solution-fit-finder-clipboard.png"
+          }
+        },
+        "alt": "Clipboard checklist beside a small potted plant",
+        "altConfirmed": false,
+        "decorative": false,
+        "destination": null,
+        "fit": "contain",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "block",
+            "height": "auto",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-587": {
+      "id": "catalogue-container-587",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Problem statement content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-container-585", "catalogue-image-586"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "60px",
+            "gridTemplateColumns": "1fr .8fr"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "1fr 1fr"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-588": {
+      "id": "catalogue-container-588",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Problem statement",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-587"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-589": {
+      "id": "catalogue-heading-589",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "How it works",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-590": {
+      "id": "catalogue-heading-590",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Answer questions number",
+      "props": {
+        "content": "01",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "18px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-591": {
+      "id": "catalogue-icon-591",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Answer questions icon",
+      "props": {
+        "name": "activity",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-592": {
+      "id": "catalogue-heading-592",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Answer questions heading",
+      "props": {
+        "content": "Answer questions",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "21px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-593": {
+      "id": "catalogue-rich-text-593",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Answer questions description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Share your goals, constraints, and current situation."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-594": {
+      "id": "catalogue-container-594",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Answer questions step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-590",
+        "catalogue-icon-591",
+        "catalogue-heading-592",
+        "catalogue-rich-text-593"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "10px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "padding": "28px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-595": {
+      "id": "catalogue-heading-595",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Match your needs number",
+      "props": {
+        "content": "02",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "18px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-596": {
+      "id": "catalogue-icon-596",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Match your needs icon",
+      "props": {
+        "name": "target",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-597": {
+      "id": "catalogue-heading-597",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Match your needs heading",
+      "props": {
+        "content": "Match your needs",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "21px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-598": {
+      "id": "catalogue-rich-text-598",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Match your needs description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Your answers are compared with the offers you configure."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-599": {
+      "id": "catalogue-container-599",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Match your needs step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-595",
+        "catalogue-icon-596",
+        "catalogue-heading-597",
+        "catalogue-rich-text-598"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "10px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "padding": "28px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-600": {
+      "id": "catalogue-heading-600",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Get a recommendation number",
+      "props": {
+        "content": "03",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "18px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-601": {
+      "id": "catalogue-icon-601",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Get a recommendation icon",
+      "props": {
+        "name": "star",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-602": {
+      "id": "catalogue-heading-602",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Get a recommendation heading",
+      "props": {
+        "content": "Get a recommendation",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "21px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-603": {
+      "id": "catalogue-rich-text-603",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Get a recommendation description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Receive a suitable option with practical next steps."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-604": {
+      "id": "catalogue-container-604",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Get a recommendation step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-600",
+        "catalogue-icon-601",
+        "catalogue-heading-602",
+        "catalogue-rich-text-603"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "border": "1px solid #dce5ef",
+            "borderRadius": "10px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "padding": "28px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-605": {
+      "id": "catalogue-container-605",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Solution matching steps",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-594",
+        "catalogue-container-599",
+        "catalogue-container-604"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-606": {
+      "id": "catalogue-container-606",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "How it works content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-589", "catalogue-container-605"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-607": {
+      "id": "catalogue-container-607",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "How it works",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-606"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-pale-blue"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-608": {
+      "id": "catalogue-heading-608",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Example outcomes heading",
+      "props": {
+        "content": "Example recommendations you might receive",
+        "level": 2,
+        "anchorId": "outcomes"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-609": {
+      "id": "catalogue-icon-609",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Growth accelerator icon",
+      "props": {
+        "name": "chart",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-610": {
+      "id": "catalogue-heading-610",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Growth accelerator heading",
+      "props": {
+        "content": "Growth accelerator",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-611": {
+      "id": "catalogue-rich-text-611",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Growth accelerator description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "For customers ready to scale and reach more of the right people."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-612": {
+      "id": "catalogue-button-612",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Growth accelerator detail link",
+      "props": {
+        "label": "Learn more →",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-detail-link"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-613": {
+      "id": "catalogue-container-613",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Growth accelerator outcome",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-609",
+        "catalogue-heading-610",
+        "catalogue-rich-text-611",
+        "catalogue-button-612"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": "#e6f2ff",
+            "border": "1px solid #dce5ef",
+            "borderRadius": "10px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "padding": "30px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-614": {
+      "id": "catalogue-icon-614",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Efficiency optimisation icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-615": {
+      "id": "catalogue-heading-615",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Efficiency optimisation heading",
+      "props": {
+        "content": "Efficiency optimisation",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-616": {
+      "id": "catalogue-rich-text-616",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Efficiency optimisation description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "For customers looking to streamline processes and save time."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-617": {
+      "id": "catalogue-button-617",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Efficiency optimisation detail link",
+      "props": {
+        "label": "Learn more →",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-detail-link"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-618": {
+      "id": "catalogue-container-618",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Efficiency optimisation outcome",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-614",
+        "catalogue-heading-615",
+        "catalogue-rich-text-616",
+        "catalogue-button-617"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": "#e7f5e8",
+            "border": "1px solid #dce5ef",
+            "borderRadius": "10px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "padding": "30px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-619": {
+      "id": "catalogue-icon-619",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Idea validation sprint icon",
+      "props": {
+        "name": "sparkles",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-620": {
+      "id": "catalogue-heading-620",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Idea validation sprint heading",
+      "props": {
+        "content": "Idea validation sprint",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-621": {
+      "id": "catalogue-rich-text-621",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Idea validation sprint description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "For testing a concept and reducing risk before launch."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "15px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-622": {
+      "id": "catalogue-button-622",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Idea validation sprint detail link",
+      "props": {
+        "label": "Learn more →",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-detail-link"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-623": {
+      "id": "catalogue-container-623",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Idea validation sprint outcome",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-619",
+        "catalogue-heading-620",
+        "catalogue-rich-text-621",
+        "catalogue-button-622"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": "#fff0ec",
+            "border": "1px solid #dce5ef",
+            "borderRadius": "10px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "padding": "30px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-624": {
+      "id": "catalogue-container-624",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Example outcome cards",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-613",
+        "catalogue-container-618",
+        "catalogue-container-623"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-625": {
+      "id": "catalogue-container-625",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Example outcomes content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-608", "catalogue-container-624"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-626": {
+      "id": "catalogue-container-626",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Example outcomes",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-625"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-627": {
+      "id": "catalogue-icon-627",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Privacy section icon",
+      "props": {
+        "name": "shield",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-628": {
+      "id": "catalogue-heading-628",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Privacy heading",
+      "props": {
+        "content": "Your privacy matters",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "30px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-629": {
+      "id": "catalogue-rich-text-629",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Privacy explanation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace this with an accurate explanation of how answers are stored, used, and protected. Only promise confidentiality that your real process supports."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "760px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-630": {
+      "id": "catalogue-container-630",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Privacy message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-628", "catalogue-rich-text-629"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "8px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-631": {
+      "id": "catalogue-container-631",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Privacy content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-icon-627", "catalogue-container-630"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "auto 1fr",
+            "paddingBottom": "42px",
+            "paddingTop": "42px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "start",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-632": {
+      "id": "catalogue-container-632",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Privacy",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-631"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-pale-blue"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-633": {
+      "id": "catalogue-heading-633",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "FAQ heading",
+      "props": {
+        "content": "Frequently asked questions",
+        "level": 2,
+        "anchorId": "faq"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-accordion-634": {
+      "id": "catalogue-accordion-634",
+      "type": "accordion",
+      "elementVersion": 1,
+      "name": "Solution Fit FAQ",
+      "props": {
+        "allowMultiple": true,
+        "items": [
+          {
+            "id": "faq-1",
+            "question": "How long does the assessment take?",
+            "answer": "Replace with a duration verified against the linked quiz."
+          },
+          {
+            "id": "faq-2",
+            "question": "How is the recommendation made?",
+            "answer": "Explain the real matching or scoring method in plain language."
+          },
+          {
+            "id": "faq-3",
+            "question": "Is my information private?",
+            "answer": "Replace with accurate privacy, storage, and access information."
+          },
+          {
+            "id": "faq-4",
+            "question": "What happens after I get my result?",
+            "answer": "Describe the actual follow-up, booking, purchase, or learning journey."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-635": {
+      "id": "catalogue-container-635",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-633", "catalogue-accordion-634"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-636": {
+      "id": "catalogue-container-636",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-635"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-637": {
+      "id": "catalogue-icon-637",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Final recommendation icon",
+      "props": {
+        "name": "star",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "44px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-638": {
+      "id": "catalogue-heading-638",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Final call to action heading",
+      "props": {
+        "content": "Ready to find your best fit?",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "42px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-639": {
+      "id": "catalogue-rich-text-639",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Final call to action copy",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Take the short assessment and get clarity on the right solution for you."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-640": {
+      "id": "catalogue-container-640",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-638", "catalogue-rich-text-639"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "10px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-641": {
+      "id": "catalogue-button-641",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Assessment call to action",
+      "props": {
+        "label": "Start the assessment",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "borderColor": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-coral"
+            }
+          },
+          "hover": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "borderColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-642": {
+      "id": "catalogue-container-642",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-icon-637",
+        "catalogue-container-640",
+        "catalogue-button-641"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "30px",
+            "gridTemplateColumns": "auto 1fr auto",
+            "paddingBottom": "48px",
+            "paddingTop": "48px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "stretch",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-643": {
+      "id": "catalogue-container-643",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-642"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-coral"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-logo-644": {
+      "id": "catalogue-logo-644",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Footer brand",
+      "props": {
+        "display": "text",
+        "text": "YOUR BRAND",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "fontSize": "24px",
+            "fontWeight": 800
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-menu-645": {
+      "id": "catalogue-menu-645",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Footer navigation",
+      "props": {
+        "ariaLabel": "Footer navigation",
+        "collapseAt": "never",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 22,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "overview",
+            "label": "Overview",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-583"
+            }
+          },
+          {
+            "id": "benefits",
+            "label": "Benefits",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-563"
+            }
+          },
+          {
+            "id": "outcomes",
+            "label": "Outcomes",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-608"
+            }
+          },
+          {
+            "id": "faq",
+            "label": "FAQ",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-633"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#d7deea",
+            "fontSize": "13px",
+            "fontWeight": 600
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-copyright-646": {
+      "id": "catalogue-copyright-646",
+      "type": "copyright",
+      "elementVersion": 1,
+      "name": "Copyright",
+      "props": {
+        "showSymbol": true,
+        "showYear": true,
+        "owner": "Your Brand",
+        "suffix": "All rights reserved."
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#d7deea",
+            "fontSize": "12px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-647": {
+      "id": "catalogue-container-647",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-logo-644",
+        "catalogue-menu-645",
+        "catalogue-copyright-646"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "30px",
+            "gridTemplateColumns": "1fr auto auto",
+            "paddingBottom": "30px",
+            "paddingTop": "30px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "start",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-648": {
+      "id": "catalogue-container-648",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer",
+      "props": {
+        "tag": "footer",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-647"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {
+    "template-section": {
+      "id": "template-section",
+      "name": "Solution section",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "36px",
+            "margin": "0 auto",
+            "maxWidth": {
+              "type": "variable",
+              "variableId": "template-content-width"
+            },
+            "padding": "80px 36px",
+            "width": "100%"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "padding": "64px 28px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gap": "28px",
+            "padding": "50px 20px"
+          }
+        }
+      }
+    },
+    "template-heading": {
+      "id": "template-heading",
+      "name": "Solution heading",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "48px",
+            "fontWeight": 750,
+            "letterSpacing": "-.035em",
+            "lineHeight": 1.05,
+            "margin": 0
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "42px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "34px"
+          }
+        }
+      }
+    },
+    "template-copy": {
+      "id": "template-copy",
+      "name": "Solution copy",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "17px",
+            "lineHeight": 1.6
+          }
+        }
+      }
+    },
+    "template-button": {
+      "id": "template-button",
+      "name": "Primary action",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "border": "1px solid #1557d6",
+            "borderRadius": "8px",
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            },
+            "display": "inline-flex",
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": 700,
+            "justifyContent": "center",
+            "padding": "14px 24px",
+            "textDecoration": "none",
+            "width": "fit-content"
+          },
+          "hover": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "borderColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-white"
+            }
+          },
+          "focusVisible": {
+            "outline": "3px solid #1557d6",
+            "outlineOffset": "3px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "width": "100%"
+          }
+        }
+      }
+    },
+    "template-detail-link": {
+      "id": "template-detail-link",
+      "name": "Recommendation detail link",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "border": "0 solid transparent",
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "display": "inline-flex",
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": 700,
+            "justifyContent": "center",
+            "padding": "4px",
+            "textDecoration": "none",
+            "width": "fit-content"
+          },
+          "hover": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "textDecoration": "underline"
+          }
+        }
+      }
+    }
+  },
+  "classOrder": [
+    "template-section",
+    "template-heading",
+    "template-copy",
+    "template-button",
+    "template-detail-link"
+  ],
+  "variables": {
+    "template-blue": {
+      "id": "template-blue",
+      "name": "Action blue",
+      "kind": "color",
+      "value": "#1557d6"
+    },
+    "template-coral": {
+      "id": "template-coral",
+      "name": "Outcome coral",
+      "kind": "color",
+      "value": "#ff654f"
+    },
+    "template-green": {
+      "id": "template-green",
+      "name": "Outcome green",
+      "kind": "color",
+      "value": "#63b96f"
+    },
+    "template-pale-blue": {
+      "id": "template-pale-blue",
+      "name": "Pale blue surface",
+      "kind": "color",
+      "value": "#edf6ff"
+    },
+    "template-ink": {
+      "id": "template-ink",
+      "name": "Ink",
+      "kind": "color",
+      "value": "#111827"
+    },
+    "template-muted": {
+      "id": "template-muted",
+      "name": "Muted copy",
+      "kind": "color",
+      "value": "#526071"
+    },
+    "template-border": {
+      "id": "template-border",
+      "name": "Soft border",
+      "kind": "color",
+      "value": "#dce5ef"
+    },
+    "template-white": {
+      "id": "template-white",
+      "name": "White",
+      "kind": "color",
+      "value": "#ffffff"
+    },
+    "template-content-width": {
+      "id": "template-content-width",
+      "name": "Content width",
+      "kind": "contentWidth",
+      "value": "1180px"
+    }
+  },
+  "variableOrder": [
+    "template-blue",
+    "template-coral",
+    "template-green",
+    "template-pale-blue",
+    "template-ink",
+    "template-muted",
+    "template-border",
+    "template-white",
+    "template-content-width"
+  ],
+  "settings": {
+    "contentWidth": 1200,
+    "showDefaultHeader": false,
+    "breakpoints": {
+      "tabletMax": 1024,
+      "mobileMax": 767
+    },
+    "seo": {
+      "title": "Solution Fit Finder",
+      "description": "Help prospective customers find the offer that best matches their goals, constraints, and current situation.",
+      "socialTitle": "",
+      "socialDescription": "",
+      "socialImage": null,
+      "noIndex": false
+    }
+  }
+}

@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState, type DragEvent, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type DragEvent,
+  type KeyboardEvent,
+} from "react";
 import {
   ArrowDownIcon,
   ArrowLeftIcon,
@@ -54,6 +60,8 @@ import {
   resolveKeyboardMove,
 } from "./canvas-placement.js";
 import { usePagebldrEditor } from "./context.js";
+import { readBlockDrag } from "./block-drag.js";
+import { SaveBlockDialog } from "./save-block-dialog.js";
 import { useMovableOverlay } from "./movable-overlay.js";
 import {
   defaultExpandedStructureIds,
@@ -81,6 +89,9 @@ export function StructureWindow({
   styleClipboard,
 }: StructureWindowProps) {
   const editor = usePagebldrEditor();
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
+  const [dropError, setDropError] = useState<string | null>(null);
   const movable = useMovableOverlay();
   const [minimized, setMinimized] = useState(false);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() =>
@@ -190,6 +201,11 @@ export function StructureWindow({
           <XIcon />
         </Button>
       </div>
+      {dropError ? (
+        <p role="alert" className="p-2 text-sm text-destructive">
+          {dropError}
+        </p>
+      ) : null}
       {!minimized ? (
         <ScrollArea className="min-h-0 flex-1">
           <div
@@ -311,8 +327,10 @@ export function StructureWindow({
     if (editor.mode !== "edit") return;
     const movingId = event.dataTransfer.getData(pagebldrExistingDragType);
     const elementType = event.dataTransfer.getData(pagebldrElementDragType);
+    const block = readBlockDrag(event.dataTransfer);
     const moving = movingId ? editor.document.elements[movingId] : null;
-    const type = elementType || moving?.type;
+    const type =
+      block?.elements[block.rootId]?.type || elementType || moving?.type;
     if (!type) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const ratio = (event.clientY - rect.top) / rect.height;
@@ -328,7 +346,39 @@ export function StructureWindow({
     });
     if (!placement) return;
     event.preventDefault();
-    if (moving)
+    if (block) {
+      const document = editor.document;
+      setDropError(null);
+      void (async () => {
+        const adapted =
+          (await editor.librarySource?.adaptBlockReferences?.(
+            block,
+            new AbortController().signal,
+          )) ?? block;
+        const latest = editorRef.current;
+        if (latest.document !== document || latest.mode !== "edit")
+          throw new Error(
+            "Document changed during Block adaptation. Drop the Block again.",
+          );
+        const clipboard = latest.builder.editor.library.prepareBlock(
+          adapted,
+          document,
+        );
+        latest.dispatch({
+          type: "insert",
+          parentId: placement.parentId,
+          index: placement.index,
+          clipboard,
+        });
+        latest.select(clipboard.rootId);
+      })().catch((failure: unknown) =>
+        setDropError(
+          failure instanceof Error
+            ? failure.message
+            : "Block insertion failed.",
+        ),
+      );
+    } else if (moving)
       editor.dispatch({
         type: "move",
         elementId: moving.id,
@@ -364,6 +414,7 @@ function StructureMenu({
   const editor = usePagebldrEditor();
   const element = editor.document.elements[elementId]!;
   const root = elementId === editor.document.rootId;
+  const [savingBlock, setSavingBlock] = useState(false);
   const readOnly = editor.mode !== "edit";
   const movePlacements = {
     up: resolveKeyboardMove({
@@ -410,158 +461,178 @@ function StructureMenu({
       })
     : null;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          aria-label={`Actions for ${element.name}`}
-          className="mr-0.5 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
-          size="icon-xs"
-          variant="ghost"
-        >
-          <MenuIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>{element.name}</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => editor.select(elementId)}>
-          <PencilIcon /> Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || root || element.locked}
-          onSelect={() => {
-            const name = window.prompt("Element name", element.name)?.trim();
-            if (name) editor.dispatch({ type: "rename", elementId, name });
-          }}
-        >
-          <PencilIcon /> Rename
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          disabled={root}
-          onSelect={() =>
-            onCopy(
-              editor.builder.editor.clipboard.copy(editor.document, elementId),
-            )
-          }
-        >
-          <ClipboardCopyIcon /> Copy
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || !pastePlacement || !clipboard}
-          onSelect={() => {
-            if (clipboard && pastePlacement)
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            aria-label={`Actions for ${element.name}`}
+            className="mr-0.5 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            size="icon-xs"
+            variant="ghost"
+          >
+            <MenuIcon />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>{element.name}</DropdownMenuLabel>
+          <DropdownMenuItem onSelect={() => editor.select(elementId)}>
+            <PencilIcon /> Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || root || element.locked}
+            onSelect={() => {
+              const name = window.prompt("Element name", element.name)?.trim();
+              if (name) editor.dispatch({ type: "rename", elementId, name });
+            }}
+          >
+            <PencilIcon /> Rename
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            disabled={root}
+            onSelect={() =>
+              onCopy(
+                editor.builder.editor.clipboard.copy(
+                  editor.document,
+                  elementId,
+                ),
+              )
+            }
+          >
+            <ClipboardCopyIcon /> Copy
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || !pastePlacement || !clipboard}
+            onSelect={() => {
+              if (clipboard && pastePlacement)
+                editor.dispatch({
+                  type: "paste",
+                  parentId: pastePlacement.parentId,
+                  index: pastePlacement.index,
+                  clipboard,
+                });
+            }}
+          >
+            <ClipboardPasteIcon /> Paste
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || root || element.locked}
+            onSelect={() => editor.dispatch({ type: "duplicate", elementId })}
+          >
+            <CopyIcon /> Duplicate
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() =>
+              onCopyStyles(
+                editor.builder.editor.clipboard.copyStyles(
+                  editor.document,
+                  elementId,
+                ),
+              )
+            }
+          >
+            <ClipboardCopyIcon /> Copy styles
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || element.locked || !styleClipboard}
+            onSelect={() => {
+              if (styleClipboard)
+                editor.dispatch({
+                  type: "paste-styles",
+                  elementId,
+                  clipboard: styleClipboard,
+                });
+            }}
+          >
+            <ClipboardPasteIcon /> Paste styles
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            disabled={readOnly || !movePlacements.up}
+            onSelect={() => move("up")}
+          >
+            <ArrowUpIcon /> Move up
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || !movePlacements.down}
+            onSelect={() => move("down")}
+          >
+            <ArrowDownIcon /> Move down
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || !movePlacements.in}
+            onSelect={() => move("in")}
+          >
+            <ArrowRightIcon /> Indent
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly || !movePlacements.out}
+            onSelect={() => move("out")}
+          >
+            <ArrowLeftIcon /> Outdent
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            disabled={readOnly || root || element.locked}
+            onSelect={() =>
               editor.dispatch({
-                type: "paste",
-                parentId: pastePlacement.parentId,
-                index: pastePlacement.index,
-                clipboard,
-              });
-          }}
-        >
-          <ClipboardPasteIcon /> Paste
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || root || element.locked}
-          onSelect={() => editor.dispatch({ type: "duplicate", elementId })}
-        >
-          <CopyIcon /> Duplicate
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() =>
-            onCopyStyles(
-              editor.builder.editor.clipboard.copyStyles(
-                editor.document,
+                type: "set-hidden",
                 elementId,
-              ),
-            )
-          }
-        >
-          <ClipboardCopyIcon /> Copy styles
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || element.locked || !styleClipboard}
-          onSelect={() => {
-            if (styleClipboard)
+                hidden: !element.hidden,
+              })
+            }
+          >
+            {element.hidden ? <EyeIcon /> : <EyeOffIcon />}
+            {element.hidden ? "Show" : "Hide"}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={readOnly}
+            onSelect={() =>
               editor.dispatch({
-                type: "paste-styles",
+                type: "set-locked",
                 elementId,
-                clipboard: styleClipboard,
-              });
-          }}
-        >
-          <ClipboardPasteIcon /> Paste styles
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          disabled={readOnly || !movePlacements.up}
-          onSelect={() => move("up")}
-        >
-          <ArrowUpIcon /> Move up
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || !movePlacements.down}
-          onSelect={() => move("down")}
-        >
-          <ArrowDownIcon /> Move down
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || !movePlacements.in}
-          onSelect={() => move("in")}
-        >
-          <ArrowRightIcon /> Indent
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly || !movePlacements.out}
-          onSelect={() => move("out")}
-        >
-          <ArrowLeftIcon /> Outdent
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          disabled={readOnly || root || element.locked}
-          onSelect={() =>
-            editor.dispatch({
-              type: "set-hidden",
-              elementId,
-              hidden: !element.hidden,
-            })
-          }
-        >
-          {element.hidden ? <EyeIcon /> : <EyeOffIcon />}
-          {element.hidden ? "Show" : "Hide"}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={readOnly}
-          onSelect={() =>
-            editor.dispatch({
-              type: "set-locked",
-              elementId,
-              locked: !element.locked,
-            })
-          }
-        >
-          {element.locked ? <UnlockIcon /> : <LockIcon />}
-          {element.locked ? "Unlock" : "Lock"}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled
-          title="Add a Host Block source to enable this action."
-        >
-          <PackagePlusIcon /> Save as Block
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          disabled={readOnly || root || element.locked}
-          onSelect={() => {
-            editor.dispatch({ type: "remove", elementId });
-            editor.select(editor.document.rootId);
-          }}
-        >
-          <Trash2Icon /> Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+                locked: !element.locked,
+              })
+            }
+          >
+            {element.locked ? <UnlockIcon /> : <LockIcon />}
+            {element.locked ? "Unlock" : "Lock"}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={
+              readOnly ||
+              root ||
+              element.locked ||
+              !editor.librarySource?.saveBlock
+            }
+            title={
+              editor.librarySource?.saveBlock
+                ? undefined
+                : "Add a Host Block source to enable this action."
+            }
+            onSelect={() => setSavingBlock(true)}
+          >
+            <PackagePlusIcon /> Save as Block
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            disabled={readOnly || root || element.locked}
+            onSelect={() => {
+              editor.dispatch({ type: "remove", elementId });
+              editor.select(editor.document.rootId);
+            }}
+          >
+            <Trash2Icon /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <SaveBlockDialog
+        elementId={elementId}
+        open={savingBlock}
+        onOpenChange={setSavingBlock}
+      />
+    </>
   );
 }
 

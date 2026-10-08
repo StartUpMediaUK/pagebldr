@@ -1,0 +1,76 @@
+---
+title: Libraries and shared media
+description: Supply Host-owned Templates, saved Blocks, and media capabilities.
+---
+
+The standard editor includes a searchable Elements/Blocks/Templates library. The
+23 neutral Blocks are available by default and separately exported as
+`standardBlocks` from `pagebldr/library`. Block insertion creates ordinary
+editable Elements with fresh IDs. Host definitions can override a standard Block
+by key. Previewing never changes the controlled Document.
+
+There is no bundled Template catalogue or Template imagery. Configure
+`createPagebldr({ templates })` or supply `PagebldrEditor`'s `librarySource` to
+expose your own Templates. A Template factory returns an Element tree or native
+Document; application preserves the destination page identity and SEO. The
+source-derived Documents in the repository's private Reference Host are testing
+fixtures, not part of the installed package.
+
+## Host-backed libraries
+
+`EditorLibrarySource` is exported by `pagebldr/react`. Implement only the
+capabilities the current actor may use:
+
+- `listBlocks` and `listTemplates` return authorized definitions.
+- `saveBlock` receives a label and native subtree clipboard. The editor bounds
+  labels to 1–80 characters and saved Blocks to 50; enforce the same bounds and
+  authorization on the Host's durable storage boundary.
+- `deleteBlock` and `deleteTemplate` enable deletion. `editTemplate` signals
+  Host navigation to the managed Template editor; the package owns no route.
+- `adaptBlockReferences` and `adaptTemplateReferences` resolve references before
+  insertion/application. A Document change during adaptation prevents stale
+  application; retry the action against the current Document.
+
+Callbacks receive an AbortSignal where applicable. Authentication, scope,
+storage, permissions and navigation remain Host responsibilities. A missing
+capability does not authorize an action. Favourites are local, optional
+preferences scoped to the builder namespace, not durable saved Blocks.
+
+## Media adapter capabilities
+
+A Resource adapter's optional `media` capability describes opaque browse items
+as `MediaItem` values and may implement `upload` and `createExternal`. An item
+has an opaque Resource reference, kind, name, safe preview URL or unavailable
+state, source and creation time. Upload input contains bytes, name and content
+type; its context provides progress and cancellation. Neither capability
+attaches a Resource to the Document by itself.
+
+Implement optional `media.lookup(reference, context)` to restore existing
+selections even when they are outside the first browse page. Browse requests
+include `media.allowed`, optional `media.kind` and `media.source`, and
+`media.sort`; apply those before pagination so filtering and ordering cover the
+whole authorized library, not just the currently loaded page.
+
+The picker supports search, type/source filters, sorting, masonry/grid/list
+views, pagination, ordered pending selection and single/multiple limits. Only
+Select commits; Cancel, Escape or closing discard pending selection. Uploads run
+independently of the active tab and remain visible when reopening the picker
+while the same adapter instance lives. Choose at most ten files per batch;
+failed/cancelled uploads can be retried or removed.
+
+Use `MediaPicker` and `MediaViewer` from `pagebldr/react` in an ordinary Host
+route with an explicit `builder`, or within editor context. `MediaPicker`
+accepts `allowed`, `maximum`, `existing`, `excluded`, `readOnly`, `label`,
+`open`, `onOpenChange` and `onCommit`. Pass stable, scoped adapter instances;
+replace the adapter when changing authenticated scope. The Host owns uploaded
+asset lifetime and URL authorization. The picker never grants upload rights.
+
+Viewer support includes images, native/provider videos without autoplay, audio,
+PDF, bounded escaped TXT/CSV content, and download fallback for other documents.
+PDF preview fetches at most 20 MB, verifies the PDF signature and renders a
+PDF-only object URL; the Host must permit that read through CORS. Inaccessible,
+oversized or invalid files show a safe error and retain the download action.
+Unavailable items retain their identity but cannot be selected. Image
+alternative text and confirmation, gallery captions/decorative flags, logo
+metadata and social image selection belong to each Document usage, not to the
+shared Resource.

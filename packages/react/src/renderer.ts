@@ -17,6 +17,19 @@ import type {
 } from "@pagebldr/core";
 import { menuResponsiveStyles } from "./menu-styles.js";
 
+// React 18 HTML-escapes style children during SSR; raw-text style elements do
+// not decode those entities. Emit identical server/client CSS while preventing
+// authored values from terminating the style element.
+function styleMarkup(css: string): { __html: string } {
+  return { __html: css.replace(/</g, "\\3c ") };
+}
+function cssAttribute(value: string): string {
+  return value.replace(
+    /[^a-zA-Z0-9_-]/g,
+    (character) => `\\${character.codePointAt(0)!.toString(16)} `,
+  );
+}
+
 export interface PagebldrRendererProps {
   readonly builder: Pagebldr;
   readonly document: PageDocument;
@@ -93,28 +106,29 @@ export function PagebldrRenderer({
     Fragment,
     null,
     Object.values(document.elements).some((element) => element.type === "menu")
-      ? createElement(
-          "style",
-          { nonce: styleNonce, "data-pagebldr-menu-styles": document.id },
-          menuResponsiveStyles(builder.namespace, document),
-        )
+      ? createElement("style", {
+          nonce: styleNonce,
+          "data-pagebldr-menu-styles": document.id,
+          dangerouslySetInnerHTML: styleMarkup(
+            menuResponsiveStyles(builder.namespace, document),
+          ),
+        })
       : null,
     compiled.css
-      ? createElement(
-          "style",
-          { nonce: styleNonce, "data-pagebldr-authored-styles": document.id },
-          compiled.css,
-        )
+      ? createElement("style", {
+          nonce: styleNonce,
+          "data-pagebldr-authored-styles": document.id,
+          dangerouslySetInnerHTML: styleMarkup(compiled.css),
+        })
       : null,
     mode === "edit"
-      ? createElement(
-          "style",
-          {
-            nonce: styleNonce,
-            "data-pagebldr-edit-visibility": document.id,
-          },
-          `[${compiled.scopeAttribute}="${compiled.scopeValue}"][${compiled.documentAttribute}="${compiled.documentValue}"] [data-pagebldr-hidden="true"]{display:revert!important}`,
-        )
+      ? createElement("style", {
+          nonce: styleNonce,
+          "data-pagebldr-edit-visibility": document.id,
+          dangerouslySetInnerHTML: styleMarkup(
+            `[${compiled.scopeAttribute}="${cssAttribute(compiled.scopeValue)}"][${compiled.documentAttribute}="${cssAttribute(compiled.documentValue)}"] [data-pagebldr-hidden="true"]{display:revert!important}`,
+          ),
+        })
       : null,
     createElement(
       "main",

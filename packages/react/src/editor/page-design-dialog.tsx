@@ -33,6 +33,7 @@ import {
 import { Textarea } from "../components/ui/textarea.js";
 import { usePagebldrEditor } from "./context.js";
 import { VariableManager } from "./variable-manager.js";
+import { MediaPicker } from "./media-picker.js";
 import {
   ValidatedInputField,
   parseNumberDraft,
@@ -94,6 +95,7 @@ export function PageDesignDialog({
 }) {
   const editor = usePagebldrEditor();
   const [draft, setDraft] = useState<PageSettings>(editor.document.settings);
+  const [mediaOpen, setMediaOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<PageDesignTab>("design");
   const [pageTitleError, setPageTitleError] = useState<string | null>(null);
   const [designReset, setDesignReset] = useState(0);
@@ -105,6 +107,7 @@ export function PageDesignDialog({
   const errors = validatePageDesign(draft);
 
   useEffect(() => {
+    if (!open) setMediaOpen(false);
     if (open && !wasOpen.current) {
       setDraft(structuredClone(editor.document.settings));
       setPageTitleError(null);
@@ -131,239 +134,259 @@ export function PageDesignDialog({
     }));
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-h-[min(48rem,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-2xl"
-        onEscapeKeyDown={(event) => {
-          if (
-            event.target instanceof HTMLElement &&
-            event.target.matches(
-              '[data-draft-changed="true"], [aria-invalid="true"]',
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          className="max-h-[min(48rem,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-2xl"
+          onEscapeKeyDown={(event) => {
+            if (
+              event.target instanceof HTMLElement &&
+              event.target.matches(
+                '[data-draft-changed="true"], [aria-invalid="true"]',
+              )
             )
-          )
-            event.preventDefault();
-        }}
-      >
-        <DialogHeader className="px-6 pt-6">
-          <DialogTitle>Page design</DialogTitle>
-          <DialogDescription>
-            Edit page-wide layout, Host chrome intent, and search/social
-            metadata.
-          </DialogDescription>
-        </DialogHeader>
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as PageDesignTab)}
-          className="min-h-0 gap-0"
+              event.preventDefault();
+          }}
         >
-          <TabsList className="mx-6 grid w-auto grid-cols-4">
-            <TabsTrigger value="design">Design</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            <TabsTrigger value="seo">SEO &amp; social</TabsTrigger>
-            <TabsTrigger value="variables">Variables</TabsTrigger>
-          </TabsList>
-          <div className="max-h-[32rem] overflow-y-auto px-6 py-5">
-            <TabsContent value="design">
-              <FieldGroup>
-                <NumberField
-                  key={`${designReset}:contentWidth`}
-                  label="Content width"
-                  value={draft.contentWidth}
-                  min={320}
-                  max={2_400}
-                  disabled={readOnly}
-                  onValidityChange={(valid) => validity("contentWidth", valid)}
-                  onChange={(contentWidth) => update({ contentWidth })}
-                />
-                <NumberField
-                  key={`${designReset}:tabletMax`}
-                  label="Tablet maximum"
-                  value={draft.breakpoints.tabletMax}
-                  min={768}
-                  max={1_200}
-                  disabled={readOnly}
-                  onValidityChange={(valid) => validity("tabletMax", valid)}
-                  onChange={(tabletMax) => updateBreakpoints({ tabletMax })}
-                />
-                <NumberField
-                  key={`${designReset}:mobileMax`}
-                  label="Mobile maximum"
-                  value={draft.breakpoints.mobileMax}
-                  min={320}
-                  max={767}
-                  disabled={readOnly}
-                  onValidityChange={(valid) => validity("mobileMax", valid)}
-                  onChange={(mobileMax) => updateBreakpoints({ mobileMax })}
-                />
-                {errors.map((error) => (
-                  <FieldError key={error}>{error}</FieldError>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={readOnly}
-                  onClick={() => {
-                    setInvalidFields({});
-                    setDesignReset((current) => current + 1);
-                    update({ contentWidth: defaultPageDesign.contentWidth });
-                    updateBreakpoints({
-                      tabletMax: defaultPageDesign.tabletMax,
-                      mobileMax: defaultPageDesign.mobileMax,
-                    });
-                  }}
-                >
-                  <RotateCcwIcon data-icon="inline-start" />
-                  Reset design defaults
-                </Button>
-              </FieldGroup>
-            </TabsContent>
-            <TabsContent value="settings">
-              <FieldGroup>
-                <Field orientation="horizontal">
-                  <div className="flex flex-1 flex-col gap-1">
-                    <FieldLabel htmlFor="pb-page-default-header">
-                      Show default Host header
-                    </FieldLabel>
-                    <FieldDescription>
-                      Records Host chrome intent; pagebldr does not render the
-                      header.
-                    </FieldDescription>
-                  </div>
-                  <Switch
-                    id="pb-page-default-header"
-                    checked={draft.showDefaultHeader}
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle>Page design</DialogTitle>
+            <DialogDescription>
+              Edit page-wide layout, Host chrome intent, and search/social
+              metadata.
+            </DialogDescription>
+          </DialogHeader>
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as PageDesignTab)}
+            className="min-h-0 gap-0"
+          >
+            <TabsList className="mx-6 grid w-auto grid-cols-4">
+              <TabsTrigger value="design">Design</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="seo">SEO &amp; social</TabsTrigger>
+              <TabsTrigger value="variables">Variables</TabsTrigger>
+            </TabsList>
+            <div className="max-h-[32rem] overflow-y-auto px-6 py-5">
+              <TabsContent value="design">
+                <FieldGroup>
+                  <NumberField
+                    key={`${designReset}:contentWidth`}
+                    label="Content width"
+                    value={draft.contentWidth}
+                    min={320}
+                    max={2_400}
                     disabled={readOnly}
-                    onCheckedChange={(showDefaultHeader) =>
-                      update({ showDefaultHeader })
+                    onValidityChange={(valid) =>
+                      validity("contentWidth", valid)
+                    }
+                    onChange={(contentWidth) => update({ contentWidth })}
+                  />
+                  <NumberField
+                    key={`${designReset}:tabletMax`}
+                    label="Tablet maximum"
+                    value={draft.breakpoints.tabletMax}
+                    min={768}
+                    max={1_200}
+                    disabled={readOnly}
+                    onValidityChange={(valid) => validity("tabletMax", valid)}
+                    onChange={(tabletMax) => updateBreakpoints({ tabletMax })}
+                  />
+                  <NumberField
+                    key={`${designReset}:mobileMax`}
+                    label="Mobile maximum"
+                    value={draft.breakpoints.mobileMax}
+                    min={320}
+                    max={767}
+                    disabled={readOnly}
+                    onValidityChange={(valid) => validity("mobileMax", valid)}
+                    onChange={(mobileMax) => updateBreakpoints({ mobileMax })}
+                  />
+                  {errors.map((error) => (
+                    <FieldError key={error}>{error}</FieldError>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={readOnly}
+                    onClick={() => {
+                      setInvalidFields({});
+                      setDesignReset((current) => current + 1);
+                      update({ contentWidth: defaultPageDesign.contentWidth });
+                      updateBreakpoints({
+                        tabletMax: defaultPageDesign.tabletMax,
+                        mobileMax: defaultPageDesign.mobileMax,
+                      });
+                    }}
+                  >
+                    <RotateCcwIcon data-icon="inline-start" />
+                    Reset design defaults
+                  </Button>
+                </FieldGroup>
+              </TabsContent>
+              <TabsContent value="settings">
+                <FieldGroup>
+                  <Field orientation="horizontal">
+                    <div className="flex flex-1 flex-col gap-1">
+                      <FieldLabel htmlFor="pb-page-default-header">
+                        Show default Host header
+                      </FieldLabel>
+                      <FieldDescription>
+                        Records Host chrome intent; pagebldr does not render the
+                        header.
+                      </FieldDescription>
+                    </div>
+                    <Switch
+                      id="pb-page-default-header"
+                      checked={draft.showDefaultHeader}
+                      disabled={readOnly}
+                      onCheckedChange={(showDefaultHeader) =>
+                        update({ showDefaultHeader })
+                      }
+                    />
+                  </Field>
+                </FieldGroup>
+              </TabsContent>
+              <TabsContent value="seo">
+                <FieldGroup>
+                  <ValidatedInputField
+                    label="Page title"
+                    value={editor.document.title}
+                    inputProps={{ maxLength: 160, disabled: readOnly }}
+                    commitOnBlur
+                    onValidityChange={(valid) =>
+                      setPageTitleError(valid ? null : "Page title is invalid.")
+                    }
+                    onCommit={(draft) => {
+                      const next = draft.trim();
+                      const error = validatePageTitle(next);
+                      if (error) throw new Error(error);
+                      if (next !== editor.document.title)
+                        editor.dispatch({ type: "update-page", title: next });
+                    }}
+                  >
+                    <FieldDescription>
+                      Applies on blur as its own undoable page command.
+                    </FieldDescription>
+                  </ValidatedInputField>
+                  <TextField
+                    label="Search title"
+                    value={draft.seo.title}
+                    maxLength={70}
+                    disabled={readOnly}
+                    onChange={(title) => updateSeo({ title })}
+                  />
+                  <TextField
+                    label="Search description"
+                    value={draft.seo.description}
+                    maxLength={170}
+                    multiline
+                    disabled={readOnly}
+                    onChange={(description) => updateSeo({ description })}
+                  />
+                  <TextField
+                    label="Social title"
+                    value={draft.seo.socialTitle}
+                    maxLength={70}
+                    disabled={readOnly}
+                    onChange={(socialTitle) => updateSeo({ socialTitle })}
+                  />
+                  <TextField
+                    label="Social description"
+                    value={draft.seo.socialDescription}
+                    maxLength={200}
+                    multiline
+                    disabled={readOnly}
+                    onChange={(socialDescription) =>
+                      updateSeo({ socialDescription })
                     }
                   />
-                </Field>
-              </FieldGroup>
-            </TabsContent>
-            <TabsContent value="seo">
-              <FieldGroup>
-                <ValidatedInputField
-                  label="Page title"
-                  value={editor.document.title}
-                  inputProps={{ maxLength: 160, disabled: readOnly }}
-                  commitOnBlur
-                  onValidityChange={(valid) =>
-                    setPageTitleError(valid ? null : "Page title is invalid.")
-                  }
-                  onCommit={(draft) => {
-                    const next = draft.trim();
-                    const error = validatePageTitle(next);
-                    if (error) throw new Error(error);
-                    if (next !== editor.document.title)
-                      editor.dispatch({ type: "update-page", title: next });
-                  }}
-                >
-                  <FieldDescription>
-                    Applies on blur as its own undoable page command.
-                  </FieldDescription>
-                </ValidatedInputField>
-                <TextField
-                  label="Search title"
-                  value={draft.seo.title}
-                  maxLength={70}
-                  disabled={readOnly}
-                  onChange={(title) => updateSeo({ title })}
-                />
-                <TextField
-                  label="Search description"
-                  value={draft.seo.description}
-                  maxLength={170}
-                  multiline
-                  disabled={readOnly}
-                  onChange={(description) => updateSeo({ description })}
-                />
-                <TextField
-                  label="Social title"
-                  value={draft.seo.socialTitle}
-                  maxLength={70}
-                  disabled={readOnly}
-                  onChange={(socialTitle) => updateSeo({ socialTitle })}
-                />
-                <TextField
-                  label="Social description"
-                  value={draft.seo.socialDescription}
-                  maxLength={200}
-                  multiline
-                  disabled={readOnly}
-                  onChange={(socialDescription) =>
-                    updateSeo({ socialDescription })
-                  }
-                />
-                <Field>
-                  <FieldLabel>Social image</FieldLabel>
-                  <FieldDescription>
-                    {draft.seo.socialImage
-                      ? `Current Resource: ${resourceKey(draft.seo.socialImage)}`
-                      : "No social image selected. Selection is provided by the shared media picker."}
-                  </FieldDescription>
-                  {draft.seo.socialImage ? (
+                  <Field>
+                    <FieldLabel>Social image</FieldLabel>
+                    <FieldDescription>
+                      {draft.seo.socialImage
+                        ? `Current Resource: ${resourceKey(draft.seo.socialImage)}`
+                        : "No social image selected."}
+                    </FieldDescription>
                     <Button
-                      type="button"
                       variant="outline"
                       disabled={readOnly}
-                      onClick={() => updateSeo({ socialImage: null })}
+                      onClick={() => setMediaOpen(true)}
                     >
-                      <Trash2Icon data-icon="inline-start" />
-                      Clear social image
+                      Choose social image
                     </Button>
-                  ) : null}
-                </Field>
-                <Field orientation="horizontal">
-                  <div className="flex flex-1 flex-col gap-1">
-                    <FieldLabel htmlFor="pb-page-no-index">
-                      Hide from search engines
-                    </FieldLabel>
-                    <FieldDescription>
-                      Sets the page's noindex metadata intent.
-                    </FieldDescription>
-                  </div>
-                  <Switch
-                    id="pb-page-no-index"
-                    checked={draft.seo.noIndex}
-                    disabled={readOnly}
-                    onCheckedChange={(noIndex) => updateSeo({ noIndex })}
-                  />
-                </Field>
-              </FieldGroup>
-            </TabsContent>
-            <TabsContent value="variables">
-              <VariableManager />
-            </TabsContent>
-          </div>
-        </Tabs>
-        <DialogFooter className="border-t px-6 py-4">
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
+                    {draft.seo.socialImage ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={readOnly}
+                        onClick={() => updateSeo({ socialImage: null })}
+                      >
+                        <Trash2Icon data-icon="inline-start" />
+                        Clear social image
+                      </Button>
+                    ) : null}
+                  </Field>
+                  <Field orientation="horizontal">
+                    <div className="flex flex-1 flex-col gap-1">
+                      <FieldLabel htmlFor="pb-page-no-index">
+                        Hide from search engines
+                      </FieldLabel>
+                      <FieldDescription>
+                        Sets the page's noindex metadata intent.
+                      </FieldDescription>
+                    </div>
+                    <Switch
+                      id="pb-page-no-index"
+                      checked={draft.seo.noIndex}
+                      disabled={readOnly}
+                      onCheckedChange={(noIndex) => updateSeo({ noIndex })}
+                    />
+                  </Field>
+                </FieldGroup>
+              </TabsContent>
+              <TabsContent value="variables">
+                <VariableManager />
+              </TabsContent>
+            </div>
+          </Tabs>
+          <DialogFooter className="border-t px-6 py-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              type="button"
+              disabled={
+                readOnly ||
+                errors.length > 0 ||
+                Boolean(pageTitleError) ||
+                Object.values(invalidFields).some(Boolean)
+              }
+              onClick={() => {
+                if (
+                  JSON.stringify(draft) !==
+                  JSON.stringify(editor.document.settings)
+                )
+                  editor.dispatch({ type: "update-settings", settings: draft });
+                onOpenChange(false);
+              }}
+            >
+              Apply page design
             </Button>
-          </DialogClose>
-          <Button
-            type="button"
-            disabled={
-              readOnly ||
-              errors.length > 0 ||
-              Boolean(pageTitleError) ||
-              Object.values(invalidFields).some(Boolean)
-            }
-            onClick={() => {
-              if (
-                JSON.stringify(draft) !==
-                JSON.stringify(editor.document.settings)
-              )
-                editor.dispatch({ type: "update-settings", settings: draft });
-              onOpenChange(false);
-            }}
-          >
-            Apply page design
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <MediaPicker
+        open={mediaOpen && open}
+        onOpenChange={setMediaOpen}
+        allowed={["image"]}
+        label="Social image"
+        onCommit={(items) => {
+          if (items[0]) updateSeo({ socialImage: items[0].reference });
+        }}
+      />
+    </>
   );
 }
 

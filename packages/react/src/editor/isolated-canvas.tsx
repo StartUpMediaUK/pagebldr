@@ -73,6 +73,7 @@ import {
   type CanvasDragSource,
 } from "./canvas-protocol.js";
 import { usePagebldrEditor } from "./context.js";
+import { readBlockDrag } from "./block-drag.js";
 
 type CanvasStatus = "loading" | "ready" | "error";
 
@@ -193,7 +194,7 @@ export function IsolatedCanvas({
               ? current.document.elements[message.source.elementId]
               : null;
           const elementType =
-            message.source.kind === "element"
+            message.source.kind !== "existing"
               ? message.source.elementType
               : moving?.type;
           if (!elementType) break;
@@ -206,7 +207,43 @@ export function IsolatedCanvas({
             ...(moving ? { movingId: moving.id } : {}),
           });
           if (!placement) break;
-          if (message.source.kind === "existing")
+          if (message.source.kind === "block") {
+            const source = message.source.clipboard;
+            const document = current.document;
+            void (async () => {
+              const adapted =
+                (await current.librarySource?.adaptBlockReferences?.(
+                  source,
+                  new AbortController().signal,
+                )) ?? source;
+              const latest = editorRef.current;
+              if (
+                latest.document !== document ||
+                latest.mode !== "edit" ||
+                latest.previewing
+              )
+                throw new Error(
+                  "Document changed during Block adaptation. Drop the Block again.",
+                );
+              const clipboard = latest.builder.editor.library.prepareBlock(
+                adapted,
+                document,
+              );
+              latest.dispatch({
+                type: "insert",
+                parentId: placement.parentId,
+                index: placement.index,
+                clipboard,
+              });
+              latest.select(clipboard.rootId);
+            })().catch((failure: unknown) =>
+              setError(
+                failure instanceof Error
+                  ? failure.message
+                  : "Block insertion failed.",
+              ),
+            );
+          } else if (message.source.kind === "existing")
             current.dispatch({
               type: "move",
               elementId: message.source.elementId,
@@ -305,6 +342,9 @@ export function IsolatedCanvas({
   useEffect(() => {
     if (fitEnabled) setZoom(fitZoom);
   }, [fitEnabled, fitZoom]);
+  useEffect(() => {
+    if (editor.canvasFitVersion > 0) setFitEnabled(true);
+  }, [editor.canvasFitVersion]);
 
   const loadFrame = () => {
     const document = frameRef.current?.contentDocument;
@@ -358,6 +398,14 @@ export function IsolatedCanvas({
         >
           Preparing canvas…
         </Badge>
+      ) : null}
+      {error && status !== "error" ? (
+        <p
+          role="alert"
+          className="absolute top-2 left-2 z-20 rounded-md bg-background p-2 text-sm text-destructive"
+        >
+          {error}
+        </p>
       ) : null}
       {status === "error" ? (
         <div className="absolute inset-4 flex items-center justify-center rounded-md bg-background">
@@ -600,6 +648,13 @@ function CanvasRuntime({
   };
 
   const dragSource = (dataTransfer: DataTransfer): CanvasDragSource | null => {
+    const clipboard = readBlockDrag(dataTransfer);
+    if (clipboard && clipboard.elements[clipboard.rootId])
+      return {
+        kind: "block",
+        elementType: clipboard.elements[clipboard.rootId]!.type,
+        clipboard,
+      };
     const elementType = dataTransfer.getData(pagebldrElementDragType);
     if (elementType) return { kind: "element", elementType };
     const elementId = dataTransfer.getData(pagebldrExistingDragType);
@@ -625,7 +680,7 @@ function CanvasRuntime({
     const moving =
       source.kind === "existing" ? document.elements[source.elementId] : null;
     const elementType =
-      source.kind === "element" ? source.elementType : moving?.type;
+      source.kind !== "existing" ? source.elementType : moving?.type;
     if (!elementType) return null;
     for (const position of positions) {
       const placement = resolveCanvasPlacement({

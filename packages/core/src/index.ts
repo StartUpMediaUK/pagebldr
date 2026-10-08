@@ -72,6 +72,7 @@ export type { DocumentMigration } from "./migrations.js";
 export type {
   BlockDefinition,
   ElementTree,
+  LibraryMetadata,
   TemplateDefinition,
 } from "./factories.js";
 export type {
@@ -93,5 +94,17 @@ export type {
   ResourceAdapter,
   ResourceContext,
   ResourceReference,
+  MediaKind,
+  MediaBrowseOptions,
+  MediaItem,
+  MediaUpload,
+  MediaCapabilities,
 } from "./types.js";
+export {
+  selectMediaItem,
+  detectExternalMediaKind,
+  resolveMediaVideoEmbed,
+  createMediaUploadQueue,
+} from "./media.js";
+export type { MediaUploadQueue, MediaUploadEntry } from "./media.js";
 export type { ValidationResult } from "./validation.js";

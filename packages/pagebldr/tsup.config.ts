@@ -6,6 +6,7 @@ export default defineConfig({
   dts: { resolve: true },
   entry: {
     index: "src/index.ts",
+    library: "src/library.ts",
     react: "src/react.ts",
     "react-server": "src/react-server.ts",
     server: "src/server.ts",

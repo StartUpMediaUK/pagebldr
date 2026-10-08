@@ -1,0 +1,2944 @@
+{
+  "format": "pagebldr",
+  "schemaVersion": 2,
+  "id": "catalogue-page-208",
+  "title": "Independent Work Study",
+  "slug": "independent-work-study",
+  "rootId": "catalogue-root-209",
+  "elements": {
+    "catalogue-root-209": {
+      "id": "catalogue-root-209",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Page",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-container-214",
+        "catalogue-container-220",
+        "catalogue-container-228",
+        "catalogue-container-244",
+        "catalogue-container-248",
+        "catalogue-container-268",
+        "catalogue-container-274",
+        "catalogue-container-279",
+        "catalogue-container-283",
+        "catalogue-container-303",
+        "catalogue-container-307",
+        "catalogue-container-312",
+        "catalogue-container-318"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-background"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "display": "flex",
+            "flexDirection": "column",
+            "minHeight": "100vh",
+            "overflow": "hidden"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-logo-210": {
+      "id": "catalogue-logo-210",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Study mark",
+      "props": {
+        "display": "text",
+        "text": "Independent Work Study",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontWeight": 750
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-menu-211": {
+      "id": "catalogue-menu-211",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Study navigation",
+      "props": {
+        "ariaLabel": "Primary navigation",
+        "collapseAt": "tablet",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 26,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "none",
+        "items": [
+          {
+            "id": "about-the-study",
+            "label": "About the study",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-229"
+            }
+          },
+          {
+            "id": "who-can-take-part",
+            "label": "Who can take part",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-221"
+            }
+          },
+          {
+            "id": "privacy",
+            "label": "Privacy",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-275"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px",
+            "fontWeight": 650
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-212": {
+      "id": "catalogue-button-212",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Survey call to action",
+      "props": {
+        "label": "Start survey",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "mobile": {
+          "normal": {
+            "gridColumn": "1 / -1"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-213": {
+      "id": "catalogue-container-213",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-logo-210",
+        "catalogue-menu-211",
+        "catalogue-button-212"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "24px",
+            "gridTemplateColumns": "1fr auto auto",
+            "padding": "16px 32px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "1fr auto auto"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr auto",
+            "padding": "14px 20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-214": {
+      "id": "catalogue-container-214",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header",
+      "props": {
+        "tag": "header",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-213"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderBottom": "1px solid #e3e6ee"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-215": {
+      "id": "catalogue-heading-215",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Page title",
+      "props": {
+        "content": "How is independent work changing?",
+        "level": 1
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "62px",
+            "maxWidth": "780px",
+            "textAlign": "center"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "52px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "40px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-216": {
+      "id": "catalogue-rich-text-216",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Study invitation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Share your experience in a 6-minute survey. Review the anonymity statement against your linked quiz before publishing."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "maxWidth": "720px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-217": {
+      "id": "catalogue-button-217",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Survey call to action",
+      "props": {
+        "label": "Start the survey",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-218": {
+      "id": "catalogue-rich-text-218",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Anonymity caution",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Anonymous by default — only if your quiz does not collect identifying data"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px",
+            "fontWeight": 650,
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-219": {
+      "id": "catalogue-container-219",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-215",
+        "catalogue-rich-text-216",
+        "catalogue-button-217",
+        "catalogue-rich-text-218"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "paddingBottom": "54px",
+            "paddingTop": "64px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-220": {
+      "id": "catalogue-container-220",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-219"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "#fbfbfe"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-221": {
+      "id": "catalogue-heading-221",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "You can take part if you:",
+        "level": 2,
+        "anchorId": "who-can-take-part"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "24px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-222": {
+      "id": "catalogue-rich-text-222",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Eligibility criterion 1",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Are 18 years or older"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderTop": "2px solid #e3e6ee",
+            "fontSize": "16px",
+            "fontWeight": 650,
+            "paddingTop": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-223": {
+      "id": "catalogue-rich-text-223",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Eligibility criterion 2",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Work for yourself or run your own business"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderTop": "2px solid #e3e6ee",
+            "fontSize": "16px",
+            "fontWeight": 650,
+            "paddingTop": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-224": {
+      "id": "catalogue-rich-text-224",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Eligibility criterion 3",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Do paid freelance, contract, or self-employed work"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderTop": "2px solid #e3e6ee",
+            "fontSize": "16px",
+            "fontWeight": 650,
+            "paddingTop": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-225": {
+      "id": "catalogue-rich-text-225",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Eligibility criterion 4",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Live in a location included by this study"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderTop": "2px solid #e3e6ee",
+            "fontSize": "16px",
+            "fontWeight": 650,
+            "paddingTop": "16px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-226": {
+      "id": "catalogue-container-226",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Eligibility columns",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-rich-text-222",
+        "catalogue-rich-text-223",
+        "catalogue-rich-text-224",
+        "catalogue-rich-text-225"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-227": {
+      "id": "catalogue-container-227",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Eligibility content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-221", "catalogue-container-226"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "paddingBottom": "36px",
+            "paddingTop": "36px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-228": {
+      "id": "catalogue-container-228",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Eligibility",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-227"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-229": {
+      "id": "catalogue-heading-229",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Study overview",
+        "level": 2,
+        "anchorId": "about-the-study"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "34px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-230": {
+      "id": "catalogue-icon-230",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Participant target icon",
+      "props": {
+        "name": "users",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-231": {
+      "id": "catalogue-heading-231",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Participant target",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-232": {
+      "id": "catalogue-rich-text-232",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Participant target description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace this with the intended sample size and audience. It is not a live progress count."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-233": {
+      "id": "catalogue-container-233",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Participant target card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-230",
+        "catalogue-heading-231",
+        "catalogue-rich-text-232"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-234": {
+      "id": "catalogue-icon-234",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "What we're exploring icon",
+      "props": {
+        "name": "chart",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-235": {
+      "id": "catalogue-heading-235",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "What we're exploring",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-236": {
+      "id": "catalogue-rich-text-236",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "What we're exploring description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Work patterns, financial stability, tools, wellbeing, and future outlook."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-237": {
+      "id": "catalogue-container-237",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "What we're exploring card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-234",
+        "catalogue-heading-235",
+        "catalogue-rich-text-236"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-238": {
+      "id": "catalogue-icon-238",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Study timeline icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-orange"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-239": {
+      "id": "catalogue-heading-239",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Study timeline",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-240": {
+      "id": "catalogue-rich-text-240",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Study timeline description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace with recruitment, analysis, and reporting dates that are accurate for your study."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-241": {
+      "id": "catalogue-container-241",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Study timeline card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-238",
+        "catalogue-heading-239",
+        "catalogue-rich-text-240"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-242": {
+      "id": "catalogue-container-242",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Study overview cards",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-233",
+        "catalogue-container-237",
+        "catalogue-container-241"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "20px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-243": {
+      "id": "catalogue-container-243",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Study overview content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-229", "catalogue-container-242"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-244": {
+      "id": "catalogue-container-244",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Study overview",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-243"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-245": {
+      "id": "catalogue-heading-245",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Why this research matters",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "34px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-246": {
+      "id": "catalogue-rich-text-246",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Research purpose",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Independent work is changing how people earn a living. Your experience can help researchers, educators, and decision-makers understand what support is needed most."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "margin": "0 auto",
+            "maxWidth": "820px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-247": {
+      "id": "catalogue-container-247",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Why this matters content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-245", "catalogue-rich-text-246"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-248": {
+      "id": "catalogue-container-248",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Why this matters",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-247"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-249": {
+      "id": "catalogue-heading-249",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "What we'll ask about",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "34px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-250": {
+      "id": "catalogue-icon-250",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Work patterns icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-251": {
+      "id": "catalogue-heading-251",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Work patterns",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-252": {
+      "id": "catalogue-rich-text-252",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Work patterns description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "How, where, and when you work."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-253": {
+      "id": "catalogue-container-253",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Work patterns card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-250",
+        "catalogue-heading-251",
+        "catalogue-rich-text-252"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-254": {
+      "id": "catalogue-icon-254",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Income and stability icon",
+      "props": {
+        "name": "chart",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-255": {
+      "id": "catalogue-heading-255",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Income and stability",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-256": {
+      "id": "catalogue-rich-text-256",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Income and stability description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Earnings, financial security, and variability."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-257": {
+      "id": "catalogue-container-257",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Income and stability card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-254",
+        "catalogue-heading-255",
+        "catalogue-rich-text-256"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-258": {
+      "id": "catalogue-icon-258",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Tools and technology icon",
+      "props": {
+        "name": "sparkles",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-orange"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-259": {
+      "id": "catalogue-heading-259",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Tools and technology",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-260": {
+      "id": "catalogue-rich-text-260",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Tools and technology description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Platforms, software, and AI in your work."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-261": {
+      "id": "catalogue-container-261",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Tools and technology card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-258",
+        "catalogue-heading-259",
+        "catalogue-rich-text-260"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-262": {
+      "id": "catalogue-icon-262",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Wellbeing and balance icon",
+      "props": {
+        "name": "heart",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-green"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-263": {
+      "id": "catalogue-heading-263",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Wellbeing and balance",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-264": {
+      "id": "catalogue-rich-text-264",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Wellbeing and balance description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Satisfaction, stress, and work-life balance."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-265": {
+      "id": "catalogue-container-265",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Wellbeing and balance card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-262",
+        "catalogue-heading-263",
+        "catalogue-rich-text-264"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-266": {
+      "id": "catalogue-container-266",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Research topics",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-253",
+        "catalogue-container-257",
+        "catalogue-container-261",
+        "catalogue-container-265"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "18px",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-267": {
+      "id": "catalogue-container-267",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Topics content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-249", "catalogue-container-266"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-268": {
+      "id": "catalogue-container-268",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Topics",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-267"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-image-269": {
+      "id": "catalogue-image-269",
+      "type": "image",
+      "elementVersion": 2,
+      "name": "Researcher portrait",
+      "props": {
+        "source": {
+          "type": "external",
+          "url": "https://images.unsplash.com/photo-1551836022-d5d88e9218df"
+        },
+        "alt": "Replace with a portrait of the study researcher",
+        "altConfirmed": false,
+        "decorative": false,
+        "destination": null,
+        "fit": "cover",
+        "position": "center"
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderRadius": "999px",
+            "height": "180px",
+            "objectFit": "cover",
+            "width": "180px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-270": {
+      "id": "catalogue-heading-270",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "From the researcher",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "30px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-271": {
+      "id": "catalogue-rich-text-271",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Researcher statement",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace this statement with the researcher's name, role, institution or independent affiliation, purpose, and a genuine contact route."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-272": {
+      "id": "catalogue-container-272",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Researcher details",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-270", "catalogue-rich-text-271"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "justifyContent": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-273": {
+      "id": "catalogue-container-273",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Researcher statement content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-image-269", "catalogue-container-272"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "40px",
+            "gridTemplateColumns": "auto 1fr"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-274": {
+      "id": "catalogue-container-274",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Researcher statement",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-273"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-275": {
+      "id": "catalogue-heading-275",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Your privacy and consent",
+        "level": 2,
+        "anchorId": "privacy"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "30px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-list-276": {
+      "id": "catalogue-icon-list-276",
+      "type": "icon-list",
+      "elementVersion": 1,
+      "name": "Privacy summary",
+      "props": {
+        "items": [
+          {
+            "id": "identity",
+            "icon": "shield",
+            "text": "Confirm whether responses are anonymous or identified."
+          },
+          {
+            "id": "choice",
+            "icon": "check",
+            "text": "Explain which questions may be skipped and how to withdraw."
+          },
+          {
+            "id": "storage",
+            "icon": "check",
+            "text": "State where data is stored, who can access it, and for how long."
+          },
+          {
+            "id": "consent",
+            "icon": "check",
+            "text": "Capture any required consent inside the linked survey."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-277": {
+      "id": "catalogue-button-277",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Participant information link",
+      "props": {
+        "label": "Read participant information",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/participant-information",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "border": "1px solid #d6d9e2",
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-278": {
+      "id": "catalogue-container-278",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Privacy and consent content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-275",
+        "catalogue-icon-list-276",
+        "catalogue-button-277"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "#faf9ff",
+            "border": "1px solid #e3e6ee",
+            "borderRadius": "14px",
+            "marginBottom": "48px",
+            "marginTop": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-279": {
+      "id": "catalogue-container-279",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Privacy and consent",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-278"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-280": {
+      "id": "catalogue-heading-280",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "How participation works",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "30px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-list-281": {
+      "id": "catalogue-list-281",
+      "type": "list",
+      "elementVersion": 1,
+      "name": "Participation steps",
+      "props": {
+        "ordered": true,
+        "items": [
+          {
+            "id": "start",
+            "text": "Start the survey — check the study information before beginning."
+          },
+          {
+            "id": "answer",
+            "text": "Answer at your pace — state whether questions may be skipped or paused."
+          },
+          {
+            "id": "submit",
+            "text": "Submit — explain what the participant should expect after completion."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "17px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-282": {
+      "id": "catalogue-container-282",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Participation steps content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-280", "catalogue-list-281"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "820px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-283": {
+      "id": "catalogue-container-283",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Participation steps",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-282"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-284": {
+      "id": "catalogue-heading-284",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "What happens to your answers",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "34px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-285": {
+      "id": "catalogue-icon-285",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Stored securely icon",
+      "props": {
+        "name": "shield",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-286": {
+      "id": "catalogue-heading-286",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Stored securely",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-287": {
+      "id": "catalogue-rich-text-287",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Stored securely description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Replace with accurate storage and access details."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-288": {
+      "id": "catalogue-container-288",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Stored securely card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-285",
+        "catalogue-heading-286",
+        "catalogue-rich-text-287"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-289": {
+      "id": "catalogue-icon-289",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Analysed in aggregate icon",
+      "props": {
+        "name": "chart",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-blue"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-290": {
+      "id": "catalogue-heading-290",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Analysed in aggregate",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-291": {
+      "id": "catalogue-rich-text-291",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Analysed in aggregate description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Explain how individual responses will be combined or reported."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-292": {
+      "id": "catalogue-container-292",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Analysed in aggregate card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-289",
+        "catalogue-heading-290",
+        "catalogue-rich-text-291"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-293": {
+      "id": "catalogue-icon-293",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Publication icon",
+      "props": {
+        "name": "users",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-orange"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-294": {
+      "id": "catalogue-heading-294",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Publication",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-295": {
+      "id": "catalogue-rich-text-295",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Publication description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "State where findings may be shared and what will remain private."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-296": {
+      "id": "catalogue-container-296",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Publication card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-293",
+        "catalogue-heading-294",
+        "catalogue-rich-text-295"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-icon-297": {
+      "id": "catalogue-icon-297",
+      "type": "icon",
+      "elementVersion": 1,
+      "name": "Retention and contact icon",
+      "props": {
+        "name": "clock",
+        "label": ""
+      },
+      "children": [],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-green"
+            },
+            "fontSize": "32px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-298": {
+      "id": "catalogue-heading-298",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Retention and contact",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "20px",
+            "letterSpacing": "-0.02em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-299": {
+      "id": "catalogue-rich-text-299",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Retention and contact description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "State the retention period and whether participants may be contacted."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-300": {
+      "id": "catalogue-container-300",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Retention and contact card",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-icon-297",
+        "catalogue-heading-298",
+        "catalogue-rich-text-299"
+      ],
+      "classIds": ["template-card"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-301": {
+      "id": "catalogue-container-301",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Answer handling",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-288",
+        "catalogue-container-292",
+        "catalogue-container-296",
+        "catalogue-container-300"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "18px",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-302": {
+      "id": "catalogue-container-302",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Answer handling content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-284", "catalogue-container-301"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-303": {
+      "id": "catalogue-container-303",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Answer handling",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-302"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-304": {
+      "id": "catalogue-heading-304",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Frequently asked questions",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "34px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-accordion-305": {
+      "id": "catalogue-accordion-305",
+      "type": "accordion",
+      "elementVersion": 1,
+      "name": "Study frequently asked questions",
+      "props": {
+        "allowMultiple": true,
+        "items": [
+          {
+            "id": "faq-1",
+            "question": "Who can participate in this study?",
+            "answer": "Replace with the exact eligibility criteria for your study."
+          },
+          {
+            "id": "faq-2",
+            "question": "How long does the survey take?",
+            "answer": "The example survey is described as taking about six minutes. Verify this before publishing."
+          },
+          {
+            "id": "faq-3",
+            "question": "Is the survey really anonymous?",
+            "answer": "Only describe it as anonymous if the linked quiz and surrounding systems collect no identifying data."
+          },
+          {
+            "id": "faq-4",
+            "question": "Can I see the results?",
+            "answer": "Explain whether, when, and where findings will be available."
+          },
+          {
+            "id": "faq-5",
+            "question": "Who is funding this study?",
+            "answer": "Name the funder accurately or state that the study is independently funded."
+          },
+          {
+            "id": "faq-6",
+            "question": "I have another question.",
+            "answer": "Add a monitored researcher contact address before publishing."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "margin": "0 auto",
+            "maxWidth": "920px",
+            "width": "100%"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-306": {
+      "id": "catalogue-container-306",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-304", "catalogue-accordion-305"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-307": {
+      "id": "catalogue-container-307",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-306"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-308": {
+      "id": "catalogue-heading-308",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Your experience matters.",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#ffffff",
+            "fontSize": "42px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-309": {
+      "id": "catalogue-rich-text-309",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Final invitation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Help build a clearer picture of independent work — start the survey when you are ready."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#dfe7f6",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-310": {
+      "id": "catalogue-button-310",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Survey call to action",
+      "props": {
+        "label": "Start the survey",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-311": {
+      "id": "catalogue-container-311",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-308",
+        "catalogue-rich-text-309",
+        "catalogue-button-310"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "paddingBottom": "58px",
+            "paddingTop": "58px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-312": {
+      "id": "catalogue-container-312",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-311"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-navy"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-logo-313": {
+      "id": "catalogue-logo-313",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Footer study mark",
+      "props": {
+        "display": "text",
+        "text": "Independent Work Study",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontWeight": 750
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-menu-314": {
+      "id": "catalogue-menu-314",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Study information links",
+      "props": {
+        "ariaLabel": "Study information",
+        "collapseAt": "never",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 20,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "information",
+            "label": "Information sheet",
+            "destination": {
+              "type": "external",
+              "url": "https://example.com/participant-information",
+              "newTab": false
+            }
+          },
+          {
+            "id": "privacy",
+            "label": "Privacy policy",
+            "destination": {
+              "type": "external",
+              "url": "https://example.com/privacy-policy",
+              "newTab": false
+            }
+          },
+          {
+            "id": "contact",
+            "label": "Contact",
+            "destination": {
+              "type": "email",
+              "address": "researcher@example.com"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-copyright-315": {
+      "id": "catalogue-copyright-315",
+      "type": "copyright",
+      "elementVersion": 1,
+      "name": "Copyright",
+      "props": {
+        "showSymbol": true,
+        "showYear": true,
+        "owner": "Your Brand",
+        "suffix": "All rights reserved."
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-316": {
+      "id": "catalogue-container-316",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer details",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-menu-314", "catalogue-copyright-315"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "flex-end",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "flex-start"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-317": {
+      "id": "catalogue-container-317",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-logo-313", "catalogue-container-316"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "1fr 2fr",
+            "paddingBottom": "30px",
+            "paddingTop": "30px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "start",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-318": {
+      "id": "catalogue-container-318",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer",
+      "props": {
+        "tag": "footer",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-317"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {
+    "template-section": {
+      "id": "template-section",
+      "name": "Section content",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "28px",
+            "margin": "0 auto",
+            "maxWidth": {
+              "type": "variable",
+              "variableId": "template-content-width"
+            },
+            "padding": "72px 32px",
+            "width": "100%"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "padding": "64px 28px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gap": "22px",
+            "padding": "48px 20px"
+          }
+        }
+      }
+    },
+    "template-heading": {
+      "id": "template-heading",
+      "name": "Study heading",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "44px",
+            "fontWeight": 750,
+            "letterSpacing": "-0.045em",
+            "lineHeight": 1.08,
+            "margin": 0
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "38px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "32px"
+          }
+        }
+      }
+    },
+    "template-copy": {
+      "id": "template-copy",
+      "name": "Study copy",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#5d6475",
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "16px",
+            "lineHeight": 1.65
+          }
+        }
+      }
+    },
+    "template-button": {
+      "id": "template-button",
+      "name": "Survey action",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "borderRadius": "8px",
+            "color": "#ffffff",
+            "display": "inline-flex",
+            "fontFamily": "Geist, sans-serif",
+            "fontWeight": 700,
+            "justifyContent": "center",
+            "padding": "15px 26px",
+            "textDecoration": "none",
+            "width": "fit-content"
+          },
+          "hover": {
+            "opacity": 0.9,
+            "transform": "translateY(-1px)"
+          },
+          "focusVisible": {
+            "outline": "3px solid rgba(100,55,232,.3)",
+            "outlineOffset": "3px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "width": "100%"
+          }
+        }
+      }
+    },
+    "template-card": {
+      "id": "template-card",
+      "name": "Research card",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-surface"
+            },
+            "border": "1px solid #e3e6ee",
+            "borderRadius": "14px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "14px",
+            "padding": "26px"
+          }
+        }
+      }
+    }
+  },
+  "classOrder": [
+    "template-section",
+    "template-heading",
+    "template-copy",
+    "template-button",
+    "template-card"
+  ],
+  "variables": {
+    "template-background": {
+      "id": "template-background",
+      "name": "Page background",
+      "kind": "color",
+      "value": "#ffffff"
+    },
+    "template-ink": {
+      "id": "template-ink",
+      "name": "Ink",
+      "kind": "color",
+      "value": "#151827"
+    },
+    "template-brand": {
+      "id": "template-brand",
+      "name": "Violet",
+      "kind": "color",
+      "value": "#6437e8"
+    },
+    "template-blue": {
+      "id": "template-blue",
+      "name": "Blue",
+      "kind": "color",
+      "value": "#2878e6"
+    },
+    "template-orange": {
+      "id": "template-orange",
+      "name": "Orange",
+      "kind": "color",
+      "value": "#ff7a2f"
+    },
+    "template-green": {
+      "id": "template-green",
+      "name": "Green",
+      "kind": "color",
+      "value": "#64a967"
+    },
+    "template-navy": {
+      "id": "template-navy",
+      "name": "Navy",
+      "kind": "color",
+      "value": "#101f3d"
+    },
+    "template-surface": {
+      "id": "template-surface",
+      "name": "Soft surface",
+      "kind": "color",
+      "value": "#f7f8fc"
+    },
+    "template-content-width": {
+      "id": "template-content-width",
+      "name": "Content width",
+      "kind": "contentWidth",
+      "value": "1180px"
+    },
+    "template-section-space": {
+      "id": "template-section-space",
+      "name": "Section spacing",
+      "kind": "spacing",
+      "value": "72px"
+    }
+  },
+  "variableOrder": [
+    "template-background",
+    "template-ink",
+    "template-brand",
+    "template-blue",
+    "template-orange",
+    "template-green",
+    "template-navy",
+    "template-surface",
+    "template-content-width",
+    "template-section-space"
+  ],
+  "settings": {
+    "contentWidth": 1200,
+    "showDefaultHeader": true,
+    "breakpoints": {
+      "tabletMax": 1024,
+      "mobileMax": 767
+    },
+    "seo": {
+      "title": "Independent Work Study",
+      "description": "Invite eligible participants to share their experience of independent work in a short research survey.",
+      "socialTitle": "",
+      "socialDescription": "",
+      "socialImage": null,
+      "noIndex": false
+    }
+  }
+}

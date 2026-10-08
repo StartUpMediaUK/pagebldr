@@ -1,0 +1,280 @@
+{
+  "blocks": [
+    {
+      "key": "simple-header",
+      "label": "Simple navigation",
+      "category": "header",
+      "description": "A compact brand header with navigation and a primary action.",
+      "tags": ["navigation", "header", "cta"],
+      "thumbnail": {
+        "accent": "#ede9fe",
+        "eyebrow": "Header",
+        "summary": "Your expertise, made easier to understand"
+      }
+    },
+    {
+      "key": "lead-magnet-hero",
+      "label": "Lead magnet hero",
+      "category": "hero",
+      "description": "A clear value-first hero for a guide, report, or diagnostic.",
+      "tags": ["hero", "lead magnet", "guide"],
+      "thumbnail": {
+        "accent": "#ddd6fe",
+        "eyebrow": "Lead magnet",
+        "summary": "Turn one useful insight into your next confident decision"
+      }
+    },
+    {
+      "key": "assessment-hero",
+      "label": "Assessment hero",
+      "category": "hero",
+      "description": "An outcome-led introduction for an assessment or scorecard journey.",
+      "tags": ["hero", "assessment", "scorecard"],
+      "thumbnail": {
+        "accent": "#dbeafe",
+        "eyebrow": "Assessment",
+        "summary": "See what is helping—and what is holding you back"
+      }
+    },
+    {
+      "key": "recommendation-hero",
+      "label": "Recommendation hero",
+      "category": "hero",
+      "description": "A recommendation-focused hero for matching visitors to the right path.",
+      "tags": ["hero", "recommendation", "product"],
+      "thumbnail": {
+        "accent": "#dcfce7",
+        "eyebrow": "Recommendation",
+        "summary": "Find the option that fits your priorities"
+      }
+    },
+    {
+      "key": "consultation-hero",
+      "label": "Consultation hero",
+      "category": "hero",
+      "description": "A trust-led hero for qualification and consultation funnels.",
+      "tags": ["hero", "consultation", "qualification"],
+      "thumbnail": {
+        "accent": "#ffedd5",
+        "eyebrow": "Consultation",
+        "summary": "Clarify the challenge before you book the conversation"
+      }
+    },
+    {
+      "key": "event-hero",
+      "label": "Event hero",
+      "category": "hero",
+      "description": "A focused event or webinar registration introduction.",
+      "tags": ["hero", "webinar", "event"],
+      "thumbnail": {
+        "accent": "#fef3c7",
+        "eyebrow": "Event",
+        "summary": "Join a practical session built around one meaningful outcome"
+      }
+    },
+    {
+      "key": "waitlist-hero",
+      "label": "Waitlist hero",
+      "category": "hero",
+      "description": "A concise launch hero that earns an early expression of interest.",
+      "tags": ["hero", "waitlist", "launch"],
+      "thumbnail": {
+        "accent": "#fae8ff",
+        "eyebrow": "Waitlist",
+        "summary": "Be first to know when the next opportunity opens"
+      }
+    },
+    {
+      "key": "newsletter-hero",
+      "label": "Newsletter hero",
+      "category": "hero",
+      "description": "An audience-first hero for research and newsletter growth.",
+      "tags": ["hero", "newsletter", "research"],
+      "thumbnail": {
+        "accent": "#cffafe",
+        "eyebrow": "Newsletter",
+        "summary": "Get useful thinking without adding noise to your inbox"
+      }
+    },
+    {
+      "key": "problem-solution",
+      "label": "Problem and solution",
+      "category": "problem-solution",
+      "description": "A three-part explanation that moves from challenge to action.",
+      "tags": ["problem", "solution", "tabs"],
+      "thumbnail": {
+        "accent": "#f1f5f9",
+        "eyebrow": "Problem / solution",
+        "summary": "Move from uncertainty to a useful next step"
+      }
+    },
+    {
+      "key": "benefit-grid",
+      "label": "Benefits and features",
+      "category": "benefits",
+      "description": "A responsive benefit grid focused on visitor outcomes.",
+      "tags": ["benefits", "features", "grid"],
+      "thumbnail": {
+        "accent": "#ecfccb",
+        "eyebrow": "Benefits",
+        "summary": "What visitors gain from taking the next step"
+      }
+    },
+    {
+      "key": "numbered-steps",
+      "label": "How it works",
+      "category": "steps",
+      "description": "A simple numbered process visitors can understand at a glance.",
+      "tags": ["steps", "process", "how it works"],
+      "thumbnail": {
+        "accent": "#e0f2fe",
+        "eyebrow": "How it works",
+        "summary": "A straightforward path from question to action"
+      }
+    },
+    {
+      "key": "assessment-explainer",
+      "label": "Assessment explanation",
+      "category": "explanation",
+      "description": "A media-led explanation for an assessment or lead magnet.",
+      "tags": ["video", "assessment", "explanation"],
+      "thumbnail": {
+        "accent": "#dbeafe",
+        "eyebrow": "Explanation",
+        "summary": "Know what to expect before you begin"
+      }
+    },
+    {
+      "key": "authority-gallery",
+      "label": "About and authority",
+      "category": "authority",
+      "description": "An editable gallery for experience, approach, and authority.",
+      "tags": ["about", "authority", "gallery"],
+      "thumbnail": {
+        "accent": "#fce7f3",
+        "eyebrow": "Authority",
+        "summary": "Show the experience behind the guidance"
+      }
+    },
+    {
+      "key": "trust-strip",
+      "label": "Logo and trust strip",
+      "category": "trust",
+      "description": "A responsive partner or customer logo cloud.",
+      "tags": ["logos", "trust", "partners"],
+      "thumbnail": {
+        "accent": "#f4f4f5",
+        "eyebrow": "Trust",
+        "summary": "Recognisable proof, presented simply"
+      }
+    },
+    {
+      "key": "statistics",
+      "label": "Statistics",
+      "category": "social-proof",
+      "description": "A responsive set of editable outcome counters.",
+      "tags": ["statistics", "counter", "proof"],
+      "thumbnail": {
+        "accent": "#ede9fe",
+        "eyebrow": "Statistics",
+        "summary": "Make the value easier to grasp"
+      }
+    },
+    {
+      "key": "featured-proof",
+      "label": "Featured social proof",
+      "category": "social-proof",
+      "description": "A rating and featured customer statement.",
+      "tags": ["rating", "testimonial", "proof"],
+      "thumbnail": {
+        "accent": "#fef3c7",
+        "eyebrow": "Social proof",
+        "summary": "Let a customer explain the difference"
+      }
+    },
+    {
+      "key": "testimonial-grid",
+      "label": "Testimonial grid",
+      "category": "testimonials",
+      "description": "Three editable testimonials in a responsive grid.",
+      "tags": ["testimonials", "quotes", "grid"],
+      "thumbnail": {
+        "accent": "#fae8ff",
+        "eyebrow": "Testimonials",
+        "summary": "Specific experiences build credible trust"
+      }
+    },
+    {
+      "key": "comparison",
+      "label": "Pricing and comparison",
+      "category": "comparison",
+      "description": "Two editable paths with benefits and calls to action.",
+      "tags": ["pricing", "comparison", "options"],
+      "thumbnail": {
+        "accent": "#dcfce7",
+        "eyebrow": "Comparison",
+        "summary": "Help visitors choose the right level of support"
+      }
+    },
+    {
+      "key": "faq",
+      "label": "Frequently asked questions",
+      "category": "faq",
+      "description": "An accessible accordion for final objections and practical details.",
+      "tags": ["faq", "accordion", "questions"],
+      "thumbnail": {
+        "accent": "#f1f5f9",
+        "eyebrow": "FAQ",
+        "summary": "Answer the questions that delay a decision"
+      }
+    },
+    {
+      "key": "mid-page-cta",
+      "label": "Mid-page call to action",
+      "category": "cta",
+      "description": "A compact call to action between major narrative sections.",
+      "tags": ["cta", "conversion"],
+      "thumbnail": {
+        "accent": "#ddd6fe",
+        "eyebrow": "Call to action",
+        "summary": "Ready to see which direction fits?"
+      }
+    },
+    {
+      "key": "event-countdown-cta",
+      "label": "Event countdown CTA",
+      "category": "cta",
+      "description": "A time-sensitive event action with an accessible countdown.",
+      "tags": ["cta", "countdown", "event"],
+      "thumbnail": {
+        "accent": "#fef3c7",
+        "eyebrow": "Event CTA",
+        "summary": "Reserve your place before registration closes"
+      }
+    },
+    {
+      "key": "final-cta",
+      "label": "Final call to action",
+      "category": "cta",
+      "description": "A decisive final action with a clear outcome.",
+      "tags": ["cta", "final", "conversion"],
+      "thumbnail": {
+        "accent": "#c4b5fd",
+        "eyebrow": "Final CTA",
+        "summary": "Take the next useful step with confidence"
+      }
+    },
+    {
+      "key": "footer-legal",
+      "label": "Footer and disclaimer",
+      "category": "footer",
+      "description": "A simple footer with social links and editable legal copy.",
+      "tags": ["footer", "legal", "social"],
+      "thumbnail": {
+        "accent": "#e4e4e7",
+        "eyebrow": "Footer",
+        "summary": "Stay connected"
+      }
+    }
+  ]
+}

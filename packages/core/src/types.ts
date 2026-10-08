@@ -9,18 +9,66 @@ export interface ResourceReference<
 }
 
 export interface ResourceAdapter<Reference = unknown, Item = unknown> {
+  readonly media?: MediaCapabilities;
   readonly reference: StandardSchemaV1<unknown, Reference>;
   readonly resolve: (
     reference: Reference,
     context: ResourceContext,
   ) => string | null | Promise<string | null>;
   readonly browse?: (
-    request: { readonly query?: string; readonly cursor?: string },
+    request: {
+      readonly query?: string;
+      readonly cursor?: string;
+      readonly media?: MediaBrowseOptions;
+    },
     context: ResourceContext,
   ) => Promise<{
     readonly items: readonly Item[];
     readonly nextCursor?: string;
   }>;
+}
+
+export type MediaKind = "image" | "video" | "audio" | "document";
+export interface MediaBrowseOptions {
+  readonly allowed: readonly MediaKind[];
+  readonly kind?: MediaKind;
+  readonly source?: "uploaded" | "external";
+  readonly sort: "newest" | "oldest" | "name-asc" | "name-desc";
+}
+export interface MediaItem {
+  readonly reference: ResourceReference;
+  readonly kind: MediaKind;
+  readonly displayName: string;
+  readonly originalName?: string;
+  readonly url: string | null;
+  readonly thumbnailUrl?: string;
+  readonly source: "uploaded" | "external";
+  readonly createdAt: string;
+  readonly available: boolean;
+  readonly text?: string;
+}
+export interface MediaUpload {
+  readonly name: string;
+  readonly contentType: string;
+  readonly bytes: Uint8Array;
+}
+export interface MediaCapabilities {
+  readonly lookup?: (
+    reference: ResourceReference,
+    context: ResourceContext,
+  ) => Promise<MediaItem | null>;
+  readonly describe: (item: unknown) => MediaItem;
+  readonly upload?: (
+    file: MediaUpload,
+    context: ResourceContext & {
+      readonly onProgress: (progress: number) => void;
+    },
+  ) => Promise<MediaItem>;
+  readonly createExternal?: (
+    url: string,
+    kind: MediaKind,
+    context: ResourceContext,
+  ) => Promise<MediaItem>;
 }
 
 export interface ResourceContext {

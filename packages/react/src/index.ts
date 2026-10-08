@@ -21,6 +21,10 @@ import type { EditorContribution, EditorPreset } from "./editor/composition.js";
 import type { ApplicationDestinationOption } from "./editor/context.js";
 import { PagebldrRenderer } from "./renderer.js";
 import { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
+import type { EditorLibrarySource } from "./editor/library-source.js";
+export type { EditorLibrarySource } from "./editor/library-source.js";
+export { MediaPicker, MediaViewer } from "./editor/media-picker.js";
+export type { MediaPickerProps } from "./editor/media-picker.js";
 
 export { PagebldrRenderer } from "./renderer.js";
 export { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
@@ -64,6 +68,7 @@ export interface PublishRequest {
 }
 
 export interface PagebldrEditorProps {
+  readonly librarySource?: EditorLibrarySource;
   readonly builder: Pagebldr;
   readonly document: PageDocument;
   readonly onChange: (event: DocumentChangeEvent) => void;

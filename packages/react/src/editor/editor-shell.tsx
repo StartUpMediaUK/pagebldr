@@ -97,8 +97,6 @@ import { IsolatedCanvas } from "./isolated-canvas.js";
 import { useMovableOverlay } from "./movable-overlay.js";
 import { StructureWindow } from "./structure-window.js";
 import {
-  pagebldrElementDragType,
-  createElementClipboard,
   resolveClickInsertion,
   resolveKeyboardMove,
 } from "./canvas-placement.js";
@@ -107,6 +105,8 @@ import { DestinationControl } from "./destination-control.js";
 import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
+import { LibraryPanel } from "./library-panel.js";
+import { MediaControl } from "./media-control.js";
 import { SliderField } from "./slider-field.js";
 import { ColorField } from "./color-field.js";
 import {
@@ -123,6 +123,7 @@ import {
 export function EditorShell(props: PagebldrEditorProps) {
   return (
     <EditorProvider
+      {...(props.librarySource ? { librarySource: props.librarySource } : {})}
       applicationDestinations={props.applicationDestinations ?? []}
       builder={props.builder}
       document={props.document}
@@ -879,98 +880,7 @@ function ViewportToggle({ compact = false }: { readonly compact?: boolean }) {
 }
 
 function LeftPanel() {
-  return (
-    <Tabs defaultValue="elements" className="h-full gap-0">
-      <TabsList className="mx-3 mt-3 grid w-auto grid-cols-3">
-        <TabsTrigger value="elements">Elements</TabsTrigger>
-        <TabsTrigger value="blocks">Blocks</TabsTrigger>
-        <TabsTrigger value="templates">Templates</TabsTrigger>
-      </TabsList>
-      <TabsContent value="elements" className="min-h-0">
-        <ScrollArea className="h-full px-2">
-          <ElementLibrary />
-        </ScrollArea>
-      </TabsContent>
-      <TabsContent value="blocks" className="min-h-0 p-4">
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>Blocks</EmptyTitle>
-            <EmptyDescription>
-              Registered Blocks will appear here ready to insert.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </TabsContent>
-      <TabsContent value="templates" className="min-h-0 p-4">
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>Templates</EmptyTitle>
-            <EmptyDescription>
-              Registered Templates will appear here ready to apply.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </TabsContent>
-    </Tabs>
-  );
-}
-
-function ElementLibrary() {
-  const editor = usePagebldrEditor();
-  const [query, setQuery] = useState("");
-  const add = (type: string) => {
-    const placement = resolveClickInsertion({
-      document: editor.document,
-      definitions: editor.builder.elements,
-      elementType: type,
-      selectedId: editor.selectedId,
-    });
-    if (!placement) return;
-    editor.dispatch({
-      type: "insert",
-      parentId: placement.parentId,
-      index: placement.index,
-      clipboard: createElementClipboard(editor.builder.elements.get(type)!),
-    });
-  };
-  return (
-    <div className="p-2">
-      <div className="relative mb-3">
-        <Input
-          aria-label="Search elements"
-          placeholder="Search elements..."
-          value={query}
-          onChange={(event) => setQuery(event.currentTarget.value)}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-2 pb-4">
-        {[...editor.builder.elements.values()]
-          .filter((definition) =>
-            definition.label.toLowerCase().includes(query.trim().toLowerCase()),
-          )
-          .map((definition) => (
-            <Button
-              key={definition.type}
-              variant="outline"
-              className="h-auto min-h-16 flex-col"
-              disabled={editor.mode !== "edit"}
-              onClick={() => add(definition.type)}
-              draggable={editor.mode === "edit"}
-              onDragStart={(event) => {
-                event.dataTransfer.effectAllowed = "copy";
-                event.dataTransfer.setData(
-                  pagebldrElementDragType,
-                  definition.type,
-                );
-              }}
-            >
-              <PlusIcon data-icon="inline-start" />
-              {definition.label}
-            </Button>
-          ))}
-      </div>
-    </div>
-  );
+  return <LibraryPanel />;
 }
 
 function Inspector() {
@@ -1062,6 +972,8 @@ function PropertyField({
   const value = element.props[control.key];
   const label = propertyControlLabel(control, element.props);
   if (!isPropertyControlVisible(control, element.props)) return null;
+  if (control.kind === "media")
+    return <MediaControl element={element} control={control} />;
   const description = control.description ? (
     <FieldDescription>{control.description}</FieldDescription>
   ) : null;

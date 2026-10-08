@@ -1,4 +1,4 @@
-import type { PageDocument } from "@pagebldr/core";
+import type { PageDocument, PagebldrClipboard } from "@pagebldr/core";
 
 export const canvasProtocolVersion = 1 as const;
 export const canvasProtocolChannel = "pagebldr.canvas" as const;
@@ -11,6 +11,11 @@ export interface CanvasRect {
 }
 
 export type CanvasDragSource =
+  | {
+      readonly kind: "block";
+      readonly elementType: string;
+      readonly clipboard: PagebldrClipboard;
+    }
   | { readonly kind: "element"; readonly elementType: string }
   | { readonly kind: "existing"; readonly elementId: string };
 
@@ -161,6 +166,14 @@ function isRect(value: unknown): value is CanvasRect {
 
 function isDragSource(value: unknown): value is CanvasDragSource {
   if (!isRecord(value)) return false;
+  if (value.kind === "block")
+    return (
+      typeof value.elementType === "string" &&
+      isRecord(value.clipboard) &&
+      value.clipboard.format === "pagebldr-clipboard" &&
+      typeof value.clipboard.rootId === "string" &&
+      isRecord(value.clipboard.elements)
+    );
   return value.kind === "element"
     ? typeof value.elementType === "string"
     : value.kind === "existing" && typeof value.elementId === "string";

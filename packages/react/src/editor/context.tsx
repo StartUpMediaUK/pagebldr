@@ -23,6 +23,7 @@ import type {
 } from "@pagebldr/core";
 
 import { CanvasDimensionsProvider } from "./canvas-dimensions-context.js";
+import type { EditorLibrarySource } from "./library-source.js";
 
 export type EditorMode = "edit" | "preview" | "readOnly";
 export type EditorViewport = "desktop" | "desktop-fill" | "tablet" | "mobile";
@@ -34,6 +35,11 @@ export interface ApplicationDestinationOption {
 }
 
 export interface EditorContextValue {
+  readonly librarySource: EditorLibrarySource | undefined;
+  readonly libraryVersion: number;
+  readonly refreshLibrary: () => void;
+  readonly canvasFitVersion: number;
+  readonly fitCanvas: () => void;
   readonly builder: Pagebldr;
   readonly document: PageDocument;
   readonly mode: EditorMode;
@@ -61,12 +67,29 @@ export interface EditorContextValue {
 
 const EditorContext = createContext<EditorContextValue | null>(null);
 const SelectionVersionContext = createContext(0);
+interface LibraryBrowsingState {
+  readonly query: string;
+  readonly tab: string;
+  readonly category: string;
+  readonly templateSource: string;
+  readonly favouritesOnly: boolean;
+}
+const LibraryBrowsingContext = createContext<{
+  readonly value: LibraryBrowsingState;
+  readonly update: React.Dispatch<React.SetStateAction<LibraryBrowsingState>>;
+} | null>(null);
+export function useLibraryBrowsing() {
+  const state = useContext(LibraryBrowsingContext);
+  if (!state) throw new Error("Library browsing requires editor context.");
+  return state;
+}
 /** Private UI notification; repeated selections are not Document mutations. */
 export function useEditorSelectionVersion(): number {
   return useContext(SelectionVersionContext);
 }
 
 export interface EditorProviderProps {
+  readonly librarySource?: EditorLibrarySource;
   readonly builder: Pagebldr;
   readonly document: PageDocument;
   readonly mode: EditorMode;
@@ -79,6 +102,7 @@ export interface EditorProviderProps {
 }
 
 export function EditorProvider({
+  librarySource,
   applicationDestinations,
   builder,
   children,
@@ -87,6 +111,23 @@ export function EditorProvider({
   onChange,
   resolveApplicationDestination,
 }: EditorProviderProps) {
+  const [libraryBrowsing, setLibraryBrowsing] = useState<LibraryBrowsingState>({
+    query: "",
+    tab: "elements",
+    category: "all",
+    templateSource: "featured",
+    favouritesOnly: false,
+  });
+  const [libraryVersion, setLibraryVersion] = useState(0);
+  const [canvasFitVersion, setCanvasFitVersion] = useState(0);
+  const fitCanvas = useCallback(
+    () => setCanvasFitVersion((value) => value + 1),
+    [],
+  );
+  const refreshLibrary = useCallback(
+    () => setLibraryVersion((value) => value + 1),
+    [],
+  );
   const [history, setHistory] = useState<LocalHistory>(() =>
     builder.editor.history.create(document),
   );
@@ -162,6 +203,11 @@ export function EditorProvider({
 
   const value = useMemo<EditorContextValue>(
     () => ({
+      librarySource,
+      libraryVersion,
+      refreshLibrary,
+      canvasFitVersion,
+      fitCanvas,
       builder,
       document: history.present,
       mode,
@@ -189,6 +235,11 @@ export function EditorProvider({
         : {}),
     }),
     [
+      librarySource,
+      libraryVersion,
+      refreshLibrary,
+      canvasFitVersion,
+      fitCanvas,
       builder,
       applicationDestinations,
       dispatch,
@@ -209,7 +260,11 @@ export function EditorProvider({
   return (
     <SelectionVersionContext.Provider value={selectionVersion}>
       <EditorContext.Provider value={value}>
-        <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
+        <LibraryBrowsingContext.Provider
+          value={{ value: libraryBrowsing, update: setLibraryBrowsing }}
+        >
+          <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
+        </LibraryBrowsingContext.Provider>
       </EditorContext.Provider>
     </SelectionVersionContext.Provider>
   );
@@ -220,4 +275,9 @@ export function usePagebldrEditor(): EditorContextValue {
   if (!context)
     throw new Error("usePagebldrEditor must be used inside PagebldrEditor.");
   return context;
+}
+
+/** Private optional context for components also usable by ordinary Hosts. */
+export function useOptionalPagebldrEditor(): EditorContextValue | null {
+  return useContext(EditorContext);
 }

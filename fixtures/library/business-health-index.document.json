@@ -1,0 +1,2928 @@
+{
+  "format": "pagebldr",
+  "schemaVersion": 2,
+  "id": "catalogue-page-319",
+  "title": "Business Health Index",
+  "slug": "business-health-index",
+  "rootId": "catalogue-root-320",
+  "elements": {
+    "catalogue-root-320": {
+      "id": "catalogue-root-320",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Page",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-container-325",
+        "catalogue-container-337",
+        "catalogue-container-344",
+        "catalogue-container-364",
+        "catalogue-container-379",
+        "catalogue-container-383",
+        "catalogue-container-403",
+        "catalogue-container-407",
+        "catalogue-container-413",
+        "catalogue-container-418"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-background"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "display": "flex",
+            "flexDirection": "column",
+            "minHeight": "100vh",
+            "overflow": "hidden"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-logo-321": {
+      "id": "catalogue-logo-321",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Header wordmark",
+      "props": {
+        "display": "text",
+        "text": "YOUR FIRM",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "24px",
+            "fontWeight": 650
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-menu-322": {
+      "id": "catalogue-menu-322",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Index navigation",
+      "props": {
+        "ariaLabel": "Primary navigation",
+        "collapseAt": "tablet",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#f4f1e9",
+        "panelPadding": 24,
+        "itemGap": 30,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "none",
+        "items": [
+          {
+            "id": "method",
+            "label": "Method",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-384"
+            }
+          },
+          {
+            "id": "dimensions",
+            "label": "Dimensions",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-345"
+            }
+          },
+          {
+            "id": "insights",
+            "label": "Insights",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-365"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 700
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-323": {
+      "id": "catalogue-button-323",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Assessment call to action",
+      "props": {
+        "label": "Begin assessment",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          },
+          "hover": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-brand"
+            }
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridColumn": "1 / -1"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-324": {
+      "id": "catalogue-container-324",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-logo-321",
+        "catalogue-menu-322",
+        "catalogue-button-323"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "1fr auto auto",
+            "padding": "16px 36px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr auto",
+            "padding": "14px 20px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-325": {
+      "id": "catalogue-container-325",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Header",
+      "props": {
+        "tag": "header",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-324"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderBottom": "1px solid #b8b6ae"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-326": {
+      "id": "catalogue-heading-326",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Page title",
+      "props": {
+        "content": "The Business Health Index",
+        "level": 1
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "78px",
+            "maxWidth": "650px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "62px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-327": {
+      "id": "catalogue-heading-327",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Know the true health of your business.",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "34px",
+            "maxWidth": "560px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-328": {
+      "id": "catalogue-rich-text-328",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Index introduction",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "A focused diagnostic for established founders. Get an objective view across four dimensions and identify the priority that deserves attention next."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "570px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-329": {
+      "id": "catalogue-button-329",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Assessment call to action",
+      "props": {
+        "label": "Begin the assessment",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-330": {
+      "id": "catalogue-container-330",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero message",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-326",
+        "catalogue-heading-327",
+        "catalogue-rich-text-328",
+        "catalogue-button-329"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "24px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-331": {
+      "id": "catalogue-rich-text-331",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Score illustration label",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "ILLUSTRATIVE INDEX"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".08em",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-332": {
+      "id": "catalogue-heading-332",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "72",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "104px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-333": {
+      "id": "catalogue-rich-text-333",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Score illustration scale",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "OUT OF 100 — EXAMPLE ONLY"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".06em",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-334": {
+      "id": "catalogue-container-334",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Illustrative score",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-331",
+        "catalogue-heading-332",
+        "catalogue-rich-text-333"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-surface"
+            },
+            "border": "1px solid #111210",
+            "borderRadius": "999px",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "6px",
+            "justifyContent": "center",
+            "minHeight": "310px",
+            "padding": "34px",
+            "width": "310px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-335": {
+      "id": "catalogue-container-335",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Static radial score illustration",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-334"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "backgroundImage": "conic-gradient(#d7f000 0 72%,#cbc9c1 72% 100%)",
+            "borderRadius": "999px",
+            "display": "flex",
+            "justifyContent": "center",
+            "minHeight": "440px",
+            "padding": "64px",
+            "width": "440px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "minHeight": "390px",
+            "width": "390px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "minHeight": "320px",
+            "padding": "38px",
+            "width": "320px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-336": {
+      "id": "catalogue-container-336",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-container-330", "catalogue-container-335"],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "54px",
+            "gridTemplateColumns": "1.15fr .85fr",
+            "paddingBottom": "70px",
+            "paddingTop": "70px"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-337": {
+      "id": "catalogue-container-337",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Hero",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-336"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-338": {
+      "id": "catalogue-heading-338",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Clarity creates leverage.",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-background"
+            },
+            "fontSize": "50px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-339": {
+      "id": "catalogue-rich-text-339",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Manifesto statement 1",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Most businesses do not fail from a lack of effort. They lose momentum when the real constraint stays hidden."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #d7f000",
+            "color": "#deddd6",
+            "paddingLeft": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-340": {
+      "id": "catalogue-rich-text-340",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Manifesto statement 2",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "A focused diagnostic turns complex signals into a clear view of what matters and where to act."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #d7f000",
+            "color": "#deddd6",
+            "paddingLeft": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-341": {
+      "id": "catalogue-rich-text-341",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Manifesto statement 3",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "This is not about vanity metrics. It is about building a business that performs with more intention."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #d7f000",
+            "color": "#deddd6",
+            "paddingLeft": "22px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-342": {
+      "id": "catalogue-container-342",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Manifesto statements",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-rich-text-339",
+        "catalogue-rich-text-340",
+        "catalogue-rich-text-341"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "repeat(3,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-343": {
+      "id": "catalogue-container-343",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Manifesto content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-338", "catalogue-container-342"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-344": {
+      "id": "catalogue-container-344",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Manifesto",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-343"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-345": {
+      "id": "catalogue-heading-345",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Four dimensions. One clear priority.",
+        "level": 2,
+        "anchorId": "dimensions"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "520px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-346": {
+      "id": "catalogue-rich-text-346",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Growth number",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "01"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 750
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-347": {
+      "id": "catalogue-heading-347",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Growth",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-348": {
+      "id": "catalogue-rich-text-348",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Growth description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Your ability to acquire, retain, and expand profitable demand."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-349": {
+      "id": "catalogue-container-349",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Growth dimension",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-346",
+        "catalogue-heading-347",
+        "catalogue-rich-text-348"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #b8b6ae",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "minHeight": "240px",
+            "padding": "8px 24px 24px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-350": {
+      "id": "catalogue-rich-text-350",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Profitability number",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "02"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 750
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-351": {
+      "id": "catalogue-heading-351",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Profitability",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-352": {
+      "id": "catalogue-rich-text-352",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Profitability description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Efficiency, margins, and the quality of your economic engine."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-353": {
+      "id": "catalogue-container-353",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Profitability dimension",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-350",
+        "catalogue-heading-351",
+        "catalogue-rich-text-352"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #b8b6ae",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "minHeight": "240px",
+            "padding": "8px 24px 24px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-354": {
+      "id": "catalogue-rich-text-354",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Resilience number",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "03"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 750
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-355": {
+      "id": "catalogue-heading-355",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Resilience",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-356": {
+      "id": "catalogue-rich-text-356",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Resilience description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "How well the business manages risk, adapts, and withstands disruption."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-357": {
+      "id": "catalogue-container-357",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Resilience dimension",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-354",
+        "catalogue-heading-355",
+        "catalogue-rich-text-356"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #b8b6ae",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "minHeight": "240px",
+            "padding": "8px 24px 24px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-358": {
+      "id": "catalogue-rich-text-358",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Alignment number",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "04"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 750
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-359": {
+      "id": "catalogue-heading-359",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Alignment",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "28px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-360": {
+      "id": "catalogue-rich-text-360",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Alignment description",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Clarity, culture, and execution around what matters most."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-361": {
+      "id": "catalogue-container-361",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Alignment dimension",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-358",
+        "catalogue-heading-359",
+        "catalogue-rich-text-360"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderLeft": "1px solid #b8b6ae",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "minHeight": "240px",
+            "padding": "8px 24px 24px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-362": {
+      "id": "catalogue-container-362",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Business health dimensions",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-349",
+        "catalogue-container-353",
+        "catalogue-container-357",
+        "catalogue-container-361"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "0",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-363": {
+      "id": "catalogue-container-363",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Dimensions content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-345", "catalogue-container-362"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-364": {
+      "id": "catalogue-container-364",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Dimensions",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-363"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-365": {
+      "id": "catalogue-heading-365",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Insight that drives decisions.",
+        "level": 2,
+        "anchorId": "insights"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-366": {
+      "id": "catalogue-rich-text-366",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Sample report introduction",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Go beyond a score. Use the example report structure to show how a linked quiz can turn responses into a clear outcome and practical recommendations."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "maxWidth": "560px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-367": {
+      "id": "catalogue-heading-367",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Overall health: 72",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "30px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-368": {
+      "id": "catalogue-rich-text-368",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Illustrative outcome summary",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Example outcome: strong foundations with the clearest opportunity in profitability."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-progress-369": {
+      "id": "catalogue-progress-369",
+      "type": "progress",
+      "elementVersion": 2,
+      "name": "Growth sample score",
+      "props": {
+        "value": 78,
+        "label": "Growth",
+        "showLabel": true,
+        "showValue": true,
+        "trackColor": {
+          "type": "variable",
+          "variableId": "template-rule"
+        },
+        "indicatorColor": {
+          "type": "variable",
+          "variableId": "template-ink"
+        },
+        "thickness": 9,
+        "radius": 0
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 700
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-progress-370": {
+      "id": "catalogue-progress-370",
+      "type": "progress",
+      "elementVersion": 2,
+      "name": "Profitability sample score",
+      "props": {
+        "value": 54,
+        "label": "Profitability",
+        "showLabel": true,
+        "showValue": true,
+        "trackColor": {
+          "type": "variable",
+          "variableId": "template-rule"
+        },
+        "indicatorColor": {
+          "type": "variable",
+          "variableId": "template-brand"
+        },
+        "thickness": 9,
+        "radius": 0
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 700
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-progress-371": {
+      "id": "catalogue-progress-371",
+      "type": "progress",
+      "elementVersion": 2,
+      "name": "Resilience sample score",
+      "props": {
+        "value": 71,
+        "label": "Resilience",
+        "showLabel": true,
+        "showValue": true,
+        "trackColor": {
+          "type": "variable",
+          "variableId": "template-rule"
+        },
+        "indicatorColor": {
+          "type": "variable",
+          "variableId": "template-ink"
+        },
+        "thickness": 9,
+        "radius": 0
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 700
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-progress-372": {
+      "id": "catalogue-progress-372",
+      "type": "progress",
+      "elementVersion": 2,
+      "name": "Alignment sample score",
+      "props": {
+        "value": 83,
+        "label": "Alignment",
+        "showLabel": true,
+        "showValue": true,
+        "trackColor": {
+          "type": "variable",
+          "variableId": "template-rule"
+        },
+        "indicatorColor": {
+          "type": "variable",
+          "variableId": "template-ink"
+        },
+        "thickness": 9,
+        "radius": 0
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "13px",
+            "fontWeight": 700
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-373": {
+      "id": "catalogue-container-373",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Sample score report",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-367",
+        "catalogue-rich-text-368",
+        "catalogue-progress-369",
+        "catalogue-progress-370",
+        "catalogue-progress-371",
+        "catalogue-progress-372"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-surface"
+            },
+            "border": "1px solid #b8b6ae",
+            "boxShadow": "8px 8px 0 rgba(17,18,16,.08)",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "18px",
+            "padding": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-374": {
+      "id": "catalogue-heading-374",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Strengthen pricing power and margin quality.",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "30px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-list-375": {
+      "id": "catalogue-list-375",
+      "type": "list",
+      "elementVersion": 1,
+      "name": "Example next steps",
+      "props": {
+        "ordered": true,
+        "items": [
+          {
+            "id": "step-1",
+            "text": "Refine the value proposition and pricing architecture."
+          },
+          {
+            "id": "step-2",
+            "text": "Remove non-core costs and streamline operations."
+          },
+          {
+            "id": "step-3",
+            "text": "Introduce a regular margin review cadence."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-376": {
+      "id": "catalogue-container-376",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Sample top priority",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-374", "catalogue-list-375"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-surface"
+            },
+            "border": "1px solid #b8b6ae",
+            "boxShadow": "8px 8px 0 rgba(17,18,16,.08)",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "24px",
+            "padding": "34px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-377": {
+      "id": "catalogue-container-377",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Sample report pages",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": ["catalogue-container-373", "catalogue-container-376"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "22px",
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-378": {
+      "id": "catalogue-container-378",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Sample report content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-365",
+        "catalogue-rich-text-366",
+        "catalogue-container-377"
+      ],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-379": {
+      "id": "catalogue-container-379",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Sample report",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-378"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderTop": "1px solid #b8b6ae"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-380": {
+      "id": "catalogue-heading-380",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "“The assessment gave our leadership team the clarity to focus on the issue we had been avoiding.”",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-background"
+            },
+            "fontSize": "42px",
+            "maxWidth": "960px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-381": {
+      "id": "catalogue-rich-text-381",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Testimonial attribution",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "REPLACE WITH A VERIFIED CLIENT NAME, ROLE, AND ORGANISATION"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".06em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-382": {
+      "id": "catalogue-container-382",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Testimonial content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-380", "catalogue-rich-text-381"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-383": {
+      "id": "catalogue-container-383",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Testimonial",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-382"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-384": {
+      "id": "catalogue-heading-384",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "A rigorous, founder-first approach.",
+        "level": 2,
+        "anchorId": "method"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "maxWidth": "560px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-385": {
+      "id": "catalogue-heading-385",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "01",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "border": "1px solid #111210",
+            "borderRadius": "999px",
+            "fontSize": "15px",
+            "padding": "13px",
+            "textAlign": "center",
+            "width": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-386": {
+      "id": "catalogue-heading-386",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Answer",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-387": {
+      "id": "catalogue-rich-text-387",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Answer method",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Respond to a focused set of questions about the business."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-388": {
+      "id": "catalogue-container-388",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Answer step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-385",
+        "catalogue-heading-386",
+        "catalogue-rich-text-387"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "borderTop": "1px solid #111210",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "paddingTop": "22px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-389": {
+      "id": "catalogue-heading-389",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "02",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "border": "1px solid #111210",
+            "borderRadius": "999px",
+            "fontSize": "15px",
+            "padding": "13px",
+            "textAlign": "center",
+            "width": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-390": {
+      "id": "catalogue-heading-390",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Analyse",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-391": {
+      "id": "catalogue-rich-text-391",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Analyse method",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Your linked quiz evaluates responses across the chosen dimensions."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-392": {
+      "id": "catalogue-container-392",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Analyse step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-389",
+        "catalogue-heading-390",
+        "catalogue-rich-text-391"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "borderTop": "1px solid #111210",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "paddingTop": "22px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-393": {
+      "id": "catalogue-heading-393",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "03",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "border": "1px solid #111210",
+            "borderRadius": "999px",
+            "fontSize": "15px",
+            "padding": "13px",
+            "textAlign": "center",
+            "width": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-394": {
+      "id": "catalogue-heading-394",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Interpret",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-395": {
+      "id": "catalogue-rich-text-395",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Interpret method",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Review what the result means without implying external benchmarking."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-396": {
+      "id": "catalogue-container-396",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Interpret step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-393",
+        "catalogue-heading-394",
+        "catalogue-rich-text-395"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "borderTop": "1px solid #111210",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "paddingTop": "22px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-397": {
+      "id": "catalogue-heading-397",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "04",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "border": "1px solid #111210",
+            "borderRadius": "999px",
+            "fontSize": "15px",
+            "padding": "13px",
+            "textAlign": "center",
+            "width": "48px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-398": {
+      "id": "catalogue-heading-398",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Prioritise",
+        "level": 3
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "23px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-399": {
+      "id": "catalogue-rich-text-399",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Prioritise method",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Leave with a clear score, insight, and practical next step."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "14px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-400": {
+      "id": "catalogue-container-400",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Prioritise step",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-397",
+        "catalogue-heading-398",
+        "catalogue-rich-text-399"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "borderTop": "1px solid #111210",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "15px",
+            "paddingTop": "22px",
+            "textAlign": "center"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-401": {
+      "id": "catalogue-container-401",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Assessment method",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-container-388",
+        "catalogue-container-392",
+        "catalogue-container-396",
+        "catalogue-container-400"
+      ],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "grid",
+            "gap": "22px",
+            "gridTemplateColumns": "repeat(4,minmax(0,1fr))"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "gridTemplateColumns": "repeat(2,minmax(0,1fr))"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-402": {
+      "id": "catalogue-container-402",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Method content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-384", "catalogue-container-401"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-403": {
+      "id": "catalogue-container-403",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Method",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-402"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "borderBottom": "1px solid #b8b6ae"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-404": {
+      "id": "catalogue-heading-404",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Common questions.",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-accordion-405": {
+      "id": "catalogue-accordion-405",
+      "type": "accordion",
+      "elementVersion": 1,
+      "name": "Assessment frequently asked questions",
+      "props": {
+        "allowMultiple": true,
+        "items": [
+          {
+            "id": "faq-1",
+            "question": "How long does the assessment take?",
+            "answer": "Replace with a duration verified against the linked quiz."
+          },
+          {
+            "id": "faq-2",
+            "question": "Are my answers private and secure?",
+            "answer": "Replace with accurate privacy, storage, and access information."
+          },
+          {
+            "id": "faq-3",
+            "question": "How is my score calculated?",
+            "answer": "Explain the linked quiz's actual scoring model in plain language."
+          },
+          {
+            "id": "faq-4",
+            "question": "What do I receive at the end?",
+            "answer": "Describe the real outcome, recommendations, and any follow-up accurately."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-406": {
+      "id": "catalogue-container-406",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-heading-404", "catalogue-accordion-405"],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-407": {
+      "id": "catalogue-container-407",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "FAQ",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-406"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-408": {
+      "id": "catalogue-rich-text-408",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Final call to action label",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "GET CLARITY. TAKE ACTION."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "fontSize": "12px",
+            "fontWeight": 750,
+            "letterSpacing": ".08em"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-heading-409": {
+      "id": "catalogue-heading-409",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "Begin the assessment.",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-background"
+            },
+            "fontSize": "52px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-410": {
+      "id": "catalogue-rich-text-410",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Final invitation",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Use the next few minutes to identify the business priority that deserves your attention."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": "#deddd6",
+            "maxWidth": "580px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-button-411": {
+      "id": "catalogue-button-411",
+      "type": "button",
+      "elementVersion": 1,
+      "name": "Assessment call to action",
+      "props": {
+        "label": "Begin the assessment",
+        "destination": {
+          "type": "external",
+          "url": "https://example.com/start",
+          "newTab": false
+        }
+      },
+      "children": [],
+      "classIds": ["template-button"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": "transparent",
+            "border": "1px solid #f4f1e9",
+            "color": {
+              "type": "variable",
+              "variableId": "template-background"
+            }
+          },
+          "hover": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-412": {
+      "id": "catalogue-container-412",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action content",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-rich-text-408",
+        "catalogue-heading-409",
+        "catalogue-rich-text-410",
+        "catalogue-button-411"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "flex-start",
+            "paddingBottom": "58px",
+            "paddingTop": "58px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-413": {
+      "id": "catalogue-container-413",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Final call to action",
+      "props": {
+        "tag": "div",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-412"],
+      "classIds": [],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-logo-414": {
+      "id": "catalogue-logo-414",
+      "type": "logo",
+      "elementVersion": 1,
+      "name": "Footer wordmark",
+      "props": {
+        "display": "text",
+        "text": "YOUR FIRM",
+        "source": {
+          "type": "external",
+          "url": "https://placehold.co/240x80/f4f4f5/171717?text=Your+Brand"
+        },
+        "alt": "Your Brand",
+        "imagePosition": "before",
+        "gap": 12,
+        "alignment": "center",
+        "imageWidth": 120,
+        "imageFit": "contain"
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "22px",
+            "fontWeight": 650
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-menu-415": {
+      "id": "catalogue-menu-415",
+      "type": "menu",
+      "elementVersion": 1,
+      "name": "Footer navigation",
+      "props": {
+        "ariaLabel": "Footer navigation",
+        "collapseAt": "never",
+        "presentation": "dropdown",
+        "toggleLabel": "Open navigation",
+        "panelBackground": "#ffffff",
+        "panelPadding": 24,
+        "itemGap": 22,
+        "itemAlignment": "start",
+        "fullscreenVerticalAlignment": "start",
+        "itemAppearance": "underline",
+        "itemBackground": "#f4f4f5",
+        "itemHoverBackground": "#e4e4e7",
+        "breakpointPosition": "end",
+        "items": [
+          {
+            "id": "method",
+            "label": "Method",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-384"
+            }
+          },
+          {
+            "id": "dimensions",
+            "label": "Dimensions",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-345"
+            }
+          },
+          {
+            "id": "insights",
+            "label": "Insights",
+            "destination": {
+              "type": "anchor",
+              "elementId": "catalogue-heading-365"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "12px",
+            "fontWeight": 700
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-copyright-416": {
+      "id": "catalogue-copyright-416",
+      "type": "copyright",
+      "elementVersion": 1,
+      "name": "Copyright",
+      "props": {
+        "showSymbol": true,
+        "showYear": true,
+        "owner": "Your Brand",
+        "suffix": "All rights reserved."
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "fontSize": "12px"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-417": {
+      "id": "catalogue-container-417",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer content",
+      "props": {
+        "tag": "div",
+        "layout": "grid"
+      },
+      "children": [
+        "catalogue-logo-414",
+        "catalogue-menu-415",
+        "catalogue-copyright-416"
+      ],
+      "classIds": ["template-section"],
+      "styles": {
+        "desktop": {
+          "normal": {
+            "alignItems": "center",
+            "display": "grid",
+            "gap": "28px",
+            "gridTemplateColumns": "1fr auto auto",
+            "paddingBottom": "24px",
+            "paddingTop": "24px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "alignItems": "flex-start",
+            "gridTemplateColumns": "1fr"
+          }
+        }
+      },
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-418": {
+      "id": "catalogue-container-418",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "Footer",
+      "props": {
+        "tag": "footer",
+        "layout": "flex"
+      },
+      "children": ["catalogue-container-417"],
+      "classIds": [],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {
+    "template-section": {
+      "id": "template-section",
+      "name": "Editorial section",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "30px",
+            "margin": "0 auto",
+            "maxWidth": {
+              "type": "variable",
+              "variableId": "template-content-width"
+            },
+            "padding": "80px 36px",
+            "width": "100%"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "padding": "64px 28px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gap": "24px",
+            "padding": "50px 20px"
+          }
+        }
+      }
+    },
+    "template-heading": {
+      "id": "template-heading",
+      "name": "Editorial heading",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "50px",
+            "fontWeight": 500,
+            "letterSpacing": "-0.055em",
+            "lineHeight": 1,
+            "margin": 0
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "42px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "34px"
+          }
+        }
+      }
+    },
+    "template-copy": {
+      "id": "template-copy",
+      "name": "Editorial copy",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "16px",
+            "lineHeight": 1.65
+          }
+        }
+      }
+    },
+    "template-button": {
+      "id": "template-button",
+      "name": "Assessment action",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "border": "1px solid #111210",
+            "borderRadius": "0",
+            "color": {
+              "type": "variable",
+              "variableId": "template-background"
+            },
+            "display": "inline-flex",
+            "fontFamily": "Geist, sans-serif",
+            "fontSize": "13px",
+            "fontWeight": 750,
+            "justifyContent": "center",
+            "letterSpacing": ".055em",
+            "padding": "16px 24px",
+            "textDecoration": "none",
+            "textTransform": "uppercase",
+            "width": "fit-content"
+          },
+          "hover": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            }
+          },
+          "focusVisible": {
+            "outline": "3px solid #d7f000",
+            "outlineOffset": "3px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "width": "100%"
+          }
+        }
+      }
+    }
+  },
+  "classOrder": [
+    "template-section",
+    "template-heading",
+    "template-copy",
+    "template-button"
+  ],
+  "variables": {
+    "template-background": {
+      "id": "template-background",
+      "name": "Bone",
+      "kind": "color",
+      "value": "#f4f1e9"
+    },
+    "template-ink": {
+      "id": "template-ink",
+      "name": "Black",
+      "kind": "color",
+      "value": "#111210"
+    },
+    "template-muted": {
+      "id": "template-muted",
+      "name": "Gray",
+      "kind": "color",
+      "value": "#6d6d65"
+    },
+    "template-rule": {
+      "id": "template-rule",
+      "name": "Rules and tracks",
+      "kind": "color",
+      "value": "#d8d5cc"
+    },
+    "template-brand": {
+      "id": "template-brand",
+      "name": "Acid lime",
+      "kind": "color",
+      "value": "#d7f000"
+    },
+    "template-surface": {
+      "id": "template-surface",
+      "name": "Paper",
+      "kind": "color",
+      "value": "#faf8f2"
+    },
+    "template-content-width": {
+      "id": "template-content-width",
+      "name": "Content width",
+      "kind": "contentWidth",
+      "value": "1240px"
+    },
+    "template-section-space": {
+      "id": "template-section-space",
+      "name": "Section spacing",
+      "kind": "spacing",
+      "value": "80px"
+    }
+  },
+  "variableOrder": [
+    "template-background",
+    "template-ink",
+    "template-muted",
+    "template-rule",
+    "template-brand",
+    "template-surface",
+    "template-content-width",
+    "template-section-space"
+  ],
+  "settings": {
+    "contentWidth": 1200,
+    "showDefaultHeader": true,
+    "breakpoints": {
+      "tabletMax": 1024,
+      "mobileMax": 767
+    },
+    "seo": {
+      "title": "Business Health Index",
+      "description": "Invite established founders to assess business health across growth, profitability, resilience, and alignment.",
+      "socialTitle": "",
+      "socialDescription": "",
+      "socialImage": null,
+      "noIndex": false
+    }
+  }
+}

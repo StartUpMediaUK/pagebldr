@@ -17,6 +17,12 @@ import {
 import "pagebldr/styles.css";
 import allElementsFixture from "../../../fixtures/parity/all-elements.document.json";
 import projectEnquiryFixture from "../../../fixtures/parity/project-enquiry.document.json";
+import { referenceLibrary, referenceTemplate } from "./reference-library.js";
+import { MediaExample } from "./media-example.js";
+import {
+  createReferenceMediaAdapter,
+  createCuratedMediaAdapter,
+} from "./reference-media.js";
 
 const stringReference: StandardSchemaV1<unknown, string> = {
   "~standard": {
@@ -29,20 +35,19 @@ const stringReference: StandardSchemaV1<unknown, string> = {
   },
 };
 
+const referenceMedia = createReferenceMediaAdapter();
 const builder = createPagebldr({
   namespace: "vite-example",
   elements: standardElements,
   styleCapabilities: standardStyleCapabilities,
   resources: {
-    asset: {
+    asset: referenceMedia,
+    "curated-media": createCuratedMediaAdapter(),
+    // Original geometric illustration, not one of the source Template images.
+    "template-media": {
       reference: stringReference,
-      resolve: (id) => (typeof id === "string" ? `/assets/${id}` : null),
-      browse: ({ query }) =>
-        Promise.resolve({
-          items: ["hero.jpg", "product.jpg"].filter((id) =>
-            id.includes(query ?? ""),
-          ),
-        }),
+      resolve: (_reference, context) =>
+        referenceMedia.resolve("image-1", context),
     },
     "application-link": {
       reference: stringReference,
@@ -55,6 +60,7 @@ const builder = createPagebldr({
 
 const initialDocument = builder.documents.migrate(projectEnquiryFixture);
 const allElementsDocument = builder.documents.migrate(allElementsFixture);
+const librarySource = referenceLibrary(builder);
 
 type ExtensionEditorOptions = Pick<
   PagebldrEditorProps,
@@ -72,6 +78,15 @@ function App() {
     useState<ExtensionEditorOptions | null>(null);
 
   useEffect(() => {
+    if (route.startsWith("#/editor/template/")) {
+      const template = referenceTemplate(
+        builder,
+        route.slice("#/editor/template/".length),
+      );
+      if (template) setDocument(template);
+    }
+  }, [route]);
+  useEffect(() => {
     const onHashChange = () => setRoute(window.location.hash || "#/editor");
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
@@ -84,6 +99,7 @@ function App() {
     );
   }, [extensionOptions, route]);
 
+  if (route === "#/media") return <MediaExample builder={builder} />;
   if (
     route === "#/preview" ||
     route === "#/published" ||
@@ -119,6 +135,7 @@ function App() {
         </a>
       </nav>
       <PagebldrEditor
+        librarySource={librarySource}
         applicationDestinations={[
           {
             label: "Welcome",

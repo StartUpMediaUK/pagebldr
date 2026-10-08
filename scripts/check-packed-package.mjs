@@ -17,6 +17,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
+import { assertTemplateBoundary } from "./template-boundary.mjs";
 
 const workspace = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const packageDirectory = join(workspace, "packages", "pagebldr");
@@ -69,9 +70,21 @@ try {
     throw new Error("pnpm pack did not return an archive path.");
 
   const archivePath = resolve(temporaryDirectory, archiveName);
-  // Source-composed inspectors and Radix Select add ~72 KB compressed over
-  // the colour checkpoint, including maps; retain explicit measured budgets.
-  assertMaximumSize(archivePath, 1_515_000, "Packed archive");
+  // Check the packed file list before consumer installation or browser setup.
+  const archiveFiles = execFileSync("tar", ["-tf", archivePath], {
+    encoding: "utf8",
+  });
+  if (
+    /fixtures\/|public\/templates\/|\.(?:png|jpe?g|webp|gif|avif|svg)$/imu.test(
+      archiveFiles,
+    )
+  )
+    throw new Error(
+      "The package archive must not contain test fixtures or image assets.",
+    );
+  // Phase 6 adds the neutral 23-Block library subpath and shared library/media
+  // UI (~1.61 MB packed including maps); private Template fixtures are excluded.
+  assertMaximumSize(archivePath, 1_650_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -132,6 +145,8 @@ export const builder = createPagebldr({ namespace: "tree-shake-check" });
     join(consumerDirectory, "vite-consumer.tsx"),
     `import { createPagebldr } from "pagebldr";
 import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
+import { standardBlocks } from "pagebldr/library";
+void standardBlocks;
 
 const builder = createPagebldr({ namespace: "vite-app" });
 const document = builder.documents.create({ id: "home", title: "Home" });
@@ -177,7 +192,8 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    127_000,
+    // Measured Phase 6 factory-only consumer: 127,253 bytes.
+    128_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -235,7 +251,7 @@ if (errors.length > 0) throw errors[0];
     [
       "--input-type=module",
       "--eval",
-      "await Promise.all([import('pagebldr'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/server/next'), import('pagebldr/runtime'), import('pagebldr/runtime/next'), import('pagebldr/adapters/memory'), import('pagebldr/adapters/prisma')])",
+      "await Promise.all([import('pagebldr'), import('pagebldr/library'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/server/next'), import('pagebldr/runtime'), import('pagebldr/runtime/next'), import('pagebldr/adapters/memory'), import('pagebldr/adapters/prisma')])",
     ],
     { cwd: consumerDirectory, stdio: "inherit" },
   );
@@ -261,6 +277,12 @@ if (errors.length > 0) throw errors[0];
     { recursive: true },
   );
   const fixtureDirectory = join(consumerDirectory, "fixtures", "parity");
+  // Private Host testing material is supplied separately, never from the archive.
+  cpSync(
+    join(workspace, "fixtures", "library"),
+    join(consumerDirectory, "fixtures", "library"),
+    { recursive: true },
+  );
   mkdirSync(fixtureDirectory, { recursive: true });
   copyFileSync(
     join(workspace, "fixtures", "parity", "project-enquiry.document.json"),
@@ -322,6 +344,7 @@ if (errors.length > 0) throw errors[0];
     console.log(`Packed Reference Host: ${referenceHostDirectory}`);
   }
   const installedPackage = join(consumerDirectory, "node_modules", "pagebldr");
+  assertTemplateBoundary(installedPackage);
   for (const [subpath, target] of Object.entries(installedManifest.exports)) {
     const targets =
       typeof target === "string" ? [target] : Object.values(target);
@@ -379,13 +402,13 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    1_085_000,
+    1_350_000,
     "React entry",
   );
   assertMaximumSize(
     join(distributionDirectory, "index.js"),
-    // Phase 6 library preparation adds ~2 KB over the 249,061-byte Phase 5 core.
-    252_000,
+    // Phase 6 adds media contracts and upload queue, not catalogue data, to core.
+    260_000,
     "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {
@@ -397,7 +420,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    79_000,
+    85_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

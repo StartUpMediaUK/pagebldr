@@ -33,6 +33,10 @@
     "THIRD_PARTY_NOTICES.md"
   ],
   "exports": {
+    "./library": {
+      "types": "./dist/library.d.ts",
+      "import": "./dist/library.js"
+    },
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"

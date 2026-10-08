@@ -1,4 +1,4 @@
 {
   "title": "React integration",
-  "pages": ["index", "editor", "renderer", "modes"]
+  "pages": ["index", "editor", "libraries-and-media", "renderer", "modes"]
 }

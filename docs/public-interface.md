@@ -139,6 +139,32 @@ editor token does not rewrite authored Document colors.
 
 ## Elements, Resources, Blocks, and Templates
 
+The standard editor includes 23 neutral Block factories, also exported from
+`pagebldr/library`. It ships no built-in Template catalogue or Template images.
+Templates are supplied by the Host through builder configuration or the React
+editor's `librarySource: EditorLibrarySource` prop. Private Reference Host
+Template fixtures are not installed package content.
+
+`EditorLibrarySource` exposes optional list/save/delete Block callbacks,
+list/delete/edit Template callbacks, and reference adaptation callbacks before
+insertion/application. The Host supplies only authorized capabilities and owns
+scope, durable storage and navigation. Saved Block labels are 1–80 characters
+and the editor prechecks the 50-Block limit; the Host must also enforce it.
+Preview is read-only. Async adaptation refuses stale Document application.
+
+`ResourceAdapter.media` optionally describes browse items and provides existing
+reference lookup and upload/external-creation capabilities. Browse requests
+carry `MediaBrowseOptions` for allowed kinds, type/source filters and ordering;
+Hosts apply them before pagination. `media.lookup` restores selections outside
+the first browse page. `MediaPicker` and `MediaViewer` are public React exports,
+usable in editor context or with an explicit builder. Pending selection commits
+only on Select; cancellation never attaches Resources. Upload queues survive
+picker closure for the lifetime of a scoped adapter. MediaItem, MediaKind,
+MediaUpload, MediaBrowseOptions and MediaCapabilities are core public types. PDF
+previews verify bounded bytes before producing a PDF-only object URL;
+inaccessible files retain a safe download fallback. See the public
+libraries/media guide for cardinality and per-usage semantics.
+
 An Element definition owns its property schema and defaults, child policy, Style
 capabilities, migration, Controls, accessibility metadata, Resource references,
 and framework-neutral render tree. React rendering translates that tree; it does

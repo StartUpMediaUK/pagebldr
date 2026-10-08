@@ -17,7 +17,7 @@
     "lint": "eslint .",
     "packages:check": "pnpm --filter pagebldr package:check && node scripts/check-packed-package.mjs",
     "parity:fixtures:check": "node scripts/check-parity-fixtures.mjs",
-    "test": "turbo run test",
+    "test": "node --test scripts/template-boundary.test.mjs && turbo run test",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {

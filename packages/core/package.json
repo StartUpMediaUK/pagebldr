@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./library": "./src/standard-library.ts"
   },
   "devDependencies": {
     "fast-check": "4.9.0",

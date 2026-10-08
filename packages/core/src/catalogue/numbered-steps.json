@@ -1,0 +1,274 @@
+{
+  "format": "pagebldr-clipboard",
+  "schemaVersion": 1,
+  "rootId": "catalogue-container-51",
+  "elements": {
+    "catalogue-heading-48": {
+      "id": "catalogue-heading-48",
+      "type": "heading",
+      "elementVersion": 1,
+      "name": "Section heading",
+      "props": {
+        "content": "A straightforward path from question to action",
+        "level": 2
+      },
+      "children": [],
+      "classIds": ["template-heading"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-rich-text-49": {
+      "id": "catalogue-rich-text-49",
+      "type": "rich-text",
+      "elementVersion": 1,
+      "name": "Supporting copy",
+      "props": {
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "Reduce uncertainty by making the journey visible before visitors begin."
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-list-50": {
+      "id": "catalogue-list-50",
+      "type": "list",
+      "elementVersion": 1,
+      "name": "Numbered steps",
+      "props": {
+        "ordered": true,
+        "items": [
+          {
+            "id": "step-1",
+            "text": "Share the context that matters"
+          },
+          {
+            "id": "step-2",
+            "text": "Review the direction that fits"
+          },
+          {
+            "id": "step-3",
+            "text": "Choose the next practical action"
+          }
+        ]
+      },
+      "children": [],
+      "classIds": ["template-card", "template-copy"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    },
+    "catalogue-container-51": {
+      "id": "catalogue-container-51",
+      "type": "container",
+      "elementVersion": 1,
+      "name": "How it works",
+      "props": {
+        "tag": "section",
+        "layout": "flex"
+      },
+      "children": [
+        "catalogue-heading-48",
+        "catalogue-rich-text-49",
+        "catalogue-list-50"
+      ],
+      "classIds": ["template-section"],
+      "styles": {},
+      "locked": false,
+      "hidden": false
+    }
+  },
+  "classes": {
+    "template-section": {
+      "id": "template-section",
+      "name": "Template section",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "24px",
+            "margin": "0 auto",
+            "maxWidth": {
+              "type": "variable",
+              "variableId": "template-content-width"
+            },
+            "padding": "88px 32px",
+            "width": "100%"
+          }
+        },
+        "tablet": {
+          "normal": {
+            "padding": "72px 28px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "gap": "18px",
+            "padding": "56px 20px"
+          }
+        }
+      }
+    },
+    "template-heading": {
+      "id": "template-heading",
+      "name": "Template heading",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-ink"
+            },
+            "fontSize": "52px",
+            "fontWeight": 750,
+            "letterSpacing": "-0.045em",
+            "lineHeight": 1.02,
+            "margin": 0
+          }
+        },
+        "tablet": {
+          "normal": {
+            "fontSize": "44px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "36px"
+          }
+        }
+      }
+    },
+    "template-copy": {
+      "id": "template-copy",
+      "name": "Template copy",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "color": {
+              "type": "variable",
+              "variableId": "template-muted"
+            },
+            "fontSize": "18px",
+            "lineHeight": 1.65
+          }
+        },
+        "mobile": {
+          "normal": {
+            "fontSize": "16px"
+          }
+        }
+      }
+    },
+    "template-button": {
+      "id": "template-button",
+      "name": "Template button",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-brand"
+            },
+            "borderRadius": "12px",
+            "color": "#ffffff",
+            "display": "inline-flex",
+            "fontWeight": 700,
+            "padding": "15px 22px",
+            "textDecoration": "none",
+            "width": "fit-content"
+          },
+          "hover": {
+            "opacity": 0.9,
+            "transform": "translateY(-1px)"
+          },
+          "focusVisible": {
+            "outline": "3px solid rgba(109,93,251,.35)",
+            "outlineOffset": "3px"
+          }
+        },
+        "mobile": {
+          "normal": {
+            "width": "100%"
+          }
+        }
+      }
+    },
+    "template-card": {
+      "id": "template-card",
+      "name": "Template card",
+      "styles": {
+        "desktop": {
+          "normal": {
+            "backgroundColor": {
+              "type": "variable",
+              "variableId": "template-surface"
+            },
+            "borderRadius": "20px",
+            "padding": "28px"
+          }
+        }
+      }
+    }
+  },
+  "classOrder": [
+    "template-section",
+    "template-heading",
+    "template-copy",
+    "template-button",
+    "template-card"
+  ],
+  "variables": {
+    "template-brand": {
+      "id": "template-brand",
+      "name": "Template brand",
+      "kind": "color",
+      "value": "#6d5dfb"
+    },
+    "template-ink": {
+      "id": "template-ink",
+      "name": "Template ink",
+      "kind": "color",
+      "value": "#171a2b"
+    },
+    "template-muted": {
+      "id": "template-muted",
+      "name": "Template muted text",
+      "kind": "color",
+      "value": "#667085"
+    },
+    "template-surface": {
+      "id": "template-surface",
+      "name": "Template surface",
+      "kind": "color",
+      "value": "#f5f3ff"
+    },
+    "template-content-width": {
+      "id": "template-content-width",
+      "name": "Template content width",
+      "kind": "contentWidth",
+      "value": "1180px"
+    },
+    "template-section-space": {
+      "id": "template-section-space",
+      "name": "Template section spacing",
+      "kind": "spacing",
+      "value": "88px"
+    }
+  },
+  "variableOrder": [
+    "template-brand",
+    "template-ink",
+    "template-muted",
+    "template-surface",
+    "template-content-width",
+    "template-section-space"
+  ]
+}

@@ -123,6 +123,11 @@ export type ElementControl<Props> =
       }[];
     })
   | (ElementControlBase<Props> & {
+      readonly kind: "media";
+      readonly usage: "image" | "video" | "gallery" | "logos";
+      readonly nullable?: boolean;
+    })
+  | (ElementControlBase<Props> & {
       readonly kind: "destination";
       readonly nullable?: boolean;
     })

@@ -1,0 +1,113 @@
+[
+  {
+    "key": "growth-bottleneck-audit",
+    "label": "Growth Bottleneck Audit",
+    "category": "lead-funnel",
+    "description": "An energetic qualification funnel that helps prospects identify the constraint slowing their growth.",
+    "tags": [
+      "lead funnel",
+      "qualification",
+      "consultant",
+      "audit",
+      "diagnostic"
+    ],
+    "thumbnail": {
+      "accent": "#ff43b4",
+      "eyebrow": "Lead funnel",
+      "summary": "Find the constraint costing your business momentum."
+    }
+  },
+  {
+    "key": "independent-work-study",
+    "label": "Independent Work Study",
+    "category": "market-research",
+    "description": "A calm research recruitment page with eligibility, privacy guidance, and clear participation steps.",
+    "tags": [
+      "market research",
+      "survey",
+      "anonymous audience",
+      "study",
+      "feedback"
+    ],
+    "thumbnail": {
+      "accent": "#6437e8",
+      "eyebrow": "Market research",
+      "summary": "Recruit eligible participants with clear study and privacy information."
+    }
+  },
+  {
+    "key": "business-health-index",
+    "label": "Business Health Index",
+    "category": "lead-funnel",
+    "description": "A restrained editorial scorecard page for consultancies and fractional executives.",
+    "tags": [
+      "lead funnel",
+      "scorecard",
+      "business health",
+      "consulting",
+      "prospective customers"
+    ],
+    "thumbnail": {
+      "accent": "#d7f000",
+      "eyebrow": "Lead funnel",
+      "summary": "Frame a rigorous business diagnostic and preview its outcome."
+    }
+  },
+  {
+    "key": "business-pulse",
+    "label": "Business Pulse",
+    "category": "lead-funnel",
+    "description": "A bold, energetic business diagnostic for agencies, coaches, and growth consultancies.",
+    "tags": [
+      "lead funnel",
+      "business diagnostic",
+      "scorecard",
+      "agency",
+      "coaching",
+      "prospective customers"
+    ],
+    "thumbnail": {
+      "accent": "#1647e8",
+      "eyebrow": "Lead funnel",
+      "summary": "Turn business signals into one clear priority and next move."
+    }
+  },
+  {
+    "key": "solution-fit-finder",
+    "label": "Solution Fit Finder",
+    "category": "lead-funnel",
+    "description": "A calm, adaptable recommendation journey for service, product, education, and research offers.",
+    "tags": [
+      "lead funnel",
+      "recommendation",
+      "solution finder",
+      "product matching",
+      "service matching",
+      "prospective customers"
+    ],
+    "thumbnail": {
+      "accent": "#1557d6",
+      "eyebrow": "Lead funnel",
+      "summary": "Match each prospect to the solution that fits them best."
+    }
+  },
+  {
+    "key": "project-fit-enquiry",
+    "label": "Project Fit Enquiry",
+    "category": "structured-data-collection",
+    "description": "An editorial enquiry page for qualifying thoughtful, project-led service work.",
+    "tags": [
+      "structured data collection",
+      "project enquiry",
+      "lead qualification",
+      "service business",
+      "landscape design",
+      "prospective customers"
+    ],
+    "thumbnail": {
+      "accent": "#667858",
+      "eyebrow": "Structured data collection",
+      "summary": "Gather the context needed to review project fit thoughtfully."
+    }
+  }
+]
