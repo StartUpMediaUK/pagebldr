@@ -63,6 +63,16 @@ export interface EventDeliveryOptions {
 }
 
 export interface EventDelivery {
+  /** Prepare a redacted durable Audit record without sending it to a sink. */
+  readonly prepareAudit: (
+    input: Omit<
+      AuditEvent,
+      "family" | "schemaVersion" | "id" | "sequence" | "occurredAt"
+    >,
+    sequence?: number,
+  ) => AuditEvent;
+  /** Bounded immediate delivery of an existing durable ID; false leaves it pending. */
+  readonly deliverAudit: (event: AuditEvent) => Promise<boolean>;
   readonly audit: (
     input: Omit<
       AuditEvent,
@@ -109,22 +119,49 @@ export function createEventDelivery(
     queue.push(event);
     if (queue.length >= batchSize) pending = pending.then(flush, flush);
   };
+  const prepareAudit: EventDelivery["prepareAudit"] = (
+    input,
+    durableSequence,
+  ) => {
+    const nextSequence = durableSequence ?? sequence + 1;
+    if (!Number.isSafeInteger(nextSequence) || nextSequence < 1)
+      throw new TypeError("Audit sequence must be a positive safe integer.");
+    sequence = Math.max(sequence, nextSequence);
+    return Object.freeze({
+      ...input,
+      family: "audit",
+      schemaVersion: 1,
+      id: createId(),
+      sequence: nextSequence,
+      occurredAt: now().toISOString(),
+      data: redact(input.data),
+    });
+  };
   return Object.freeze({
+    prepareAudit,
+    deliverAudit: async (event: AuditEvent) => {
+      const redacted: AuditEvent = { ...event, data: redact(event.data) };
+      for (
+        let attempt = 0;
+        attempt <= Math.min(Math.max(options.retries ?? 2, 0), 10);
+        attempt++
+      ) {
+        try {
+          await options.sink.write([redacted]);
+          return true;
+        } catch {
+          /* Durable outbox retains the event for a later Host retry. */
+        }
+      }
+      return false;
+    },
     audit: (
       input: Omit<
         AuditEvent,
         "family" | "schemaVersion" | "id" | "sequence" | "occurredAt"
       >,
     ) => {
-      const event: AuditEvent = Object.freeze({
-        family: "audit",
-        schemaVersion: 1,
-        id: createId(),
-        sequence: ++sequence,
-        occurredAt: now().toISOString(),
-        ...input,
-        data: redact(input.data),
-      });
+      const event = prepareAudit(input);
       schedule(event);
       return Promise.resolve(event);
     },

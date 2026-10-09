@@ -27,6 +27,19 @@ function storage(
 }
 
 describe("createPagebldrServer", () => {
+  it.each([0, -1, 1.5, NaN, Infinity])(
+    "refuses invalid retention %s",
+    (retention) => {
+      expect(() =>
+        createPagebldrServer({
+          builder: createPagebldr({ namespace: "test-app" }),
+          storage: storage(),
+          collection: { mode: "multiple" },
+          revisions: { enabled: true, retention },
+        }),
+      ).toThrow("positive safe integer");
+    },
+  );
   it("preserves provider identity", () => {
     const server = createPagebldrServer({
       builder: createPagebldr({ namespace: "test-app" }),

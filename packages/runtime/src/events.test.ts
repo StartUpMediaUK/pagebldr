@@ -6,11 +6,55 @@ import {
   createEventDelivery,
   memoryAuditEventStore,
   memoryEventSink,
+  type PagebldrEvent,
 } from "./events.js";
 
 const context = { namespace: "test", scope: { workspace: "one" } };
 
 describe("event delivery", () => {
+  it("prepares a redacted durable record without delivery and preserves its ID on bounded retries", async () => {
+    const write = vi
+      .fn<(events: readonly PagebldrEvent[]) => Promise<void>>()
+      .mockRejectedValue(new Error("offline"));
+    const delivery = createEventDelivery({
+      sink: callbackEventSink(write),
+      createId: () => "durable-id",
+      retries: 100,
+      failure: "throw",
+    });
+    const event = delivery.prepareAudit(
+      {
+        type: "document.saved",
+        context,
+        subject: { documentKey: "home" },
+        data: { version: 2, content: "private" },
+      },
+      7,
+    );
+    await delivery.flush();
+    expect(write).not.toHaveBeenCalled();
+    expect(event).toMatchObject({
+      id: "durable-id",
+      sequence: 7,
+      schemaVersion: 1,
+      data: { version: 2 },
+    });
+    expect(event.data).not.toHaveProperty("content");
+    await expect(delivery.deliverAudit(event)).resolves.toBe(false);
+    expect(write).toHaveBeenCalledTimes(11);
+    expect(
+      write.mock.calls.every(([batch]) => batch[0]?.id === "durable-id"),
+    ).toBe(true);
+    write.mockResolvedValue(undefined);
+    await expect(delivery.deliverAudit(event)).resolves.toBe(true);
+    expect(() =>
+      delivery.prepareAudit(
+        { type: "document.saved", context, subject: {}, data: {} },
+        0,
+      ),
+    ).toThrow("positive safe integer");
+  });
+
   it("versions, orders, deduplicates IDs, redacts, batches, and gates Analytics consent", async () => {
     const sink = memoryEventSink();
     let id = 0;

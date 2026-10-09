@@ -23,6 +23,19 @@ import { PagebldrRenderer } from "./renderer.js";
 import { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
 import type { EditorLibrarySource } from "./editor/library-source.js";
 export type { EditorLibrarySource } from "./editor/library-source.js";
+export { createEditorLifecycle } from "./editor/lifecycle.js";
+export type {
+  EditorLifecycleOptions,
+  EditorLifecycleSnapshot,
+  EditorLifecycleSaveRequest,
+  EditorLifecycleMutationRequest,
+  EditorRevision,
+} from "./editor/lifecycle.js";
+export type {
+  EditorRecoveryStorage,
+  EditorRecovery,
+} from "./editor/recovery.js";
+import type { createEditorLifecycle } from "./editor/lifecycle.js";
 export { MediaPicker, MediaViewer } from "./editor/media-picker.js";
 export type { MediaPickerProps } from "./editor/media-picker.js";
 
@@ -68,6 +81,7 @@ export interface PublishRequest {
 }
 
 export interface PagebldrEditorProps {
+  readonly lifecycle?: ReturnType<typeof createEditorLifecycle>;
   readonly librarySource?: EditorLibrarySource;
   readonly builder: Pagebldr;
   readonly document: PageDocument;

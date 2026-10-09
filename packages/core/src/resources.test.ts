@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createPagebldr } from "./config.js";
 import { defineElement } from "./element.js";
-import { resolveDocumentResources, resourceKey } from "./resources.js";
+import {
+  extractDocumentReferences,
+  resolveDocumentResources,
+  resourceKey,
+} from "./resources.js";
 import type { StandardSchemaV1 } from "./schema.js";
 
 const referenceSchema = {
@@ -41,6 +45,34 @@ const image = defineElement({
 });
 
 describe("Resource preparation", () => {
+  it("includes social media settings and deduplicates them with Element references", async () => {
+    const resolve = vi.fn(() => "/social.svg");
+    const builder = createPagebldr({
+      namespace: "social-references",
+      elements: [image],
+      resources: { asset: { reference: referenceSchema, resolve } },
+    });
+    const base = builder.documents.create({ id: "home" });
+    const document = {
+      ...base,
+      settings: {
+        ...base.settings,
+        seo: {
+          ...base.settings.seo,
+          socialImage: { kind: "asset", value: "social" },
+        },
+      },
+    };
+    expect(extractDocumentReferences(builder, document)).toEqual([
+      { kind: "asset", value: "social" },
+    ]);
+    expect(
+      (await resolveDocumentResources(builder, document)).values.get(
+        resourceKey({ kind: "asset", value: "social" }),
+      ),
+    ).toBe("/social.svg");
+    expect(resolve).toHaveBeenCalledOnce();
+  });
   it("resolves and deduplicates references through independent adapters", async () => {
     const asset = vi.fn((value: string) => `/assets/${value}`);
     const cdn = vi.fn((value: string) => `https://cdn.example/${value}`);

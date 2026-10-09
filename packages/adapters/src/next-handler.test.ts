@@ -26,6 +26,81 @@ const builder = createPagebldr({
 });
 
 describe("Host-mounted Next handler", () => {
+  it("forwards autosave, atomic publication and operation IDs without duplicate mutations", async () => {
+    const server = createPagebldrServer({
+      builder,
+      storage: memoryAdapter(),
+      collection: { mode: "multiple" },
+      revisions: { enabled: true },
+    });
+    const scope = { workspace: "lifecycle-host" };
+    const handler = createPagebldrHandler(server, {
+      authorize: () => true,
+      resolveScope: () => scope,
+    });
+    const key = "lifecycle";
+    const document = builder.documents.create({ id: key });
+    await server.documents.create({ key, scope, document });
+    const post = (body: Readonly<Record<string, unknown>>) =>
+      handler(
+        new Request(`http://localhost/pagebldr/documents/${key}`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+        { params: { all: ["documents", key] } },
+      );
+    const publish = {
+      operation: "publish",
+      document: { ...document, title: "Submitted" },
+      expectedVersion: 1,
+      operationId: "publish-id",
+    };
+    const first = await post(publish);
+    expect(first.status).toBe(200);
+    const body: unknown = await first.json();
+    const repeated = await post(publish);
+    expect(await repeated.json()).toEqual(body);
+    const saved = await post({
+      operation: "save",
+      document,
+      expectedVersion: 2,
+      reason: "autosave",
+    });
+    expect(saved.status).toBe(200);
+    expect(await server.revisions.list({ scope, key })).toHaveLength(1);
+    const revisionId = (await server.publications.get({ scope, key }))!
+      .revisionId;
+    const restore = {
+      operation: "restore",
+      revisionId,
+      expectedVersion: 3,
+      operationId: "restore-id",
+    };
+    expect((await post(restore)).status).toBe(200);
+    expect((await post(restore)).status).toBe(200);
+    const unpublish = { operation: "unpublish", operationId: "unpublish-id" };
+    expect((await post(unpublish)).status).toBe(204);
+    expect((await post(unpublish)).status).toBe(204);
+    expect(await server.publications.get({ scope, key })).toBeNull();
+    expect((await server.documents.load({ scope, key }))?.version).toBe(4);
+    expect(
+      (await server.revisions.list({ scope, key })).map(
+        (revision) => revision.kind,
+      ),
+    ).toEqual(["restore", "publish"]);
+    expect((await post({ ...publish, operationId: 123 })).status).toBe(400);
+    expect(
+      (
+        await post({
+          operation: "save",
+          document,
+          expectedVersion: 4,
+          reason: "unknown",
+        })
+      ).status,
+    ).toBe(400);
+  });
   it("exposes the same lifecycle while the Host supplies authorization and Scope", async () => {
     const server = createPagebldrServer({
       builder,

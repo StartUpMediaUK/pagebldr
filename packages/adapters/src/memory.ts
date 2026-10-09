@@ -4,11 +4,16 @@ import {
   type StorageScope,
   type StorageTransaction,
   type StoredDocument,
+  type StoredAudit,
+  type StoredOperation,
   type StoredPublication,
   type StoredRevision,
 } from "@pagebldr/server";
+import { PagebldrError } from "@pagebldr/core";
 
 interface MemoryState {
+  audits: Map<string, StoredAudit>;
+  operations: Map<string, StoredOperation>;
   documents: Map<string, StoredDocument>;
   revisions: Map<string, StoredRevision>;
   publications: Map<string, StoredPublication>;
@@ -16,6 +21,8 @@ interface MemoryState {
 
 export function memoryAdapter(): StorageAdapter<"memory", "memory"> {
   let state: MemoryState = {
+    audits: new Map(),
+    operations: new Map(),
     documents: new Map(),
     revisions: new Map(),
     publications: new Map(),
@@ -50,7 +57,7 @@ export function memoryAdapter(): StorageAdapter<"memory", "memory"> {
       publicationPointers: true,
       pagination: true,
       scopeIsolation: true,
-      transactionalAudit: false,
+      transactionalAudit: true,
     },
     setup: {
       strategy: "automatic",
@@ -66,7 +73,77 @@ function createTransaction(state: MemoryState): StorageTransaction {
   const compound = (scope: StorageScope, id: string) =>
     `${canonicalScope(scope)}\u0000${id}`;
   return {
+    audits: {
+      list: (scope, documentKey) =>
+        Promise.resolve(
+          clone(
+            [...state.audits.values()]
+              .filter(
+                (row) =>
+                  canonicalScope(row.scope) === canonicalScope(scope) &&
+                  row.documentKey === documentKey,
+              )
+              .sort((a, b) => a.event.sequence - b.event.sequence),
+          ),
+        ),
+      put: (record) => {
+        const key = compound(record.scope, record.event.id);
+        if (
+          state.audits.has(key) ||
+          [...state.audits.values()].some(
+            (row) =>
+              canonicalScope(row.scope) === canonicalScope(record.scope) &&
+              row.documentKey === record.documentKey &&
+              row.event.sequence === record.event.sequence,
+          )
+        )
+          return Promise.reject(
+            new PagebldrError(
+              "CONFLICT",
+              "Audit identifier or sequence already exists.",
+            ),
+          );
+        state.audits.set(key, clone(record));
+        return Promise.resolve();
+      },
+      markDelivered: (scope, id, deliveredAt) => {
+        const key = compound(scope, id);
+        const row = state.audits.get(key);
+        if (row)
+          state.audits.set(key, { ...row, deliveredAt: clone(deliveredAt) });
+        return Promise.resolve();
+      },
+    },
+    operations: {
+      deleteForDocument: (scope, documentKey) => {
+        for (const [key, record] of state.operations) {
+          if (
+            canonicalScope(record.scope) === canonicalScope(scope) &&
+            record.documentKey === documentKey
+          )
+            state.operations.delete(key);
+        }
+        return Promise.resolve();
+      },
+      get: (scope, id) =>
+        Promise.resolve(
+          clone(state.operations.get(compound(scope, id)) ?? null),
+        ),
+      put: (record) => {
+        const key = compound(record.scope, record.id);
+        if (state.operations.has(key))
+          return Promise.reject(new Error("Operation receipt already exists."));
+        state.operations.set(key, clone(record));
+        return Promise.resolve();
+      },
+    },
     documents: {
+      insert: (record) => {
+        const key = compound(record.scope, record.key);
+        if (state.documents.has(key)) return Promise.resolve(false);
+        state.documents.set(key, clone(record));
+        return Promise.resolve(true);
+      },
       get: (scope, key) =>
         Promise.resolve(
           clone(state.documents.get(compound(scope, key)) ?? null),
@@ -93,6 +170,13 @@ function createTransaction(state: MemoryState): StorageTransaction {
       put: (record) => {
         state.documents.set(compound(record.scope, record.key), clone(record));
         return Promise.resolve();
+      },
+      replace: (record, expectedVersion) => {
+        const key = compound(record.scope, record.key);
+        if (state.documents.get(key)?.version !== expectedVersion)
+          return Promise.resolve(false);
+        state.documents.set(key, clone(record));
+        return Promise.resolve(true);
       },
       delete: (scope, key) => {
         state.documents.delete(compound(scope, key));
@@ -121,7 +205,15 @@ function createTransaction(state: MemoryState): StorageTransaction {
           ),
         ),
       put: (record) => {
-        state.revisions.set(compound(record.scope, record.id), clone(record));
+        const key = compound(record.scope, record.id);
+        if (state.revisions.has(key))
+          return Promise.reject(
+            new PagebldrError(
+              "CONFLICT",
+              "Revision identifier already exists.",
+            ),
+          );
+        state.revisions.set(key, clone(record));
         return Promise.resolve();
       },
       delete: (scope, id) => {
@@ -151,6 +243,12 @@ function createTransaction(state: MemoryState): StorageTransaction {
 
 function cloneState(state: MemoryState): MemoryState {
   return {
+    audits: new Map(
+      [...state.audits].map(([key, value]) => [key, clone(value)]),
+    ),
+    operations: new Map(
+      [...state.operations].map(([key, value]) => [key, clone(value)]),
+    ),
     documents: new Map(
       [...state.documents].map(([key, value]) => [key, clone(value)]),
     ),

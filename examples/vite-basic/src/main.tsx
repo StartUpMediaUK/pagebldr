@@ -7,9 +7,12 @@ import {
   standardStyleCapabilities,
   type PageDocument,
   type StandardSchemaV1,
+  resolveDocumentResources,
+  type PreparedResources,
 } from "pagebldr";
 import {
   PagebldrEditor,
+  createEditorLifecycle,
   PagebldrRenderer,
   PagebldrRuntimeInteractions,
   type PagebldrEditorProps,
@@ -23,6 +26,7 @@ import {
   createReferenceMediaAdapter,
   createCuratedMediaAdapter,
 } from "./reference-media.js";
+import { referenceLifecycle } from "./reference-lifecycle.js";
 
 const stringReference: StandardSchemaV1<unknown, string> = {
   "~standard": {
@@ -60,6 +64,13 @@ const builder = createPagebldr({
 
 const initialDocument = builder.documents.migrate(projectEnquiryFixture);
 const allElementsDocument = builder.documents.migrate(allElementsFixture);
+// Lightweight private fixture keeps browser retention evidence within Web Storage
+// limits; the default editor still uses the representative populated Document.
+const lifecycleDocument = builder.documents.create({
+  id: "lifecycle-retention",
+  title: "Lifecycle retention",
+  slug: "lifecycle-retention",
+});
 const librarySource = referenceLibrary(builder);
 
 type ExtensionEditorOptions = Pick<
@@ -68,12 +79,32 @@ type ExtensionEditorOptions = Pick<
 >;
 
 function App() {
-  const [document, setDocument] = useState<PageDocument>(() =>
-    window.location.hash === "#/editor/elements"
-      ? allElementsDocument
-      : initialDocument,
+  const [document, setDocument] = useState<PageDocument>(
+    () =>
+      referenceLifecycle(
+        builder,
+        window.location.hash === "#/editor/elements"
+          ? allElementsDocument
+          : window.location.hash === "#/editor/lifecycle"
+            ? lifecycleDocument
+            : initialDocument,
+      ).loaded.document,
   );
   const [route, setRoute] = useState(window.location.hash || "#/editor");
+  const [lifecycle, setLifecycle] = useState<ReturnType<
+    typeof createEditorLifecycle
+  > | null>(null);
+  useEffect(() => {
+    const host = referenceLifecycle(builder, document);
+    const next = createEditorLifecycle({
+      builder,
+      ...host,
+      onLoadDocument: setDocument,
+    });
+    setLifecycle(next);
+    setDocument(host.loaded.document);
+    return () => next.dispose();
+  }, [document.id]);
   const [extensionOptions, setExtensionOptions] =
     useState<ExtensionEditorOptions | null>(null);
 
@@ -111,9 +142,14 @@ function App() {
         <nav>
           <a href="#/editor">Back to editor</a>
         </nav>
-        <PagebldrRenderer
-          builder={builder}
-          document={route === "#/elements" ? allElementsDocument : document}
+        <DocumentView
+          document={
+            route === "#/elements"
+              ? allElementsDocument
+              : route === "#/published"
+                ? referenceLifecycle(builder, document).published()
+                : document
+          }
           mode={route === "#/published" ? "published" : "preview"}
         />
       </div>
@@ -135,6 +171,10 @@ function App() {
         </a>
       </nav>
       <PagebldrEditor
+        key={document.id}
+        {...(lifecycle && lifecycle.exportLocalDocument().id === document.id
+          ? { lifecycle }
+          : {})}
         librarySource={librarySource}
         applicationDestinations={[
           {
@@ -150,14 +190,6 @@ function App() {
         document={document}
         mode={route === "#/readonly" ? "readOnly" : "edit"}
         onChange={({ document: nextDocument }) => setDocument(nextDocument)}
-        onSave={async ({ document: nextDocument }) => {
-          await pause();
-          localStorage.setItem(
-            "pagebldr-vite-example",
-            JSON.stringify(nextDocument),
-          );
-        }}
-        onPublish={async () => pause()}
         resolveApplicationDestination={(reference) =>
           reference.kind === "application-link" &&
           typeof reference.value === "string"
@@ -172,8 +204,34 @@ function App() {
   );
 }
 
-function pause() {
-  return new Promise<void>((resolve) => window.setTimeout(resolve, 350));
+function DocumentView({
+  document,
+  mode,
+}: {
+  readonly document: PageDocument | null;
+  readonly mode: "published" | "preview";
+}) {
+  const [resources, setResources] = useState<PreparedResources>();
+  useEffect(() => {
+    if (!document) return;
+    const abort = new AbortController();
+    void resolveDocumentResources(builder, document, {
+      signal: abort.signal,
+    }).then((next) => {
+      if (!abort.signal.aborted) setResources(next);
+    });
+    return () => abort.abort();
+  }, [document]);
+  return document ? (
+    <PagebldrRenderer
+      builder={builder}
+      document={document}
+      mode={mode}
+      {...(resources ? { resources } : {})}
+    />
+  ) : (
+    <p>This page is not published.</p>
+  );
 }
 
 createRoot(document.getElementById("root")!).render(

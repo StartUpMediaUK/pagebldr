@@ -4,12 +4,16 @@ import type {
   StorageScope,
   StorageTransaction,
   StoredDocument,
+  StoredAudit,
+  StoredOperation,
   StoredPublication,
   StoredRevision,
 } from "@pagebldr/server";
 import { canonicalScope } from "@pagebldr/server";
+import { PagebldrError } from "@pagebldr/core";
 
 interface DocumentRow {
+  references: unknown;
   storageId: string;
   scopeKey: string;
   scope: unknown;
@@ -19,7 +23,48 @@ interface DocumentRow {
   createdAt: Date;
   updatedAt: Date;
 }
+interface AuditRow {
+  storageId: string;
+  scopeKey: string;
+  scope: unknown;
+  documentKey: string;
+  event: unknown;
+  sequence: number;
+  deliveredAt: Date | null;
+}
+interface AuditDelegate {
+  findMany(args: {
+    where: { scopeKey: string; documentKey: string };
+    orderBy: { sequence: "asc" };
+  }): Promise<AuditRow[]>;
+  create(args: { data: AuditRow }): Promise<unknown>;
+  updateMany(args: {
+    where: { storageId: string };
+    data: { deliveredAt: Date };
+  }): Promise<unknown>;
+}
+interface OperationRow {
+  storageId: string;
+  scopeKey: string;
+  scope: unknown;
+  id: string;
+  documentKey: string;
+  fingerprint: string;
+  response: string;
+}
+interface OperationDelegate {
+  deleteMany(args: {
+    where: { scopeKey: string; documentKey: string };
+  }): Promise<unknown>;
+  findUnique(args: {
+    where: { storageId: string };
+  }): Promise<OperationRow | null>;
+  create(args: { data: OperationRow }): Promise<unknown>;
+}
 interface RevisionRow {
+  kind: string;
+  title: string;
+  actorId: string | null;
   storageId: string;
   scopeKey: string;
   scope: unknown;
@@ -30,6 +75,7 @@ interface RevisionRow {
   createdAt: Date;
 }
 interface PublicationRow {
+  references: unknown;
   storageId: string;
   scopeKey: string;
   scope: unknown;
@@ -39,6 +85,11 @@ interface PublicationRow {
 }
 
 interface DocumentDelegate {
+  create(args: { data: DocumentRow }): Promise<unknown>;
+  updateMany(args: {
+    where: { storageId: string; version: number };
+    data: Omit<DocumentRow, "storageId" | "createdAt">;
+  }): Promise<{ count: number }>;
   findUnique(args: {
     where: { storageId: string };
   }): Promise<DocumentRow | null>;
@@ -57,6 +108,7 @@ interface DocumentDelegate {
   deleteMany(args: { where: { storageId: string } }): Promise<unknown>;
 }
 interface RevisionDelegate {
+  create(args: { data: RevisionRow }): Promise<unknown>;
   findUnique(args: {
     where: { storageId: string };
   }): Promise<RevisionRow | null>;
@@ -64,11 +116,6 @@ interface RevisionDelegate {
     where: { scopeKey: string; documentKey: string };
     orderBy: readonly [{ createdAt: "desc" }, { version: "desc" }];
   }): Promise<RevisionRow[]>;
-  upsert(args: {
-    where: { storageId: string };
-    create: RevisionRow;
-    update: Omit<RevisionRow, "storageId">;
-  }): Promise<unknown>;
   deleteMany(args: { where: { storageId: string } }): Promise<unknown>;
 }
 interface PublicationDelegate {
@@ -84,6 +131,8 @@ interface PublicationDelegate {
 }
 
 export interface PagebldrPrismaClient {
+  readonly pagebldrAudit: AuditDelegate;
+  readonly pagebldrOperation: OperationDelegate;
   readonly pagebldrDocument: DocumentDelegate;
   readonly pagebldrRevision: RevisionDelegate;
   readonly pagebldrPublication: PublicationDelegate;
@@ -105,10 +154,12 @@ export function asPagebldrPrismaClient(client: unknown): PagebldrPrismaClient {
     !candidate.pagebldrDocument ||
     !candidate.pagebldrRevision ||
     !candidate.pagebldrPublication ||
+    !candidate.pagebldrOperation ||
+    !candidate.pagebldrAudit ||
     typeof candidate.$transaction !== "function"
   ) {
     throw new TypeError(
-      "Prisma Client must be generated with the pagebldr Document, Revision, and Publication models.",
+      "Prisma Client must be generated with the pagebldr Document, Revision, Publication, Operation, and Audit models.",
     );
   }
   return candidate as PagebldrPrismaClient;
@@ -147,9 +198,24 @@ function createPrismaAdapter<Provider extends "postgresql" | "mongodb">(
   const transaction = <Result>(
     operation: (storage: StorageTransaction) => Promise<Result>,
   ): Promise<Result> =>
-    client.$transaction<Result>((transactionClient) =>
-      operation(createStorage(transactionClient)),
-    );
+    client
+      .$transaction<Result>((transactionClient) =>
+        operation(createStorage(transactionClient)),
+      )
+      .catch((error: unknown) => {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "code" in error &&
+          (error.code === "P2034" || error.code === "P2002")
+        )
+          throw new PagebldrError(
+            "CONFLICT",
+            "The draft changed during the transaction.",
+            { cause: error },
+          );
+        throw error;
+      });
   const adapter: StorageAdapter<"prisma", Provider> = {
     integration: "prisma",
     provider,
@@ -160,7 +226,7 @@ function createPrismaAdapter<Provider extends "postgresql" | "mongodb">(
       publicationPointers: true,
       pagination: true,
       scopeIsolation: true,
-      transactionalAudit: false,
+      transactionalAudit: true,
     },
     setup,
     read,
@@ -175,7 +241,71 @@ function createStorage(
   const storageId = (scope: StorageScope, id: string) =>
     `${canonicalScope(scope)}::${id}`;
   return {
+    audits: {
+      list: async (scope, documentKey) =>
+        (
+          await client.pagebldrAudit.findMany({
+            where: { scopeKey: canonicalScope(scope), documentKey },
+            orderBy: { sequence: "asc" },
+          })
+        ).map((row): StoredAudit => ({
+          scope: row.scope as StorageScope,
+          documentKey: row.documentKey,
+          event: row.event as StoredAudit["event"],
+          deliveredAt: row.deliveredAt,
+        })),
+      put: async (record) => {
+        await client.pagebldrAudit.create({
+          data: {
+            ...record,
+            storageId: storageId(record.scope, record.event.id),
+            scopeKey: canonicalScope(record.scope),
+            sequence: record.event.sequence,
+          },
+        });
+      },
+      markDelivered: async (scope, id, deliveredAt) => {
+        await client.pagebldrAudit.updateMany({
+          where: { storageId: storageId(scope, id) },
+          data: { deliveredAt },
+        });
+      },
+    },
+    operations: {
+      deleteForDocument: async (scope, documentKey) => {
+        await client.pagebldrOperation.deleteMany({
+          where: { scopeKey: canonicalScope(scope), documentKey },
+        });
+      },
+      get: async (scope, id): Promise<StoredOperation | null> => {
+        const row = await client.pagebldrOperation.findUnique({
+          where: { storageId: storageId(scope, id) },
+        });
+        return row
+          ? {
+              scope: row.scope as StorageScope,
+              id: row.id,
+              documentKey: row.documentKey,
+              fingerprint: row.fingerprint,
+              response: row.response,
+            }
+          : null;
+      },
+      put: async (record) => {
+        await client.pagebldrOperation.create({
+          data: {
+            ...record,
+            storageId: storageId(record.scope, record.id),
+            scopeKey: canonicalScope(record.scope),
+          },
+        });
+      },
+    },
     documents: {
+      insert: async (record) => {
+        await client.pagebldrDocument.create({ data: toDocument(record) });
+        return true;
+      },
       get: async (scope, key) =>
         fromDocument(
           await client.pagebldrDocument.findUnique({
@@ -209,10 +339,27 @@ function createStorage(
             scope: row.scope,
             key: row.key,
             document: row.document,
+            references: row.references,
             version: row.version,
             updatedAt: row.updatedAt,
           },
         });
+      },
+      replace: async (record, expectedVersion) => {
+        const row = toDocument(record);
+        const result = await client.pagebldrDocument.updateMany({
+          where: { storageId: row.storageId, version: expectedVersion },
+          data: {
+            scopeKey: row.scopeKey,
+            scope: row.scope,
+            key: row.key,
+            document: row.document,
+            references: row.references,
+            version: row.version,
+            updatedAt: row.updatedAt,
+          },
+        });
+        return result.count === 1;
       },
       delete: async (scope, key) => {
         await client.pagebldrDocument.deleteMany({
@@ -236,12 +383,7 @@ function createStorage(
         ).map(fromRevision),
       put: async (record) => {
         const row = toRevision(record);
-        const update = withoutStorageId(row);
-        await client.pagebldrRevision.upsert({
-          where: { storageId: row.storageId },
-          create: row,
-          update,
-        });
+        await client.pagebldrRevision.create({ data: row });
       },
       delete: async (scope, id) => {
         await client.pagebldrRevision.deleteMany({
@@ -280,6 +422,7 @@ const toDocument = (record: StoredDocument): DocumentRow => ({
   scope: record.scope,
   key: record.key,
   document: record.document,
+  references: record.references ?? [],
   version: record.version,
   createdAt: record.createdAt,
   updatedAt: record.updatedAt,
@@ -290,12 +433,16 @@ const fromDocument = (row: DocumentRow | null): StoredDocument | null =>
         scope: row.scope as StorageScope,
         key: row.key,
         document: row.document as StoredDocument["document"],
+        references: row.references as NonNullable<StoredDocument["references"]>,
         version: row.version,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
       }
     : null;
 const toRevision = (record: StoredRevision): RevisionRow => ({
+  kind: record.kind,
+  title: record.title,
+  actorId: record.actorId,
   storageId: `${canonicalScope(record.scope)}::${record.id}`,
   scopeKey: canonicalScope(record.scope),
   scope: record.scope,
@@ -306,6 +453,9 @@ const toRevision = (record: StoredRevision): RevisionRow => ({
   createdAt: record.createdAt,
 });
 const fromRevision = (row: RevisionRow): StoredRevision => ({
+  kind: revisionKind(row.kind),
+  title: row.title || (row.document as StoredRevision["document"]).title,
+  actorId: row.actorId,
   scope: row.scope as StorageScope,
   id: row.id,
   documentKey: row.documentKey,
@@ -313,7 +463,13 @@ const fromRevision = (row: RevisionRow): StoredRevision => ({
   version: row.version,
   createdAt: row.createdAt,
 });
+
+function revisionKind(kind: string): StoredRevision["kind"] {
+  if (kind === "save" || kind === "publish" || kind === "restore") return kind;
+  throw new TypeError(`Unknown stored Revision kind: ${kind}.`);
+}
 const toPublication = (record: StoredPublication): PublicationRow => ({
+  references: record.references ?? [],
   storageId: `${canonicalScope(record.scope)}::${record.documentKey}`,
   scopeKey: canonicalScope(record.scope),
   scope: record.scope,
@@ -330,6 +486,9 @@ const fromPublication = (
         documentKey: row.documentKey,
         revisionId: row.revisionId,
         publishedAt: row.publishedAt,
+        references: row.references as NonNullable<
+          StoredPublication["references"]
+        >,
       }
     : null;
 

@@ -7,3 +7,117 @@ Callbacks are the smallest integration. The optional server module standardizes
 optimistic saves, Revisions, restoration, and publication pointers through a
 Storage adapter. Every adapter declares both its integration and concrete
 Provider. Authentication and authorization remain in the Host.
+
+Server `documents.save` takes an `expectedVersion` and an optional `reason`. Use
+`reason: "autosave"` to advance the draft without adding a durable Revision;
+omitting the reason means explicit manual save. Both paths validate/migrate the
+Document and reject a competing version with `CONFLICT`.
+
+Revision retention keeps the newest configured snapshots and also protects an
+older live snapshot. Restore validates the selected snapshot and creates a new
+draft head; it does not change the live publication.
+
+Custom Storage adapters must implement atomic
+`documents.replace(record, expectedVersion)`. A read followed by an
+unconditional upsert does not prevent overlapping writers. The shared provider
+conformance suite exercises simultaneous saves, autosave, restoration and
+live-snapshot retention.
+
+Creation adds no durable Revision. Publishing requires the submitted `document`
+and `expectedVersion`; it saves that draft and its live snapshot atomically and
+returns the new version, Document, Revision and publication metadata. The old
+publish-by-`revisionId` request is removed. Revision entries carry `save`,
+`publish` or `restore` kind, title and nullable Host actor ID. Supply server
+`actor(request)` to attribute Revisions independently of Audit configuration.
+
+Use an `operationId` for explicit Save, Publish, Restore and Unpublish. Reuse
+the same ID and unchanged request after a lost response. Durable receipts return
+the original result without changing later work, duplicating Revisions or
+appending another Audit record. Pending sink delivery may retry the same event
+ID. IDs are scoped, 1–128 letters/digits/underscores/ hyphens; a different
+request using the same ID conflicts. Identical concurrent operations use at most
+three bounded retries with the original expected version. Calls without an ID do
+not have this replay guarantee.
+
+Updated Prisma adapters require a `PagebldrOperation` model and Revision `kind`,
+`title`, `actorId` fields. Merge the supplied schema into the Host schema,
+migrate it and regenerate the client. Defaults preserve old untyped snapshots as
+Save entries with Document titles and unknown authors; backfill historical
+intent when known. Custom adapters also implement atomic `documents.insert` and
+append-only, scoped operation receipt storage. Revision storage is append-only;
+duplicate IDs roll back the mutation instead of rewriting history. Host
+`createId` factories must generate unique identifiers.
+
+Receipts contain original response Documents and survive Revision retention. The
+Host owns their access and retention policy; keep them through the promised
+retry window. Deleting a Document atomically removes its receipts too.
+
+Draft and published Resource references are stored independently with their
+respective snapshots, including SEO social media. Restore changes draft
+references only; Unpublish removes the published references with its pointer.
+
+Memory, Prisma/PostgreSQL and Prisma/MongoDB now support transactional Audit.
+Mutations append redacted schema-versioned Audit records and their stable IDs in
+the same transaction as drafts, Revisions, references and receipts. Delivery is
+at least once, not exactly once: Host sinks deduplicate by event ID. Failed
+delivery remains in the outbox. Invoke `server.audit.flush({ scope, key })` from
+the Host's retry/scheduling mechanism; each invocation processes at most 100
+pending records in per-Document sequence order with bounded sink retries.
+Receipt replay also retries pending delivery without appending another record.
+Hosts still own sink configuration, authorization, retention and access.
+
+Prisma schemas additionally require `PagebldrAudit` and JSON `references` on
+Document and Publication. Migrate the Host schema and regenerate its client; the
+Document format/schemaVersion does not change.
+
+## Controlled editor lifecycle
+
+Create one `createEditorLifecycle` from `pagebldr/react` for each loaded
+Document and pass it as `PagebldrEditor`'s `lifecycle`. The Host supplies
+`loaded` (validated Document, positive server version and optional published
+Revision ID), `save`, and optional `publication`, `revisions`, `reload` and
+`recovery` capabilities. `onLoadDocument` is required when Revisions or recovery
+are configured and accepts validated Restore/recovery snapshots into the same
+controlled Host state used by `onChange`.
+
+Create the controller in a React effect and dispose that effect's instance in
+cleanup. This is safe during Strict Mode setup/cleanup replay; do not dispose an
+instance that a subsequent effect setup will reuse. The shell observes accepted
+controlled Documents. The package owns 900ms serialized autosave, exact local
+revision tracking, save-state labels, pending controls, History, retry and
+recovery UI. The old `onSave`/`onPublish` props remain manual-only callbacks;
+they do not establish a durable version or autosave contract.
+
+`publication` supplies `validate(document, signal)`, `publish(request)` and
+`unpublish(request)`. The publish result includes new `version` and
+`revisionId`. `revisions` supplies `list(signal)`, `preview(id, signal)` and
+`restore(request)`; cards use `id`, `version`, `kind`, `title`, nullable
+`actorId`, and ISO `createdAt`. Restore returns its validated `document` and new
+`version`. The Reference Host provides a complete public-export example in
+`examples/vite-basic/src/reference-lifecycle.ts`.
+
+The optional recovery adapter exposes synchronous `read`, `write`, and `remove`
+for a Host-scoped storage key; no browser globals are accessed by the
+controller. Payloads contain recovery schema version, timestamp, Document and
+server version. Invalid payloads are removed. Matching recovery resumes dirty;
+mismatched recovery resumes in Conflict, preserving its original version across
+reloads. Successful saves clear only their own matching payload, not another
+session's newer work. Storage failures are visible and do not prevent a server
+save.
+
+Conflicts pause writes and preserve the local Document and Actions. `reload`
+loads the newer head for review. Keeping local work is a deliberate action that
+updates the expected version and retries the exact local Document. JSON download
+is available before choosing. A read-only reason in `loaded.readOnlyReason`
+blocks lifecycle writes; Host authorization remains the security boundary.
+
+## Publication checks
+
+`validatePublication` uses registry validation, definition-owned
+`publicationIssues`, typed Resource references and the Host's neutral
+`checkReference` policy. Managed Image and image Gallery usages require
+confirmed alt text or a decorative designation. Missing Resources block
+publication; Host-reported unpublished destinations warn and require
+confirmation. `server.publications.validate` exposes the same checks. The server
+independently revalidates before mutation and accepts only matching
+`confirmedWarnings` IDs; confirmation never bypasses blocking errors.

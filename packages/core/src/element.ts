@@ -187,6 +187,11 @@ export interface ElementDefinition<
   readonly destinations?: (
     props: InferSchemaOutput<Schema>,
   ) => readonly unknown[];
+  readonly publicationIssues?: (props: InferSchemaOutput<Schema>) => readonly {
+    readonly code: string;
+    readonly message: string;
+    readonly path?: string;
+  }[];
 }
 
 export function defineElement<

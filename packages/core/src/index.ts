@@ -17,7 +17,16 @@ export { assertUniqueId, createId, createSequentialIdFactory } from "./ids.js";
 export { isAnchorIdDuplicate, normalizeAnchorId } from "./anchors.js";
 export { findStandardFontFamily, standardFontFamilies } from "./fonts.js";
 export { PagebldrError } from "./types.js";
-export { resolveDocumentResources, resourceKey } from "./resources.js";
+export {
+  extractDocumentReferences,
+  resolveDocumentResources,
+  resourceKey,
+} from "./resources.js";
+export { validatePublication } from "./publication.js";
+export type {
+  PublicationIssue,
+  PublicationValidationOptions,
+} from "./publication.js";
 export {
   standardElements,
   standardStyleCapabilities,

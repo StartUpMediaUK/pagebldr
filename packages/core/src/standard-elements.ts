@@ -280,6 +280,7 @@ function definition(config: {
   migrate?: (props: unknown, fromVersion: number) => Props;
   references?: (props: Props) => readonly ResourceReference[];
   destinations?: (props: Props) => readonly unknown[];
+  publicationIssues?: ElementDefinition["publicationIssues"];
 }): ElementDefinition {
   const schema = config.schema.extend({ anchorId }).strict();
   return defineElement({
@@ -298,6 +299,9 @@ function definition(config: {
     ...(config.migrate ? { migrate: config.migrate } : {}),
     ...(config.references ? { references: config.references } : {}),
     ...(config.destinations ? { destinations: config.destinations } : {}),
+    ...(config.publicationIssues
+      ? { publicationIssues: config.publicationIssues }
+      : {}),
   });
 }
 
@@ -985,6 +989,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     ],
     destinations: (props) => (props.destination ? [props.destination] : []),
     migrate: migrateImage,
+    publicationIssues: (props) => managedImageIssues(props as Props),
     render: renderImage,
   }),
   definition({
@@ -1614,9 +1619,34 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     references: (props) =>
       sourceReferences(array(props, "items").map((item) => item.source)),
     migrate: migrateGallery,
+    publicationIssues: (props) =>
+      array(props as Props, "items").flatMap((item, index) =>
+        item.kind === "image"
+          ? managedImageIssues(item, `items[${index}].alt`)
+          : [],
+      ),
     render: renderGallery,
   }),
 ]);
+
+function managedImageIssues(props: Props, path = "alt") {
+  const source = props.source;
+  return source &&
+    typeof source === "object" &&
+    "type" in source &&
+    source.type === "resource" &&
+    props.decorative !== true &&
+    props.altConfirmed !== true
+    ? [
+        {
+          code: "image-alt",
+          path,
+          message:
+            "Confirm alternative text or mark this managed image decorative.",
+        },
+      ]
+    : [];
+}
 
 function renderRichText(blocks: Props[]): RenderElement {
   const children: RenderNode[] = [];

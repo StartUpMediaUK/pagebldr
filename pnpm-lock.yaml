@@ -172,13 +172,13 @@ importers:
 
   packages/adapters:
     dependencies:
+      '@pagebldr/core':
+        specifier: workspace:*
+        version: link:../core
       '@pagebldr/server':
         specifier: workspace:*
         version: link:../server
     devDependencies:
-      '@pagebldr/core':
-        specifier: workspace:*
-        version: link:../core
       '@pagebldr/runtime':
         specifier: workspace:*
         version: link:../runtime

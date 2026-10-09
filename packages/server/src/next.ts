@@ -49,8 +49,19 @@ export function createPagebldrHandler(
       }
       const key = all[0] === "documents" ? all[1] : undefined;
       if (!key) return json({ error: "Not found" }, 404);
-      if (request.method === "GET")
-        return json(await server.documents.load({ scope, key }));
+      if (request.method === "GET") {
+        if (all.length === 2)
+          return json(await server.documents.load({ scope, key }));
+        if (all[2] === "revisions" && all.length === 3)
+          return json(await server.revisions.list({ scope, key }));
+        if (all[2] === "revisions" && all.length === 4)
+          return json(
+            await server.revisions.load({ scope, key, revisionId: all[3]! }),
+          );
+        if (all[2] === "publication" && all.length === 3)
+          return json(await server.publications.get({ scope, key }));
+        return json({ error: "Not found" }, 404);
+      }
       if (request.method === "DELETE") {
         await server.documents.delete({ scope, key });
         return new Response(null, { status: 204 });
@@ -58,6 +69,35 @@ export function createPagebldrHandler(
       if (request.method !== "POST")
         return json({ error: "Method not allowed" }, 405);
       const body = (await request.json()) as Record<string, unknown>;
+      if (
+        body.confirmedWarnings !== undefined &&
+        (!Array.isArray(body.confirmedWarnings) ||
+          !body.confirmedWarnings.every((item) => typeof item === "string"))
+      )
+        return json(
+          { error: "Confirmed warnings must be a string array." },
+          400,
+        );
+      if (body.operation === "validate-publication")
+        return json(
+          await server.publications.validate({
+            scope,
+            key,
+            document: body.document as never,
+          }),
+        );
+      if (
+        body.operationId !== undefined &&
+        typeof body.operationId !== "string"
+      )
+        return json({ error: "Operation ID must be a string." }, 400);
+      if (
+        body.operation === "save" &&
+        body.reason !== undefined &&
+        body.reason !== "manual" &&
+        body.reason !== "autosave"
+      )
+        return json({ error: "Unknown save reason." }, 400);
       if (body.operation === "create")
         return json(
           await server.documents.create({
@@ -74,6 +114,12 @@ export function createPagebldrHandler(
             key,
             document: body.document as never,
             expectedVersion: body.expectedVersion as number,
+            ...(typeof body.operationId === "string"
+              ? { operationId: body.operationId }
+              : {}),
+            ...(body.reason === "autosave"
+              ? { reason: "autosave" as const }
+              : {}),
           }),
         );
       if (body.operation === "restore")
@@ -83,6 +129,9 @@ export function createPagebldrHandler(
             key,
             revisionId: body.revisionId as string,
             expectedVersion: body.expectedVersion as number,
+            ...(typeof body.operationId === "string"
+              ? { operationId: body.operationId }
+              : {}),
           }),
         );
       if (body.operation === "publish")
@@ -90,13 +139,24 @@ export function createPagebldrHandler(
           await server.publications.publish({
             scope,
             key,
-            ...(typeof body.revisionId === "string"
-              ? { revisionId: body.revisionId }
+            document: body.document as never,
+            expectedVersion: body.expectedVersion as number,
+            ...(Array.isArray(body.confirmedWarnings)
+              ? { confirmedWarnings: body.confirmedWarnings }
+              : {}),
+            ...(typeof body.operationId === "string"
+              ? { operationId: body.operationId }
               : {}),
           }),
         );
       if (body.operation === "unpublish") {
-        await server.publications.unpublish({ scope, key });
+        await server.publications.unpublish({
+          scope,
+          key,
+          ...(typeof body.operationId === "string"
+            ? { operationId: body.operationId }
+            : {}),
+        });
         return new Response(null, { status: 204 });
       }
       return json({ error: "Unknown operation" }, 400);

@@ -7,6 +7,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@pagebldr/core": "workspace:*",
     "@pagebldr/server": "workspace:*"
   },
   "scripts": {
@@ -15,7 +16,6 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "@pagebldr/core": "workspace:*",
     "@pagebldr/runtime": "workspace:*",
     "@prisma/client": "6.19.0",
     "prisma": "6.19.0"

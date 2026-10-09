@@ -1,5 +1,6 @@
 // Copy these models into the Host's MongoDB Prisma schema. MongoDB must use a replica set.
 model PagebldrDocument {
+  references Json @default("[]")
   storageId String @id @map("_id")
   scopeKey String
   scope Json
@@ -11,6 +12,9 @@ model PagebldrDocument {
   @@index([scopeKey, key])
 }
 model PagebldrRevision {
+  kind String @default("save")
+  title String @default("")
+  actorId String?
   storageId String @id @map("_id")
   scopeKey String
   scope Json
@@ -22,6 +26,7 @@ model PagebldrRevision {
   @@index([scopeKey, documentKey, createdAt, version])
 }
 model PagebldrPublication {
+  references Json @default("[]")
   storageId String @id @map("_id")
   scopeKey String
   scope Json
@@ -29,4 +34,28 @@ model PagebldrPublication {
   revisionId String
   publishedAt DateTime
   @@index([scopeKey, documentKey])
+}
+
+model PagebldrOperation {
+  scopeKey String @default("")
+  storageId String @id @map("_id")
+  scope Json
+  id String
+  documentKey String
+  fingerprint String
+  response String
+  @@index([scopeKey, documentKey])
+}
+
+model PagebldrAudit {
+  storageId String @id @map("_id")
+  scopeKey String
+  scope Json
+  documentKey String
+  event Json
+  sequence Int
+  deliveredAt DateTime?
+
+  @@unique([scopeKey, documentKey, sequence])
+  @@index([scopeKey, documentKey, deliveredAt])
 }

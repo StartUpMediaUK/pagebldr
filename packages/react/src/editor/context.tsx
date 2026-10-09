@@ -51,6 +51,12 @@ export interface EditorContextValue {
   readonly styleState: StyleState;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
+  readonly actions: readonly {
+    readonly label: string;
+    readonly position: number;
+  }[];
+  readonly actionPosition: number;
+  readonly jumpToAction: (position: number) => void;
   readonly applicationDestinations: readonly ApplicationDestinationOption[];
   readonly dispatch: (command: EditorCommand, coalesceKey?: string) => void;
   readonly undo: () => void;
@@ -221,6 +227,27 @@ export function EditorProvider({
       styleState,
       canUndo: builder.editor.selectors.canUndo(history),
       canRedo: builder.editor.selectors.canRedo(history),
+      actions: [
+        { label: "Opened editor", position: 0 },
+        ...[...history.past, ...[...history.future].reverse()].map(
+          (entry, index) => ({
+            label: entry.label,
+            position: index + 1,
+          }),
+        ),
+      ],
+      actionPosition: history.past.length,
+      jumpToAction: (position) => {
+        if (mode !== "edit" || position === history.past.length) return;
+        const next = builder.editor.history.jump(history, position);
+        const entry = history.past.at(-1) ?? history.future.at(-1);
+        if (entry)
+          emit(next, {
+            command: entry.command,
+            label: "Jump through Actions",
+            changedElementIds: Object.keys(next.present.elements),
+          });
+      },
       applicationDestinations,
       dispatch,
       undo,
@@ -244,6 +271,7 @@ export function EditorProvider({
       applicationDestinations,
       dispatch,
       history,
+      emit,
       hoveredId,
       mode,
       previewing,

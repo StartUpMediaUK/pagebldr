@@ -6,6 +6,7 @@ import {
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
@@ -56,6 +57,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu.js";
@@ -115,19 +117,35 @@ import {
 } from "./property-presentation.js";
 import { StyleControls } from "./style-control.js";
 import { PageDesignDialog } from "./page-design-dialog.js";
+import { HistorySheet } from "./history-sheet.js";
+import { LifecycleDialogs } from "./lifecycle-dialogs.js";
 import {
   ValidatedInputField,
   parseNumberDraft,
 } from "./validated-input-field.js";
 
+const emptySubscribe = () => () => undefined;
+const emptySnapshot = () => null;
+
 export function EditorShell(props: PagebldrEditorProps) {
+  const lifecycleState = useSyncExternalStore(
+    props.lifecycle?.subscribe ?? emptySubscribe,
+    props.lifecycle?.getSnapshot ?? emptySnapshot,
+    props.lifecycle?.getSnapshot ?? emptySnapshot,
+  );
   return (
     <EditorProvider
       {...(props.librarySource ? { librarySource: props.librarySource } : {})}
       applicationDestinations={props.applicationDestinations ?? []}
       builder={props.builder}
       document={props.document}
-      mode={props.mode ?? "edit"}
+      mode={
+        lifecycleState?.readOnlyReason ||
+        lifecycleState?.recovery ||
+        lifecycleState?.pending === "restore"
+          ? "readOnly"
+          : (props.mode ?? "edit")
+      }
       onChange={props.onChange}
       {...(props.resolveApplicationDestination
         ? {
@@ -148,11 +166,38 @@ function EditorWorkspace({
   onPublish,
   onSave,
   preset = standardEditorPreset,
+  lifecycle,
 }: PagebldrEditorProps) {
+  const lifecycleState = useSyncExternalStore(
+    lifecycle?.subscribe ?? emptySubscribe,
+    lifecycle?.getSnapshot ?? emptySnapshot,
+    lifecycle?.getSnapshot ?? emptySnapshot,
+  );
   const editor = usePagebldrEditor();
   const selectionVersion = useEditorSelectionVersion();
   const [pending, setPending] = useState<"save" | "publish" | null>(null);
-  const [status, setStatus] = useState("Ready");
+  const [legacyStatus, setStatus] = useState("Ready");
+  const status = lifecycleState
+    ? {
+        saved: "Saved",
+        dirty: "Unsaved",
+        saving: "Saving…",
+        failed: "Failed",
+        conflict: "Conflict",
+      }[lifecycleState.status]
+    : legacyStatus;
+  const canSave = !!lifecycle || !!onSave;
+  const canPublish = lifecycle
+    ? lifecycle.capabilities.publication
+    : !!onPublish;
+  const lifecycleBlocked =
+    !!lifecycleState &&
+    (lifecycleState.status === "conflict" ||
+      !!lifecycleState.recovery ||
+      !!lifecycleState.pending ||
+      !!lifecycleState.readOnlyReason);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [unpublishOpen, setUnpublishOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
   const [panelMode, setPanelMode] = useState<"add" | "inspector">("add");
   const [structureOpen, setStructureOpen] = useState(true);
@@ -161,6 +206,7 @@ function EditorWorkspace({
   const [styleClipboard, setStyleClipboard] =
     useState<PagebldrStyleClipboard | null>(null);
   const editorRootRef = useRef<HTMLElement>(null);
+  const moreActionsRef = useRef<HTMLButtonElement>(null);
   const initializedLayout = useRef(false);
   const savedDocument = useRef(editor.document);
   const panelOverlay = useMovableOverlay<HTMLElement>({
@@ -172,6 +218,14 @@ function EditorWorkspace({
 
   const perform = useCallback(
     async (kind: "save" | "publish") => {
+      if (lifecycle) {
+        try {
+          await (kind === "save" ? lifecycle.save() : lifecycle.publish());
+        } catch {
+          /* Shared lifecycle state exposes failure/conflict to the shell. */
+        }
+        return;
+      }
       const callback = kind === "save" ? onSave : onPublish;
       if (!callback) return;
       setPending(kind);
@@ -193,8 +247,11 @@ function EditorWorkspace({
         setPending(null);
       }
     },
-    [editor.document, onPublish, onSave],
+    [editor.document, lifecycle, onPublish, onSave],
   );
+  useEffect(() => {
+    lifecycle?.observe(editor.document);
+  }, [lifecycle, editor.document]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -206,7 +263,13 @@ function EditorWorkspace({
         return;
       }
       if (editor.previewing) return;
-      if (modifier && event.key.toLowerCase() === "s" && onSave) {
+      if (
+        modifier &&
+        event.key.toLowerCase() === "s" &&
+        canSave &&
+        !readOnly &&
+        !lifecycleBlocked
+      ) {
         event.preventDefault();
         void perform("save");
         return;
@@ -323,7 +386,7 @@ function EditorWorkspace({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [clipboard, editor, onSave, perform, readOnly]);
+  }, [clipboard, editor, canSave, lifecycleBlocked, perform, readOnly]);
 
   useEffect(() => {
     const root = editorRootRef.current;
@@ -353,8 +416,8 @@ function EditorWorkspace({
 
   const capabilities = new Set<EditorCapability>([
     ...(editor.mode === "edit" ? (["edit"] as const) : []),
-    ...(onSave ? (["save"] as const) : []),
-    ...(onPublish ? (["publish"] as const) : []),
+    ...(canSave ? (["save"] as const) : []),
+    ...(canPublish ? (["publish"] as const) : []),
     ...(editor.builder.resources.size > 0 ? (["resources"] as const) : []),
   ]);
   const contributionContext: EditorContributionContext = {
@@ -363,9 +426,15 @@ function EditorWorkspace({
   };
   const composition = createEditorComposition(preset, [
     ...builtInContributions({
-      canPublish: !!onPublish,
-      canSave: !!onSave,
-      pending,
+      canPublish: canPublish && !lifecycleBlocked && !readOnly,
+      canSave: canSave && !lifecycleBlocked && !readOnly,
+      published: !!lifecycleState?.publishedRevisionId,
+      pending: lifecycle
+        ? lifecycleState?.pending === "save" ||
+          lifecycleState?.pending === "publish"
+          ? lifecycleState.pending
+          : null
+        : pending,
       status,
       onSave: () => void perform("save"),
       onPublish: () => void perform("publish"),
@@ -386,7 +455,15 @@ function EditorWorkspace({
       data-pagebldr-mode={editor.mode}
     >
       <EditorToolbar
-        canSave={!!onSave && pending === null}
+        moreActionsRef={moreActionsRef}
+        canSave={canSave && pending === null && !lifecycleBlocked && !readOnly}
+        onHistory={() => setHistoryOpen(true)}
+        canUnpublish={
+          !!lifecycleState?.publishedRevisionId &&
+          !lifecycleBlocked &&
+          !readOnly
+        }
+        onUnpublish={() => setUnpublishOpen(true)}
         onSave={() => void perform("save")}
         panelOpen={panelOpen}
         onPanelOpenChange={setPanelOpen}
@@ -471,7 +548,10 @@ function EditorWorkspace({
                 </div>
               </aside>
             ) : null}
-            <main className="relative min-w-0 flex-1">
+            <section
+              aria-label="Page canvas"
+              className="relative min-w-0 flex-1"
+            >
               <IsolatedCanvas>
                 {composition.render("canvas.overlay", contributionContext)}
               </IsolatedCanvas>
@@ -483,7 +563,7 @@ function EditorWorkspace({
                 onStyleClipboardChange={setStyleClipboard}
                 styleClipboard={styleClipboard}
               />
-            </main>
+            </section>
             <CompactToolbar
               panelOpen={panelOpen}
               onPanelOpenChange={setPanelOpen}
@@ -500,11 +580,27 @@ function EditorWorkspace({
         open={pageDesignOpen}
         onOpenChange={setPageDesignOpen}
       />
+      <HistorySheet
+        restoreFocus={() => moreActionsRef.current?.focus()}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        lifecycle={lifecycle}
+        snapshot={lifecycleState}
+      />
+      {lifecycle && lifecycleState ? (
+        <LifecycleDialogs
+          lifecycle={lifecycle}
+          snapshot={lifecycleState}
+          unpublishOpen={unpublishOpen}
+          onUnpublishOpenChange={setUnpublishOpen}
+        />
+      ) : null}
     </section>
   );
 }
 
 function builtInContributions(input: {
+  readonly published: boolean;
   readonly canPublish: boolean;
   readonly canSave: boolean;
   readonly pending: "save" | "publish" | null;
@@ -562,9 +658,13 @@ function builtInContributions(input: {
 }
 
 function EditorToolbar({
+  moreActionsRef,
   canSave,
+  canUnpublish,
+  onUnpublish,
   onPanelOpenChange,
   onPageDesign,
+  onHistory,
   onSave,
   onStructureOpenChange,
   panelOpen,
@@ -573,9 +673,13 @@ function EditorToolbar({
   status,
   structureOpen,
 }: {
+  readonly moreActionsRef: React.RefObject<HTMLButtonElement | null>;
   readonly canSave: boolean;
+  readonly canUnpublish: boolean;
+  readonly onUnpublish: () => void;
   readonly onPanelOpenChange: (open: boolean) => void;
   readonly onPageDesign: () => void;
+  readonly onHistory: () => void;
   readonly onSave: () => void;
   readonly onStructureOpenChange: (open: boolean) => void;
   readonly panelOpen: boolean;
@@ -650,6 +754,7 @@ function EditorToolbar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
+              ref={moreActionsRef}
               aria-label="More editor actions"
               size="icon-sm"
               variant="ghost"
@@ -658,29 +763,42 @@ function EditorToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem disabled={!editor.canUndo} onSelect={editor.undo}>
-              <Undo2Icon /> Undo
-            </DropdownMenuItem>
-            <DropdownMenuItem disabled={!editor.canRedo} onSelect={editor.redo}>
-              <Redo2Icon /> Redo
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => editor.setPreviewing(true)}>
-              <EyeIcon /> Preview
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => onStructureOpenChange(!structureOpen)}
-            >
-              <Layers3Icon /> {structureOpen ? "Hide" : "Show"} Structure
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem disabled={!canSave} onSelect={onSave}>
-              <SaveIcon /> Save draft
-            </DropdownMenuItem>
-            <DropdownMenuItem disabled>History</DropdownMenuItem>
-            <DropdownMenuItem onSelect={onPageDesign}>
-              <PaletteIcon /> Page design
-            </DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                disabled={!editor.canUndo}
+                onSelect={editor.undo}
+              >
+                <Undo2Icon /> Undo
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={!editor.canRedo}
+                onSelect={editor.redo}
+              >
+                <Redo2Icon /> Redo
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => editor.setPreviewing(true)}>
+                <EyeIcon /> Preview
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => onStructureOpenChange(!structureOpen)}
+              >
+                <Layers3Icon /> {structureOpen ? "Hide" : "Show"} Structure
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled={!canSave} onSelect={onSave}>
+                <SaveIcon /> Save draft
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onHistory}>History</DropdownMenuItem>
+              {canUnpublish ? (
+                <DropdownMenuItem variant="destructive" onSelect={onUnpublish}>
+                  Unpublish
+                </DropdownMenuItem>
+              ) : null}
+              <DropdownMenuItem onSelect={onPageDesign}>
+                <PaletteIcon /> Page design
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}
@@ -710,12 +828,14 @@ function HistoryControls() {
 }
 
 function PersistenceControls({
+  published,
   canPublish,
   canSave,
   pending,
   onSave,
   onPublish,
 }: {
+  readonly published: boolean;
   readonly canPublish: boolean;
   readonly canSave: boolean;
   readonly pending: "save" | "publish" | null;
@@ -741,7 +861,11 @@ function PersistenceControls({
         onClick={onPublish}
       >
         <SendIcon data-icon="inline-start" />
-        {pending === "publish" ? "Publishing…" : "Publish"}
+        {pending === "publish"
+          ? "Publishing…"
+          : published
+            ? "Update"
+            : "Publish"}
       </Button>
     </div>
   );

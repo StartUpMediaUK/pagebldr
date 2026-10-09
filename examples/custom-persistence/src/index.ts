@@ -64,9 +64,18 @@ export function createServerPersistence(input: {
       input.notify(`Saved version ${record.version}.`);
       return record;
     },
-    publish: async (key: string) => {
+    publish: async (
+      key: string,
+      document: PageDocument,
+      expectedVersion: number,
+    ) => {
       if (!input.canPublish) throw new Error("Host permission denied.");
-      const publication = await server.publications.publish({ key });
+      const publication = await server.publications.publish({
+        key,
+        document,
+        expectedVersion,
+        operationId: crypto.randomUUID(),
+      });
       input.notify(`Published Revision ${publication.revisionId}.`);
       return publication;
     },

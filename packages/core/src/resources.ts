@@ -12,21 +12,34 @@ export function resourceKey(reference: ResourceReference): string {
   return `${reference.kind}:${stableJson(reference.value)}`;
 }
 
+/** Typed Element references plus Document-level SEO media, deduplicated. */
+export function extractDocumentReferences(
+  builder: Pagebldr,
+  document: PageDocument,
+): readonly ResourceReference[] {
+  const references = new Map<string, ResourceReference>();
+  for (const element of Object.values(document.elements)) {
+    const definition = builder.elements.get(element.type);
+    for (const reference of definition?.references?.(element.props) ?? [])
+      references.set(resourceKey(reference), reference);
+  }
+  if (document.settings.seo.socialImage) {
+    const reference = document.settings.seo.socialImage;
+    references.set(resourceKey(reference), reference);
+  }
+  return structuredClone([...references.values()]);
+}
+
 export async function resolveDocumentResources(
   builder: Pagebldr,
   document: PageDocument,
   context: ResourceContext = {},
 ): Promise<PreparedResources> {
-  const references = new Map<string, ResourceReference>();
-  for (const element of Object.values(document.elements)) {
-    const definition = builder.elements.get(element.type);
-    if (!definition?.references) continue;
-    for (const reference of definition.references(element.props))
-      references.set(resourceKey(reference), reference);
-  }
+  const references = extractDocumentReferences(builder, document);
   const values = new Map<string, string | null>();
   await Promise.all(
-    [...references].map(async ([key, reference]) => {
+    references.map(async (reference) => {
+      const key = resourceKey(reference);
       const adapter = builder.resources.get(reference.kind);
       if (!adapter)
         throw new PagebldrError(

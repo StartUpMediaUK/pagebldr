@@ -471,6 +471,99 @@ draft and published state, and stable errors. A single-page collection is the
 same storage model constrained to one configured key; it is not a different
 adapter.
 
+`documents.save` accepts `reason: "manual" | "autosave"` (default: `"manual"`).
+Both validate/migrate the submitted Document and compare `expectedVersion`
+atomically before advancing the draft version. Autosave returns `revision: null`
+and does not add a durable Revision. Explicit saves create Revisions when
+enabled. Revision retention must be a positive safe integer. Cleanup keeps the
+newest configured number of snapshots and additionally protects the published
+Revision when it lies outside that window. Restore validates/migrates the saved
+snapshot before appending a new draft head; it never changes the publication
+pointer.
+
+Custom Storage adapters must implement
+`documents.replace(record, expectedVersion)` as an atomic compare-and-swap,
+returning `false` when the stored version no longer matches. A read followed by
+an unconditional upsert is not sufficient, even inside a default-isolation
+transaction. The memory adapter serializes transactions; the Prisma providers
+use a version-filtered update and normalize provider transaction conflicts to
+`CONFLICT`. The shared conformance suite includes simultaneous saves, not just
+sequential stale-version attempts.
+
+`documents.create` inserts only when absent and creates no durable Revision.
+`publications.publish` now requires the submitted `document` and
+`expectedVersion`; the earlier `revisionId` pointer-selection request is
+removed. It validates/migrates the submission, advances the draft, creates a
+`publish` Revision and updates the publication pointer in one transaction. Its
+response includes the submitted Document, new version and Revision as well as
+publication metadata. Save and Restore Revisions have kind `save` and `restore`
+respectively; all carry a title and nullable Host actor ID (`actor(request)`,
+with Audit context as a fallback). Unpublish leaves the draft unchanged.
+
+Pass an `operationId` on explicit save, publish, restore and unpublish requests
+and reuse it with the identical payload after an uncertain response. IDs contain
+1–128 letters, digits, underscores or hyphens and are unique within a Scope.
+Successful-operation receipts commit with the mutation and remain independent of
+Revision retention. Replays return the original response, even after later edits
+or Unpublish, without creating another Revision or appending another Audit
+record. Pending delivery may retry its original ID. Reusing an ID for a
+different request returns `CONFLICT`. Identical concurrent operations may retry
+at most three times with bounded backoff, always preserving the original
+expected version. If retries are exhausted, preserve local work and retry the
+same ID later; no newer draft is overwritten. Without an ID, explicit calls have
+no lost-response replay guarantee.
+
+Storage adapters must additionally provide atomic `documents.insert` and
+append-only operation receipt `get`/`put` plus scoped `deleteForDocument`. The
+Prisma schemas require the new `PagebldrOperation` model and Revision `kind`,
+`title`, `actorId` fields. Hosts must migrate their own schema and regenerate
+their client before using the updated adapters. Existing untyped Revision rows
+default to `save`, derive an absent title from the Document and have an unknown
+actor; these defaults do not reconstruct historical intent. Backfill known
+historical metadata through the Host's migration process. Receipts contain
+original response Documents: Hosts own retention/access and must retain them for
+their promised retry window. Document deletion removes its receipts atomically
+and ends that replay guarantee. Revision `put` is append-only too: identifier
+collisions must fail rather than overwrite history. Host `createId` factories
+must generate unique identifiers.
+
+The shipped adapters now declare `transactionalAudit: true`. Draft and live
+Resource references (including social-image settings) live with their snapshots.
+Audit records append in the lifecycle transaction with immutable event IDs,
+schema version and per-Document sequence. Sink delivery happens after commit,
+with bounded retries and retained pending records, never inside the transaction.
+`server.audit.flush({ scope, key }, limit?)` lets the Host drain up to 100
+pending records; operation replay also retries pending delivery. Delivery is at
+least once, so Host sinks deduplicate IDs. Host authorization, scheduling,
+retention, querying and privacy remain outside the package.
+
+Prisma consumers also migrate `PagebldrAudit` and the Document/Publication
+`references` JSON fields, then regenerate clients. Custom Storage transactions
+implement append-only Audit storage and delivery acknowledgement.
+
+`createEditorLifecycle` (`pagebldr/react`) is the unified controlled lifecycle
+interface. It receives `builder`, `loaded`, `save` and optional `publication`,
+`revisions`, `reload`, `recovery` and `onLoadDocument` capabilities. Pass the
+result as the editor's `lifecycle`; create/dispose effect-owned instances rather
+than reusing a disposed controller during React Strict Mode replay. The shell
+observes controlled Documents and owns state labels, autosave, Actions/Revisions
+History, preview/restore, failed-operation retry, conflict resolution, recovery
+choice and JSON download. Restore/recovery invoke `onLoadDocument` to accept
+validated snapshots; configuring either capability requires that callback. These
+external snapshots become Host state; ordinary commands still use `onChange`.
+Loaded `readOnlyReason` blocks writes and is shown in the shell. Local Actions
+selectors expose labels/positions and jumping, not the history store. Durable
+save, publish and restore use retry-safe operation IDs; new edits remain dirty
+until their exact snapshot has been saved. Recovery cleanup never removes
+another session's newer payload.
+
+`validatePublication` (`pagebldr`) returns stable error/warning IDs using
+definition-owned `publicationIssues`, Resource availability and optional neutral
+Host `checkReference`. Managed Image/Gallery usage confirmation is blocking;
+unpublished destinations require `confirmedWarnings`. The server's
+`publications.validate` and `publish` enforce the same checks independently of
+editor UI. Legacy editor `onSave`/`onPublish` remain manual-only callbacks.
+
 Every Storage adapter requires a concrete Provider/dialect. Adapter identity
 alone is insufficient: `prisma + mongodb` and `prisma + postgresql` have
 different capabilities. Construction validates the selected Provider, returns an

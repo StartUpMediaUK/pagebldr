@@ -9,6 +9,7 @@ datasource db {
 }
 
 model PagebldrDocument {
+  references Json @default("[]")
   storageId String   @id @map("_id")
   scopeKey  String
   scope     Json
@@ -22,6 +23,9 @@ model PagebldrDocument {
 }
 
 model PagebldrRevision {
+  kind        String @default("save")
+  title       String @default("")
+  actorId     String?
   storageId   String   @id @map("_id")
   scopeKey    String
   scope       Json
@@ -35,6 +39,7 @@ model PagebldrRevision {
 }
 
 model PagebldrPublication {
+  references Json @default("[]")
   storageId   String   @id @map("_id")
   scopeKey    String
   scope       Json
@@ -43,4 +48,28 @@ model PagebldrPublication {
   publishedAt DateTime
 
   @@index([scopeKey, documentKey])
+}
+
+model PagebldrOperation {
+  scopeKey    String @default("")
+  storageId   String @id @map("_id")
+  scope       Json
+  id          String
+  documentKey String
+  fingerprint String
+  response    String
+  @@index([scopeKey, documentKey])
+}
+
+model PagebldrAudit {
+  storageId String @id @map("_id")
+  scopeKey String
+  scope Json
+  documentKey String
+  event Json
+  sequence Int
+  deliveredAt DateTime?
+
+  @@unique([scopeKey, documentKey, sequence])
+  @@index([scopeKey, documentKey, deliveredAt])
 }

@@ -1,4 +1,5 @@
-import type { PageDocument } from "@pagebldr/core";
+import type { PageDocument, ResourceReference } from "@pagebldr/core";
+import type { AuditEvent } from "@pagebldr/runtime";
 
 export type StorageScope = Readonly<Record<string, string>>;
 
@@ -20,6 +21,7 @@ export interface StorageSetupGuide {
 }
 
 export interface StoredDocument {
+  readonly references?: readonly ResourceReference[];
   readonly scope: StorageScope;
   readonly key: string;
   readonly document: PageDocument;
@@ -29,6 +31,9 @@ export interface StoredDocument {
 }
 
 export interface StoredRevision {
+  readonly kind: "save" | "publish" | "restore";
+  readonly title: string;
+  readonly actorId: string | null;
   readonly scope: StorageScope;
   readonly id: string;
   readonly documentKey: string;
@@ -38,10 +43,20 @@ export interface StoredRevision {
 }
 
 export interface StoredPublication {
+  readonly references?: readonly ResourceReference[];
   readonly scope: StorageScope;
   readonly documentKey: string;
   readonly revisionId: string;
   readonly publishedAt: Date;
+}
+
+/** A durable successful-operation receipt, independent of Revision retention. */
+export interface StoredOperation {
+  readonly scope: StorageScope;
+  readonly id: string;
+  readonly documentKey: string;
+  readonly fingerprint: string;
+  readonly response: string;
 }
 
 export interface StorageListRequest {
@@ -56,6 +71,31 @@ export interface StorageListResult {
 }
 
 export interface StorageTransaction {
+  readonly audits: {
+    readonly list: (
+      scope: StorageScope,
+      documentKey: string,
+    ) => Promise<readonly StoredAudit[]>;
+    /** Append-only event identity and payload, in the lifecycle transaction. */
+    readonly put: (record: StoredAudit) => Promise<void>;
+    readonly markDelivered: (
+      scope: StorageScope,
+      id: string,
+      deliveredAt: Date,
+    ) => Promise<void>;
+  };
+  readonly operations: {
+    readonly get: (
+      scope: StorageScope,
+      id: string,
+    ) => Promise<StoredOperation | null>;
+    /** Append only: never replace a receipt with another request or response. */
+    readonly put: (record: StoredOperation) => Promise<void>;
+    readonly deleteForDocument: (
+      scope: StorageScope,
+      key: string,
+    ) => Promise<void>;
+  };
   readonly documents: {
     readonly get: (
       scope: StorageScope,
@@ -63,6 +103,13 @@ export interface StorageTransaction {
     ) => Promise<StoredDocument | null>;
     readonly list: (request: StorageListRequest) => Promise<StorageListResult>;
     readonly put: (record: StoredDocument) => Promise<void>;
+    /** Insert only if absent. Must not overwrite a concurrently created draft. */
+    readonly insert: (record: StoredDocument) => Promise<boolean>;
+    /** Atomically replace only the matching draft head; false means conflict. */
+    readonly replace: (
+      record: StoredDocument,
+      expectedVersion: number,
+    ) => Promise<boolean>;
     readonly delete: (scope: StorageScope, key: string) => Promise<void>;
   };
   readonly revisions: {
@@ -74,6 +121,7 @@ export interface StorageTransaction {
       scope: StorageScope,
       documentKey: string,
     ) => Promise<readonly StoredRevision[]>;
+    /** Append only; duplicate identifiers must fail rather than rewrite history. */
     readonly put: (record: StoredRevision) => Promise<void>;
     readonly delete: (scope: StorageScope, id: string) => Promise<void>;
   };
@@ -88,6 +136,13 @@ export interface StorageTransaction {
       documentKey: string,
     ) => Promise<void>;
   };
+}
+
+export interface StoredAudit {
+  readonly scope: StorageScope;
+  readonly documentKey: string;
+  readonly event: AuditEvent;
+  readonly deliveredAt: Date | null;
 }
 
 export interface StorageAdapter<

@@ -9,6 +9,7 @@ export type {
   PublishRequest,
   RestoreRequest,
   SaveRequest,
+  UnpublishRequest,
 } from "./server.js";
 export { canonicalScope } from "./storage.js";
 export type {
@@ -20,6 +21,8 @@ export type {
   StorageSetupGuide,
   StorageTransaction,
   StoredDocument,
+  StoredAudit,
+  StoredOperation,
   StoredPublication,
   StoredRevision,
 } from "./storage.js";

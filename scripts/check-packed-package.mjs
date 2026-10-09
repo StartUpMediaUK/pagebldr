@@ -84,7 +84,10 @@ try {
     );
   // Phase 6 adds the neutral 23-Block library subpath and shared library/media
   // UI (~1.61 MB packed including maps); private Template fixtures are excluded.
-  assertMaximumSize(archivePath, 1_650_000, "Packed archive");
+  // Phase 7 adds the lifecycle/History/recovery UI, publication validation and
+  // transactional Audit outbox. Measured checkpoint: 1,678,118 bytes; retain
+  // an explicit ceiling for these required features, not an unbounded waiver.
+  assertMaximumSize(archivePath, 1_720_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -402,7 +405,7 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "react.js"),
-    1_350_000,
+    1_400_000,
     "React entry",
   );
   assertMaximumSize(
