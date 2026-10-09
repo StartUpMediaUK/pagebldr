@@ -17,7 +17,7 @@
   "devDependencies": {
     "@pagebldr/core": "workspace:*",
     "@pagebldr/runtime": "workspace:*",
-    "@prisma/client": "6.19.0",
-    "prisma": "6.19.0"
+    "@prisma/client": "7.10.0",
+    "prisma": "7.10.0"
   }
 }
