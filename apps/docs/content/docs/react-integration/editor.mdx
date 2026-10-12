@@ -6,3 +6,17 @@ description: Document ownership, change events, save, and publish intents.
 `PagebldrEditor` receives `document` and emits the next Document through
 `onChange`. `onSave` and `onPublish` signal Host intent and surface thrown Host
 errors; they do not install persistence policy.
+
+## Canvas navigation
+
+For an overflowing canvas, hold Space and drag to pan. Alt and mouse wheel
+changes zoom between 25% and 200%; manual zoom turns off persistent width-Fit.
+The percentage control fits the page width, not its whole height.
+
+Focus the Canvas workspace to scroll with arrow keys, or use the keyboard-ready
+zoom controls. Space continues to type normally in text fields. Navigation only
+changes the workspace view, never the Document or its save state.
+
+Editor controls follow system colors in forced-colors mode. Reduced-motion
+preference disables editor transitions and smooth selection scrolling. Neither
+setting rewrites authored Document colors.

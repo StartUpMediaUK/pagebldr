@@ -7,6 +7,7 @@ import {
   clampCanvasZoom,
   fitCanvasZoom,
   stepCanvasZoom,
+  wheelCanvasZoom,
 } from "./canvas-controller.js";
 
 const settings = {
@@ -24,6 +25,14 @@ const settings = {
 } as const;
 
 describe("canvas controller", () => {
+  it("uses bounded wheel steps without treating stationary or invalid input as zoom", () => {
+    expect(wheelCanvasZoom(1, -100)).toBe(1.1);
+    expect(wheelCanvasZoom(1, 100)).toBe(0.9);
+    expect(wheelCanvasZoom(2, -1)).toBe(2);
+    expect(wheelCanvasZoom(0.25, 1)).toBe(0.25);
+    expect(wheelCanvasZoom(1, 0)).toBe(1);
+    expect(wheelCanvasZoom(1, NaN)).toBe(1);
+  });
   it("clamps and steps zoom through the 25–200% authoring range", () => {
     expect(clampCanvasZoom(0)).toBe(0.25);
     expect(clampCanvasZoom(3)).toBe(2);

@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent, ReactNode } from "react";
+import { PagebldrRuntimeInteractions } from "pagebldr/react";
 
 export function AnalyticsBoundary({
   children,
@@ -23,5 +24,10 @@ export function AnalyticsBoundary({
       }),
     });
   };
-  return <div onClick={track}>{children}</div>;
+  return (
+    <div onClick={track}>
+      <PagebldrRuntimeInteractions />
+      {children}
+    </div>
+  );
 }

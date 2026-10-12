@@ -1,5 +1,37 @@
 @import "tailwindcss";
 
+/* Accessibility preferences must override primitive motion utilities. */
+@media (prefers-reduced-motion: reduce) {
+  [data-pagebldr-ui],
+  [data-pagebldr-ui] *,
+  [data-pagebldr-ui] *::before,
+  [data-pagebldr-ui] *::after,
+  [data-pagebldr-editor] *,
+  [data-pagebldr-editor] *::before,
+  [data-pagebldr-editor] *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0s;
+    scroll-behavior: auto;
+  }
+}
+
+/* Compact targets must override primitive sizing utilities. */
+@media (max-width: 1023px) {
+  :is([data-pagebldr-editor], [data-pagebldr-ui])
+    :is(
+      button,
+      input:not([type="file"]),
+      select,
+      [role="tab"],
+      [role^="menuitem"],
+      [role="option"]
+    ) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 /* Package-owned library/media compositions; Hosts need no extra stylesheet. */
 .pb-library-thumbnail {
   display: flex;
@@ -405,6 +437,28 @@
   [data-pagebldr-canvas-workspace] iframe:focus-visible {
     outline: 2px solid var(--pagebldr-focus);
     outline-offset: 2px;
+  }
+
+  [data-pagebldr-canvas-workspace]:focus-visible {
+    outline: 2px solid var(--pagebldr-focus);
+    outline-offset: -2px;
+  }
+
+  @media (forced-colors: active) {
+    :root,
+    [data-pagebldr-editor] {
+      --pagebldr-background: Canvas;
+      --pagebldr-foreground: CanvasText;
+      --pagebldr-card: Canvas;
+      --pagebldr-primary: ButtonFace;
+      --pagebldr-primary-foreground: ButtonText;
+      --pagebldr-muted: Canvas;
+      --pagebldr-muted-foreground: CanvasText;
+      --pagebldr-accent: Canvas;
+      --pagebldr-destructive: ButtonText;
+      --pagebldr-border: ButtonText;
+      --pagebldr-focus: Highlight;
+    }
   }
 
   [data-pagebldr-selection-outline],

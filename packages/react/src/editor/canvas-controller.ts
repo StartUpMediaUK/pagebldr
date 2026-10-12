@@ -14,6 +14,11 @@ export function stepCanvasZoom(value: number, direction: -1 | 1): number {
   return clampCanvasZoom(Math.round((value + direction * 0.1) * 10) / 10);
 }
 
+export function wheelCanvasZoom(value: number, deltaY: number): number {
+  if (!Number.isFinite(deltaY) || deltaY === 0) return value;
+  return stepCanvasZoom(value, deltaY < 0 ? 1 : -1);
+}
+
 export function fitCanvasZoom(input: {
   readonly canvasWidth: number;
   readonly availableWidth: number;

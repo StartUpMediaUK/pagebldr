@@ -54,6 +54,7 @@ import {
   canvasViewportWidth,
   fitCanvasZoom,
   stepCanvasZoom,
+  wheelCanvasZoom,
 } from "./canvas-controller.js";
 import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 import {
@@ -98,6 +99,8 @@ export function IsolatedCanvas({
   });
   const [zoom, setZoom] = useState(1);
   const [fitEnabled, setFitEnabled] = useState(false);
+  const [spaceHeld, setSpaceHeld] = useState(false);
+  const [panning, setPanning] = useState(false);
   const zoomRef = useRef(zoom);
   const [geometry, setGeometry] = useState<{
     readonly elementId: string;
@@ -340,13 +343,132 @@ export function IsolatedCanvas({
   };
 
   useEffect(() => {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    let held = false;
+    let drag: {
+      id: number;
+      x: number;
+      y: number;
+      left: number;
+      top: number;
+    } | null = null;
+    const finish = () => {
+      const id = drag?.id;
+      drag = null;
+      setPanning(false);
+      if (id !== undefined && workspace.hasPointerCapture(id))
+        workspace.releasePointerCapture(id);
+    };
+    const reset = () => {
+      held = false;
+      setSpaceHeld(false);
+      finish();
+    };
+    const keyDown = (event: KeyboardEvent) => {
+      if (
+        event.code !== "Space" ||
+        event.defaultPrevented ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        isInteractiveTarget(event.target)
+      )
+        return;
+      if (
+        !isDomElement(event.target) ||
+        (!workspace.contains(event.target) &&
+          event.target.ownerDocument !== frameDocument)
+      )
+        return;
+      if (
+        workspace.scrollWidth <= workspace.clientWidth &&
+        workspace.scrollHeight <= workspace.clientHeight
+      )
+        return;
+      event.preventDefault();
+      held = true;
+      setSpaceHeld(true);
+    };
+    const keyUp = (event: KeyboardEvent) => {
+      if (event.code === "Space") reset();
+    };
+    const begin = (event: PointerEvent) => {
+      if (!held || event.button !== 0 || isInteractiveTarget(event.target))
+        return;
+      event.preventDefault();
+      event.stopPropagation();
+      drag = {
+        id: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        left: workspace.scrollLeft,
+        top: workspace.scrollTop,
+      };
+      workspace.setPointerCapture(event.pointerId);
+      setPanning(true);
+    };
+    const move = (event: PointerEvent) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      event.preventDefault();
+      workspace.scrollLeft = drag.left + drag.x - event.clientX;
+      workspace.scrollTop = drag.top + drag.y - event.clientY;
+    };
+    const end = (event: PointerEvent) => {
+      if (event.pointerId === drag?.id) finish();
+    };
+    const wheel = (event: WheelEvent) => {
+      if (
+        !event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.defaultPrevented ||
+        isInteractiveTarget(event.target) ||
+        !Number.isFinite(event.deltaY) ||
+        event.deltaY === 0
+      )
+        return;
+      event.preventDefault();
+      setFitEnabled(false);
+      setZoom((current) => wheelCanvasZoom(current, event.deltaY));
+    };
+    window.addEventListener("keydown", keyDown);
+    window.addEventListener("keyup", keyUp);
+    window.addEventListener("blur", reset);
+    frameDocument?.addEventListener("keydown", keyDown, true);
+    frameDocument?.addEventListener("keyup", keyUp, true);
+    workspace.addEventListener("pointerdown", begin, true);
+    workspace.addEventListener("pointermove", move);
+    workspace.addEventListener("pointerup", end);
+    workspace.addEventListener("pointercancel", end);
+    workspace.addEventListener("lostpointercapture", finish);
+    workspace.addEventListener("wheel", wheel, { passive: false });
+    frameDocument?.addEventListener("wheel", wheel, { passive: false });
+    return () => {
+      reset();
+      window.removeEventListener("keydown", keyDown);
+      window.removeEventListener("keyup", keyUp);
+      window.removeEventListener("blur", reset);
+      frameDocument?.removeEventListener("keydown", keyDown, true);
+      frameDocument?.removeEventListener("keyup", keyUp, true);
+      workspace.removeEventListener("pointerdown", begin, true);
+      workspace.removeEventListener("pointermove", move);
+      workspace.removeEventListener("pointerup", end);
+      workspace.removeEventListener("pointercancel", end);
+      workspace.removeEventListener("lostpointercapture", finish);
+      workspace.removeEventListener("wheel", wheel);
+      frameDocument?.removeEventListener("wheel", wheel);
+    };
+  }, [frameDocument]);
+
+  useEffect(() => {
     if (fitEnabled) setZoom(fitZoom);
   }, [fitEnabled, fitZoom]);
   useEffect(() => {
     if (editor.canvasFitVersion > 0) setFitEnabled(true);
   }, [editor.canvasFitVersion]);
 
-  const loadFrame = () => {
+  const loadFrame = useCallback(() => {
     const document = frameRef.current?.contentDocument;
     if (!document) {
       setStatus("error");
@@ -355,7 +477,17 @@ export function IsolatedCanvas({
     }
     installPackageStyles(window.document, document);
     setFrameDocument(document);
-  };
+  }, []);
+
+  useEffect(() => {
+    // An SSR frame can finish loading before React attaches its load listener.
+    const document = frameRef.current?.contentDocument;
+    if (
+      document?.readyState === "complete" &&
+      document.getElementById("pagebldr-canvas-root")
+    )
+      loadFrame();
+  }, [loadFrame]);
 
   return (
     <div
@@ -363,7 +495,19 @@ export function IsolatedCanvas({
       className="relative h-full overflow-auto bg-muted p-4"
       data-pagebldr-canvas-workspace
       data-canvas-status={status}
+      tabIndex={0}
+      role="region"
+      aria-label="Canvas workspace"
+      aria-describedby={`${canvasId}-navigation`}
+      style={{
+        cursor: panning ? "grabbing" : spaceHeld ? "grab" : undefined,
+        userSelect: spaceHeld ? "none" : undefined,
+      }}
     >
+      <p id={`${canvasId}-navigation`} className="sr-only">
+        Hold Space and drag to pan. Alt and mouse wheel zooms. Arrow keys scroll
+        the focused workspace; zoom controls also work with the keyboard.
+      </p>
       {children ? (
         <div className="pointer-events-none absolute inset-0">{children}</div>
       ) : null}
@@ -388,6 +532,7 @@ export function IsolatedCanvas({
             height: contentHeight,
             transform: `scale(${zoom})`,
             transformOrigin: "top left",
+            pointerEvents: spaceHeld ? "none" : undefined,
           }}
         />
       </div>
@@ -904,7 +1049,7 @@ function CanvasZoomControls({
   return (
     <>
       <div
-        className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[900px]:hidden"
+        className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[1024px]:hidden"
         onPointerEnter={dimensions.show}
         onPointerLeave={dimensions.hideSoon}
         onFocusCapture={dimensions.show}
@@ -933,7 +1078,7 @@ function CanvasZoomControls({
           onClick={onReveal}
         />
       </div>
-      <div className="sticky bottom-16 mx-auto hidden w-fit @max-[900px]:block">
+      <div className="sticky bottom-16 mx-auto hidden w-fit @max-[1024px]:block">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -1027,7 +1172,7 @@ function CanvasViewportIndicator({
   if (!dimensions.visible) return null;
 
   return (
-    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit @max-[900px]:hidden">
+    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit @max-[1024px]:hidden">
       <div
         className="pointer-events-auto flex h-9 items-center gap-1 rounded-lg border bg-background px-3 text-xs tabular-nums shadow-sm"
         onPointerEnter={dimensions.show}
@@ -1092,7 +1237,12 @@ function revealRect(
     height >= workspace.clientHeight
       ? top - 24
       : top - (workspace.clientHeight - height) / 2;
-  workspace.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
+  workspace.scrollTo({
+    top: Math.max(0, target),
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth",
+  });
 }
 
 function closestPageElement(target: EventTarget | null) {

@@ -212,7 +212,7 @@ function EditorWorkspace({
   const panelOverlay = useMovableOverlay<HTMLElement>({
     enabled: (element) =>
       (element.closest<HTMLElement>("[data-pagebldr-editor]")?.clientWidth ??
-        901) <= 900,
+        1024) < 1024,
   });
   const readOnly = editor.mode !== "edit" || editor.previewing;
 
@@ -394,7 +394,7 @@ function EditorWorkspace({
     const observer = new ResizeObserver(([entry]) => {
       if (!entry || initializedLayout.current) return;
       initializedLayout.current = true;
-      if (entry.contentRect.width < 901) setPanelOpen(false);
+      if (entry.contentRect.width < 1024) setPanelOpen(false);
     });
     observer.observe(root);
     return () => observer.disconnect();
@@ -447,7 +447,7 @@ function EditorWorkspace({
       ref={editorRootRef}
       aria-label="Page builder"
       className={cn(
-        "@container flex h-[min(900px,100vh)] min-h-[640px] flex-col overflow-hidden rounded-lg border bg-background text-foreground",
+        "@container flex h-[min(900px,100vh)] min-h-[640px] flex-col overflow-hidden rounded-lg bg-background text-foreground",
         className,
       )}
       data-pagebldr-editor={editor.builder.namespace}
@@ -502,13 +502,13 @@ function EditorWorkspace({
               <aside
                 ref={panelOverlay.ref}
                 style={panelOverlay.style}
-                className="z-20 flex w-[22rem] shrink-0 flex-col border-r bg-background @max-[900px]:absolute @max-[900px]:bottom-14 @max-[900px]:left-3 @max-[900px]:top-3 @max-[900px]:w-[min(22rem,calc(100%-1.5rem))] @max-[900px]:rounded-xl @max-[900px]:border @max-[900px]:shadow-xl"
+                className="z-20 flex w-[22rem] shrink-0 flex-col border-r bg-background @max-[1024px]:absolute @max-[1024px]:bottom-14 @max-[1024px]:left-3 @max-[1024px]:top-3 @max-[1024px]:w-[min(22rem,calc(100%-1.5rem))] @max-[1024px]:rounded-xl @max-[1024px]:border @max-[1024px]:shadow-xl"
                 aria-label={
                   panelMode === "add" ? "Add to page" : "Element inspector"
                 }
               >
                 <div
-                  className="flex min-h-16 items-center gap-2 border-b px-4 py-3 @max-[900px]:cursor-move @max-[900px]:touch-none"
+                  className="flex min-h-16 items-center gap-2 border-b px-4 py-3 @max-[1024px]:cursor-move @max-[1024px]:touch-none"
                   onDoubleClick={panelOverlay.reset}
                   onPointerDown={panelOverlay.beginMove}
                 >
@@ -692,7 +692,7 @@ function EditorToolbar({
   return (
     <header className="flex min-h-14 items-center gap-2 px-2">
       {!editor.previewing ? (
-        <div className="@max-[900px]:hidden">
+        <div className="@max-[1024px]:hidden">
           <ToolButton
             label={panelOpen ? "Close Add panel" : "Open Add panel"}
             onClick={() => onPanelOpenChange(!panelOpen)}
@@ -716,13 +716,13 @@ function EditorToolbar({
           <HomeIcon className="size-3" /> Home · {status}
         </span>
       </div>
-      <Badge className="@max-[900px]:hidden" variant="secondary">
+      <Badge className="@max-[1024px]:hidden" variant="secondary">
         {editor.previewing ? "Preview" : editor.mode}
       </Badge>
       <div
         className={cn(
           "flex flex-1 items-center justify-center",
-          !editor.previewing && "@max-[900px]:hidden",
+          !editor.previewing && "@max-[1024px]:hidden",
         )}
       >
         {start}
@@ -730,7 +730,7 @@ function EditorToolbar({
       {!editor.previewing ? (
         <>
           <Button
-            className="@max-[900px]:hidden"
+            className="@max-[1024px]:hidden"
             size="sm"
             variant={structureOpen ? "secondary" : "ghost"}
             onClick={() => onStructureOpenChange(!structureOpen)}
@@ -739,7 +739,7 @@ function EditorToolbar({
             Structure
           </Button>
           <Button
-            className="@max-[900px]:hidden"
+            className="@max-[1024px]:hidden"
             size="sm"
             variant="ghost"
             onClick={() => editor.setPreviewing(true)}
@@ -855,7 +855,7 @@ function PersistenceControls({
         {pending === "save" ? "Saving…" : "Save"}
       </Button>
       <Button
-        className="@max-[900px]:h-11"
+        className="@max-[1024px]:h-11"
         size="sm"
         disabled={!canPublish || pending !== null}
         onClick={onPublish}
@@ -884,7 +884,7 @@ function CompactToolbar({
 }) {
   const editor = usePagebldrEditor();
   return (
-    <div className="absolute inset-x-0 bottom-0 z-40 hidden h-14 items-center justify-around border-t bg-background/95 px-2 backdrop-blur @max-[900px]:flex">
+    <div className="absolute inset-x-0 bottom-0 z-40 hidden h-14 items-center justify-around border-t bg-background/95 px-2 backdrop-blur @max-[1024px]:flex">
       <Button
         aria-label={panelOpen ? "Close Add panel" : "Open Add panel"}
         className="size-11"
