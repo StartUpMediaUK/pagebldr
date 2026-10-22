@@ -33,8 +33,7 @@ const builder = api.createPagebldr({
   styleCapabilities: api.standardStyleCapabilities,
 });
 const output = resolve(
-  evidence ??
-    "docs/plans/standalone-package/audits/evidence/parity-phase-6/browser-2026-10-08",
+  evidence ?? "release-evidence/parity-phase-6/browser-2026-10-08",
 );
 await mkdir(output, { recursive: true });
 const origin = process.env.PAGEBLDR_PHASE6_ORIGIN ?? "http://localhost:5175";

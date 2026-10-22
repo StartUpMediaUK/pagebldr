@@ -12,8 +12,7 @@ const require = createRequire(join(resolve(consumer), "package.json"));
 const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 const output = resolve(
-  evidence ??
-    "docs/plans/standalone-package/audits/evidence/parity-phase-8/navigation-2026-10-09",
+  evidence ?? "release-evidence/parity-phase-8/navigation-2026-10-09",
 );
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath });

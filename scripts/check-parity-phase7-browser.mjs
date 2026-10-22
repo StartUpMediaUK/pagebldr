@@ -13,8 +13,7 @@ const require = createRequire(join(resolve(consumer), "package.json"));
 const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 const output = resolve(
-  evidence ??
-    "docs/plans/standalone-package/audits/evidence/parity-phase-7/browser-2026-10-08",
+  evidence ?? "release-evidence/parity-phase-7/browser-2026-10-08",
 );
 await mkdir(output, { recursive: true });
 const origin = process.env.PAGEBLDR_PHASE7_ORIGIN ?? "http://localhost:5180";

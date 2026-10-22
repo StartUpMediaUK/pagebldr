@@ -1,0 +1,14 @@
+{
+  "mouse-moved.png": {
+    "height": 430,
+    "target": { "x": 1336, "y": 105, "size": 24 }
+  },
+  "pencil-inspector.png": {
+    "height": 430,
+    "target": { "x": 1416, "y": 74, "size": 24 }
+  },
+  "touch-moved.png": {
+    "height": 430,
+    "target": { "x": 796, "y": 110, "size": 24 }
+  }
+}

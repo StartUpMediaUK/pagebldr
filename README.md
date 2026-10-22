@@ -30,14 +30,13 @@ production rendering without a database or external account. Acceptance checks
 run it against a freshly packed package artifact using public exports and the
 package stylesheet. Public guides live in `apps/docs`.
 
-## Current documents
+## Documentation and contributing
 
-- [Product specification](docs/product-specification.md)
-- [Public interface proposal](docs/public-interface.md)
-- [Editor composition proposal](docs/editor-composition.md)
-- [Package architecture and extraction plan](docs/architecture-and-extraction.md)
-- [Open owner decisions](docs/owner-decisions.md)
-- [Startup Media repository audit](docs/startup-media-audit.md)
-- [Package and release research](docs/research/package-and-release-foundations.md)
-- [Standalone package plan](docs/plans/standalone-package/plan.md)
-- [Source and licence inventory](docs/plans/standalone-package/source-and-license-inventory.md)
+- [User guides and integration examples](apps/docs/content/docs)
+- [Contributing](CONTRIBUTING.md)
+- [Agent guidance](AGENTS.md)
+- [Domain language](CONTEXT.md)
+- [Public interface](docs/public-interface.md)
+- [Editor composition](docs/editor-composition.md)
+- [Release procedures](RELEASING.md)
+- [UI attribution](docs/attributions/ui.md)
