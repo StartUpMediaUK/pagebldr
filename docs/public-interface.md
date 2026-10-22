@@ -1,6 +1,7 @@
-# Public interface proposal
+# Public interface
 
-Status: implemented and evolving through the standalone-package phase gates.
+The public interface evolves through reviewed changes, Changesets and migration
+guidance.
 
 ## Design conclusion
 

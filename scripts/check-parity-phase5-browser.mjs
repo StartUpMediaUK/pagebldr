@@ -17,8 +17,7 @@ const require = createRequire(join(resolve(consumerDirectory), "package.json"));
 const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 const output = resolve(
-  evidenceDirectory ??
-    "docs/plans/standalone-package/audits/evidence/parity-phase-5/editor-a11y-2026-10-05",
+  evidenceDirectory ?? "release-evidence/parity-phase-5/editor-a11y-2026-10-05",
 );
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath, headless: true });

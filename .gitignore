@@ -12,3 +12,15 @@ node_modules/
 *.log
 *.tgz
 *.tsbuildinfo
+
+# Local planning, research and generated verification output
+/docs/plans/
+/docs/research/
+/docs/product-specification.md
+/docs/owner-decisions.md
+/docs/architecture-and-extraction.md
+/docs/startup-media-audit.md
+/docs/implementation-plan.md
+/AGENTS.local.md
+/.local/
+/release-evidence/
