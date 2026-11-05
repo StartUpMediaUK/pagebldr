@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 
-import { PagebldrRenderer } from "pagebldr/react/server";
-import { pagebldrMetadata, pagebldrRouteResult } from "pagebldr/runtime/next";
+import { PagebldrRenderer } from "@startupmedia/pagebldr/react/server";
+import {
+  pagebldrMetadata,
+  pagebldrRouteResult,
+} from "@startupmedia/pagebldr/runtime/next";
 
 import { builder } from "../../lib/builder";
 import { runtime } from "../../lib/runtime";

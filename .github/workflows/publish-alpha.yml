@@ -86,8 +86,8 @@ jobs:
           node scripts/verify-alpha-candidate.mjs
           release-evidence/distribution/release.json "$EXPECTED_VERSION"
       # OIDC configuration requires the one-time manual bootstrap to exist first.
-      - run: npm view pagebldr name
+      - run: npm view @startupmedia/pagebldr name
       - run:
           npm publish
-          "release-evidence/distribution/pagebldr-${EXPECTED_VERSION}.tgz" --tag
-          alpha --provenance --ignore-scripts
+          "release-evidence/distribution/startupmedia-pagebldr-${EXPECTED_VERSION}.tgz"
+          --tag alpha --provenance --ignore-scripts

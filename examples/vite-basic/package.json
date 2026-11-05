@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "pagebldr": "workspace:*",
+    "@startupmedia/pagebldr": "workspace:*",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },

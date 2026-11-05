@@ -11,8 +11,12 @@ const [consumer, executablePath, directory] = process.argv.slice(2);
 const require = createRequire(join(resolve(consumer), "package.json"));
 const { chromium } = require("playwright");
 const { standardElements } = await import(
-  pathToFileURL(join(resolve(consumer), "node_modules/pagebldr/dist/index.js"))
-    .href
+  pathToFileURL(
+    join(
+      resolve(consumer),
+      "node_modules/@startupmedia/pagebldr/dist/index.js",
+    ),
+  ).href
 );
 const fixture = JSON.parse(
   await readFile(

@@ -48,7 +48,10 @@ copyFileSync(
   join(target, ".next/packed-artifact.json"),
 );
 const manifest = JSON.parse(
-  readFileSync(join(consumer, "node_modules/pagebldr/package.json"), "utf8"),
+  readFileSync(
+    join(consumer, "node_modules/@startupmedia/pagebldr/package.json"),
+    "utf8",
+  ),
 );
-if (manifest.name !== "pagebldr")
+if (manifest.name !== "@startupmedia/pagebldr")
   throw new Error("Expected installed public package.");

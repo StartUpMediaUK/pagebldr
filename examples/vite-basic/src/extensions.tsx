@@ -1,9 +1,9 @@
-import type { PagebldrEditorProps } from "pagebldr/react";
+import type { PagebldrEditorProps } from "@startupmedia/pagebldr/react";
 import {
   defineEditorContribution,
   defineEditorPreset,
   standardEditorPreset,
-} from "pagebldr/react";
+} from "@startupmedia/pagebldr/react";
 
 const contributions = [
   defineEditorContribution({

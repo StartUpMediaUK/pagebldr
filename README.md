@@ -1,10 +1,10 @@
 # pagebldr
 
-`pagebldr` is an embeddable visual page-building engine for React applications.
-It provides a schema-versioned document model, command engine, controlled visual
-editor, production renderer, optional server lifecycle, and published-page
-Runtime. The Host owns persistence choice, routes, authorization, resources,
-deployment, and surrounding product UX.
+`@startupmedia/pagebldr` is an embeddable visual page-building engine for React
+applications. It provides a schema-versioned document model, command engine,
+controlled visual editor, production renderer, optional server lifecycle, and
+published-page Runtime. The Host owns persistence choice, routes, authorization,
+resources, deployment, and surrounding product UX.
 
 Licensed under the [MIT License](LICENSE).
 

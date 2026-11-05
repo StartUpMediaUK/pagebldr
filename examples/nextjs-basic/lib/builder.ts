@@ -2,8 +2,11 @@ import {
   createPagebldr,
   standardElements,
   standardStyleCapabilities,
-} from "pagebldr";
-import { createEventDelivery, memoryEventSink } from "pagebldr/runtime";
+} from "@startupmedia/pagebldr";
+import {
+  createEventDelivery,
+  memoryEventSink,
+} from "@startupmedia/pagebldr/runtime";
 
 export const builder = createPagebldr({
   namespace: "nextjs-example",

@@ -1,5 +1,5 @@
 ---
-"pagebldr": minor
+"@startupmedia/pagebldr": minor
 ---
 
 Complete the schema-v2 Document, command, Local history, Destination and style

@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { resourceKey, type Pagebldr, type MediaItem } from "pagebldr";
-import { MediaPicker, MediaViewer } from "pagebldr/react";
+import {
+  resourceKey,
+  type Pagebldr,
+  type MediaItem,
+} from "@startupmedia/pagebldr";
+import { MediaPicker, MediaViewer } from "@startupmedia/pagebldr/react";
 
 /** A separate Host route exercises the public picker without editor internals. */
 export function MediaExample({ builder }: { readonly builder: Pagebldr }) {

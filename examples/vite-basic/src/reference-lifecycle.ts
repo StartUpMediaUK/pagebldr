@@ -1,4 +1,4 @@
-import type { Pagebldr, PageDocument } from "pagebldr";
+import type { Pagebldr, PageDocument } from "@startupmedia/pagebldr";
 import {
   createPagebldrServer,
   type StoredDocument,
@@ -7,9 +7,12 @@ import {
   type StoredOperation,
   type StoredAudit,
   type StorageAdapter,
-} from "pagebldr/server";
-import { memoryAdapter } from "pagebldr/adapters/memory";
-import { createEventDelivery, memoryEventSink } from "pagebldr/runtime";
+} from "@startupmedia/pagebldr/server";
+import { memoryAdapter } from "@startupmedia/pagebldr/adapters/memory";
+import {
+  createEventDelivery,
+  memoryEventSink,
+} from "@startupmedia/pagebldr/runtime";
 
 interface State {
   readonly document: StoredDocument;

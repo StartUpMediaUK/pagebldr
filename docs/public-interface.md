@@ -15,7 +15,7 @@ The factory creates a configured namespace with a small set of capabilities:
 
 ```ts
 // pagebldr.config.ts
-import { createPagebldr, standardElements } from "pagebldr";
+import { createPagebldr, standardElements } from "@startupmedia/pagebldr";
 
 export const builder = createPagebldr({
   namespace: "my-app",
@@ -126,7 +126,7 @@ rather than public implementation classes.
 Editor-shell and renderer baseline CSS is separate:
 
 ```ts
-import "pagebldr/styles.css";
+import "@startupmedia/pagebldr/styles.css";
 ```
 
 Hosts may theme it with `--pagebldr-background`, `--pagebldr-foreground`,
@@ -141,10 +141,10 @@ editor token does not rewrite authored Document colors.
 ## Elements, Resources, Blocks, and Templates
 
 The standard editor includes 23 neutral Block factories, also exported from
-`pagebldr/library`. It ships no built-in Template catalogue or Template images.
-Templates are supplied by the Host through builder configuration or the React
-editor's `librarySource: EditorLibrarySource` prop. Private Reference Host
-Template fixtures are not installed package content.
+`@startupmedia/pagebldr/library`. It ships no built-in Template catalogue or
+Template images. Templates are supplied by the Host through builder
+configuration or the React editor's `librarySource: EditorLibrarySource` prop.
+Private Reference Host Template fixtures are not installed package content.
 
 `EditorLibrarySource` exposes optional list/save/delete Block callbacks,
 list/delete/edit Template callbacks, and reference adaptation callbacks before
@@ -310,16 +310,17 @@ adapters. The Host owns storage, querying, retention, export, privacy, consent,
 and costs. `createAuditQuery()` demonstrates an authorized, scope-resolved Host
 HTTP integration. No event has a package-owned network destination.
 
-Next.js helpers under `pagebldr/runtime/next` translate prepared pages to
-metadata, cache tags, and route outcomes without owning an application route.
+Next.js helpers under `@startupmedia/pagebldr/runtime/next` translate prepared
+pages to metadata, cache tags, and route outcomes without owning an application
+route.
 
 ## React interface
 
 The primary editor is controlled:
 
 ```tsx
-import { PagebldrEditor } from "pagebldr/react";
-import "pagebldr/styles.css";
+import { PagebldrEditor } from "@startupmedia/pagebldr/react";
+import "@startupmedia/pagebldr/styles.css";
 
 <PagebldrEditor
   builder={builder}
@@ -442,21 +443,21 @@ values may supply Host metadata for display but cannot replace the controlled
 Document implicitly.
 
 These callbacks remain the client-side persistence seam. Hosts may implement
-them directly or connect them to the optional `pagebldr/server` module. This
-preserves local-first and unusual integrations while giving ordinary
-applications a standardized save path.
+them directly or connect them to the optional `@startupmedia/pagebldr/server`
+module. This preserves local-first and unusual integrations while giving
+ordinary applications a standardized save path.
 
 Server Components import the presentation-only renderer from
-`pagebldr/react/server`. This subpath contains no editor context or browser
-hooks, so a Next.js Host can SSR a Runtime result without marking its route as a
-Client Component. Interactive editor and analytics helpers remain explicit
-client boundaries.
+`@startupmedia/pagebldr/react/server`. This subpath contains no editor context
+or browser hooks, so a Next.js Host can SSR a Runtime result without marking its
+route as a Client Component. Interactive editor and analytics helpers remain
+explicit client boundaries.
 
 ## Optional server interface
 
 ```ts
-import { createPagebldrServer } from "pagebldr/server";
-import { prismaAdapter } from "pagebldr/adapters/prisma";
+import { createPagebldrServer } from "@startupmedia/pagebldr/server";
+import { prismaAdapter } from "@startupmedia/pagebldr/adapters/prisma";
 
 export const pages = createPagebldrServer({
   builder,
@@ -545,26 +546,26 @@ Prisma consumers also migrate `PagebldrAudit` and the Document/Publication
 `references` JSON fields, then regenerate clients. Custom Storage transactions
 implement append-only Audit storage and delivery acknowledgement.
 
-`createEditorLifecycle` (`pagebldr/react`) is the unified controlled lifecycle
-interface. It receives `builder`, `loaded`, `save` and optional `publication`,
-`revisions`, `reload`, `recovery` and `onLoadDocument` capabilities. Pass the
-result as the editor's `lifecycle`; create/dispose effect-owned instances rather
-than reusing a disposed controller during React Strict Mode replay. The shell
-observes controlled Documents and owns state labels, autosave, Actions/Revisions
-History, preview/restore, failed-operation retry, conflict resolution, recovery
-choice and JSON download. Restore/recovery invoke `onLoadDocument` to accept
-validated snapshots; configuring either capability requires that callback. These
-external snapshots become Host state; ordinary commands still use `onChange`.
-Loaded `readOnlyReason` blocks writes and is shown in the shell. Local Actions
-selectors expose labels/positions and jumping, not the history store. Durable
-save, publish and restore use retry-safe operation IDs; new edits remain dirty
-until their exact snapshot has been saved. Recovery cleanup never removes
-another session's newer payload.
+`createEditorLifecycle` (`@startupmedia/pagebldr/react`) is the unified
+controlled lifecycle interface. It receives `builder`, `loaded`, `save` and
+optional `publication`, `revisions`, `reload`, `recovery` and `onLoadDocument`
+capabilities. Pass the result as the editor's `lifecycle`; create/dispose
+effect-owned instances rather than reusing a disposed controller during React
+Strict Mode replay. The shell observes controlled Documents and owns state
+labels, autosave, Actions/Revisions History, preview/restore, failed-operation
+retry, conflict resolution, recovery choice and JSON download. Restore/recovery
+invoke `onLoadDocument` to accept validated snapshots; configuring either
+capability requires that callback. These external snapshots become Host state;
+ordinary commands still use `onChange`. Loaded `readOnlyReason` blocks writes
+and is shown in the shell. Local Actions selectors expose labels/positions and
+jumping, not the history store. Durable save, publish and restore use retry-safe
+operation IDs; new edits remain dirty until their exact snapshot has been saved.
+Recovery cleanup never removes another session's newer payload.
 
-`validatePublication` (`pagebldr`) returns stable error/warning IDs using
-definition-owned `publicationIssues`, Resource availability and optional neutral
-Host `checkReference`. Managed Image/Gallery usage confirmation is blocking;
-unpublished destinations require `confirmedWarnings`. The server's
+`validatePublication` (`@startupmedia/pagebldr`) returns stable error/warning
+IDs using definition-owned `publicationIssues`, Resource availability and
+optional neutral Host `checkReference`. Managed Image/Gallery usage confirmation
+is blocking; unpublished destinations require `confirmedWarnings`. The server's
 `publications.validate` and `publish` enforce the same checks independently of
 editor UI. Legacy editor `onSave`/`onPublish` remain manual-only callbacks.
 
@@ -586,7 +587,7 @@ Host:
 
 ```ts
 // Host: app/api/pagebldr/[...all]/route.ts
-import { createPagebldrHandler } from "pagebldr/server/next";
+import { createPagebldrHandler } from "@startupmedia/pagebldr/server/next";
 import { pages } from "@/pagebldr.server";
 
 export const { GET, POST, PUT, DELETE } = createPagebldrHandler(pages, {
@@ -598,7 +599,7 @@ export const { GET, POST, PUT, DELETE } = createPagebldrHandler(pages, {
 The file, runtime, authentication, authorization, rate limiting, observability,
 scaling, and bill all belong to the Host. The handler factory is optional;
 direct calls, Server Actions, REST, GraphQL, and tRPC remain valid. The
-`pagebldr` repository deploys no shared document API.
+`@startupmedia/pagebldr` repository deploys no shared document API.
 
 ## Events and developer access
 
@@ -662,8 +663,8 @@ policy. Public Analytics collection is disabled until configured; consent denial
 prevents client analytics dispatch.
 
 Developers access events through their chosen sink or through authorized Host
-endpoints backed by `pages.audit.list(...)`. `pagebldr` does not ship a
-cross-tenant dashboard or remotely collect telemetry.
+endpoints backed by `pages.audit.list(...)`. `@startupmedia/pagebldr` does not
+ship a cross-tenant dashboard or remotely collect telemetry.
 
 ## Production Runtime
 
@@ -707,10 +708,11 @@ export default async function Page({ params }: PageProps) {
 }
 ```
 
-An optional `pagebldr/runtime/next` helper can reduce this wiring and provide
-metadata/cache helpers, but the Host owns the route, conflicts with other
-application routes, revalidation policy, domain mapping, runtime, and traffic.
-Vite/React Router integrations use the same Runtime resolution interface.
+An optional `@startupmedia/pagebldr/runtime/next` helper can reduce this wiring
+and provide metadata/cache helpers, but the Host owns the route, conflicts with
+other application routes, revalidation policy, domain mapping, runtime, and
+traffic. Vite/React Router integrations use the same Runtime resolution
+interface.
 
 Visits are emitted after the Host-defined counting point (server resolution,
 successful response, or client mount). Clicks use renderer-owned semantic

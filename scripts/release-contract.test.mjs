@@ -33,6 +33,9 @@ test("alpha release rejects a stable version, wrong identity and stale approval"
   assert.throws(() =>
     assertAlphaRelease({ ...manifest, name: "other" }, manifest.version),
   );
+  assert.throws(() =>
+    assertAlphaRelease({ ...manifest, name: "pagebldr" }, manifest.version),
+  );
 });
 
 test("candidate scripts preserve the checked archive and reject tampering", () => {
@@ -47,9 +50,11 @@ test("candidate scripts preserve the checked archive and reject tampering", () =
     const archive = join(directory, "pagebldr-test.tgz");
     execFileSync("tar", ["-czf", archive, "-C", source, "package"]);
     const consumer = join(directory, "consumer");
-    mkdirSync(join(consumer, "node_modules/pagebldr"), { recursive: true });
+    mkdirSync(join(consumer, "node_modules/@startupmedia/pagebldr"), {
+      recursive: true,
+    });
     writeFileSync(
-      join(consumer, "node_modules/pagebldr/package.json"),
+      join(consumer, "node_modules/@startupmedia/pagebldr/package.json"),
       JSON.stringify(manifest),
     );
     const packed = join(directory, "packed.json");

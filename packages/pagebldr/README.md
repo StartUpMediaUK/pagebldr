@@ -12,13 +12,13 @@ authorization, Resources, and deployment.
 ## Install
 
 ```sh
-pnpm add pagebldr react react-dom
+pnpm add @startupmedia/pagebldr react react-dom
 ```
 
 Import the package-owned stylesheet once in the Host application:
 
 ```ts
-import "pagebldr/styles.css";
+import "@startupmedia/pagebldr/styles.css";
 ```
 
 ## Minimal controlled integration
@@ -30,9 +30,9 @@ import {
   standardStyleCapabilities,
   type PageDocument,
   type DocumentChangeEvent,
-} from "pagebldr";
-import { standardBlocks } from "pagebldr/library";
-import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
+} from "@startupmedia/pagebldr";
+import { standardBlocks } from "@startupmedia/pagebldr/library";
+import { PagebldrEditor, PagebldrRenderer } from "@startupmedia/pagebldr/react";
 
 const builder = createPagebldr({
   namespace: "my-app",
@@ -73,14 +73,18 @@ the Host needs published-route lookup, metadata and analytics.
 
 ## Public entry points
 
-- `pagebldr` — configuration and shared contracts
-- `pagebldr/library` — the standard Block catalogue
-- `pagebldr/react` and `pagebldr/react/server` — editor and SSR-safe rendering
-- `pagebldr/server` and `pagebldr/server/next` — optional lifecycle
-  orchestration
-- `pagebldr/runtime` and `pagebldr/runtime/next` — published route resolution
-- `pagebldr/adapters/memory` and `pagebldr/adapters/prisma` — Storage adapters
-- `pagebldr/styles.css` — compiled editor styles and theme variables
+- `@startupmedia/pagebldr` — configuration and shared contracts
+- `@startupmedia/pagebldr/library` — the standard Block catalogue
+- `@startupmedia/pagebldr/react` and `@startupmedia/pagebldr/react/server` —
+  editor and SSR-safe rendering
+- `@startupmedia/pagebldr/server` and `@startupmedia/pagebldr/server/next` —
+  optional lifecycle orchestration
+- `@startupmedia/pagebldr/runtime` and `@startupmedia/pagebldr/runtime/next` —
+  published route resolution
+- `@startupmedia/pagebldr/adapters/memory` and
+  `@startupmedia/pagebldr/adapters/prisma` — Storage adapters
+- `@startupmedia/pagebldr/styles.css` — compiled editor styles and theme
+  variables
 
 See the [repository](https://github.com/StartUpMediaUK/pagebldr) for complete
 documentation, examples, support, security, and contribution guidance.

@@ -24,7 +24,7 @@ import {
   defineEditorContribution,
   defineEditorPreset,
   standardEditorPreset,
-} from "pagebldr/react";
+} from "@startupmedia/pagebldr/react";
 
 const action = defineEditorContribution({
   id: "my-app.select-page",

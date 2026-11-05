@@ -1,5 +1,5 @@
 {
-  "name": "pagebldr",
+  "name": "@startupmedia/pagebldr",
   "version": "0.0.0-alpha.0",
   "description": "Embeddable visual page-building engine for React applications.",
   "license": "MIT",

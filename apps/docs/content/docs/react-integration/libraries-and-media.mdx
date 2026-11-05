@@ -5,12 +5,13 @@ description: Supply Host-owned Templates, saved Blocks, and media capabilities.
 
 The standard editor includes a searchable Elements/Blocks/Templates library. The
 23 neutral Blocks are available by default and separately exported as
-`standardBlocks` from `pagebldr/library`. Block insertion creates ordinary
-editable Elements with fresh IDs. Host definitions can override a standard Block
-by key. Each Block card has an Insert action; saved Blocks appear as compact
-rows. Both support dragging into the canvas. Templates open a read-only Preview
-before Apply; previewing never changes the controlled Document. Template
-favourites appear beside each title and in the category filter.
+`standardBlocks` from `@startupmedia/pagebldr/library`. Block insertion creates
+ordinary editable Elements with fresh IDs. Host definitions can override a
+standard Block by key. Each Block card has an Insert action; saved Blocks appear
+as compact rows. Both support dragging into the canvas. Templates open a
+read-only Preview before Apply; previewing never changes the controlled
+Document. Template favourites appear beside each title and in the category
+filter.
 
 There is no bundled Template catalogue or Template imagery. Configure
 `createPagebldr({ templates })` or supply `PagebldrEditor`'s `librarySource` to
@@ -21,8 +22,8 @@ fixtures, not part of the installed package.
 
 ## Host-backed libraries
 
-`EditorLibrarySource` is exported by `pagebldr/react`. Implement only the
-capabilities the current actor may use:
+`EditorLibrarySource` is exported by `@startupmedia/pagebldr/react`. Implement
+only the capabilities the current actor may use:
 
 - `listBlocks` and `listTemplates` return authorized definitions.
 - `saveBlock` receives a label and native subtree clipboard. The editor bounds
@@ -61,12 +62,13 @@ independently of the active tab and remain visible when reopening the picker
 while the same adapter instance lives. Choose at most ten files per batch;
 failed/cancelled uploads can be retried or removed.
 
-Use `MediaPicker` and `MediaViewer` from `pagebldr/react` in an ordinary Host
-route with an explicit `builder`, or within editor context. `MediaPicker`
-accepts `allowed`, `maximum`, `existing`, `excluded`, `readOnly`, `label`,
-`open`, `onOpenChange` and `onCommit`. Pass stable, scoped adapter instances;
-replace the adapter when changing authenticated scope. The Host owns uploaded
-asset lifetime and URL authorization. The picker never grants upload rights.
+Use `MediaPicker` and `MediaViewer` from `@startupmedia/pagebldr/react` in an
+ordinary Host route with an explicit `builder`, or within editor context.
+`MediaPicker` accepts `allowed`, `maximum`, `existing`, `excluded`, `readOnly`,
+`label`, `open`, `onOpenChange` and `onCommit`. Pass stable, scoped adapter
+instances; replace the adapter when changing authenticated scope. The Host owns
+uploaded asset lifetime and URL authorization. The picker never grants upload
+rights.
 
 Viewer support includes images, native/provider videos without autoplay, audio,
 PDF, bounded escaped TXT/CSV content, and download fallback for other documents.

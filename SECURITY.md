@@ -2,8 +2,8 @@
 
 ## Supported versions
 
-`pagebldr` has not released a supported version yet. This policy will list
-supported release lines before the first public alpha.
+`@startupmedia/pagebldr` has not released a supported version yet. This policy
+will list supported release lines before the first public alpha.
 
 ## Reporting a vulnerability
 

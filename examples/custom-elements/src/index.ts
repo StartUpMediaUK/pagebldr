@@ -7,7 +7,7 @@ import {
   standardElements,
   standardStyleCapabilities,
   type StandardSchemaV1,
-} from "pagebldr";
+} from "@startupmedia/pagebldr";
 
 interface CardProps extends Record<string, unknown> {
   readonly title: string;

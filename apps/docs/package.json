@@ -16,7 +16,7 @@
     "fumadocs-mdx": "15.3.0",
     "fumadocs-ui": "16.14.5",
     "next": "16.4.1",
-    "pagebldr": "workspace:*",
+    "@startupmedia/pagebldr": "workspace:*",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },

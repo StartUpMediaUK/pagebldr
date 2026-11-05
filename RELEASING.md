@@ -71,10 +71,10 @@ published package feature.
 
 ## First alpha: explicit manual bootstrap
 
-The registry returned 404 for `pagebldr` during this checkpoint. This does not
-prove that the name can be claimed by a particular account. Before publishing,
-verify account authority, package identity, source ownership and the exact
-reviewed candidate. Confirm the source commit and publish the same checked
+The registry returned 404 for `@startupmedia/pagebldr` during this checkpoint.
+This does not prove that the name can be claimed by a particular account. Before
+publishing, verify account authority, package identity, source ownership and the
+exact reviewed candidate. Confirm the source commit and publish the same checked
 archive, rather than rebuilding after approval.
 
 The first publish is an interactive maintainer action with npm 2FA, after
@@ -82,7 +82,7 @@ explicit owner authorization. For the reviewed alpha candidate:
 
 ```sh
 npm login
-npm publish release-evidence/distribution/pagebldr-0.0.0-alpha.0.tgz --tag alpha --access public --provenance=false --ignore-scripts
+npm publish release-evidence/distribution/startupmedia-pagebldr-0.0.0-alpha.0.tgz --tag alpha --access public --provenance=false --ignore-scripts
 ```
 
 The one-time local bootstrap has no CI provenance. Record that limitation, the
@@ -94,13 +94,13 @@ set or move `latest` for an alpha.
 ## Subsequent alphas: protected OIDC workflow
 
 After the package exists, configure its npm trusted publisher for organization
-`StartUpMediaUK`, repository `pagebldr`, workflow `publish-alpha.yml`,
-environment `npm-alpha`. Configure that GitHub environment with required
-reviewer approval, restrict it to `release/alpha`, and set repository variable
-`PAGEBLDR_NPM_PUBLISHING=enabled` only after that review. These are external
-account changes and require explicit authorization. The workflow also requires a
-public repository for provenance. Changing repository visibility is a separate
-owner decision; this preparation does not change it.
+`StartUpMediaUK`, repository `@startupmedia/pagebldr`, workflow
+`publish-alpha.yml`, environment `npm-alpha`. Configure that GitHub environment
+with required reviewer approval, restrict it to `release/alpha`, and set
+repository variable `PAGEBLDR_NPM_PUBLISHING=enabled` only after that review.
+These are external account changes and require explicit authorization. The
+workflow also requires a public repository for provenance. Changing repository
+visibility is a separate owner decision; this preparation does not change it.
 
 Trusted publishing uses short-lived OIDC credentials. npm requires Node 22.14+
 and npm 11.5.1+; the publish job uses Node 24 and `id-token: write`. Supported

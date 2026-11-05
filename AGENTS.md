@@ -49,8 +49,8 @@ authentication, authorization, deployment, Resources and operational policy.
   shadcn primitives, suitable ReUI compositions, then small local compositions.
   Check current component documentation and review installed registry source.
 - Preserve registry provenance and required notices. Ship compiled package CSS;
-  consumers import `pagebldr/styles.css` without configuring Tailwind or
-  registries.
+  consumers import `@startupmedia/pagebldr/styles.css` without configuring
+  Tailwind or registries.
 - Use semantic theme tokens, component variants and accessible primitives. Label
   controls, title dialogs, preserve visible focus, support reduced motion and
   provide keyboard alternatives for pointer interactions.

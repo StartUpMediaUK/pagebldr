@@ -1,4 +1,4 @@
-import { createPagebldrRuntime } from "pagebldr/runtime";
+import { createPagebldrRuntime } from "@startupmedia/pagebldr/runtime";
 
 import { builder, events, publishedDocument } from "./builder";
 

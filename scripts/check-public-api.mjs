@@ -84,7 +84,7 @@ if (process.argv.includes("--write")) {
       assert.ok(
         files.some((file) => {
           try {
-            return /^"?pagebldr"?:\s*(?:patch|minor|major)\s*$/mu.test(
+            return /^"?@startupmedia\/pagebldr"?:\s*(?:patch|minor|major)\s*$/mu.test(
               readFileSync(file, "utf8"),
             );
           } catch {

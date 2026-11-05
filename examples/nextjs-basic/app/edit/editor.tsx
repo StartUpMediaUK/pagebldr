@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import type { PageDocument } from "pagebldr";
-import { PagebldrEditor } from "pagebldr/react";
+import type { PageDocument } from "@startupmedia/pagebldr";
+import { PagebldrEditor } from "@startupmedia/pagebldr/react";
 
 import { builder, publishedDocument } from "../../lib/builder";
 

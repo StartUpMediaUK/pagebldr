@@ -1,5 +1,5 @@
 ---
-"pagebldr": minor
+"@startupmedia/pagebldr": minor
 ---
 
 Always mount the controlled editor shell. Remove the provisional

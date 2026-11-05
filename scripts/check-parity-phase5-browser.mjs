@@ -1372,7 +1372,10 @@ try {
   }
   const { standardElements } = await import(
     pathToFileURL(
-      join(resolve(consumerDirectory), "node_modules/pagebldr/dist/index.js"),
+      join(
+        resolve(consumerDirectory),
+        "node_modules/@startupmedia/pagebldr/dist/index.js",
+      ),
     ).href
   );
   const allElements = JSON.parse(

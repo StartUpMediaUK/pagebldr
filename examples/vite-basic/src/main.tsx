@@ -9,15 +9,15 @@ import {
   type StandardSchemaV1,
   resolveDocumentResources,
   type PreparedResources,
-} from "pagebldr";
+} from "@startupmedia/pagebldr";
 import {
   PagebldrEditor,
   createEditorLifecycle,
   PagebldrRenderer,
   PagebldrRuntimeInteractions,
   type PagebldrEditorProps,
-} from "pagebldr/react";
-import "pagebldr/styles.css";
+} from "@startupmedia/pagebldr/react";
+import "@startupmedia/pagebldr/styles.css";
 import allElementsFixture from "../../../fixtures/parity/all-elements.document.json";
 import projectEnquiryFixture from "../../../fixtures/parity/project-enquiry.document.json";
 import { referenceLibrary, referenceTemplate } from "./reference-library.js";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { MouseEvent, ReactNode } from "react";
-import { PagebldrRuntimeInteractions } from "pagebldr/react";
+import { PagebldrRuntimeInteractions } from "@startupmedia/pagebldr/react";
 
 export function AnalyticsBoundary({
   children,

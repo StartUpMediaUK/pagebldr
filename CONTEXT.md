@@ -5,9 +5,9 @@ that integrate it.
 
 ## Language
 
-**Host**: A React application that embeds `pagebldr` and owns product policy,
-persistence, publication, resources, permissions, and surrounding screens.
-_Avoid_: CMS, tenant
+**Host**: A React application that embeds `@startupmedia/pagebldr` and owns
+product policy, persistence, publication, resources, permissions, and
+surrounding screens. _Avoid_: CMS, tenant
 
 **Reference Host**: The repository's runnable example application that consumes
 the packed public package exactly as an external developer would. It is the

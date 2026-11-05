@@ -14,7 +14,7 @@ if (!resultFile || !destination || !expectedVersion)
 const result = JSON.parse(readFileSync(resultFile, "utf8"));
 const manifest = JSON.parse(
   readFileSync(
-    join(result.consumer, "node_modules/pagebldr/package.json"),
+    join(result.consumer, "node_modules/@startupmedia/pagebldr/package.json"),
     "utf8",
   ),
 );

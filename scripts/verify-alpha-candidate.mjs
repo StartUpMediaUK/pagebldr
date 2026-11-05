@@ -10,7 +10,7 @@ const [releaseFile, expectedVersion] = process.argv.slice(2);
 if (!releaseFile || !expectedVersion)
   throw new Error("A release manifest and expected version are required.");
 const release = JSON.parse(readFileSync(releaseFile, "utf8"));
-assert.equal(release.name, "pagebldr");
+assert.equal(release.name, "@startupmedia/pagebldr");
 assert.equal(release.version, expectedVersion);
 assert.equal(release.tag, "alpha");
 assert.match(release.sha256, /^[a-f0-9]{64}$/u);

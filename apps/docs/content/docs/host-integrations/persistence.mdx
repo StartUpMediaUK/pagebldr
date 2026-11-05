@@ -72,8 +72,8 @@ Document format/schemaVersion does not change.
 
 ## Controlled editor lifecycle
 
-Create one `createEditorLifecycle` from `pagebldr/react` for each loaded
-Document and pass it as `PagebldrEditor`'s `lifecycle`. The Host supplies
+Create one `createEditorLifecycle` from `@startupmedia/pagebldr/react` for each
+loaded Document and pass it as `PagebldrEditor`'s `lifecycle`. The Host supplies
 `loaded` (validated Document, positive server version and optional published
 Revision ID), `save`, and optional `publication`, `revisions`, `reload` and
 `recovery` capabilities. `onLoadDocument` is required when Revisions or recovery

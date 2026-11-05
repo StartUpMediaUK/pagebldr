@@ -4,7 +4,7 @@ import {
   type MediaItem,
   type MediaKind,
   type StandardSchemaV1,
-} from "pagebldr";
+} from "@startupmedia/pagebldr";
 
 const reference: StandardSchemaV1<unknown, string> = {
   "~standard": {

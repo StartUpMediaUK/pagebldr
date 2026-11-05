@@ -1,8 +1,8 @@
 # Parity acceptance Documents
 
 These immutable, product-neutral Documents define the target data exercised by
-the Quizr-experience parity program. They use the `pagebldr` format and contain
-no Quizr identifiers, routes or adoption compatibility data.
+the Quizr-experience parity program. They use the `@startupmedia/pagebldr`
+format and contain no Quizr identifiers, routes or adoption compatibility data.
 
 They intentionally use target Document schema version 2. The current package
 supports version 1 and must reject these fixtures as future Documents until

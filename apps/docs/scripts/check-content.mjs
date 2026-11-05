@@ -8,7 +8,9 @@ const packageManifest = JSON.parse(
 );
 const publicExports = new Set(
   Object.keys(packageManifest.exports).map((key) =>
-    key === "." ? "pagebldr" : `pagebldr${key.slice(1)}`,
+    key === "."
+      ? packageManifest.name
+      : `${packageManifest.name}${key.slice(1)}`,
   ),
 );
 
@@ -57,7 +59,7 @@ for (const file of files) {
   }
 
   for (const [, moduleName] of content.matchAll(
-    /(?:from\s+|import\s*)["'`](pagebldr(?:\/[a-z-]+)?)["'`]/gu,
+    /(?:from\s+|import\s*)["'`]((?:@startupmedia\/)?pagebldr(?:\/[a-z-]+)*)["'`]/gu,
   )) {
     if (!publicExports.has(moduleName))
       failures.push(`${relative}: unknown public export ${moduleName}`);

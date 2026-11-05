@@ -1,5 +1,5 @@
 ---
-"pagebldr": patch
+"@startupmedia/pagebldr": patch
 ---
 
 Upgrade bundled validation to Zod 4.6.6 and refresh the development and packed

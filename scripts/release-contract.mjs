@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 export function assertAlphaRelease(manifest, expectedVersion) {
   assert.equal(
     manifest.name,
-    "pagebldr",
+    "@startupmedia/pagebldr",
     "Only the pagebldr consumer package is publishable.",
   );
   assert.notEqual(

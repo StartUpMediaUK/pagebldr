@@ -148,15 +148,15 @@ try {
   );
   writeFileSync(
     join(consumerDirectory, "tree-shake.ts"),
-    `import { createPagebldr } from "pagebldr";
+    `import { createPagebldr } from "@startupmedia/pagebldr";
 export const builder = createPagebldr({ namespace: "tree-shake-check" });
 `,
   );
   writeFileSync(
     join(consumerDirectory, "vite-consumer.tsx"),
-    `import { createPagebldr } from "pagebldr";
-import { PagebldrEditor, PagebldrRenderer, defineEditorContribution, defineEditorPreset, standardEditorPreset, usePagebldrEditor } from "pagebldr/react";
-import { standardBlocks } from "pagebldr/library";
+    `import { createPagebldr } from "@startupmedia/pagebldr";
+import { PagebldrEditor, PagebldrRenderer, defineEditorContribution, defineEditorPreset, standardEditorPreset, usePagebldrEditor } from "@startupmedia/pagebldr/react";
+import { standardBlocks } from "@startupmedia/pagebldr/library";
 void standardBlocks;
 
 const builder = createPagebldr({ namespace: "vite-app" });
@@ -184,13 +184,13 @@ export const unsupportedReplacement = <PagebldrEditor builder={builder} document
   );
   writeFileSync(
     join(consumerDirectory, "next-consumer.ts"),
-    `import { createPagebldr } from "pagebldr";
-import { memoryAdapter } from "pagebldr/adapters/memory";
-import { createPagebldrRuntime } from "pagebldr/runtime";
-import { pagebldrMetadata } from "pagebldr/runtime/next";
-import { createPagebldrServer } from "pagebldr/server";
-import { createPagebldrHandler } from "pagebldr/server/next";
-import { asPagebldrPrismaClient } from "pagebldr/adapters/prisma";
+    `import { createPagebldr } from "@startupmedia/pagebldr";
+import { memoryAdapter } from "@startupmedia/pagebldr/adapters/memory";
+import { createPagebldrRuntime } from "@startupmedia/pagebldr/runtime";
+import { pagebldrMetadata } from "@startupmedia/pagebldr/runtime/next";
+import { createPagebldrServer } from "@startupmedia/pagebldr/server";
+import { createPagebldrHandler } from "@startupmedia/pagebldr/server/next";
+import { asPagebldrPrismaClient } from "@startupmedia/pagebldr/adapters/prisma";
 
 const builder = createPagebldr({ namespace: "next-app" });
 const storage = memoryAdapter();
@@ -242,8 +242,8 @@ import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { renderToString } from "react-dom/server";
 import { hydrateRoot } from "react-dom/client";
-import { createPagebldr, standardElements, standardStyleCapabilities } from "pagebldr";
-import { PagebldrRenderer } from "pagebldr/react/server";
+import { createPagebldr, standardElements, standardStyleCapabilities } from "@startupmedia/pagebldr";
+import { PagebldrRenderer } from "@startupmedia/pagebldr/react/server";
 
 const builder = createPagebldr({
   namespace: "hydration-check",
@@ -279,7 +279,7 @@ if (errors.length > 0) throw errors[0];
     [
       "--input-type=module",
       "--eval",
-      "await Promise.all([import('pagebldr'), import('pagebldr/library'), import('pagebldr/react'), import('pagebldr/server'), import('pagebldr/server/next'), import('pagebldr/runtime'), import('pagebldr/runtime/next'), import('pagebldr/adapters/memory'), import('pagebldr/adapters/prisma')])",
+      "await Promise.all([import('@startupmedia/pagebldr'), import('@startupmedia/pagebldr/library'), import('@startupmedia/pagebldr/react'), import('@startupmedia/pagebldr/server'), import('@startupmedia/pagebldr/server/next'), import('@startupmedia/pagebldr/runtime'), import('@startupmedia/pagebldr/runtime/next'), import('@startupmedia/pagebldr/adapters/memory'), import('@startupmedia/pagebldr/adapters/prisma')])",
     ],
     { cwd: consumerDirectory, stdio: "inherit" },
   );
@@ -379,14 +379,19 @@ if (errors.length > 0) throw errors[0];
 
   const installedManifest = JSON.parse(
     readFileSync(
-      join(consumerDirectory, "node_modules", "pagebldr", "package.json"),
+      join(
+        consumerDirectory,
+        "node_modules",
+        "@startupmedia/pagebldr",
+        "package.json",
+      ),
       "utf8",
     ),
   );
   if (installedManifest.private === true) {
     throw new Error("The packed package must not be private.");
   }
-  if (installedManifest.name !== "pagebldr") {
+  if (installedManifest.name !== "@startupmedia/pagebldr") {
     throw new Error("The packed package has the wrong name.");
   }
   if (keepReferenceHost) {
@@ -419,7 +424,11 @@ if (errors.length > 0) throw errors[0];
         ),
       );
   }
-  const installedPackage = join(consumerDirectory, "node_modules", "pagebldr");
+  const installedPackage = join(
+    consumerDirectory,
+    "node_modules",
+    "@startupmedia/pagebldr",
+  );
   assertTemplateBoundary(installedPackage);
   for (const [subpath, target] of Object.entries(installedManifest.exports)) {
     const targets =

@@ -2,8 +2,9 @@
 
 These six package-native Documents characterize source editor behavior. They are
 testing material for the private Reference Host, not a catalogue distributed
-with `pagebldr`. Package code must not import this directory. Hosts supply their
-own Templates through the public definition and library-source interfaces.
+with `@startupmedia/pagebldr`. Package code must not import this directory.
+Hosts supply their own Templates through the public definition and
+library-source interfaces.
 
 The product owner confirmed this scope on 2026-10-07. No source image binaries
 are copied here. Historical media filenames are opaque test Resource references;

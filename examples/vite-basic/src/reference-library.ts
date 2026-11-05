@@ -5,8 +5,8 @@ import {
   type PagebldrClipboard,
   type TemplateDefinition,
   type PageDocument,
-} from "pagebldr";
-import type { EditorLibrarySource } from "pagebldr/react";
+} from "@startupmedia/pagebldr";
+import type { EditorLibrarySource } from "@startupmedia/pagebldr/react";
 import metadata from "../../../fixtures/library/index.json";
 import growth from "../../../fixtures/library/growth-bottleneck-audit.document.json";
 import study from "../../../fixtures/library/independent-work-study.document.json";

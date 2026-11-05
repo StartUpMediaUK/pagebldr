@@ -17,7 +17,10 @@ const require = createRequire(join(resolve(consumer), "package.json"));
 const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 // Resolve the installed ESM-only manifest's deliberate public export targets.
-const installedPackage = join(resolve(consumer), "node_modules/pagebldr");
+const installedPackage = join(
+  resolve(consumer),
+  "node_modules/@startupmedia/pagebldr",
+);
 const manifest = JSON.parse(
   await readFile(join(installedPackage, "package.json"), "utf8"),
 );

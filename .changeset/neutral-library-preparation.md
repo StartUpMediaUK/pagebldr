@@ -1,5 +1,5 @@
 ---
-"pagebldr": minor
+"@startupmedia/pagebldr": minor
 ---
 
 Add command-oriented library preparation for independently inserted Blocks and

@@ -1,5 +1,5 @@
 ---
-"pagebldr": patch
+"@startupmedia/pagebldr": patch
 ---
 
 Prepare repeatable alpha release verification: reviewed public declarations,

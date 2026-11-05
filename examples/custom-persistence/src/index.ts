@@ -3,9 +3,9 @@ import {
   standardElements,
   standardStyleCapabilities,
   type PageDocument,
-} from "pagebldr";
-import { memoryAdapter } from "pagebldr/adapters/memory";
-import { createPagebldrServer } from "pagebldr/server";
+} from "@startupmedia/pagebldr";
+import { memoryAdapter } from "@startupmedia/pagebldr/adapters/memory";
+import { createPagebldrServer } from "@startupmedia/pagebldr/server";
 
 const builder = createPagebldr({
   namespace: "persistence-example",
