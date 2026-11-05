@@ -76,7 +76,8 @@ try {
 
   const archivePath = resolve(temporaryDirectory, archiveName);
   // Check the packed file list before consumer installation or browser setup.
-  const archiveFiles = execFileSync("tar", ["-tf", archivePath], {
+  const archiveFiles = execFileSync("tar", ["-tf", archiveName], {
+    cwd: temporaryDirectory,
     encoding: "utf8",
   });
   if (

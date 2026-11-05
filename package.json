@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm parity:fixtures:check && pnpm build && pnpm api:check && pnpm packages:check && pnpm licenses:check",
+    "check": "pnpm format:check && pnpm build && pnpm lint && pnpm typecheck && pnpm test && pnpm parity:fixtures:check && pnpm api:check && pnpm packages:check && pnpm licenses:check",
     "api:check": "node scripts/check-public-api.mjs",
     "api:update": "node scripts/check-public-api.mjs --write",
     "format": "prettier --write .",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
-    "@changesets/cli": "3.0.0",
+    "@changesets/cli": "2.31.1",
     "@eslint/js": "9.39.2",
     "@types/node": "22.19.7",
     "@vitest/coverage-v8": "4.1.12",

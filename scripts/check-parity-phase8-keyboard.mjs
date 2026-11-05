@@ -136,14 +136,14 @@ try {
       await reach(
         page.getByRole("dialog").getByRole("tab", { selected: true }),
       );
-      for (let step = 0; step < 4; step++) {
-        if (
-          await page
-            .getByRole("tab", { name: "Variables", exact: true })
-            .evaluate((el) => el === document.activeElement)
-        )
-          break;
+      for (const label of ["Settings", "SEO & social", "Variables"]) {
         await key("ArrowRight");
+        await page.waitForFunction(
+          (element) => element === document.activeElement,
+          await page
+            .getByRole("tab", { name: label, exact: true })
+            .elementHandle(),
+        );
       }
       await key("Enter");
       await key("Escape");
