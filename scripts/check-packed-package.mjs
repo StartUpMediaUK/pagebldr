@@ -123,7 +123,7 @@ try {
       `react-dom@${reactVersion}`,
       ...reactTypes,
       "esbuild@0.28.2",
-      "jsdom@30.0.1",
+      "jsdom@27.4.0",
       "vite@7.3.7",
       "@vitejs/plugin-react@5.1.4",
       ...(checkNextHost ? ["next@16.4.1", "@types/node@22.19.7"] : []),
