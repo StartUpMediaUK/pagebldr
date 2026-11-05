@@ -51,13 +51,13 @@ jobs:
       - run:
           node scripts/prepare-alpha-release.mjs release-evidence/packed.json
           release-evidence/distribution "$EXPECTED_VERSION"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: approved-alpha-candidate
           path: release-evidence/distribution/
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: alpha-browser-evidence
