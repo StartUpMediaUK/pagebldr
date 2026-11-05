@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 import type { PageDocument } from "./document-types.js";
 import type { ResourceReference } from "./types.js";
@@ -84,7 +84,7 @@ export function parseDestination(value: unknown): Destination {
       },
     );
   }
-  return result.data as Destination;
+  return result.data;
 }
 
 export interface ResolvedDestination {

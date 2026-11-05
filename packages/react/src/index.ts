@@ -1,9 +1,4 @@
-import {
-  createElement,
-  type ReactElement,
-  type ReactNode,
-  useEffect,
-} from "react";
+import { createElement, type ReactElement, useEffect } from "react";
 
 import type {
   DocumentChangeEvent,
@@ -89,7 +84,6 @@ export interface PagebldrEditorProps {
   readonly onSave?: (request: SaveRequest) => void | Promise<void>;
   readonly onPublish?: (request: PublishRequest) => void | Promise<void>;
   readonly mode?: "edit" | "preview" | "readOnly";
-  readonly children?: ReactNode;
   readonly className?: string;
   readonly preset?: EditorPreset;
   readonly contributions?: readonly EditorContribution[];
@@ -100,18 +94,7 @@ export interface PagebldrEditorProps {
 }
 
 export function PagebldrEditor(props: PagebldrEditorProps): ReactElement {
-  const { builder, children, className, document, mode = "edit" } = props;
-  if (!children) return createElement(EditorShell, props);
-  return createElement(
-    "div",
-    {
-      className,
-      "data-pagebldr-editor": builder.namespace,
-      "data-pagebldr-document": document.id,
-      "data-pagebldr-mode": mode,
-    },
-    children,
-  );
+  return createElement(EditorShell, props);
 }
 
 export interface PagebldrPageProps {

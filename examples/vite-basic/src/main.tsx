@@ -157,19 +157,6 @@ function App() {
 
   return (
     <main>
-      <nav>
-        <a href="#/preview">Preview local document</a>
-        {" · "}
-        <a href="#/published">Open published rendering</a>
-        {" · "}
-        <a href="#/elements">Open element gallery</a>
-        {" · "}
-        <a href={route === "#/extensions" ? "#/editor" : "#/extensions"}>
-          {route === "#/extensions"
-            ? "Open standard editor"
-            : "Open extension examples"}
-        </a>
-      </nav>
       <PagebldrEditor
         key={document.id}
         {...(lifecycle && lifecycle.exportLocalDocument().id === document.id

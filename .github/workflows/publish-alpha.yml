@@ -1,0 +1,93 @@
+name: Publish approved alpha
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact reviewed 0.x alpha version
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-alpha
+  cancel-in-progress: false
+
+env:
+  EXPECTED_VERSION: ${{ inputs.version }}
+
+jobs:
+  verify:
+    if:
+      github.ref == 'refs/heads/release/alpha' && vars.PAGEBLDR_NPM_PUBLISHING
+      == 'enabled' && github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.8.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm audit --audit-level high
+      - run: mkdir -p release-evidence && node scripts/check-packed-package.mjs
+        env:
+          PAGEBLDR_KEEP_PACKED_REFERENCE_HOST: "1"
+          PAGEBLDR_CHECK_PACKED_NEXT: "1"
+          PAGEBLDR_PACKED_RESULT:
+            ${{ github.workspace }}/release-evidence/packed.json
+      - run:
+          node scripts/run-packed-browser.mjs release-evidence/packed.json
+          release-evidence/browser chromium full
+        env:
+          PAGEBLDR_INSTALL_BROWSER_DEPS: "1"
+      - run:
+          node scripts/prepare-alpha-release.mjs release-evidence/packed.json
+          release-evidence/distribution "$EXPECTED_VERSION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: approved-alpha-candidate
+          path: release-evidence/distribution/
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha-browser-evidence
+          path: release-evidence/browser/
+          retention-days: 14
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: npm-alpha
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: approved-alpha-candidate
+          path: release-evidence/distribution/
+      - run:
+          node scripts/verify-alpha-candidate.mjs
+          release-evidence/distribution/release.json "$EXPECTED_VERSION"
+      # OIDC configuration requires the one-time manual bootstrap to exist first.
+      - run: npm view pagebldr name
+      - run:
+          npm publish
+          "release-evidence/distribution/pagebldr-${EXPECTED_VERSION}.tgz" --tag
+          alpha --provenance --ignore-scripts

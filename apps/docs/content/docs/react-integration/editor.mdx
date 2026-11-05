@@ -7,6 +7,34 @@ description: Document ownership, change events, save, and publish intents.
 `onChange`. `onSave` and `onPublish` signal Host intent and surface thrown Host
 errors; they do not install persistence policy.
 
+The editor fills the dynamic viewport height by default. Hosts embedding it in a
+smaller application region can set its height through the public `className`
+prop. The editor scrolls its own panels and canvas rather than the outer page.
+
+On desktop, drag the separator between the inspector and canvas to resize the
+panel. You can also Tab to it and use Left/Right, Shift with Left/Right for
+larger steps, or Home/End for the 280px and 430px limits. The default width is
+340px. Panel resizing changes the workspace view; width-Fit follows the
+available canvas space without changing or saving the Document.
+
+Drag an Element from Add to page onto a highlighted canvas target to insert it
+before, inside or after an existing Element. Drag a node from Structure to move
+it into the canvas. Invalid targets reject the drop. Undo and Redo operate on
+these changes through Local history. Library buttons and Structure actions
+provide keyboard alternatives.
+
+Select an Element to show its pencil handle at the top right. Click the pencil
+to open the inspector, or press and drag it to move the Element before, inside
+or after a valid target. Mouse and touch use the same placement rules. Escape
+cancels a move; Undo restores it. The pencil uses a compact 24px blue square
+with a label-sized icon and stays the same size as canvas zoom changes. Root and
+locked Elements can be inspected but cannot be moved.
+
+With the pencil focused, Alt+Up/Down moves between siblings and Alt+Right/Left
+moves into or out of a container where permitted. Ctrl/Cmd+Z and
+Ctrl/Cmd+Shift+Z undo and redo from the canvas; inline text editing retains its
+own text undo behavior.
+
 ## Canvas navigation
 
 For an overflowing canvas, hold Space and drag to pan. Alt and mouse wheel

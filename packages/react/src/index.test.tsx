@@ -7,13 +7,59 @@ import {
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { PagebldrEditor, PagebldrRenderer } from "./index.js";
+import {
+  PagebldrEditor,
+  PagebldrRenderer,
+  defineEditorContribution,
+  defineEditorPreset,
+  standardEditorPreset,
+  usePagebldrEditor,
+} from "./index.js";
 import allElementsFixture from "../../../fixtures/parity/all-elements.document.json";
 
 const builder = createPagebldr({ namespace: "test-app" });
 const document = builder.documents.create({ id: "page-1", title: "Page" });
 
 describe("React tracer modules", () => {
+  it("renders Host Contributions inside the controlled editor context", () => {
+    const contribution = defineEditorContribution({
+      id: "host.document-status",
+      kind: "statusItem",
+      label: "Host document status",
+      render: ({ context }) => {
+        const editor = usePagebldrEditor();
+        expect(editor.document).toBe(context.document);
+        expect(context.dispatch).toBeTypeOf("function");
+        expect(context).not.toHaveProperty("store");
+        expect(context).not.toHaveProperty("canvasProtocol");
+        return <span>Host document: {context.document.title}</span>;
+      },
+    });
+    const preset = defineEditorPreset({
+      id: "host.standard",
+      label: "Host standard",
+      placements: standardEditorPreset.placements.map((placement) => ({
+        ...placement,
+        contributionIds:
+          placement.slot === "status"
+            ? [...placement.contributionIds, contribution.id]
+            : placement.contributionIds,
+      })),
+    });
+    const output = renderToString(
+      <PagebldrEditor
+        builder={builder}
+        document={document}
+        onChange={() => {}}
+        contributions={[contribution]}
+        preset={preset}
+      />,
+    );
+    expect(output).toContain("Host document: ");
+    expect(output).toContain('data-pagebldr-mode="edit"');
+    expect(output).toContain('aria-label="Page structure"');
+  });
+
   it("renders Structure leaf spacing without unnamed interactive placeholders", () => {
     const library = createPagebldr({
       namespace: "accessible-editor",

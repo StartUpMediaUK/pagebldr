@@ -1,12 +1,63 @@
 ---
-title: Blocks and Templates
-description:
-  Offer reusable starting points without creating special document types.
+title: Editor composition
+description: Extend the controlled editor through Contributions and Presets.
 ---
 
-Blocks insert ordinary editable Element trees. Templates create complete
-ordinary Documents. After insertion, neither has privileged runtime behavior,
-which keeps rendering, commands, migrations, and publication predictable.
+`PagebldrEditor` always mounts the controlled editor and its responsive shell.
+Use Contributions for Host actions, panels, panel tabs, canvas overlays and
+status items. A Preset places their IDs into compatible Slots. Custom children
+cannot replace the editor.
 
 Contributions can add editor actions and panels. They receive public selectors
 and command dispatch rather than access to the internal editor store.
+
+```tsx
+import {
+  defineEditorContribution,
+  defineEditorPreset,
+  standardEditorPreset,
+} from "pagebldr/react";
+
+export const selectPage = defineEditorContribution({
+  id: "host.select-page",
+  kind: "toolbarAction",
+  label: "Select page",
+  requires: ["edit"],
+  render: ({ context }) => (
+    <button
+      type="button"
+      onClick={() => context.select(context.document.rootId)}
+    >
+      Select page
+    </button>
+  ),
+});
+
+export const preset = defineEditorPreset({
+  id: "host.standard",
+  label: "Host standard",
+  placements: standardEditorPreset.placements.map((placement) => ({
+    ...placement,
+    contributionIds:
+      placement.slot === "toolbar.trailing"
+        ? [...placement.contributionIds, selectPage.id]
+        : placement.contributionIds,
+  })),
+});
+```
+
+Pass `contributions={[selectPage]}` and `preset={preset}` to your controlled
+editor. Keep the builder, Document and callbacks from the
+[quickstart](/docs/quickstart). Host Contributions own their accessible
+presentation; the package supplies the surrounding editor.
+
+Slots are `toolbar.leading`, `toolbar.trailing`, `sidebar.start`, `sidebar.end`,
+`canvas.overlay` and `status`. The composition validates IDs, placement and kind
+compatibility. Contributions can require `edit`, `save`, `publish` or
+`resources`; unavailable capabilities hide them. Capabilities describe available
+package operations; the Host still enforces authorization.
+
+The public `usePagebldrEditor()` hook is available inside a Contribution.
+Dispatch commands for changes and use selectors for Document, selection,
+viewport and Local history. Avoid querying internal DOM, importing editor
+modules or mutating the Document directly.

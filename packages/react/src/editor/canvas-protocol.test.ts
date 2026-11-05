@@ -48,6 +48,7 @@ describe("canvas protocol", () => {
   it("accepts every canvas-to-shell lifecycle and interaction family", () => {
     const messages = [
       canvasMessage("canvas-a", { type: "ready" }),
+      canvasMessage("canvas-a", { type: "history.request", action: "undo" }),
       canvasMessage("canvas-a", { type: "error", message: "Unavailable" }),
       canvasMessage("canvas-a", {
         type: "selection.change",
@@ -78,6 +79,18 @@ describe("canvas protocol", () => {
     ).toBe(true);
     expect(
       isCanvasToShellMessage({ ...messages.at(-1), height: -1 }, "canvas-a"),
+    ).toBe(false);
+  });
+
+  it("rejects unknown history requests and requests for another canvas", () => {
+    const message = canvasMessage("canvas-a", {
+      type: "history.request",
+      action: "redo",
+    });
+    expect(isCanvasToShellMessage(message, "canvas-a")).toBe(true);
+    expect(isCanvasToShellMessage(message, "canvas-b")).toBe(false);
+    expect(
+      isCanvasToShellMessage({ ...message, action: "delete" }, "canvas-a"),
     ).toBe(false);
   });
 

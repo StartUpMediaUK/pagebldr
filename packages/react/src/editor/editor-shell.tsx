@@ -98,6 +98,7 @@ import { standardEditorPreset } from "./presets.js";
 import { IsolatedCanvas } from "./isolated-canvas.js";
 import { useMovableOverlay } from "./movable-overlay.js";
 import { StructureWindow } from "./structure-window.js";
+import { WorkspacePanels } from "./workspace-panels.js";
 import {
   resolveClickInsertion,
   resolveKeyboardMove,
@@ -199,6 +200,7 @@ function EditorWorkspace({
   const [historyOpen, setHistoryOpen] = useState(false);
   const [unpublishOpen, setUnpublishOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
+  const [compact, setCompact] = useState(false);
   const [panelMode, setPanelMode] = useState<"add" | "inspector">("add");
   const [structureOpen, setStructureOpen] = useState(true);
   const [pageDesignOpen, setPageDesignOpen] = useState(false);
@@ -392,7 +394,9 @@ function EditorWorkspace({
     const root = editorRootRef.current;
     if (!root) return;
     const observer = new ResizeObserver(([entry]) => {
-      if (!entry || initializedLayout.current) return;
+      if (!entry) return;
+      setCompact(entry.contentRect.width < 1024);
+      if (initializedLayout.current) return;
       initializedLayout.current = true;
       if (entry.contentRect.width < 1024) setPanelOpen(false);
     });
@@ -447,7 +451,7 @@ function EditorWorkspace({
       ref={editorRootRef}
       aria-label="Page builder"
       className={cn(
-        "@container flex h-[min(900px,100vh)] min-h-[640px] flex-col overflow-hidden rounded-lg bg-background text-foreground",
+        "@container flex h-dvh min-h-0 flex-col overflow-hidden bg-background text-foreground",
         className,
       )}
       data-pagebldr-editor={editor.builder.namespace}
@@ -498,72 +502,84 @@ function EditorWorkspace({
       ) : (
         <>
           <div className="relative flex min-h-0 flex-1 overflow-hidden">
-            {panelOpen ? (
-              <aside
-                ref={panelOverlay.ref}
-                style={panelOverlay.style}
-                className="z-20 flex w-[22rem] shrink-0 flex-col border-r bg-background @max-[1024px]:absolute @max-[1024px]:bottom-14 @max-[1024px]:left-3 @max-[1024px]:top-3 @max-[1024px]:w-[min(22rem,calc(100%-1.5rem))] @max-[1024px]:rounded-xl @max-[1024px]:border @max-[1024px]:shadow-xl"
-                aria-label={
-                  panelMode === "add" ? "Add to page" : "Element inspector"
-                }
-              >
-                <div
-                  className="flex min-h-16 items-center gap-2 border-b px-4 py-3 @max-[1024px]:cursor-move @max-[1024px]:touch-none"
-                  onDoubleClick={panelOverlay.reset}
-                  onPointerDown={panelOverlay.beginMove}
-                >
-                  {panelMode === "inspector" ? (
-                    <Button
-                      aria-label="Back to Add to page"
-                      size="icon-sm"
-                      variant="ghost"
-                      onClick={() => setPanelMode("add")}
+            <WorkspacePanels
+              compact={compact}
+              panel={
+                panelOpen ? (
+                  <aside
+                    ref={panelOverlay.ref}
+                    style={compact ? panelOverlay.style : { height: "100%" }}
+                    className="z-20 flex w-full shrink-0 flex-col border-r bg-background @max-[1024px]:absolute @max-[1024px]:bottom-14 @max-[1024px]:left-3 @max-[1024px]:top-3 @max-[1024px]:w-[min(22rem,calc(100%-1.5rem))] @max-[1024px]:rounded-xl @max-[1024px]:border @max-[1024px]:shadow-xl"
+                    aria-label={
+                      panelMode === "add" ? "Add to page" : "Element inspector"
+                    }
+                  >
+                    <div
+                      className="flex min-h-16 items-center gap-2 border-b px-4 py-3 @max-[1024px]:cursor-move @max-[1024px]:touch-none"
+                      onDoubleClick={panelOverlay.reset}
+                      onPointerDown={panelOverlay.beginMove}
                     >
-                      <ChevronLeftIcon />
-                    </Button>
-                  ) : null}
-                  <div className="min-w-0 flex-1">
-                    <h2 className="truncate text-sm font-semibold">
+                      {panelMode === "inspector" ? (
+                        <Button
+                          aria-label="Back to Add to page"
+                          size="icon-sm"
+                          variant="ghost"
+                          onClick={() => setPanelMode("add")}
+                        >
+                          <ChevronLeftIcon />
+                        </Button>
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <h2 className="truncate text-sm font-semibold">
+                          {panelMode === "add"
+                            ? "Add to page"
+                            : (editor.selected?.name ?? "Inspector")}
+                        </h2>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {panelMode === "add"
+                            ? "Click or drag into the canvas"
+                            : `${
+                                editor.selected
+                                  ? (editor.builder.elements.get(
+                                      editor.selected.type,
+                                    )?.label ?? editor.selected.type)
+                                  : "Element"
+                              } · Content, style, and advanced`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="min-h-0 flex-1">
                       {panelMode === "add"
-                        ? "Add to page"
-                        : (editor.selected?.name ?? "Inspector")}
-                    </h2>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {panelMode === "add"
-                        ? "Choose an element, block, or template"
-                        : `${
-                            editor.selected
-                              ? (editor.builder.elements.get(
-                                  editor.selected.type,
-                                )?.label ?? editor.selected.type)
-                              : "Element"
-                          } · Content, style, and advanced`}
-                    </p>
-                  </div>
-                </div>
-                <div className="min-h-0 flex-1">
-                  {panelMode === "add"
-                    ? composition.render("sidebar.start", contributionContext)
-                    : composition.render("sidebar.end", contributionContext)}
-                </div>
-              </aside>
-            ) : null}
-            <section
-              aria-label="Page canvas"
-              className="relative min-w-0 flex-1"
+                        ? composition.render(
+                            "sidebar.start",
+                            contributionContext,
+                          )
+                        : composition.render(
+                            "sidebar.end",
+                            contributionContext,
+                          )}
+                    </div>
+                  </aside>
+                ) : null
+              }
             >
-              <IsolatedCanvas>
-                {composition.render("canvas.overlay", contributionContext)}
-              </IsolatedCanvas>
-              <StructureWindow
-                clipboard={clipboard}
-                open={structureOpen}
-                onClipboardChange={setClipboard}
-                onOpenChange={setStructureOpen}
-                onStyleClipboardChange={setStyleClipboard}
-                styleClipboard={styleClipboard}
-              />
-            </section>
+              <section
+                aria-label="Page canvas"
+                className="relative h-full min-w-0 flex-1"
+              >
+                <IsolatedCanvas>
+                  {composition.render("canvas.overlay", contributionContext)}
+                </IsolatedCanvas>
+                <StructureWindow
+                  clipboard={clipboard}
+                  open={structureOpen}
+                  onClipboardChange={setClipboard}
+                  onOpenChange={setStructureOpen}
+                  onStyleClipboardChange={setStyleClipboard}
+                  styleClipboard={styleClipboard}
+                />
+              </section>
+            </WorkspacePanels>
             <CompactToolbar
               panelOpen={panelOpen}
               onPanelOpenChange={setPanelOpen}
@@ -716,9 +732,13 @@ function EditorToolbar({
           <HomeIcon className="size-3" /> Home · {status}
         </span>
       </div>
-      <Badge className="@max-[1024px]:hidden" variant="secondary">
-        {editor.previewing ? "Preview" : editor.mode}
-      </Badge>
+      {editor.previewing || editor.mode !== "edit" ? (
+        <Badge className="@max-[1024px]:hidden" variant="secondary">
+          {editor.previewing || editor.mode === "preview"
+            ? "Preview"
+            : "Read only"}
+        </Badge>
+      ) : null}
       <div
         className={cn(
           "flex flex-1 items-center justify-center",

@@ -12,6 +12,7 @@ node_modules/
 *.log
 *.tgz
 *.tsbuildinfo
+release-evidence/
 
 # Local planning, research and generated verification output
 /docs/plans/

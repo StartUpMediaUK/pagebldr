@@ -10,28 +10,47 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm parity:fixtures:check && pnpm build && pnpm packages:check && pnpm licenses:check",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm parity:fixtures:check && pnpm build && pnpm api:check && pnpm packages:check && pnpm licenses:check",
+    "api:check": "node scripts/check-public-api.mjs",
+    "api:update": "node scripts/check-public-api.mjs --write",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "licenses:check": "pnpm licenses list",
     "lint": "eslint .",
     "packages:check": "pnpm --filter pagebldr package:check && node scripts/check-packed-package.mjs",
     "parity:fixtures:check": "node scripts/check-parity-fixtures.mjs",
-    "test": "node --test scripts/template-boundary.test.mjs && turbo run test",
+    "test": "node --test scripts/template-boundary.test.mjs scripts/public-api-report.test.mjs scripts/release-contract.test.mjs && turbo run test",
     "typecheck": "turbo run typecheck"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite@>=7.0.0 <7.3.7": "7.3.7",
+      "source-map-js@<1.2.2": "1.2.2",
+      "sharp@<0.35.5": "0.35.5",
+      "esbuild@>=0.27.3 <0.28.1": "0.28.2",
+      "effect@<3.20.0": "3.20.0",
+      "deepmerge-ts@<8.0.0": "8.0.0",
+      "js-yaml@>=4.0.0 <4.3.2": "4.3.2",
+      "brace-expansion@<1.1.21": "1.1.21",
+      "brace-expansion@>=4.0.0 <5.0.12": "5.0.12",
+      "smol-toml@<=1.8.0": "1.9.0",
+      "shell-quote@>=1.8.4 <1.11.0": "1.11.0",
+      "zod@<4.6.6": "4.6.6",
+      "launch-editor@<2.14.2": "2.14.2"
+    }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@changesets/cli": "3.0.0",
     "@eslint/js": "9.39.2",
     "@types/node": "22.19.7",
-    "@vitest/coverage-v8": "4.1.10",
+    "@vitest/coverage-v8": "4.1.12",
     "eslint": "9.39.2",
     "prettier": "3.9.6",
     "publint": "0.3.23",
     "turbo": "2.10.9",
     "typescript": "5.9.3",
     "typescript-eslint": "8.67.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.12"
   }
 }

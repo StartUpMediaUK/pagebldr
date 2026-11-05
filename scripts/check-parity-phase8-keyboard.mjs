@@ -11,7 +11,9 @@ const [consumer, origin, evidence] = process.argv.slice(2);
 const require = createRequire(join(resolve(consumer), "package.json"));
 const { chromium } = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
-const browser = await chromium.launch();
+const browser = await chromium.launch({
+  executablePath: process.env.PAGEBLDR_CHROMIUM_EXECUTABLE,
+});
 const output = resolve(evidence);
 await mkdir(output, { recursive: true });
 const results = [];
@@ -145,6 +147,11 @@ try {
       }
       await key("Enter");
       await key("Escape");
+      await page.getByRole("dialog").waitFor({ state: "hidden" });
+      await page.waitForFunction(
+        (element) => element === document.activeElement,
+        await button("More editor actions").elementHandle(),
+      );
       assert.equal(
         await button("More editor actions").evaluate(
           (el) => el === document.activeElement,
@@ -152,7 +159,27 @@ try {
         true,
       );
       await menu("History");
+      await page.getByRole("dialog").waitFor();
+      await page.waitForFunction(() =>
+        document
+          .querySelector("[role='dialog']")
+          ?.contains(document.activeElement),
+      );
+      await page
+        .getByRole("dialog")
+        .evaluate((element) =>
+          Promise.all(
+            element
+              .getAnimations()
+              .map((animation) => animation.finished.catch(() => {})),
+          ),
+        );
       await key("Escape");
+      await page.getByRole("dialog").waitFor({ state: "hidden" });
+      await page.waitForFunction(
+        (element) => element === document.activeElement,
+        await button("More editor actions").elementHandle(),
+      );
       assert.equal(
         await button("More editor actions").evaluate(
           (el) => el === document.activeElement,

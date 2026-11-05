@@ -1,0 +1,651 @@
+{
+  "schemaVersion": 1,
+  "peers": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "sideEffects": ["./dist/styles.css"],
+  "styles": "./dist/styles.css",
+  "modules": {
+    ".": {
+      "assertUniqueId": [
+        "declare function assertUniqueId(id: string, records: Readonly<Record<string, unknown>>): void;"
+      ],
+      "AuthoredAnchor": [
+        "interface AuthoredAnchor {\n    readonly elementId: string;\n    readonly anchorId: unknown;\n}"
+      ],
+      "BlockDefinition": [
+        "interface BlockDefinition extends LibraryMetadata {\n    readonly create: () => ElementTree | PagebldrClipboard;\n}"
+      ],
+      "Breakpoint": [
+        "type Breakpoint = \"desktop\" | \"tablet\" | \"mobile\";"
+      ],
+      "CollectionItemControl": [
+        "type CollectionItemControl = {\n    readonly kind: \"text\";\n    readonly key: string;\n    readonly label: string;\n    readonly placeholder?: string;\n    readonly allowEmpty?: boolean;\n} | {\n    readonly kind: \"textarea\";\n    readonly key: string;\n    readonly label: string;\n    readonly placeholder?: string;\n    readonly allowEmpty?: boolean;\n} | {\n    readonly kind: \"select\";\n    readonly key: string;\n    readonly label: string;\n    readonly options: readonly {\n        readonly label: string;\n        readonly value: string | number;\n    }[];\n} | {\n    readonly kind: \"destination\";\n    readonly key: string;\n    readonly label: string;\n    readonly nullable?: boolean;\n    readonly preferFirstAnchor?: boolean;\n};"
+      ],
+      "CommitOptions": [
+        "interface CommitOptions {\n    readonly coalesceKey?: string | null;\n    readonly timestamp?: number;\n    readonly coalesceWindowMs?: number;\n}"
+      ],
+      "CompiledDocumentStyles": [
+        "interface CompiledDocumentStyles {\n    readonly css: string;\n    readonly scopeAttribute: \"data-pagebldr\";\n    readonly scopeValue: string;\n    readonly documentAttribute: \"data-pagebldr-document\";\n    readonly documentValue: string;\n}"
+      ],
+      "compileDocumentStyles": [
+        "declare function compileDocumentStyles(namespace: string, document: PageDocument, allowedProperties: ReadonlySet<string>): CompiledDocumentStyles;"
+      ],
+      "CreateDocumentInput": [
+        "interface CreateDocumentInput {\n    readonly id: string;\n    readonly title?: string;\n    readonly slug?: string;\n    readonly rootId?: string;\n    readonly rootType?: string;\n    readonly rootProps?: Readonly<Record<string, unknown>>;\n}"
+      ],
+      "createId": ["createId: IdFactory"],
+      "createMediaUploadQueue": [
+        "declare function createMediaUploadQueue(capabilities: MediaCapabilities, context?: ResourceContext): MediaUploadQueue;"
+      ],
+      "createPagebldr": [
+        "declare function createPagebldr<const Options extends PagebldrOptions>(options: Options): Pagebldr<Options>;"
+      ],
+      "createSequentialIdFactory": [
+        "declare function createSequentialIdFactory(namespace?: string): IdFactory;"
+      ],
+      "defineBlock": [
+        "declare function defineBlock<const Definition extends BlockDefinition>(definition: Definition): Readonly<Definition>;"
+      ],
+      "defineElement": [
+        "declare function defineElement<const Type extends string, Schema extends StandardSchemaV1>(definition: ElementDefinition<Type, Schema>): ElementDefinition<Type, Schema>;"
+      ],
+      "defineStyleCapability": [
+        "declare function defineStyleCapability(definition: StyleCapabilityDefinition): StyleCapabilityDefinition;"
+      ],
+      "defineTemplate": [
+        "declare function defineTemplate<const Definition extends TemplateDefinition>(definition: Definition): Readonly<Definition>;"
+      ],
+      "Destination": [
+        "type Destination = {\n    readonly type: \"external\";\n    readonly url: string;\n    readonly newTab: boolean;\n} | {\n    readonly type: \"anchor\";\n    readonly elementId: string;\n} | {\n    readonly type: \"email\";\n    readonly address: string;\n    readonly subject?: string | undefined;\n} | {\n    readonly type: \"telephone\";\n    readonly number: string;\n} | {\n    readonly type: \"application\";\n    readonly reference: ResourceReference;\n    readonly newTab?: boolean | undefined;\n};"
+      ],
+      "detectExternalMediaKind": [
+        "declare function detectExternalMediaKind(input: string): MediaKind;"
+      ],
+      "DOCUMENT_FORMAT": ["DOCUMENT_FORMAT: \"pagebldr\""],
+      "DOCUMENT_SCHEMA_VERSION": ["DOCUMENT_SCHEMA_VERSION: 2"],
+      "DocumentChangeEvent": [
+        "interface DocumentChangeEvent {\n    readonly document: PageDocument;\n    readonly command: EditorCommand[\"type\"];\n    readonly label: string;\n    readonly changedElementIds: readonly string[];\n}"
+      ],
+      "DocumentIndex": [
+        "interface DocumentIndex {\n    readonly parentById: ReadonlyMap<string, string | null>;\n    readonly indexById: ReadonlyMap<string, number>;\n    readonly depthById: ReadonlyMap<string, number>;\n    readonly descendantsById: ReadonlyMap<string, ReadonlySet<string>>;\n    readonly preorder: readonly string[];\n}"
+      ],
+      "DocumentMigration": [
+        "interface DocumentMigration {\n    readonly fromVersion: number;\n    readonly toVersion: number;\n    readonly migrate: (input: Readonly<Record<string, unknown>>) => Record<string, unknown>;\n}"
+      ],
+      "DocumentPatch": [
+        "type DocumentPatch = {\n    readonly op: \"element\";\n    readonly id: string;\n    readonly before: PageElement | null;\n    readonly after: PageElement | null;\n} | {\n    readonly op: \"class\";\n    readonly id: string;\n    readonly before: StyleClass | null;\n    readonly after: StyleClass | null;\n} | {\n    readonly op: \"variable\";\n    readonly id: string;\n    readonly before: StyleVariable | null;\n    readonly after: StyleVariable | null;\n} | {\n    readonly op: \"classOrder\";\n    readonly before: readonly string[];\n    readonly after: readonly string[];\n} | {\n    readonly op: \"variableOrder\";\n    readonly before: readonly string[];\n    readonly after: readonly string[];\n} | {\n    readonly op: \"page\";\n    readonly before: Pick<PageDocument, \"title\" | \"slug\">;\n    readonly after: Pick<PageDocument, \"title\" | \"slug\">;\n} | {\n    readonly op: \"settings\";\n    readonly before: PageSettings;\n    readonly after: PageSettings;\n};"
+      ],
+      "Documents": [
+        "interface Documents {\n    readonly create: (input: CreateDocumentInput) => PageDocument;\n    readonly parse: (input: unknown) => PageDocument;\n    readonly migrate: (input: unknown) => PageDocument;\n    readonly validate: (input: unknown) => ValidationResult;\n    readonly clone: (document: PageDocument) => PageDocument;\n    readonly serialize: (document: PageDocument) => string;\n    readonly deserialize: (serialized: string) => PageDocument;\n    readonly index: (document: PageDocument) => DocumentIndex;\n}"
+      ],
+      "EditorCommand": [
+        "type EditorCommand = {\n    readonly type: \"insert\";\n    readonly parentId: string;\n    readonly index: number;\n    readonly clipboard: PagebldrClipboard;\n} | {\n    readonly type: \"paste\";\n    readonly parentId: string;\n    readonly index: number;\n    readonly clipboard: PagebldrClipboard;\n    readonly idFactory?: IdFactory;\n} | {\n    readonly type: \"move\";\n    readonly elementId: string;\n    readonly parentId: string;\n    readonly index: number;\n} | {\n    readonly type: \"duplicate\";\n    readonly elementId: string;\n    readonly idFactory?: IdFactory;\n} | {\n    readonly type: \"remove\";\n    readonly elementId: string;\n} | {\n    readonly type: \"rename\";\n    readonly elementId: string;\n    readonly name: string;\n} | {\n    readonly type: \"set-locked\";\n    readonly elementId: string;\n    readonly locked: boolean;\n} | {\n    readonly type: \"set-hidden\";\n    readonly elementId: string;\n    readonly hidden: boolean;\n} | {\n    readonly type: \"update-props\";\n    readonly elementId: string;\n    readonly patch: Readonly<Record<string, unknown>>;\n    readonly unset?: readonly string[];\n} | {\n    readonly type: \"set-style\";\n    readonly target: {\n        readonly type: \"local\";\n        readonly elementId: string;\n    } | {\n        readonly type: \"class\";\n        readonly classId: string;\n    };\n    readonly breakpoint: \"desktop\" | \"tablet\" | \"mobile\";\n    readonly state: \"normal\" | \"hover\" | \"focusVisible\";\n    readonly property: string;\n    readonly value: StyleValue | null;\n} | {\n    readonly type: \"replace-styles\";\n    readonly elementId: string;\n    readonly styles: ResponsiveStyles;\n} | {\n    readonly type: \"add-class\";\n    readonly styleClass: StyleClass;\n    readonly index?: number;\n} | {\n    readonly type: \"add-class-and-assign\";\n    readonly styleClass: StyleClass;\n    readonly elementId: string;\n    readonly classIndex?: number;\n} | {\n    readonly type: \"rename-class\";\n    readonly classId: string;\n    readonly name: string;\n} | {\n    readonly type: \"replace-class-styles\";\n    readonly classId: string;\n    readonly styles: ResponsiveStyles;\n} | {\n    readonly type: \"delete-class\";\n    readonly classId: string;\n    readonly force?: boolean;\n} | {\n    readonly type: \"assign-class\";\n    readonly elementId: string;\n    readonly classId: string;\n    readonly index?: number;\n} | {\n    readonly type: \"unassign-class\";\n    readonly elementId: string;\n    readonly classId: string;\n} | {\n    readonly type: \"reorder-element-class\";\n    readonly elementId: string;\n    readonly classId: string;\n    readonly index: number;\n} | {\n    readonly type: \"reorder-class\";\n    readonly classId: string;\n    readonly index: number;\n} | {\n    readonly type: \"add-variable\";\n    readonly variable: StyleVariable;\n    readonly index?: number;\n} | {\n    readonly type: \"update-variable\";\n    readonly variableId: string;\n    readonly patch: Partial<Omit<StyleVariable, \"id\">>;\n} | {\n    readonly type: \"delete-variable\";\n    readonly variableId: string;\n    readonly force?: boolean;\n} | {\n    readonly type: \"reorder-variable\";\n    readonly variableId: string;\n    readonly index: number;\n} | {\n    readonly type: \"paste-styles\";\n    readonly elementId: string;\n    readonly clipboard: PagebldrStyleClipboard;\n} | {\n    readonly type: \"apply-template\";\n    readonly template: PageDocument;\n} | {\n    readonly type: \"update-page\";\n    readonly title?: string;\n    readonly slug?: string;\n} | {\n    readonly type: \"update-settings\";\n    readonly settings: PageSettings;\n};"
+      ],
+      "EditorEngine": [
+        "interface EditorEngine {\n    readonly library: LibraryPreparation;\n    readonly dispatch: (document: PageDocument, command: EditorCommand) => EditorTransaction;\n    readonly dispatchMany: (document: PageDocument, commands: readonly EditorCommand[]) => EditorTransaction;\n    readonly history: {\n        readonly create: (document: PageDocument, limit?: number) => LocalHistory;\n        readonly commit: (history: LocalHistory, command: EditorCommand, options?: CommitOptions) => LocalHistory;\n        readonly undo: (history: LocalHistory) => LocalHistory;\n        readonly redo: (history: LocalHistory) => LocalHistory;\n        readonly jump: (history: LocalHistory, position: number) => LocalHistory;\n    };\n    readonly clipboard: {\n        readonly copy: (document: PageDocument, elementId: string) => PagebldrClipboard;\n        readonly copyStyles: (document: PageDocument, elementId: string) => PagebldrStyleClipboard;\n    };\n    readonly can: (document: PageDocument, command: EditorCommand) => boolean;\n    readonly selectors: {\n        readonly element: (document: PageDocument, elementId: string) => PageElement | null;\n        readonly canUndo: (history: LocalHistory) => boolean;\n        readonly canRedo: (history: LocalHistory) => boolean;\n    };\n}"
+      ],
+      "EditorTransaction": [
+        "interface EditorTransaction {\n    readonly label: string;\n    readonly document: PageDocument;\n    readonly forward: readonly DocumentPatch[];\n    readonly inverse: readonly DocumentPatch[];\n    readonly changedElementIds: readonly string[];\n    readonly command: EditorCommand[\"type\"];\n}"
+      ],
+      "ElementAccessibility": [
+        "interface ElementAccessibility {\n    readonly role?: string;\n    readonly requiresLabel?: boolean;\n    readonly keyboardInteractive?: boolean;\n}"
+      ],
+      "ElementChildPolicy": [
+        "type ElementChildPolicy = {\n    readonly kind: \"none\";\n} | {\n    readonly kind: \"any\";\n    readonly max?: number;\n} | {\n    readonly kind: \"types\";\n    readonly types: readonly string[];\n    readonly max?: number;\n};"
+      ],
+      "ElementControl": [
+        "type ElementControl<Props> = (ElementControlBase<Props> & {\n    readonly kind: \"text\";\n    readonly placeholder?: string;\n    readonly presentation?: \"input\" | \"color\";\n    readonly allowAlpha?: boolean;\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"number\";\n    readonly min?: number;\n    readonly max?: number;\n    readonly step?: number;\n    readonly presentation?: \"input\" | \"slider\";\n    readonly unit?: string;\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"boolean\";\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"select\";\n    readonly presentation?: \"select\" | \"segmented\" | \"viewport\" | \"horizontal-alignment\" | \"vertical-alignment\";\n    readonly options: readonly {\n        readonly label: string;\n        readonly value: string | number;\n    }[];\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"media\";\n    readonly usage: \"image\" | \"video\" | \"gallery\" | \"logos\";\n    readonly nullable?: boolean;\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"destination\";\n    readonly nullable?: boolean;\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"rich-text\";\n    readonly blockTypes: readonly {\n        readonly label: string;\n        readonly value: string;\n    }[];\n    readonly defaultBlock: Readonly<Record<string, unknown>>;\n    readonly minBlocks?: number;\n    readonly maxBlocks?: number;\n}) | (ElementControlBase<Props> & {\n    readonly kind: \"collection\";\n    readonly itemLabel: string;\n    readonly minItems?: number;\n    readonly maxItems?: number;\n    readonly idKey: string;\n    readonly idPrefix: string;\n    readonly defaultItem: Readonly<Record<string, unknown>>;\n    readonly itemControls: readonly CollectionItemControl[];\n});"
+      ],
+      "ElementControlVisibilityCondition": [
+        "interface ElementControlVisibilityCondition<Props> {\n    readonly key: keyof Props & string;\n    readonly equals?: string | number | boolean;\n    readonly notEquals?: string | number | boolean;\n}"
+      ],
+      "ElementDefinition": [
+        "interface ElementDefinition<Type extends string = string, Schema extends StandardSchemaV1 = StandardSchemaV1> {\n    readonly type: Type;\n    readonly version: number;\n    readonly label: string;\n    readonly props: Schema;\n    readonly defaults: () => InferSchemaOutput<Schema>;\n    readonly migrate?: (props: unknown, fromVersion: number) => InferSchemaOutput<Schema>;\n    readonly controls?: readonly ElementControl<InferSchemaOutput<Schema>>[];\n    readonly styleControls?: readonly ElementControl<InferSchemaOutput<Schema>>[];\n    readonly childPolicy?: ElementChildPolicy;\n    readonly styles?: readonly StyleCapabilityDefinition[\"key\"][];\n    readonly accessibility?: ElementAccessibility;\n    readonly inlineEditing?: ElementInlineEditing<InferSchemaOutput<Schema>>;\n    readonly render?: (props: InferSchemaOutput<Schema>, context: ElementRenderContext) => RenderNode;\n    readonly references?: (props: InferSchemaOutput<Schema>) => readonly ResourceReference[];\n    readonly destinations?: (props: InferSchemaOutput<Schema>) => readonly unknown[];\n    readonly publicationIssues?: (props: InferSchemaOutput<Schema>) => readonly {\n        readonly code: string;\n        readonly message: string;\n        readonly path?: string;\n    }[];\n}"
+      ],
+      "ElementInlineEditing": [
+        "interface ElementInlineEditing<Props> {\n    readonly property: keyof Props & string;\n    readonly read: (props: Props) => string;\n    readonly update: (value: string, props: Props) => Partial<Props>;\n}"
+      ],
+      "ElementRenderContext": [
+        "interface ElementRenderContext {\n    readonly elementId?: string;\n    readonly children: readonly RenderNode[];\n    readonly mode: \"edit\" | \"preview\" | \"published\";\n    readonly now: Date;\n    readonly resource: (reference: ResourceReference) => string | null;\n    readonly destination: (value: unknown) => ResolvedDestination;\n}"
+      ],
+      "ElementTree": [
+        "interface ElementTree {\n    readonly type: string;\n    readonly props?: Readonly<Record<string, unknown>>;\n    readonly children?: readonly ElementTree[];\n    readonly name?: string;\n    readonly styles?: ResponsiveStyles;\n}"
+      ],
+      "extractDocumentReferences": [
+        "declare function extractDocumentReferences(builder: Pagebldr, document: PageDocument): readonly ResourceReference[];"
+      ],
+      "findStandardFontFamily": [
+        "declare function findStandardFontFamily(value: unknown): FontFamilyOption | null;"
+      ],
+      "FontFamilyOption": [
+        "interface FontFamilyOption {\n    readonly label: string;\n    readonly value: string;\n    readonly aliases?: readonly string[];\n}"
+      ],
+      "HistoryEntry": [
+        "interface HistoryEntry extends EditorTransaction {\n    readonly timestamp: number;\n    readonly coalesceKey: string | null;\n}"
+      ],
+      "IdFactory": ["type IdFactory = (prefix: string) => string;"],
+      "InferSchemaOutput": [
+        "type InferSchemaOutput<Schema> = Schema extends StandardSchemaV1<infer Input, infer Output> ? [\n    Input\n] extends [\n    unknown\n] ? Output : never : never;"
+      ],
+      "isAnchorIdDuplicate": [
+        "declare function isAnchorIdDuplicate(anchors: Iterable<AuthoredAnchor>, elementId: string, anchorId: string): boolean;"
+      ],
+      "LibraryMetadata": [
+        "interface LibraryMetadata {\n    readonly key: string;\n    readonly label: string;\n    readonly category?: string;\n    readonly description?: string;\n    readonly tags?: readonly string[];\n    readonly thumbnail?: {\n        readonly accent: string;\n        readonly eyebrow: string;\n        readonly summary: string;\n    };\n}"
+      ],
+      "LibraryPreparation": [
+        "interface LibraryPreparation {\n    readonly prepareBlock: (clipboard: PagebldrClipboard, destination: PageDocument, idFactory?: IdFactory) => PagebldrClipboard;\n    readonly cloneTemplate: (template: PageDocument, idFactory?: IdFactory) => PageDocument;\n}"
+      ],
+      "LocalHistory": [
+        "interface LocalHistory {\n    readonly present: PageDocument;\n    readonly past: readonly HistoryEntry[];\n    readonly future: readonly HistoryEntry[];\n    readonly limit: number;\n}"
+      ],
+      "MAX_DOCUMENT_DEPTH": ["MAX_DOCUMENT_DEPTH = 500"],
+      "MAX_DOCUMENT_ELEMENTS": ["MAX_DOCUMENT_ELEMENTS = 5000"],
+      "MediaBrowseOptions": [
+        "interface MediaBrowseOptions {\n    readonly allowed: readonly MediaKind[];\n    readonly kind?: MediaKind;\n    readonly source?: \"uploaded\" | \"external\";\n    readonly sort: \"newest\" | \"oldest\" | \"name-asc\" | \"name-desc\";\n}"
+      ],
+      "MediaCapabilities": [
+        "interface MediaCapabilities {\n    readonly lookup?: (reference: ResourceReference, context: ResourceContext) => Promise<MediaItem | null>;\n    readonly describe: (item: unknown) => MediaItem;\n    readonly upload?: (file: MediaUpload, context: ResourceContext & {\n        readonly onProgress: (progress: number) => void;\n    }) => Promise<MediaItem>;\n    readonly createExternal?: (url: string, kind: MediaKind, context: ResourceContext) => Promise<MediaItem>;\n}"
+      ],
+      "MediaItem": [
+        "interface MediaItem {\n    readonly reference: ResourceReference;\n    readonly kind: MediaKind;\n    readonly displayName: string;\n    readonly originalName?: string;\n    readonly url: string | null;\n    readonly thumbnailUrl?: string;\n    readonly source: \"uploaded\" | \"external\";\n    readonly createdAt: string;\n    readonly available: boolean;\n    readonly text?: string;\n}"
+      ],
+      "MediaKind": [
+        "type MediaKind = \"image\" | \"video\" | \"audio\" | \"document\";"
+      ],
+      "MediaUpload": [
+        "interface MediaUpload {\n    readonly name: string;\n    readonly contentType: string;\n    readonly bytes: Uint8Array;\n}"
+      ],
+      "MediaUploadEntry": [
+        "interface MediaUploadEntry {\n    readonly id: string;\n    readonly file: MediaUpload;\n    readonly progress: number;\n    readonly status: \"uploading\" | \"complete\" | \"failed\" | \"cancelled\";\n    readonly item?: MediaItem;\n    readonly error?: string;\n}"
+      ],
+      "MediaUploadQueue": [
+        "interface MediaUploadQueue {\n    readonly snapshot: () => readonly MediaUploadEntry[];\n    readonly subscribe: (listener: () => void) => () => void;\n    readonly enqueue: (files: readonly MediaUpload[]) => void;\n    readonly cancel: (id: string) => void;\n    readonly retry: (id: string) => void;\n    readonly remove: (id: string) => void;\n}"
+      ],
+      "normalizeAnchorId": [
+        "declare function normalizeAnchorId(value: string): string;"
+      ],
+      "Pagebldr": [
+        "interface Pagebldr<Options extends PagebldrOptions = PagebldrOptions> {\n    readonly namespace: Options[\"namespace\"];\n    readonly elements: ReadonlyMap<string, ElementDefinition>;\n    readonly resources: ReadonlyMap<string, ResourceAdapter>;\n    readonly documents: Documents;\n    readonly editor: EditorEngine;\n    readonly styles: StyleEngine;\n    readonly blocks: ReadonlyMap<string, BlockDefinition>;\n    readonly templates: ReadonlyMap<string, TemplateDefinition>;\n}"
+      ],
+      "PagebldrClipboard": [
+        "interface PagebldrClipboard {\n    readonly format: \"pagebldr-clipboard\";\n    readonly schemaVersion: 1;\n    readonly rootId: string;\n    readonly elements: Readonly<Record<string, PageElement>>;\n    readonly classes: Readonly<Record<string, StyleClass>>;\n    readonly classOrder: readonly string[];\n    readonly variables: Readonly<Record<string, StyleVariable>>;\n    readonly variableOrder: readonly string[];\n}"
+      ],
+      "PagebldrError": [
+        "declare class PagebldrError extends Error {\n    readonly code: PagebldrErrorCode;\n    readonly details: Readonly<Record<string, unknown>> | undefined;\n    constructor(code: PagebldrErrorCode, message: string, options?: PagebldrErrorOptions);\n}"
+      ],
+      "PagebldrErrorCode": [
+        "type PagebldrErrorCode = \"BROKEN_REFERENCE\" | \"CAPABILITY_UNAVAILABLE\" | \"CONFLICT\" | \"CIRCULAR_NESTING\" | \"DUPLICATE_ID\" | \"DUPLICATE_REGISTRATION\" | \"ELEMENT_NOT_FOUND\" | \"FUTURE_SCHEMA\" | \"INVALID_CONFIGURATION\" | \"INVALID_COMMAND\" | \"INVALID_DOCUMENT\" | \"INVALID_ELEMENT\" | \"INVALID_NAMESPACE\" | \"INVALID_PARENT\" | \"LOCKED_ELEMENT\" | \"MIGRATION_MISSING\" | \"NOT_FOUND\" | \"ROOT_OPERATION\" | \"STRUCTURAL_LIMIT\";"
+      ],
+      "PagebldrOptions": [
+        "interface PagebldrOptions {\n    readonly namespace: string;\n    readonly elements?: readonly ElementDefinition[];\n    readonly migrations?: readonly DocumentMigration[];\n    readonly resources?: Readonly<Record<string, ResourceAdapter>>;\n    readonly styleCapabilities?: readonly StyleCapabilityDefinition[];\n    readonly blocks?: readonly BlockDefinition[];\n    readonly templates?: readonly TemplateDefinition[];\n}"
+      ],
+      "PagebldrStyleClipboard": [
+        "interface PagebldrStyleClipboard {\n    readonly format: \"pagebldr-style-clipboard\";\n    readonly schemaVersion: 1;\n    readonly styles: ResponsiveStyles;\n}"
+      ],
+      "PageDocument": [
+        "interface PageDocument {\n    readonly format: \"pagebldr\";\n    readonly schemaVersion: number;\n    readonly id: string;\n    readonly title: string;\n    readonly slug: string;\n    readonly rootId: string;\n    readonly elements: Readonly<Record<string, PageElement>>;\n    readonly classes: Readonly<Record<string, StyleClass>>;\n    readonly classOrder: readonly string[];\n    readonly variables: Readonly<Record<string, StyleVariable>>;\n    readonly variableOrder: readonly string[];\n    readonly settings: PageSettings;\n}"
+      ],
+      "PageElement": [
+        "interface PageElement {\n    readonly id: string;\n    readonly type: string;\n    readonly elementVersion: number;\n    readonly name: string;\n    readonly props: Readonly<Record<string, unknown>>;\n    readonly children: readonly string[];\n    readonly classIds: readonly string[];\n    readonly styles: ResponsiveStyles;\n    readonly locked: boolean;\n    readonly hidden: boolean;\n}"
+      ],
+      "PageSettings": [
+        "interface PageSettings {\n    readonly contentWidth: number;\n    readonly showDefaultHeader: boolean;\n    readonly breakpoints: {\n        readonly tabletMax: number;\n        readonly mobileMax: number;\n    };\n    readonly seo: {\n        readonly title: string;\n        readonly description: string;\n        readonly socialTitle: string;\n        readonly socialDescription: string;\n        readonly socialImage: ResourceReference | null;\n        readonly noIndex: boolean;\n    };\n}"
+      ],
+      "parseDestination": [
+        "declare function parseDestination(value: unknown): Destination;"
+      ],
+      "PreparedResources": [
+        "interface PreparedResources {\n    readonly values: ReadonlyMap<string, string | null>;\n}"
+      ],
+      "PublicationIssue": [
+        "interface PublicationIssue {\n    readonly id: string;\n    readonly severity: \"error\" | \"warning\";\n    readonly message: string;\n    readonly elementId?: string;\n    readonly path?: string;\n}"
+      ],
+      "PublicationValidationOptions": [
+        "interface PublicationValidationOptions {\n    readonly context?: ResourceContext;\n    readonly checkReference?: (reference: ResourceReference, context: ResourceContext) => Promise<\"available\" | \"missing\" | \"unpublished\">;\n}"
+      ],
+      "RenderElement": [
+        "interface RenderElement {\n    readonly tag: string;\n    readonly attributes?: Readonly<Record<string, string | number | boolean | undefined>>;\n    readonly style?: Readonly<Record<string, string | number>>;\n    readonly children?: readonly RenderNode[];\n}"
+      ],
+      "RenderNode": [
+        "type RenderNode = string | number | null | RenderElement;"
+      ],
+      "ResolvedDestination": [
+        "interface ResolvedDestination {\n    readonly href: string | null;\n    readonly newTab: boolean;\n}"
+      ],
+      "resolveDestination": [
+        "declare function resolveDestination(document: PageDocument, value: unknown, resolveApplication?: (reference: ResourceReference) => string | null): ResolvedDestination;"
+      ],
+      "resolveDocumentResources": [
+        "declare function resolveDocumentResources(builder: Pagebldr, document: PageDocument, context?: ResourceContext): Promise<PreparedResources>;"
+      ],
+      "ResolvedStyles": [
+        "type ResolvedStyles = Readonly<Record<string, ResolvedStyleValue>>;"
+      ],
+      "ResolvedStyleSource": [
+        "interface ResolvedStyleSource {\n    readonly sourceType: \"class\" | \"local\";\n    readonly sourceId: string;\n    readonly breakpoint: Breakpoint;\n    readonly state: StyleState;\n    readonly inherited: boolean;\n}"
+      ],
+      "ResolvedStyleValue": [
+        "interface ResolvedStyleValue {\n    readonly value: StyleValue;\n    readonly source: ResolvedStyleSource;\n}"
+      ],
+      "resolveElementStyles": [
+        "declare function resolveElementStyles(document: PageDocument, elementId: string, breakpoint: Breakpoint, state?: StyleState): ResolvedStyles;"
+      ],
+      "resolveMediaVideoEmbed": [
+        "declare function resolveMediaVideoEmbed(input: string): string | null;"
+      ],
+      "ResourceAdapter": [
+        "interface ResourceAdapter<Reference = unknown, Item = unknown> {\n    readonly media?: MediaCapabilities;\n    readonly reference: StandardSchemaV1<unknown, Reference>;\n    readonly resolve: (reference: Reference, context: ResourceContext) => string | null | Promise<string | null>;\n    readonly browse?: (request: {\n        readonly query?: string;\n        readonly cursor?: string;\n        readonly media?: MediaBrowseOptions;\n    }, context: ResourceContext) => Promise<{\n        readonly items: readonly Item[];\n        readonly nextCursor?: string;\n    }>;\n}"
+      ],
+      "ResourceContext": [
+        "interface ResourceContext {\n    readonly scope?: Readonly<Record<string, string>>;\n    readonly signal?: AbortSignal;\n}"
+      ],
+      "resourceKey": [
+        "declare function resourceKey(reference: ResourceReference): string;"
+      ],
+      "ResourceReference": [
+        "interface ResourceReference<Kind extends string = string, Value = unknown> {\n    readonly kind: Kind;\n    readonly value: Value;\n}"
+      ],
+      "ResponsiveStyles": [
+        "type ResponsiveStyles = Readonly<Partial<Record<Breakpoint, StateStyles>>>;"
+      ],
+      "selectMediaItem": [
+        "declare function selectMediaItem(selected: readonly MediaItem[], item: MediaItem, allowed: readonly MediaKind[], maximum: number): readonly MediaItem[];"
+      ],
+      "standardElements": ["standardElements: readonly ElementDefinition[]"],
+      "standardFontFamilies": [
+        "standardFontFamilies: readonly FontFamilyOption[]"
+      ],
+      "StandardSchemaResult": [
+        "type StandardSchemaResult<Output> = {\n    readonly value: Output;\n    readonly issues?: undefined;\n} | {\n    readonly issues: readonly {\n        readonly message: string;\n        readonly path?: readonly PropertyKey[];\n    }[];\n};"
+      ],
+      "StandardSchemaV1": [
+        "interface StandardSchemaV1<Input = unknown, Output = Input> {\n    readonly \"~standard\": {\n        readonly version: 1;\n        readonly vendor: string;\n        readonly validate: (value: unknown) => unknown;\n        readonly types?: {\n            readonly input: Input;\n            readonly output: Output;\n        } | undefined;\n    };\n}"
+      ],
+      "standardStyleCapabilities": [
+        "standardStyleCapabilities: readonly StyleCapabilityDefinition[]"
+      ],
+      "StateStyles": [
+        "type StateStyles = Readonly<Partial<Record<StyleState, StyleDeclarations>>>;"
+      ],
+      "StyleCapabilityDefinition": [
+        "interface StyleCapabilityDefinition {\n    readonly key: string;\n    readonly label: string;\n    readonly properties: readonly string[];\n}"
+      ],
+      "StyleClass": [
+        "interface StyleClass {\n    readonly id: string;\n    readonly name: string;\n    readonly styles: ResponsiveStyles;\n}"
+      ],
+      "StyleDeclarations": [
+        "type StyleDeclarations = Readonly<Record<string, StyleValue>>;"
+      ],
+      "StyleEngine": [
+        "interface StyleEngine {\n    readonly capabilities: ReadonlyMap<string, StyleCapabilityDefinition>;\n    readonly properties: ReadonlySet<string>;\n    readonly compile: (document: PageDocument) => CompiledDocumentStyles;\n    readonly resolve: (document: PageDocument, elementId: string, breakpoint: Breakpoint, state?: StyleState) => ResolvedStyles;\n    readonly variableKindsForProperty: (property: string) => readonly VariableKind[];\n}"
+      ],
+      "StyleState": [
+        "type StyleState = \"normal\" | \"hover\" | \"focusVisible\";"
+      ],
+      "StyleValue": ["type StyleValue = string | number | VariableReference;"],
+      "StyleVariable": [
+        "interface StyleVariable {\n    readonly id: string;\n    readonly name: string;\n    readonly kind: VariableKind;\n    readonly value: string | number;\n}"
+      ],
+      "styleVariableKindsForProperty": [
+        "declare function styleVariableKindsForProperty(property: string): readonly VariableKind[];"
+      ],
+      "TemplateDefinition": [
+        "interface TemplateDefinition extends LibraryMetadata {\n    readonly create: () => ElementTree | PageDocument;\n}"
+      ],
+      "validatePublication": [
+        "declare function validatePublication(builder: Pagebldr, source: PageDocument, options?: PublicationValidationOptions): Promise<readonly PublicationIssue[]>;"
+      ],
+      "ValidationResult": [
+        "type ValidationResult = {\n    readonly valid: true;\n    readonly document: PageDocument;\n    readonly index: DocumentIndex;\n} | {\n    readonly valid: false;\n    readonly error: PagebldrError;\n};"
+      ],
+      "VariableKind": [
+        "type VariableKind = \"color\" | \"typography\" | \"spacing\" | \"radius\" | \"shadow\" | \"contentWidth\";"
+      ],
+      "VariableReference": [
+        "interface VariableReference {\n    readonly type: \"variable\";\n    readonly variableId: string;\n}"
+      ]
+    },
+    "./adapters/memory": {
+      "memoryAdapter": [
+        "declare function memoryAdapter(): StorageAdapter<\"memory\", \"memory\">;"
+      ]
+    },
+    "./adapters/prisma": {
+      "asPagebldrPrismaClient": [
+        "declare function asPagebldrPrismaClient(client: unknown): PagebldrPrismaClient;"
+      ],
+      "PagebldrPrismaClient": [
+        "interface PagebldrPrismaClient {\n    readonly pagebldrAudit: AuditDelegate;\n    readonly pagebldrOperation: OperationDelegate;\n    readonly pagebldrDocument: DocumentDelegate;\n    readonly pagebldrRevision: RevisionDelegate;\n    readonly pagebldrPublication: PublicationDelegate;\n    readonly $transaction: <Result>(operation: (client: PagebldrPrismaTransactionClient) => Promise<Result>) => Promise<Result>;\n}"
+      ],
+      "PagebldrPrismaTransactionClient": [
+        "type PagebldrPrismaTransactionClient = Omit<PagebldrPrismaClient, \"$transaction\">;"
+      ],
+      "prismaMongodbAdapter": [
+        "declare function prismaMongodbAdapter(client: PagebldrPrismaClient): StorageAdapter<\"prisma\", \"mongodb\">;"
+      ],
+      "prismaPostgresqlAdapter": [
+        "declare function prismaPostgresqlAdapter(client: PagebldrPrismaClient): StorageAdapter<\"prisma\", \"postgresql\">;"
+      ]
+    },
+    "./library": {
+      "standardBlocks": ["standardBlocks: readonly BlockDefinition[]"]
+    },
+    "./react": {
+      "ApplicationDestinationOption": [
+        "interface ApplicationDestinationOption {\n    readonly label: string;\n    readonly reference: ResourceReference;\n    readonly description?: string;\n}"
+      ],
+      "createEditorComposition": [
+        "declare function createEditorComposition(preset: EditorPreset, contributions: readonly EditorContribution[]): EditorComposition;"
+      ],
+      "createEditorLifecycle": [
+        "declare function createEditorLifecycle(options: EditorLifecycleOptions): Readonly<{\n    capabilities: Readonly<{\n        publication: boolean;\n        revisions: boolean;\n    }>;\n    getSnapshot: () => EditorLifecycleSnapshot;\n    subscribe: (listener: () => void) => () => void;\n    observe: (next: PageDocument) => void;\n    recover: () => PageDocument;\n    discardRecovery: () => void;\n    save: () => Promise<void>;\n    publish: (confirmedWarnings?: readonly string[]) => Promise<PageDocument | null>;\n    dismissPublicationIssues: () => void;\n    inspectConflict: (signal: AbortSignal) => Promise<{\n        version: number;\n        document: PageDocument;\n    }>;\n    unpublish: () => Promise<PageDocument | null>;\n    restore: (revisionId: string) => Promise<PageDocument | null>;\n    listRevisions: (signal: AbortSignal) => Promise<never[] | readonly EditorRevision[]>;\n    previewRevision: (id: string, signal: AbortSignal) => Promise<PageDocument>;\n    retry: () => Promise<void> | Promise<PageDocument | null>;\n    resolveConflict: (version: number) => void;\n    exportLocalDocument: () => PageDocument;\n    dispose: () => void;\n}>;"
+      ],
+      "defineEditorContribution": [
+        "declare function defineEditorContribution<Kind extends EditorContributionKind>(contribution: EditorContribution<Kind>): EditorContribution<Kind>;"
+      ],
+      "defineEditorPreset": [
+        "declare function defineEditorPreset(preset: EditorPreset): EditorPreset;"
+      ],
+      "DocumentChangeEvent": [
+        "interface DocumentChangeEvent {\n    readonly document: PageDocument;\n    readonly command: EditorCommand[\"type\"];\n    readonly label: string;\n    readonly changedElementIds: readonly string[];\n}"
+      ],
+      "EditorCapability": [
+        "type EditorCapability = \"edit\" | \"save\" | \"publish\" | \"resources\";"
+      ],
+      "EditorComposition": [
+        "interface EditorComposition {\n    readonly preset: EditorPreset;\n    readonly contributions: ReadonlyMap<string, EditorContribution>;\n    readonly render: (slot: EditorSlot, context: EditorContributionContext) => ReactNode;\n}"
+      ],
+      "EditorContextValue": [
+        "interface EditorContextValue {\n    readonly librarySource: EditorLibrarySource | undefined;\n    readonly libraryVersion: number;\n    readonly refreshLibrary: () => void;\n    readonly canvasFitVersion: number;\n    readonly fitCanvas: () => void;\n    readonly builder: Pagebldr;\n    readonly document: PageDocument;\n    readonly mode: EditorMode;\n    readonly viewport: EditorViewport;\n    readonly selectedId: string | null;\n    readonly selected: PageElement | null;\n    readonly hoveredId: string | null;\n    readonly previewing: boolean;\n    readonly styleState: StyleState;\n    readonly canUndo: boolean;\n    readonly canRedo: boolean;\n    readonly actions: readonly {\n        readonly label: string;\n        readonly position: number;\n    }[];\n    readonly actionPosition: number;\n    readonly jumpToAction: (position: number) => void;\n    readonly applicationDestinations: readonly ApplicationDestinationOption[];\n    readonly dispatch: (command: EditorCommand, coalesceKey?: string) => void;\n    readonly undo: () => void;\n    readonly redo: () => void;\n    readonly select: (elementId: string | null) => void;\n    readonly hover: (elementId: string | null) => void;\n    readonly setPreviewing: (previewing: boolean) => void;\n    readonly setStyleState: (state: StyleState) => void;\n    readonly setViewport: (viewport: EditorViewport) => void;\n    readonly resolveApplicationDestination?: (reference: ResourceReference) => string | null;\n}"
+      ],
+      "EditorContribution": [
+        "interface EditorContribution<Kind extends EditorContributionKind = EditorContributionKind> {\n    readonly id: string;\n    readonly kind: Kind;\n    readonly label: string;\n    readonly requires?: readonly EditorCapability[];\n    readonly render: ComponentType<{\n        readonly context: EditorContributionContext;\n    }>;\n}"
+      ],
+      "EditorContributionContext": [
+        "interface EditorContributionContext extends EditorContextValue {\n    readonly capabilities: ReadonlySet<EditorCapability>;\n}"
+      ],
+      "EditorContributionKind": [
+        "type EditorContributionKind = \"toolbarAction\" | \"panel\" | \"panelTab\" | \"canvasOverlay\" | \"statusItem\";"
+      ],
+      "EditorLibrarySource": [
+        "interface EditorLibrarySource {\n    readonly listBlocks?: (signal: AbortSignal) => Promise<readonly BlockDefinition[]>;\n    readonly saveBlock?: (request: {\n        readonly label: string;\n        readonly clipboard: PagebldrClipboard;\n        readonly signal: AbortSignal;\n    }) => Promise<void>;\n    readonly deleteBlock?: (key: string, signal: AbortSignal) => Promise<void>;\n    readonly listTemplates?: (signal: AbortSignal) => Promise<readonly TemplateDefinition[]>;\n    readonly deleteTemplate?: (key: string, signal: AbortSignal) => Promise<void>;\n    readonly editTemplate?: (key: string) => void;\n    readonly adaptBlockReferences?: (clipboard: PagebldrClipboard, signal: AbortSignal) => Promise<PagebldrClipboard>;\n    readonly adaptTemplateReferences?: (document: PageDocument, signal: AbortSignal) => Promise<PageDocument>;\n}"
+      ],
+      "EditorLifecycleMutationRequest": [
+        "interface EditorLifecycleMutationRequest {\n    readonly expectedVersion: number;\n    readonly operationId: string;\n    readonly signal: AbortSignal;\n}"
+      ],
+      "EditorLifecycleOptions": [
+        "interface EditorLifecycleOptions {\n    readonly builder: Pagebldr;\n    readonly loaded: {\n        readonly document: PageDocument;\n        readonly version: number;\n        readonly publishedRevisionId?: string | null;\n        readonly readOnlyReason?: string | null;\n    };\n    readonly save: (request: EditorLifecycleSaveRequest) => Promise<{\n        readonly version: number;\n    }>;\n    readonly recovery?: EditorRecoveryStorage;\n    readonly onLoadDocument?: (document: PageDocument) => void;\n    readonly reload?: (signal: AbortSignal) => Promise<{\n        readonly document: PageDocument;\n        readonly version: number;\n    }>;\n    readonly publication?: {\n        readonly validate?: (document: PageDocument, signal: AbortSignal) => Promise<readonly PublicationIssue[]>;\n        readonly publish: (request: EditorLifecycleMutationRequest & {\n            readonly document: PageDocument;\n            readonly confirmedWarnings?: readonly string[];\n        }) => Promise<{\n            readonly version: number;\n            readonly revisionId: string;\n        }>;\n        readonly unpublish: (request: EditorLifecycleMutationRequest) => Promise<void>;\n    };\n    readonly revisions?: {\n        readonly list: (signal: AbortSignal) => Promise<readonly EditorRevision[]>;\n        readonly preview: (id: string, signal: AbortSignal) => Promise<PageDocument>;\n        readonly restore: (request: EditorLifecycleMutationRequest & {\n            readonly revisionId: string;\n        }) => Promise<{\n            readonly version: number;\n            readonly document: PageDocument;\n        }>;\n    };\n}"
+      ],
+      "EditorLifecycleSaveRequest": [
+        "interface EditorLifecycleSaveRequest {\n    readonly document: PageDocument;\n    readonly expectedVersion: number;\n    readonly reason: \"manual\" | \"autosave\";\n    readonly signal: AbortSignal;\n    readonly operationId?: string;\n}"
+      ],
+      "EditorLifecycleSnapshot": [
+        "interface EditorLifecycleSnapshot {\n    readonly status: EditorSaveStatus;\n    readonly version: number;\n    readonly error: unknown;\n    readonly recovery: EditorRecovery | null;\n    readonly recoveryError: unknown;\n    readonly publishedRevisionId: string | null;\n    readonly pending: \"save\" | \"publish\" | \"restore\" | \"unpublish\" | null;\n    readonly readOnlyReason: string | null;\n    readonly publicationIssues: readonly PublicationIssue[];\n}"
+      ],
+      "EditorMode": [
+        "type EditorMode = \"edit\" | \"preview\" | \"readOnly\";"
+      ],
+      "EditorPlacement": [
+        "interface EditorPlacement {\n    readonly slot: EditorSlot;\n    readonly contributionIds: readonly string[];\n}"
+      ],
+      "EditorPreset": [
+        "interface EditorPreset {\n    readonly id: string;\n    readonly label: string;\n    readonly placements: readonly EditorPlacement[];\n}"
+      ],
+      "EditorRecovery": [
+        "interface EditorRecovery {\n    readonly schemaVersion: 1;\n    readonly document: PageDocument;\n    readonly version: number;\n    readonly savedAt: string;\n}"
+      ],
+      "EditorRecoveryStorage": [
+        "interface EditorRecoveryStorage {\n    readonly read: () => string | null;\n    readonly write: (payload: string) => void;\n    readonly remove: () => void;\n}"
+      ],
+      "EditorRevision": [
+        "interface EditorRevision {\n    readonly id: string;\n    readonly version: number;\n    readonly kind: \"save\" | \"publish\" | \"restore\";\n    readonly title: string;\n    readonly actorId: string | null;\n    readonly createdAt: string;\n}"
+      ],
+      "EditorSlot": ["type EditorSlot = (typeof editorSlots)[number];"],
+      "editorSlots": [
+        "editorSlots: readonly [\n    \"toolbar.leading\",\n    \"toolbar.trailing\",\n    \"sidebar.start\",\n    \"sidebar.end\",\n    \"canvas.overlay\",\n    \"status\"\n]"
+      ],
+      "EditorViewport": [
+        "type EditorViewport = \"desktop\" | \"desktop-fill\" | \"tablet\" | \"mobile\";"
+      ],
+      "focusEditorPreset": ["focusEditorPreset: EditorPreset"],
+      "MediaPicker": [
+        "declare function MediaPicker({ builder: suppliedBuilder, readOnly: suppliedReadOnly, open, onOpenChange, allowed, maximum, label, existing, excluded, onCommit, }: MediaPickerProps): react.JSX.Element;"
+      ],
+      "MediaPickerProps": [
+        "interface MediaPickerProps {\n    readonly builder?: Pagebldr;\n    readonly readOnly?: boolean;\n    readonly open: boolean;\n    readonly onOpenChange: (open: boolean) => void;\n    readonly allowed: readonly MediaKind[];\n    readonly maximum?: number;\n    readonly label: string;\n    readonly existing?: readonly ResourceReference[];\n    readonly excluded?: readonly ResourceReference[];\n    readonly onCommit: (items: readonly MediaItem[]) => void;\n}"
+      ],
+      "MediaViewer": [
+        "declare function MediaViewer({ item, onClose, }: {\n    readonly item: MediaItem | null;\n    readonly onClose: () => void;\n}): react.JSX.Element;"
+      ],
+      "PagebldrEditor": [
+        "declare function PagebldrEditor(props: PagebldrEditorProps): ReactElement;"
+      ],
+      "PagebldrEditorProps": [
+        "interface PagebldrEditorProps {\n    readonly lifecycle?: ReturnType<typeof createEditorLifecycle>;\n    readonly librarySource?: EditorLibrarySource;\n    readonly builder: Pagebldr;\n    readonly document: PageDocument;\n    readonly onChange: (event: DocumentChangeEvent) => void;\n    readonly onSave?: (request: SaveRequest) => void | Promise<void>;\n    readonly onPublish?: (request: PublishRequest) => void | Promise<void>;\n    readonly mode?: \"edit\" | \"preview\" | \"readOnly\";\n    readonly className?: string;\n    readonly preset?: EditorPreset;\n    readonly contributions?: readonly EditorContribution[];\n    readonly applicationDestinations?: readonly ApplicationDestinationOption[];\n    readonly resolveApplicationDestination?: (reference: ResourceReference) => string | null;\n}"
+      ],
+      "PagebldrPage": [
+        "declare function PagebldrPage({ builder, page, events, analyticsConsent, visit, styleNonce, }: PagebldrPageProps): ReactElement;"
+      ],
+      "PagebldrPageProps": [
+        "interface PagebldrPageProps {\n    readonly builder: Pagebldr;\n    readonly page: PublishedPage;\n    readonly events?: EventDelivery;\n    readonly analyticsConsent?: boolean;\n    readonly visit?: \"mount\" | \"manual\" | false;\n    readonly styleNonce?: string;\n}"
+      ],
+      "PagebldrRenderer": [
+        "declare function PagebldrRenderer({ builder, document, resources, mode, now, resolveApplicationDestination, styleNonce, forcedStyleState, }: PagebldrRendererProps): ReactElement;"
+      ],
+      "PagebldrRendererProps": [
+        "interface PagebldrRendererProps {\n    readonly builder: Pagebldr;\n    readonly document: PageDocument;\n    readonly resources?: PreparedResources;\n    readonly mode?: \"edit\" | \"preview\" | \"published\";\n    readonly now?: Date;\n    readonly resolveApplicationDestination?: (reference: ResourceReference) => string | null;\n    readonly styleNonce?: string;\n    readonly forcedStyleState?: {\n        readonly elementId: string;\n        readonly state: Exclude<StyleState, \"normal\">;\n    };\n}"
+      ],
+      "PagebldrRuntimeInteractions": [
+        "declare function PagebldrRuntimeInteractions(): react.JSX.Element;"
+      ],
+      "PublishRequest": [
+        "interface PublishRequest {\n    readonly document: PageDocument;\n    readonly signal: AbortSignal;\n}"
+      ],
+      "SaveRequest": [
+        "interface SaveRequest {\n    readonly document: PageDocument;\n    readonly reason: \"manual\" | \"autosave\";\n    readonly signal: AbortSignal;\n}"
+      ],
+      "standardEditorPreset": ["standardEditorPreset: EditorPreset"],
+      "usePagebldrEditor": [
+        "declare function usePagebldrEditor(): EditorContextValue;"
+      ]
+    },
+    "./react/server": {
+      "PagebldrRenderer": [
+        "declare function PagebldrRenderer({ builder, document, resources, mode, now, resolveApplicationDestination, styleNonce, forcedStyleState, }: PagebldrRendererProps): ReactElement;"
+      ],
+      "PagebldrRendererProps": [
+        "interface PagebldrRendererProps {\n    readonly builder: Pagebldr;\n    readonly document: PageDocument;\n    readonly resources?: PreparedResources;\n    readonly mode?: \"edit\" | \"preview\" | \"published\";\n    readonly now?: Date;\n    readonly resolveApplicationDestination?: (reference: ResourceReference) => string | null;\n    readonly styleNonce?: string;\n    readonly forcedStyleState?: {\n        readonly elementId: string;\n        readonly state: Exclude<StyleState, \"normal\">;\n    };\n}"
+      ]
+    },
+    "./runtime": {
+      "AnalyticsEvent": [
+        "interface AnalyticsEvent {\n    readonly family: \"analytics\";\n    readonly schemaVersion: 1;\n    readonly id: string;\n    readonly sequence: number;\n    readonly occurredAt: string;\n    readonly type: AnalyticsEventType;\n    readonly context: Omit<EventContext, \"actorId\">;\n    readonly subject: {\n        readonly documentId: string;\n        readonly elementId?: string;\n    };\n    readonly data: Readonly<Record<string, string | number | boolean | null>>;\n}"
+      ],
+      "AnalyticsEventType": [
+        "type AnalyticsEventType = \"page.visit\" | \"element.interaction\";"
+      ],
+      "AuditEvent": [
+        "interface AuditEvent {\n    readonly family: \"audit\";\n    readonly schemaVersion: 1;\n    readonly id: string;\n    readonly sequence: number;\n    readonly occurredAt: string;\n    readonly type: AuditEventType;\n    readonly context: EventContext;\n    readonly subject: {\n        readonly documentKey?: string;\n        readonly revisionId?: string;\n    };\n    readonly data: Readonly<Record<string, string | number | boolean | null>>;\n}"
+      ],
+      "AuditEventStore": [
+        "interface AuditEventStore {\n    readonly append: (events: readonly AuditEvent[]) => void | Promise<void>;\n    readonly list: (request: {\n        readonly cursor?: string;\n        readonly limit: number;\n        readonly scope?: Readonly<Record<string, string>>;\n    }) => Promise<{\n        readonly items: readonly AuditEvent[];\n        readonly nextCursor?: string;\n    }>;\n}"
+      ],
+      "AuditEventType": [
+        "type AuditEventType = \"document.created\" | \"document.saved\" | \"document.deleted\" | \"revision.restored\" | \"publication.published\" | \"publication.unpublished\" | \"editor.command\";"
+      ],
+      "auditStoreEventSink": [
+        "declare function auditStoreEventSink(store: AuditEventStore, analytics?: EventSink): EventSink;"
+      ],
+      "callbackEventSink": [
+        "declare function callbackEventSink(callback: EventSink[\"write\"]): EventSink;"
+      ],
+      "consoleEventSink": [
+        "declare function consoleEventSink(logger?: Pick<Console, \"info\">): EventSink;"
+      ],
+      "createEventDelivery": [
+        "declare function createEventDelivery(options: EventDeliveryOptions): EventDelivery;"
+      ],
+      "createPagebldrRuntime": [
+        "declare function createPagebldrRuntime(options: PagebldrRuntimeOptions): Readonly<{\n    builder: Pagebldr<PagebldrOptions>;\n    resolve: (request: RuntimeRequest) => Promise<RuntimeResolution>;\n    recordVisit: (page: PublishedPage, data?: {\n        readonly referrer?: string;\n    }) => Promise<AnalyticsEvent | null>;\n}>;"
+      ],
+      "EventContext": [
+        "interface EventContext {\n    readonly namespace: string;\n    readonly scope?: Readonly<Record<string, string>>;\n    readonly actorId?: string;\n    readonly correlationId?: string;\n}"
+      ],
+      "EventDelivery": [
+        "interface EventDelivery {\n    readonly prepareAudit: (input: Omit<AuditEvent, \"family\" | \"schemaVersion\" | \"id\" | \"sequence\" | \"occurredAt\">, sequence?: number) => AuditEvent;\n    readonly deliverAudit: (event: AuditEvent) => Promise<boolean>;\n    readonly audit: (input: Omit<AuditEvent, \"family\" | \"schemaVersion\" | \"id\" | \"sequence\" | \"occurredAt\">) => Promise<AuditEvent>;\n    readonly analytics: (input: Omit<AnalyticsEvent, \"family\" | \"schemaVersion\" | \"id\" | \"sequence\" | \"occurredAt\">) => Promise<AnalyticsEvent | null>;\n    readonly flush: () => Promise<void>;\n}"
+      ],
+      "EventDeliveryOptions": [
+        "interface EventDeliveryOptions {\n    readonly sink: EventSink;\n    readonly consent?: (event: AnalyticsEvent) => boolean | Promise<boolean>;\n    readonly batchSize?: number;\n    readonly retries?: number;\n    readonly failure?: \"isolate\" | \"throw\";\n    readonly now?: () => Date;\n    readonly createId?: () => string;\n}"
+      ],
+      "EventSink": [
+        "interface EventSink {\n    readonly write: (events: readonly PagebldrEvent[]) => void | Promise<void>;\n}"
+      ],
+      "memoryAuditEventStore": [
+        "declare function memoryAuditEventStore(): AuditEventStore;"
+      ],
+      "memoryEventSink": [
+        "declare function memoryEventSink(): EventSink & {\n    readonly events: readonly PagebldrEvent[];\n};"
+      ],
+      "normalizePath": [
+        "declare function normalizePath(input: string): string;"
+      ],
+      "openTelemetryEventSink": [
+        "declare function openTelemetryEventSink(target: OpenTelemetryEventTarget): EventSink;"
+      ],
+      "OpenTelemetryEventTarget": [
+        "interface OpenTelemetryEventTarget {\n    readonly addEvent: (name: string, attributes: Readonly<Record<string, string | number | boolean>>) => void;\n}"
+      ],
+      "pagebldrCacheTag": [
+        "declare function pagebldrCacheTag(page: PublishedPage): string;"
+      ],
+      "PagebldrEvent": ["type PagebldrEvent = AuditEvent | AnalyticsEvent;"],
+      "pagebldrMetadata": [
+        "declare function pagebldrMetadata(page: PublishedPage): {\n    robots: {\n        index: boolean;\n        follow: boolean;\n    };\n    alternates?: {\n        canonical: string;\n    };\n    title: string;\n    description: string;\n};"
+      ],
+      "pagebldrRouteResult": [
+        "declare function pagebldrRouteResult(resolution: RuntimeResolution): {\n    kind: \"render\";\n    page: PublishedPage;\n    location?: never;\n    permanent?: never;\n    error?: never;\n} | {\n    kind: \"redirect\";\n    location: string;\n    permanent: boolean;\n    page?: never;\n    error?: never;\n} | {\n    kind: \"notFound\";\n    page?: never;\n    location?: never;\n    permanent?: never;\n    error?: never;\n} | {\n    kind: \"error\";\n    error: Error;\n    page?: never;\n    location?: never;\n    permanent?: never;\n};"
+      ],
+      "PagebldrRuntimeOptions": [
+        "interface PagebldrRuntimeOptions {\n    readonly builder: Pagebldr;\n    readonly publications: PublicationSource;\n    readonly canonicalOrigin?: string;\n    readonly events?: EventDelivery;\n}"
+      ],
+      "PublicationResolution": [
+        "type PublicationResolution = PageDocument | null | {\n    readonly redirect: string;\n    readonly permanent?: boolean;\n};"
+      ],
+      "PublicationSource": [
+        "interface PublicationSource {\n    readonly resolve: (request: {\n        readonly path: string;\n        readonly scope?: Readonly<Record<string, string>>;\n    }) => Promise<PublicationResolution>;\n}"
+      ],
+      "PublishedPage": [
+        "interface PublishedPage {\n    readonly document: PageDocument;\n    readonly canonicalPath: string;\n    readonly canonicalUrl?: string;\n    readonly cacheIdentity: string;\n    readonly resources: PreparedResources;\n    readonly metadata: {\n        readonly title: string;\n        readonly description: string;\n        readonly socialTitle: string;\n        readonly socialDescription: string;\n        readonly socialImage: ResourceReference | null;\n        readonly noIndex: boolean;\n    };\n    readonly eventContext: {\n        readonly namespace: string;\n        readonly scope?: Readonly<Record<string, string>>;\n    };\n}"
+      ],
+      "recordEditorAudit": [
+        "declare function recordEditorAudit(delivery: EventDelivery, input: {\n    readonly context: EventContext;\n    readonly documentKey: string;\n    readonly commandType: string;\n    readonly changedElementCount: number;\n}): Promise<AuditEvent>;"
+      ],
+      "redact": [
+        "declare function redact(input: Readonly<Record<string, unknown>>): Readonly<Record<string, string | number | boolean | null>>;"
+      ],
+      "RuntimeRequest": [
+        "interface RuntimeRequest {\n    readonly path: string;\n    readonly scope?: Readonly<Record<string, string>>;\n}"
+      ],
+      "RuntimeResolution": [
+        "type RuntimeResolution = {\n    readonly status: \"found\";\n    readonly page: PublishedPage;\n} | {\n    readonly status: \"notFound\";\n} | {\n    readonly status: \"redirect\";\n    readonly location: string;\n    readonly permanent: boolean;\n} | {\n    readonly status: \"error\";\n    readonly error: Error;\n};"
+      ]
+    },
+    "./runtime/next": {
+      "pagebldrCacheTag": [
+        "declare function pagebldrCacheTag(page: PublishedPage): string;"
+      ],
+      "pagebldrMetadata": [
+        "declare function pagebldrMetadata(page: PublishedPage): {\n    robots: {\n        index: boolean;\n        follow: boolean;\n    };\n    alternates?: {\n        canonical: string;\n    };\n    title: string;\n    description: string;\n};"
+      ],
+      "pagebldrRouteResult": [
+        "declare function pagebldrRouteResult(resolution: RuntimeResolution): {\n    kind: \"render\";\n    page: PublishedPage;\n    location?: never;\n    permanent?: never;\n    error?: never;\n} | {\n    kind: \"redirect\";\n    location: string;\n    permanent: boolean;\n    page?: never;\n    error?: never;\n} | {\n    kind: \"notFound\";\n    page?: never;\n    location?: never;\n    permanent?: never;\n    error?: never;\n} | {\n    kind: \"error\";\n    error: Error;\n    page?: never;\n    location?: never;\n    permanent?: never;\n};"
+      ]
+    },
+    "./server": {
+      "canonicalScope": [
+        "declare function canonicalScope(scope: StorageScope): string;"
+      ],
+      "CollectionPolicy": [
+        "type CollectionPolicy = {\n    readonly mode: \"single\";\n    readonly key: string;\n} | {\n    readonly mode: \"multiple\";\n};"
+      ],
+      "createAuditQuery": [
+        "declare function createAuditQuery(options: {\n    readonly store: AuditEventStore;\n    readonly authorize: (request: Request) => boolean | Promise<boolean>;\n    readonly resolveScope: (request: Request) => Readonly<Record<string, string>> | Promise<Readonly<Record<string, string>>>;\n}): (request: Request) => Promise<Response>;"
+      ],
+      "createPagebldrServer": [
+        "declare function createPagebldrServer<Adapter extends StorageAdapter>(options: PagebldrServerOptions<Adapter>): Readonly<{\n    builder: Pagebldr<PagebldrOptions>;\n    storage: Adapter;\n    collection: CollectionPolicy;\n    audit: {\n        flush: (request: DocumentRequest, limit?: number) => Promise<void>;\n    };\n    documents: {\n        load: (request: DocumentRequest) => Promise<StoredDocument | null>;\n        list: (request?: ListRequest) => Promise<StorageListResult>;\n        create: (request: CreateRequest) => Promise<{\n            revision: null;\n            references?: readonly ResourceReference[];\n            scope: StorageScope;\n            key: string;\n            document: PageDocument;\n            version: number;\n            createdAt: Date;\n            updatedAt: Date;\n        }>;\n        save: (request: SaveRequest) => Promise<{\n            revision: StoredRevision | null;\n            references: readonly ResourceReference<string, unknown>[];\n            scope: StorageScope;\n            key: string;\n            document: PageDocument;\n            version: number;\n            createdAt: Date;\n            updatedAt: Date;\n        }>;\n        delete: (request: DocumentRequest) => Promise<void>;\n    };\n    revisions: {\n        load: (request: DocumentRequest & {\n            readonly revisionId: string;\n        }) => Promise<{\n            document: PageDocument;\n            kind: \"save\" | \"publish\" | \"restore\";\n            title: string;\n            actorId: string | null;\n            scope: StorageScope;\n            id: string;\n            documentKey: string;\n            version: number;\n            createdAt: Date;\n        }>;\n        list: (request: DocumentRequest) => Promise<readonly StoredRevision[]>;\n        restore: (request: RestoreRequest) => Promise<{\n            revision: StoredRevision | null;\n            references?: readonly ResourceReference[];\n            scope: StorageScope;\n            key: string;\n            document: PageDocument;\n            version: number;\n            createdAt: Date;\n            updatedAt: Date;\n        }>;\n    };\n    publications: {\n        validate: (request: CreateRequest) => Promise<readonly PublicationIssue[]>;\n        get: (request: DocumentRequest) => Promise<StoredPublication | null>;\n        publish: (request: PublishRequest) => Promise<{\n            document: PageDocument;\n            version: number;\n            revision: StoredRevision;\n            scope: Readonly<Record<string, string>>;\n            documentKey: string;\n            revisionId: string;\n            publishedAt: Date;\n            references: readonly ResourceReference<string, unknown>[];\n        }>;\n        unpublish: (request: UnpublishRequest) => Promise<void>;\n    };\n}>;"
+      ],
+      "CreateRequest": [
+        "interface CreateRequest extends DocumentRequest {\n    readonly document: PageDocument;\n}"
+      ],
+      "DocumentRequest": [
+        "interface DocumentRequest {\n    readonly scope?: StorageScope;\n    readonly key: string;\n}"
+      ],
+      "ListRequest": [
+        "interface ListRequest {\n    readonly scope?: StorageScope;\n    readonly cursor?: string;\n    readonly limit?: number;\n}"
+      ],
+      "PagebldrServerOptions": [
+        "interface PagebldrServerOptions<Adapter extends StorageAdapter = StorageAdapter> {\n    readonly builder: Pagebldr;\n    readonly storage: Adapter;\n    readonly collection: CollectionPolicy;\n    readonly revisions?: {\n        readonly enabled: boolean;\n        readonly retention?: number;\n    };\n    readonly requireCapabilities?: Partial<StorageCapabilities>;\n    readonly now?: () => Date;\n    readonly createId?: () => string;\n    readonly actor?: (request: DocumentRequest) => string | null;\n    readonly publication?: Pick<PublicationValidationOptions, \"checkReference\">;\n    readonly audit?: {\n        readonly delivery: EventDelivery;\n        readonly context: (request: DocumentRequest) => EventContext;\n        readonly requireTransactional?: boolean;\n    };\n}"
+      ],
+      "PublishRequest": [
+        "interface PublishRequest extends CreateRequest {\n    readonly confirmedWarnings?: readonly string[];\n    readonly expectedVersion: number;\n    readonly operationId?: string;\n}"
+      ],
+      "RestoreRequest": [
+        "interface RestoreRequest extends DocumentRequest {\n    readonly operationId?: string;\n    readonly revisionId: string;\n    readonly expectedVersion: number;\n}"
+      ],
+      "SaveRequest": [
+        "interface SaveRequest extends CreateRequest {\n    readonly operationId?: string;\n    readonly expectedVersion: number;\n    readonly reason?: \"manual\" | \"autosave\";\n}"
+      ],
+      "StorageAdapter": [
+        "interface StorageAdapter<Integration extends string = string, Provider extends string = string> {\n    readonly integration: Integration;\n    readonly provider: Provider;\n    readonly capabilities: StorageCapabilities;\n    readonly setup: StorageSetupGuide;\n    readonly read: <Result>(operation: (storage: StorageTransaction) => Promise<Result>) => Promise<Result>;\n    readonly transaction: <Result>(operation: (storage: StorageTransaction) => Promise<Result>) => Promise<Result>;\n}"
+      ],
+      "StorageCapabilities": [
+        "interface StorageCapabilities {\n    readonly atomicLifecycle: boolean;\n    readonly optimisticConcurrency: boolean;\n    readonly revisions: boolean;\n    readonly publicationPointers: boolean;\n    readonly pagination: boolean;\n    readonly scopeIsolation: boolean;\n    readonly transactionalAudit: boolean;\n}"
+      ],
+      "StorageListRequest": [
+        "interface StorageListRequest {\n    readonly scope: StorageScope;\n    readonly cursor?: string;\n    readonly limit: number;\n}"
+      ],
+      "StorageListResult": [
+        "interface StorageListResult {\n    readonly items: readonly StoredDocument[];\n    readonly nextCursor?: string;\n}"
+      ],
+      "StorageScope": ["type StorageScope = Readonly<Record<string, string>>;"],
+      "StorageSetupGuide": [
+        "interface StorageSetupGuide {\n    readonly strategy: \"automatic\" | \"prisma-db-push\" | \"prisma-migrate\" | \"manual\";\n    readonly summary: string;\n    readonly schemaPath?: string;\n}"
+      ],
+      "StorageTransaction": [
+        "interface StorageTransaction {\n    readonly audits: {\n        readonly list: (scope: StorageScope, documentKey: string) => Promise<readonly StoredAudit[]>;\n        readonly put: (record: StoredAudit) => Promise<void>;\n        readonly markDelivered: (scope: StorageScope, id: string, deliveredAt: Date) => Promise<void>;\n    };\n    readonly operations: {\n        readonly get: (scope: StorageScope, id: string) => Promise<StoredOperation | null>;\n        readonly put: (record: StoredOperation) => Promise<void>;\n        readonly deleteForDocument: (scope: StorageScope, key: string) => Promise<void>;\n    };\n    readonly documents: {\n        readonly get: (scope: StorageScope, key: string) => Promise<StoredDocument | null>;\n        readonly list: (request: StorageListRequest) => Promise<StorageListResult>;\n        readonly put: (record: StoredDocument) => Promise<void>;\n        readonly insert: (record: StoredDocument) => Promise<boolean>;\n        readonly replace: (record: StoredDocument, expectedVersion: number) => Promise<boolean>;\n        readonly delete: (scope: StorageScope, key: string) => Promise<void>;\n    };\n    readonly revisions: {\n        readonly get: (scope: StorageScope, id: string) => Promise<StoredRevision | null>;\n        readonly list: (scope: StorageScope, documentKey: string) => Promise<readonly StoredRevision[]>;\n        readonly put: (record: StoredRevision) => Promise<void>;\n        readonly delete: (scope: StorageScope, id: string) => Promise<void>;\n    };\n    readonly publications: {\n        readonly get: (scope: StorageScope, documentKey: string) => Promise<StoredPublication | null>;\n        readonly put: (record: StoredPublication) => Promise<void>;\n        readonly delete: (scope: StorageScope, documentKey: string) => Promise<void>;\n    };\n}"
+      ],
+      "StoredAudit": [
+        "interface StoredAudit {\n    readonly scope: StorageScope;\n    readonly documentKey: string;\n    readonly event: AuditEvent;\n    readonly deliveredAt: Date | null;\n}"
+      ],
+      "StoredDocument": [
+        "interface StoredDocument {\n    readonly references?: readonly ResourceReference[];\n    readonly scope: StorageScope;\n    readonly key: string;\n    readonly document: PageDocument;\n    readonly version: number;\n    readonly createdAt: Date;\n    readonly updatedAt: Date;\n}"
+      ],
+      "StoredOperation": [
+        "interface StoredOperation {\n    readonly scope: StorageScope;\n    readonly id: string;\n    readonly documentKey: string;\n    readonly fingerprint: string;\n    readonly response: string;\n}"
+      ],
+      "StoredPublication": [
+        "interface StoredPublication {\n    readonly references?: readonly ResourceReference[];\n    readonly scope: StorageScope;\n    readonly documentKey: string;\n    readonly revisionId: string;\n    readonly publishedAt: Date;\n}"
+      ],
+      "StoredRevision": [
+        "interface StoredRevision {\n    readonly kind: \"save\" | \"publish\" | \"restore\";\n    readonly title: string;\n    readonly actorId: string | null;\n    readonly scope: StorageScope;\n    readonly id: string;\n    readonly documentKey: string;\n    readonly document: PageDocument;\n    readonly version: number;\n    readonly createdAt: Date;\n}"
+      ],
+      "UnpublishRequest": [
+        "interface UnpublishRequest extends DocumentRequest {\n    readonly operationId?: string;\n}"
+      ]
+    },
+    "./server/next": {
+      "createPagebldrHandler": [
+        "declare function createPagebldrHandler(server: PagebldrServer, options: NextHandlerOptions): (request: Request, context: NextHandlerContext) => Promise<Response>;"
+      ],
+      "NextHandlerContext": [
+        "interface NextHandlerContext {\n    readonly params: {\n        readonly all?: readonly string[];\n    } | Promise<{\n        readonly all?: readonly string[];\n    }>;\n}"
+      ],
+      "NextHandlerOptions": [
+        "interface NextHandlerOptions {\n    readonly authorize: (request: Request) => boolean | Promise<boolean>;\n    readonly resolveScope: (request: Request) => StorageScope | Promise<StorageScope>;\n}"
+      ]
+    }
+  }
+}

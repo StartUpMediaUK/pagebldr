@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 import {
   defineElement,
@@ -268,7 +268,7 @@ function definition(config: {
   type: string;
   version?: number;
   label: string;
-  schema: z.AnyZodObject;
+  schema: z.ZodObject;
   defaults: Props;
   render: (props: Props, context: ElementRenderContext) => RenderNode;
   childPolicy?: ElementDefinition["childPolicy"];

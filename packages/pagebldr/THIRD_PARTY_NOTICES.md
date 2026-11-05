@@ -5,7 +5,10 @@ The editor includes package-owned source components from shadcn/ui
 component used by History. Copyright (c) 2023 shadcn. Licensed under MIT; the
 permission and warranty notice below also applies to this source.
 
-The editor bundles the following MIT-licensed colour parsing libraries:
+The package bundles the following MIT-licensed libraries:
+
+- zod 4.6.6 — https://github.com/colinhacks/zod Copyright (c) 2025 Colin
+  McDonnell
 
 - color 5.0.3 — https://github.com/Qix-/color Copyright (c) 2012 Heather Arthur
 - color-convert 3.1.3 — https://github.com/Qix-/color-convert Copyright (c)

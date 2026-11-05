@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ComponentProps,
   type DragEvent,
   type ReactNode,
 } from "react";
@@ -17,6 +18,7 @@ import {
   Maximize2Icon,
   MinusIcon,
   PlusIcon,
+  PencilIcon,
   SmartphoneIcon,
   TabletIcon,
   ZoomInIcon,
@@ -59,9 +61,9 @@ import {
 import { useCanvasDimensions } from "./canvas-dimensions-context.js";
 import {
   createElementClipboard,
-  pagebldrElementDragType,
-  pagebldrExistingDragType,
   resolveCanvasPlacement,
+  resolveKeyboardMove,
+  type KeyboardMoveDirection,
   type CanvasPlacement,
   type CanvasPlacementPosition,
 } from "./canvas-placement.js";
@@ -73,7 +75,7 @@ import {
   type CanvasRect,
   type CanvasDragSource,
 } from "./canvas-protocol.js";
-import { usePagebldrEditor } from "./context.js";
+import { usePagebldrEditor, useElementDragSession } from "./context.js";
 import { readBlockDrag } from "./block-drag.js";
 
 type CanvasStatus = "loading" | "ready" | "error";
@@ -155,6 +157,10 @@ export function IsolatedCanvas({
           break;
         case "selection.change":
           current.select(message.elementId);
+          break;
+        case "history.request":
+          if (current.mode === "edit" && !current.previewing)
+            current[message.action]();
           break;
         case "hover.change":
           current.hover(message.elementId);
@@ -588,6 +594,8 @@ export function IsolatedCanvas({
             <CanvasRuntime
               builder={editor.builder}
               canvasId={canvasId}
+              zoom={zoom}
+              workspace={workspaceRef.current}
               frameWindow={frameDocument.defaultView!}
               mode={
                 editor.mode === "edit" && !editor.previewing
@@ -618,6 +626,8 @@ function CanvasRuntime({
   canvasId,
   frameWindow,
   mode,
+  zoom,
+  workspace,
   forcedStyleState,
   resolveApplicationDestination,
 }: {
@@ -625,6 +635,8 @@ function CanvasRuntime({
   readonly canvasId: string;
   readonly frameWindow: Window;
   readonly mode: "edit" | "preview";
+  readonly zoom: number;
+  readonly workspace: HTMLDivElement | null;
   readonly forcedStyleState: {
     readonly elementId: string;
     readonly state: "hover" | "focusVisible";
@@ -632,6 +644,7 @@ function CanvasRuntime({
   readonly resolveApplicationDestination:
     ((reference: ResourceReference) => string | null) | undefined;
 }) {
+  const elementDrag = useElementDragSession();
   const [document, setDocument] = useState<PageDocument | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -640,6 +653,26 @@ function CanvasRuntime({
     (CanvasPlacement & { readonly rect: DOMRect }) | null
   >(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const pointerMove = useRef<{
+    readonly pointerId: number;
+    readonly button: HTMLButtonElement;
+    readonly elementId: string;
+    readonly x: number;
+    readonly y: number;
+    dragging: boolean;
+  } | null>(null);
+  const ignoreHandleClick = useRef(false);
+  const cancelPointerMove = useCallback(() => {
+    const active = pointerMove.current;
+    pointerMove.current = null;
+    if (active?.button.hasPointerCapture(active.pointerId))
+      active.button.releasePointerCapture(active.pointerId);
+    setDropTarget(null);
+  }, []);
+  useEffect(() => {
+    cancelPointerMove();
+    return cancelPointerMove;
+  }, [cancelPointerMove, document, mode]);
   const activeEdit = useRef<{
     readonly element: HTMLElement;
     readonly originalMarkup: string;
@@ -793,6 +826,7 @@ function CanvasRuntime({
   };
 
   const dragSource = (dataTransfer: DataTransfer): CanvasDragSource | null => {
+    if (mode !== "edit") return null;
     const clipboard = readBlockDrag(dataTransfer);
     if (clipboard && clipboard.elements[clipboard.rootId])
       return {
@@ -800,14 +834,11 @@ function CanvasRuntime({
         elementType: clipboard.elements[clipboard.rootId]!.type,
         clipboard,
       };
-    const elementType = dataTransfer.getData(pagebldrElementDragType);
-    if (elementType) return { kind: "element", elementType };
-    const elementId = dataTransfer.getData(pagebldrExistingDragType);
-    return elementId ? { kind: "existing", elementId } : null;
+    return elementDrag.read(dataTransfer);
   };
 
   const placementAt = (
-    event: DragEvent<HTMLDivElement>,
+    event: Pick<DragEvent<HTMLDivElement>, "target" | "clientY">,
     source: CanvasDragSource,
   ) => {
     const target = closestPageElement(event.target);
@@ -839,6 +870,115 @@ function CanvasRuntime({
       if (placement) return { ...placement, rect };
     }
     return null;
+  };
+
+  const pointerPlacement = (x: number, y: number, elementId: string) => {
+    const target = frameWindow.document
+      .elementsFromPoint(x, y)
+      .map(closestPageElement)
+      .find((element) => element !== null);
+    return target
+      ? placementAt({ target, clientY: y }, { kind: "existing", elementId })
+      : null;
+  };
+  const handleProps: ComponentProps<typeof Button> = {
+    onClick(event) {
+      event.stopPropagation();
+      if (ignoreHandleClick.current) {
+        ignoreHandleClick.current = false;
+        if (event.detail !== 0) return;
+      }
+      if (selectedId) {
+        finishEditing(true);
+        post({ type: "selection.change", elementId: selectedId });
+      }
+    },
+    onPointerDown(event) {
+      ignoreHandleClick.current = false;
+      if (
+        event.button !== 0 ||
+        !event.isPrimary ||
+        !selectedId ||
+        !document ||
+        activeEdit.current ||
+        selectedId === document.rootId ||
+        document.elements[selectedId]?.locked
+      )
+        return;
+      event.stopPropagation();
+      event.currentTarget.setPointerCapture(event.pointerId);
+      pointerMove.current = {
+        pointerId: event.pointerId,
+        button: event.currentTarget,
+        elementId: selectedId,
+        x: event.clientX,
+        y: event.clientY,
+        dragging: false,
+      };
+    },
+    onPointerMove(event) {
+      const active = pointerMove.current;
+      if (!active || active.pointerId !== event.pointerId) return;
+      if (
+        !active.dragging &&
+        Math.hypot(event.clientX - active.x, event.clientY - active.y) * zoom <
+          5
+      )
+        return;
+      active.dragging = true;
+      ignoreHandleClick.current = true;
+      event.preventDefault();
+      event.stopPropagation();
+      setDropTarget(
+        pointerPlacement(event.clientX, event.clientY, active.elementId),
+      );
+    },
+    onPointerUp(event) {
+      const active = pointerMove.current;
+      if (!active || active.pointerId !== event.pointerId) return;
+      const placement = active.dragging
+        ? pointerPlacement(event.clientX, event.clientY, active.elementId)
+        : null;
+      cancelPointerMove();
+      if (!active.dragging) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (placement)
+        post({
+          type: "drop.request",
+          source: { kind: "existing", elementId: active.elementId },
+          targetId: placement.targetId,
+          position: placement.position,
+        });
+    },
+    onPointerCancel: cancelPointerMove,
+    onLostPointerCapture: cancelPointerMove,
+    onKeyDown(event) {
+      if (!event.altKey || !selectedId || !document) return;
+      const directions: Readonly<Record<string, KeyboardMoveDirection>> = {
+        ArrowUp: "up",
+        ArrowDown: "down",
+        ArrowLeft: "out",
+        ArrowRight: "in",
+      };
+      const direction = directions[event.key];
+      if (!direction) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const placement = resolveKeyboardMove({
+        document,
+        definitions: builder.elements,
+        elementId: selectedId,
+        direction,
+      });
+      if (placement)
+        post({
+          type: "drop.request",
+          source: { kind: "existing", elementId: selectedId },
+          targetId: placement.targetId,
+          position: placement.position,
+        });
+    },
   };
 
   if (!document) return null;
@@ -875,6 +1015,7 @@ function CanvasRuntime({
       onDropCapture={(event) => {
         const source = dragSource(event.dataTransfer);
         const placement = source ? placementAt(event, source) : null;
+        elementDrag.end();
         setDropTarget(null);
         if (!source || !placement) return;
         event.preventDefault();
@@ -893,6 +1034,31 @@ function CanvasRuntime({
           finishEditing(true);
       }}
       onKeyDownCapture={(event) => {
+        if (event.key === "Escape" && pointerMove.current) {
+          event.preventDefault();
+          event.stopPropagation();
+          ignoreHandleClick.current = true;
+          cancelPointerMove();
+          return;
+        }
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          !event.altKey &&
+          event.key.toLowerCase() === "z" &&
+          !activeEdit.current &&
+          !closestElement(
+            event.target,
+            "input, textarea, [contenteditable='true']",
+          )
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          post({
+            type: "history.request",
+            action: event.shiftKey ? "redo" : "undo",
+          });
+          return;
+        }
         if (!activeEdit.current) return;
         if (event.key === "Escape") {
           event.preventDefault();
@@ -922,6 +1088,9 @@ function CanvasRuntime({
           findElement={findElement}
           document={document}
           post={post}
+          zoom={zoom}
+          handleProps={handleProps}
+          workspace={workspace}
         />
       ) : null}
       {mode === "edit" && dropTarget ? (
@@ -966,6 +1135,9 @@ function CanvasChrome({
   findElement,
   document,
   post,
+  zoom,
+  handleProps,
+  workspace,
 }: {
   readonly frameWindow: Window;
   readonly selectedId: string | null;
@@ -973,9 +1145,22 @@ function CanvasChrome({
   readonly findElement: (elementId: string) => HTMLElement | null;
   readonly document: PageDocument;
   readonly post: (message: Parameters<typeof canvasMessage>[1]) => void;
+  readonly zoom: number;
+  readonly handleProps: ComponentProps<typeof Button>;
+  readonly workspace: HTMLDivElement | null;
 }) {
   const [selectedRect, setSelectedRect] = useState<DOMRect | null>(null);
   const [hoveredRect, setHoveredRect] = useState<DOMRect | null>(null);
+  const [handlePosition, setHandlePosition] = useState<{
+    left: number;
+    top: number;
+  } | null>(null);
+  const canMove =
+    selectedId !== document.rootId &&
+    !document.elements[selectedId ?? ""]?.locked;
+  const handleHint = canMove
+    ? "Click to edit. Drag to move. Alt+arrow keys also move."
+    : "Open the inspector. This Element cannot be moved.";
 
   useLayoutEffect(() => {
     const update = () => {
@@ -984,6 +1169,30 @@ function CanvasChrome({
       const nextSelected = selected?.getBoundingClientRect() ?? null;
       setSelectedRect(nextSelected);
       setHoveredRect(hovered?.getBoundingClientRect() ?? null);
+      const frameRect = frameWindow.frameElement?.getBoundingClientRect();
+      const workspaceRect = workspace?.getBoundingClientRect();
+      if (nextSelected && frameRect && workspaceRect) {
+        const left = Math.max(0, (workspaceRect.left - frameRect.left) / zoom);
+        const top = Math.max(0, (workspaceRect.top - frameRect.top) / zoom);
+        const right =
+          (workspaceRect.left + workspace!.clientWidth - frameRect.left) / zoom;
+        const bottom =
+          (workspaceRect.top + workspace!.clientHeight - frameRect.top) / zoom;
+        setHandlePosition(
+          nextSelected.right >= left &&
+            nextSelected.left <= right &&
+            nextSelected.bottom >= top &&
+            nextSelected.top <= bottom
+            ? {
+                left: Math.max(
+                  left,
+                  Math.min(nextSelected.right - 24 / zoom, right - 24 / zoom),
+                ),
+                top: Math.max(top, nextSelected.top - 24 / zoom),
+              }
+            : null,
+        );
+      } else setHandlePosition(null);
       if (selectedId && nextSelected)
         post({
           type: "geometry.change",
@@ -994,17 +1203,29 @@ function CanvasChrome({
     update();
     frameWindow.addEventListener("scroll", update, true);
     frameWindow.addEventListener("resize", update);
+    workspace?.addEventListener("scroll", update);
     const observer = new ResizeObserver(update);
     if (selectedId) {
       const selected = findElement(selectedId);
       if (selected) observer.observe(selected);
     }
+    if (workspace) observer.observe(workspace);
     return () => {
       observer.disconnect();
       frameWindow.removeEventListener("scroll", update, true);
       frameWindow.removeEventListener("resize", update);
+      workspace?.removeEventListener("scroll", update);
     };
-  }, [document, findElement, frameWindow, hoveredId, post, selectedId]);
+  }, [
+    document,
+    findElement,
+    frameWindow,
+    hoveredId,
+    post,
+    selectedId,
+    workspace,
+    zoom,
+  ]);
 
   return (
     <>
@@ -1016,13 +1237,51 @@ function CanvasChrome({
         />
       ) : null}
       {selectedId && selectedRect ? (
-        <div
-          aria-hidden
-          data-pagebldr-selection-outline
-          style={outlineStyle(selectedRect)}
-        >
-          <span>{document.elements[selectedId]?.name ?? "Element"}</span>
-        </div>
+        <>
+          <div
+            aria-hidden
+            data-pagebldr-selection-outline
+            style={outlineStyle(selectedRect)}
+          >
+            <span>{document.elements[selectedId]?.name ?? "Element"}</span>
+          </div>
+          {handlePosition ? (
+            <div
+              data-pagebldr-ui
+              style={{
+                position: "fixed",
+                left: handlePosition.left,
+                top: handlePosition.top,
+                transform: `scale(${1 / zoom})`,
+                transformOrigin: "top left",
+              }}
+            >
+              <Button
+                type="button"
+                size="icon-xs"
+                aria-label={`Edit ${document.elements[selectedId]?.name ?? "Element"}`}
+                title={handleHint}
+                aria-description={handleHint}
+                style={{
+                  display: "grid",
+                  placeItems: "center",
+                  width: 24,
+                  height: 24,
+                  minWidth: 24,
+                  minHeight: 24,
+                  borderRadius: "0.25rem 0.25rem 0 0",
+                  background: "var(--pagebldr-focus, #2563eb)",
+                  color: "var(--pagebldr-primary-foreground, #ffffff)",
+                  touchAction: "none",
+                  cursor: canMove ? "grab" : undefined,
+                }}
+                {...handleProps}
+              >
+                <PencilIcon data-icon="inline-start" size={12} />
+              </Button>
+            </div>
+          ) : null}
+        </>
       ) : null}
     </>
   );

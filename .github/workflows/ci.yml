@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [master]
+    branches: [master, release/alpha]
 
 permissions:
   contents: read
@@ -18,6 +18,8 @@ jobs:
         node: [20.19.0, 22]
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v6
         with:
           version: 10.8.0
@@ -27,6 +29,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      - run:
+          node scripts/check-public-api.mjs --since origin/${{ github.base_ref
+          }}
+        if: github.event_name == 'pull_request'
 
   packed-react:
     name: Packed consumer / React ${{ matrix.react }}
@@ -77,3 +83,94 @@ jobs:
       - uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: moderate
+
+  packed-browser:
+    name: Packed browser / React ${{ matrix.react }} / ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { react: "19.2.8", browser: chromium, suite: full, next: true }
+          - { react: "18.3.1", browser: chromium, suite: smoke, next: false }
+          - { react: "19.2.8", browser: firefox, suite: smoke, next: false }
+          - { react: "19.2.8", browser: webkit, suite: smoke, next: false }
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.8.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: mkdir -p release-evidence && node scripts/check-packed-package.mjs
+        env:
+          PAGEBLDR_REACT_VERSION: ${{ matrix.react }}
+          PAGEBLDR_KEEP_PACKED_REFERENCE_HOST: "1"
+          PAGEBLDR_CHECK_PACKED_NEXT: ${{ matrix.next && '1' || '0' }}
+          PAGEBLDR_PACKED_RESULT:
+            ${{ github.workspace }}/release-evidence/packed.json
+      - run:
+          node scripts/run-packed-browser.mjs release-evidence/packed.json
+          release-evidence/browser ${{ matrix.browser }} ${{ matrix.suite }}
+        env:
+          PAGEBLDR_INSTALL_BROWSER_DEPS: "1"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-react-${{ matrix.react }}-${{ matrix.browser }}
+          path: release-evidence/
+          retention-days: 14
+
+  supply-chain:
+    name: Dependency vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.8.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --audit-level high
+
+  visual-regression:
+    name: Accepted canvas visual regression / Windows Chromium
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.8.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - shell: bash
+        run: mkdir -p release-evidence && node scripts/check-packed-package.mjs
+        env:
+          PAGEBLDR_KEEP_PACKED_REFERENCE_HOST: "1"
+          PAGEBLDR_PACKED_RESULT:
+            ${{ github.workspace }}/release-evidence/packed.json
+      - run:
+          node scripts/run-packed-browser.mjs release-evidence/packed.json
+          release-evidence/browser chromium smoke
+        env:
+          PAGEBLDR_VISUAL_BASELINE:
+            ${{ github.workspace }}/fixtures/visual/editor-canvas
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-visual-regression
+          path: release-evidence/
+          retention-days: 14

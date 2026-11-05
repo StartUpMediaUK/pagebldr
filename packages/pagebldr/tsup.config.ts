@@ -17,6 +17,10 @@ export default defineConfig({
     "adapters-prisma": "src/adapters-prisma.ts",
   },
   external: ["react", "react-dom"],
+  esbuildOptions(options) {
+    // Remove compiler whitespace without renaming public/debug symbols.
+    options.minifyWhitespace = true;
+  },
   noExternal: [/^@pagebldr\//u],
   onSuccess: async () => {
     await mkdir("dist", { recursive: true });

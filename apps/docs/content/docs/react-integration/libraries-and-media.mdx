@@ -7,7 +7,10 @@ The standard editor includes a searchable Elements/Blocks/Templates library. The
 23 neutral Blocks are available by default and separately exported as
 `standardBlocks` from `pagebldr/library`. Block insertion creates ordinary
 editable Elements with fresh IDs. Host definitions can override a standard Block
-by key. Previewing never changes the controlled Document.
+by key. Each Block card has an Insert action; saved Blocks appear as compact
+rows. Both support dragging into the canvas. Templates open a read-only Preview
+before Apply; previewing never changes the controlled Document. Template
+favourites appear beside each title and in the category filter.
 
 There is no bundled Template catalogue or Template imagery. Configure
 `createPagebldr({ templates })` or supply `PagebldrEditor`'s `librarySource` to

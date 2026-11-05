@@ -2,7 +2,7 @@ name: Release pull request
 
 on:
   push:
-    branches: [master]
+    branches: [release/alpha]
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -13,6 +13,7 @@ permissions:
 jobs:
   version:
     name: Version packages
+    if: vars.PAGEBLDR_NPM_PUBLISHING == 'enabled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -26,6 +27,12 @@ jobs:
           node-version: 22
           package-manager-cache: false
       - run: pnpm install --frozen-lockfile
+      - name: Require the alpha prerelease state
+        run:
+          node --input-type=module -e "import fs from 'node:fs'; const pre =
+          JSON.parse(fs.readFileSync('.changeset/pre.json', 'utf8')); if
+          (pre.mode !== 'pre' || pre.tag !== 'alpha') throw new Error('Enter the
+          alpha Changesets prerelease mode before creating release PRs.');"
       - uses: changesets/action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

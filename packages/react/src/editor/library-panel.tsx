@@ -3,11 +3,36 @@
 import { useEffect, useRef, useState } from "react";
 import { startBlockDrag, endBlockDrag } from "./block-drag.js";
 import {
-  PlusIcon,
+  BoxIcon,
+  BadgeIcon,
+  Building2Icon,
+  ChartNoAxesColumnIncreasingIcon,
+  CircleHelpIcon,
+  CopyrightIcon,
+  GaugeIcon,
+  HeadingIcon,
+  ImageIcon,
+  ImagesIcon,
+  ListIcon,
+  ListChecksIcon,
+  MenuIcon,
+  MousePointerClickIcon,
+  PanelsTopLeftIcon,
+  PilcrowIcon,
+  QuoteIcon,
+  SeparatorHorizontalIcon,
+  Share2Icon,
+  SpaceIcon,
+  TimerIcon,
+  VideoIcon,
+  type LucideIcon,
   StarIcon,
   EyeIcon,
   Trash2Icon,
   PencilIcon,
+  PlusIcon,
+  PackageOpenIcon,
+  SearchIcon,
 } from "lucide-react";
 import {
   resolveDocumentResources,
@@ -41,7 +66,11 @@ import {
   EmptyDescription,
 } from "../components/ui/empty.js";
 import { Field, FieldGroup, FieldLabel } from "../components/ui/field.js";
-import { Input } from "../components/ui/input.js";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../components/ui/input-group.js";
 import { ScrollArea } from "../components/ui/scroll-area.js";
 import {
   Tabs,
@@ -50,7 +79,11 @@ import {
   TabsContent,
 } from "../components/ui/tabs.js";
 import { InspectorSelect, InspectorSelectOption } from "./inspector-select.js";
-import { usePagebldrEditor, useLibraryBrowsing } from "./context.js";
+import {
+  usePagebldrEditor,
+  useLibraryBrowsing,
+  useElementDragSession,
+} from "./context.js";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -64,7 +97,6 @@ import {
 import {
   createElementClipboard,
   resolveClickInsertion,
-  pagebldrElementDragType,
 } from "./canvas-placement.js";
 import {
   materializeBlock,
@@ -75,8 +107,37 @@ import { PagebldrRenderer } from "../renderer.js";
 import { PagebldrRuntimeInteractions } from "../runtime-interactions.js";
 
 type LibraryEntry = BlockDefinition | TemplateDefinition;
+// Private presentation for the standard library. Host Elements retain a
+// neutral fallback; this does not add UI dependencies to core definitions.
+const elementIcons: Readonly<Record<string, LucideIcon>> = {
+  container: BoxIcon,
+  heading: HeadingIcon,
+  "rich-text": PilcrowIcon,
+  button: MousePointerClickIcon,
+  logo: BadgeIcon,
+  menu: MenuIcon,
+  copyright: CopyrightIcon,
+  image: ImageIcon,
+  video: VideoIcon,
+  icon: StarIcon,
+  divider: SeparatorHorizontalIcon,
+  spacer: SpaceIcon,
+  list: ListIcon,
+  "icon-list": ListChecksIcon,
+  accordion: CircleHelpIcon,
+  tabs: PanelsTopLeftIcon,
+  testimonial: QuoteIcon,
+  "star-rating": StarIcon,
+  counter: GaugeIcon,
+  progress: ChartNoAxesColumnIncreasingIcon,
+  countdown: TimerIcon,
+  "social-links": Share2Icon,
+  "logo-cloud": Building2Icon,
+  "gallery-carousel": ImagesIcon,
+};
 export function LibraryPanel() {
   const editor = usePagebldrEditor();
+  const elementDrag = useElementDragSession();
   const editorRef = useRef(editor);
   editorRef.current = editor;
   const browsing = useLibraryBrowsing();
@@ -102,6 +163,7 @@ export function LibraryPanel() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [loading, setLoading] = useState(false);
+  const previewOpener = useRef<HTMLButtonElement | null>(null);
   const [preview, setPreview] = useState<{
     entry: LibraryEntry;
     document: PageDocument;
@@ -172,7 +234,7 @@ export function LibraryPanel() {
       .toLowerCase()
       .includes(query.trim().toLowerCase()) &&
     (category === "all" || entry.category === category) &&
-    (!favouritesOnly || favourites.includes(entry.key));
+    (tab !== "templates" || !favouritesOnly || favourites.includes(entry.key));
   const perform = async (action: () => void | Promise<void>) => {
     setError(null);
     setPending(true);
@@ -298,12 +360,17 @@ export function LibraryPanel() {
           <FieldLabel htmlFor="pb-library-search" className="sr-only">
             Search library
           </FieldLabel>
-          <Input
-            id="pb-library-search"
-            placeholder="Search elements, blocks, templates…"
-            value={query}
-            onChange={(event) => setQuery(event.currentTarget.value)}
-          />
+          <InputGroup className="h-auto">
+            <InputGroupInput
+              id="pb-library-search"
+              placeholder="Search"
+              value={query}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+            />
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </InputGroup>
         </Field>
       </FieldGroup>
       <Tabs
@@ -314,7 +381,7 @@ export function LibraryPanel() {
         }}
         className="min-h-0 flex-1 gap-0"
       >
-        <TabsList className="mx-3 grid w-auto grid-cols-3">
+        <TabsList variant="line" className="mx-3 grid w-auto grid-cols-3">
           <TabsTrigger value="elements">Elements</TabsTrigger>
           <TabsTrigger value="blocks">Blocks</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
@@ -328,40 +395,43 @@ export function LibraryPanel() {
                     .toLowerCase()
                     .includes(query.trim().toLowerCase()),
                 )
-                .map((definition) => (
-                  <Button
-                    key={definition.type}
-                    variant="outline"
-                    className="h-auto min-h-16 flex-col"
-                    disabled={readOnly}
-                    draggable={!readOnly}
-                    onDragStart={(event) => {
-                      event.dataTransfer.effectAllowed = "copy";
-                      event.dataTransfer.setData(
-                        pagebldrElementDragType,
-                        definition.type,
-                      );
-                    }}
-                    onClick={() => {
-                      const placement = resolveClickInsertion({
-                        document: editor.document,
-                        definitions: editor.builder.elements,
-                        selectedId: editor.selectedId,
-                        elementType: definition.type,
-                      });
-                      if (placement)
-                        editor.dispatch({
-                          type: "insert",
-                          parentId: placement.parentId,
-                          index: placement.index,
-                          clipboard: createElementClipboard(definition),
+                .map((definition) => {
+                  const Icon = elementIcons[definition.type] ?? BoxIcon;
+                  return (
+                    <Button
+                      key={definition.type}
+                      variant="outline"
+                      className="h-20 flex-col"
+                      disabled={readOnly}
+                      draggable={!readOnly}
+                      onDragStart={(event) => {
+                        elementDrag.start(event.dataTransfer, {
+                          kind: "element",
+                          elementType: definition.type,
                         });
-                    }}
-                  >
-                    <PlusIcon data-icon="inline-start" />
-                    {definition.label}
-                  </Button>
-                ))}
+                      }}
+                      onDragEnd={() => elementDrag.end()}
+                      onClick={() => {
+                        const placement = resolveClickInsertion({
+                          document: editor.document,
+                          definitions: editor.builder.elements,
+                          selectedId: editor.selectedId,
+                          elementType: definition.type,
+                        });
+                        if (placement)
+                          editor.dispatch({
+                            type: "insert",
+                            parentId: placement.parentId,
+                            index: placement.index,
+                            clipboard: createElementClipboard(definition),
+                          });
+                      }}
+                    >
+                      <Icon data-icon="inline-start" />
+                      {definition.label}
+                    </Button>
+                  );
+                })}
             </div>
           </ScrollArea>
         </TabsContent>
@@ -389,17 +459,29 @@ export function LibraryPanel() {
                 ) : null}
                 <FieldGroup>
                   <Field>
-                    <FieldLabel>Category</FieldLabel>
+                    <FieldLabel className="sr-only">Category</FieldLabel>
                     <InspectorSelect
                       aria-label="Library category"
-                      value={category}
-                      onChange={(event) =>
-                        setCategory(event.currentTarget.value)
+                      value={
+                        value === "templates" && favouritesOnly
+                          ? "favourites"
+                          : category
                       }
+                      onChange={(event) => {
+                        const next = event.currentTarget.value;
+                        setFavouritesOnly(next === "favourites");
+                        setCategory(next === "favourites" ? "all" : next);
+                      }}
                     >
                       <InspectorSelectOption value="all">
-                        All categories
+                        All {value === "blocks" ? "block" : "template"}{" "}
+                        categories
                       </InspectorSelectOption>
+                      {value === "templates" ? (
+                        <InspectorSelectOption value="favourites">
+                          Favourites
+                        </InspectorSelectOption>
+                      ) : null}
                       {categories.map((item) => (
                         <InspectorSelectOption key={item} value={item}>
                           {item.replaceAll("-", " ")}
@@ -408,136 +490,190 @@ export function LibraryPanel() {
                     </InspectorSelect>
                   </Field>
                 </FieldGroup>
-                <Button
-                  variant="outline"
-                  aria-pressed={favouritesOnly}
-                  onClick={() => setFavouritesOnly(!favouritesOnly)}
-                >
-                  <StarIcon data-icon="inline-start" />
-                  Favourites only
-                </Button>
                 {loading ? <p role="status">Loading library…</p> : null}
                 {error ? <p role="alert">{error}</p> : null}
-                {entries.filter(matches).map((entry) => {
-                  const savedBlock = saved.includes(entry as BlockDefinition);
-                  const managedTemplate = managed.includes(
-                    entry as TemplateDefinition,
-                  );
-                  return (
-                    <Card
-                      key={`${value}:${savedBlock || managedTemplate ? "host" : "package"}:${entry.key}`}
-                      className="gap-3 py-3"
-                      data-library-key={entry.key}
-                      draggable={value === "blocks" && !readOnly && !pending}
-                      onDragStart={(event) => {
-                        if (value === "blocks")
+                {entries
+                  .filter(matches)
+                  .filter(
+                    (entry) =>
+                      value !== "blocks" ||
+                      !saved.includes(entry as BlockDefinition),
+                  )
+                  .map((entry) => {
+                    const savedBlock = saved.includes(entry as BlockDefinition);
+                    const managedTemplate = managed.includes(
+                      entry as TemplateDefinition,
+                    );
+                    return (
+                      <Card
+                        key={`${value}:${savedBlock || managedTemplate ? "host" : "package"}:${entry.key}`}
+                        data-library-key={entry.key}
+                        draggable={value === "blocks" && !readOnly && !pending}
+                        onDragStart={(event) => {
+                          if (value === "blocks")
+                            startBlockDrag(
+                              event.dataTransfer,
+                              materializeBlock(
+                                editor.builder,
+                                entry.create() as ReturnType<
+                                  BlockDefinition["create"]
+                                >,
+                              ),
+                            );
+                        }}
+                        onDragEnd={endBlockDrag}
+                      >
+                        <CardContent className="pt-3">
+                          <div
+                            aria-hidden="true"
+                            className="pb-library-thumbnail border"
+                            style={{
+                              backgroundColor:
+                                entry.thumbnail?.accent ?? "var(--muted)",
+                              color: thumbnailForeground(
+                                entry.thumbnail?.accent,
+                              ),
+                            }}
+                          >
+                            <span className="font-semibold">
+                              {entry.thumbnail?.eyebrow ??
+                                entry.category ??
+                                value}
+                            </span>
+                            <strong>
+                              {value === "templates"
+                                ? entry.label
+                                : (entry.thumbnail?.summary ?? entry.label)}
+                            </strong>
+                          </div>
+                        </CardContent>
+                        <CardHeader>
+                          <div className="flex items-start justify-between gap-2">
+                            <CardTitle>{entry.label}</CardTitle>
+                            {value === "templates" ? (
+                              <Button
+                                size="icon-sm"
+                                variant={
+                                  favourites.includes(entry.key)
+                                    ? "secondary"
+                                    : "ghost"
+                                }
+                                aria-label={`Favourite ${entry.label}`}
+                                aria-pressed={favourites.includes(entry.key)}
+                                onClick={() => favourite(entry.key)}
+                              >
+                                <StarIcon data-icon="inline-start" />
+                              </Button>
+                            ) : null}
+                          </div>
+                          <CardDescription>
+                            {entry.description ??
+                              (savedBlock ? "Saved block" : "Host template")}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardFooter className="flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                            disabled={
+                              pending || (value === "blocks" && readOnly)
+                            }
+                            aria-label={
+                              value === "templates"
+                                ? `Preview ${entry.label}`
+                                : undefined
+                            }
+                            onClick={(event) => {
+                              previewOpener.current = event.currentTarget;
+                              void (value === "blocks"
+                                ? insert(entry as BlockDefinition)
+                                : openPreview(entry, false));
+                            }}
+                          >
+                            {value === "blocks" ? (
+                              <PlusIcon data-icon="inline-start" />
+                            ) : (
+                              <EyeIcon data-icon="inline-start" />
+                            )}
+                            {value === "blocks" ? "Insert block" : "Preview"}
+                          </Button>
+                          {(savedBlock && editor.librarySource?.deleteBlock) ||
+                          (managedTemplate &&
+                            editor.librarySource?.deleteTemplate) ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={readOnly || pending}
+                              aria-label={`Delete ${entry.label}`}
+                              onClick={() =>
+                                setDeleting({ entry, block: savedBlock })
+                              }
+                            >
+                              <Trash2Icon data-icon="inline-start" />
+                            </Button>
+                          ) : null}
+                          {managedTemplate &&
+                          editor.librarySource?.editTemplate ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={readOnly}
+                              aria-label={`Edit ${entry.label}`}
+                              onClick={() =>
+                                editor.librarySource?.editTemplate?.(entry.key)
+                              }
+                            >
+                              <PencilIcon data-icon="inline-start" />
+                            </Button>
+                          ) : null}
+                        </CardFooter>
+                      </Card>
+                    );
+                  })}
+                {value === "blocks" && saved.some(matches) ? (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-muted-foreground px-1 text-xs font-medium">
+                      Saved blocks
+                    </p>
+                    {saved.filter(matches).map((entry) => (
+                      <div
+                        key={entry.key}
+                        className="flex items-center gap-1 rounded-lg border p-1"
+                        data-library-key={entry.key}
+                        draggable={!readOnly && !pending}
+                        onDragStart={(event) =>
                           startBlockDrag(
                             event.dataTransfer,
-                            materializeBlock(
-                              editor.builder,
-                              entry.create() as ReturnType<
-                                BlockDefinition["create"]
-                              >,
-                            ),
-                          );
-                      }}
-                      onDragEnd={endBlockDrag}
-                    >
-                      <CardHeader className="gap-2 px-3">
-                        <div
-                          className="pb-library-thumbnail"
-                          style={{
-                            backgroundColor:
-                              entry.thumbnail?.accent ?? "var(--muted)",
-                            color: thumbnailForeground(entry.thumbnail?.accent),
-                          }}
-                        >
-                          <span>
-                            {entry.thumbnail?.eyebrow ??
-                              entry.category ??
-                              value}
-                          </span>
-                          <strong>
-                            {entry.thumbnail?.summary ?? entry.label}
-                          </strong>
-                        </div>
-                        <CardTitle>{entry.label}</CardTitle>
-                        <CardDescription>
-                          {entry.description ??
-                            (savedBlock ? "Saved block" : "Host template")}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="px-3">
+                            materializeBlock(editor.builder, entry.create()),
+                          )
+                        }
+                        onDragEnd={endBlockDrag}
+                      >
                         <Button
-                          size="sm"
+                          className="h-auto min-w-0 flex-1 justify-start px-3 py-2"
                           variant="ghost"
-                          aria-label={`Favourite ${entry.label}`}
-                          aria-pressed={favourites.includes(entry.key)}
-                          onClick={() => favourite(entry.key)}
-                        >
-                          <StarIcon data-icon="inline-start" />
-                          Favourite
-                        </Button>
-                      </CardContent>
-                      <CardFooter className="flex-wrap gap-2 px-3">
-                        <Button
-                          size="sm"
                           disabled={readOnly || pending}
-                          onClick={() =>
-                            void (value === "blocks"
-                              ? insert(entry as BlockDefinition)
-                              : apply(entry as TemplateDefinition))
-                          }
+                          onClick={() => void insert(entry)}
                         >
-                          {value === "blocks"
-                            ? "Insert block"
-                            : "Apply template"}
+                          <PackageOpenIcon data-icon="inline-start" />
+                          <span className="truncate">{entry.label}</span>
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={pending}
-                          aria-label={`Preview ${entry.label}`}
-                          onClick={() =>
-                            void openPreview(entry, value === "blocks")
-                          }
-                        >
-                          <EyeIcon data-icon="inline-start" />
-                          Preview
-                        </Button>
-                        {(savedBlock && editor.librarySource?.deleteBlock) ||
-                        (managedTemplate &&
-                          editor.librarySource?.deleteTemplate) ? (
+                        {editor.librarySource?.deleteBlock ? (
                           <Button
+                            size="icon-sm"
                             variant="ghost"
-                            size="icon"
                             disabled={readOnly || pending}
-                            aria-label={`Delete ${entry.label}`}
-                            onClick={() =>
-                              setDeleting({ entry, block: savedBlock })
-                            }
+                            aria-label={`Delete saved block ${entry.label}`}
+                            onClick={() => setDeleting({ entry, block: true })}
                           >
                             <Trash2Icon data-icon="inline-start" />
                           </Button>
                         ) : null}
-                        {managedTemplate &&
-                        editor.librarySource?.editTemplate ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled={readOnly}
-                            aria-label={`Edit ${entry.label}`}
-                            onClick={() =>
-                              editor.librarySource?.editTemplate?.(entry.key)
-                            }
-                          >
-                            <PencilIcon data-icon="inline-start" />
-                          </Button>
-                        ) : null}
-                      </CardFooter>
-                    </Card>
-                  );
-                })}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
                 {!loading && !entries.filter(matches).length ? (
                   <Empty>
                     <EmptyHeader>
@@ -600,7 +736,15 @@ export function LibraryPanel() {
           if (!open) setPreview(null);
         }}
       >
-        <DialogContent className="pb-library-preview">
+        <DialogContent
+          className="pb-library-preview"
+          onCloseAutoFocus={(event) => {
+            if (previewOpener.current?.isConnected) {
+              event.preventDefault();
+              previewOpener.current.focus();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle>{preview?.entry.label ?? "Preview"}</DialogTitle>
             <DialogDescription>

@@ -216,24 +216,21 @@ const png = Buffer.from(
 
 try {
   await check(
-    "23 standard Blocks render and preview does not mutate",
+    "23 standard Blocks render with a single Insert action",
     async () => {
       await fresh();
       await openLibrary("Blocks");
       assert.equal(await page.locator("[data-library-key]").count(), 23);
-      const before = await doc();
-      await openLibrary("Blocks");
-      await page
-        .locator('[data-library-key="simple-header"]')
-        .getByRole("button", { name: "Preview Simple navigation", exact: true })
-        .click();
-      await page.getByRole("dialog").waitFor();
-      await snap("blocks-preview-desktop");
-      await axe("blocks-preview-desktop", true);
-      await page
-        .getByRole("button", { name: "Close preview", exact: true })
-        .click();
-      assert.deepEqual(await doc(), before);
+      const card = page.locator('[data-library-key="simple-header"]');
+      assert.equal(await card.getByRole("button").count(), 1);
+      assert.equal(
+        await card
+          .getByRole("button", { name: "Insert block", exact: true })
+          .count(),
+        1,
+      );
+      await snap("blocks-desktop");
+      await axe("blocks-desktop", true);
     },
   );
   for (const block of standardBlocks)
@@ -258,46 +255,31 @@ try {
       await page.getByRole("button", { name: "Undo", exact: true }).click();
       assert.deepEqual(await doc(), before);
     });
-  await check(
-    "library search/favourites/state survive inspector and return",
-    async () => {
-      await fresh();
-      await openLibrary("Blocks");
+  await check("library search/state survive inspector and return", async () => {
+    await fresh();
+    await openLibrary("Blocks");
+    await page
+      .getByRole("textbox", { name: "Search library", exact: true })
+      .fill("navigation");
+    const card = page.locator('[data-library-key="simple-header"]');
+    assert.equal(await page.locator("[data-library-key]").count(), 1);
+    await card
+      .getByRole("button", { name: "Insert block", exact: true })
+      .click();
+    await openLibrary("Blocks");
+    assert.equal(
       await page
         .getByRole("textbox", { name: "Search library", exact: true })
-        .fill("navigation");
-      const card = page.locator('[data-library-key="simple-header"]');
-      await card
-        .getByRole("button", {
-          name: "Favourite Simple navigation",
-          exact: true,
-        })
-        .click();
-      await page
-        .getByRole("button", { name: "Favourites only", exact: true })
-        .click();
-      assert.equal(await page.locator("[data-library-key]").count(), 1);
-      await card
-        .getByRole("button", { name: "Insert block", exact: true })
-        .click();
-      await openLibrary("Blocks");
-      assert.equal(
-        await page
-          .getByRole("textbox", { name: "Search library", exact: true })
-          .inputValue(),
-        "navigation",
-      );
-      assert.equal(await page.locator("[data-library-key]").count(), 1);
-      await snap("blocks-filtered-desktop");
-      await axe("blocks-filtered-desktop", true);
-      await page
-        .getByRole("button", { name: "Favourites only", exact: true })
-        .click();
-      await page
-        .getByRole("textbox", { name: "Search library", exact: true })
-        .fill("");
-    },
-  );
+        .inputValue(),
+      "navigation",
+    );
+    assert.equal(await page.locator("[data-library-key]").count(), 1);
+    await snap("blocks-filtered-desktop");
+    await axe("blocks-filtered-desktop", true);
+    await page
+      .getByRole("textbox", { name: "Search library", exact: true })
+      .fill("");
+  });
   const templates = JSON.parse(
     await readFile(
       join(resolve(consumer), "fixtures/library/index.json"),
@@ -324,6 +306,13 @@ try {
           .click();
         assert.deepEqual(await doc(), before);
         await card
+          .getByRole("button", {
+            name: `Preview ${template.label}`,
+            exact: true,
+          })
+          .click();
+        await page
+          .getByRole("dialog")
           .getByRole("button", { name: "Apply template", exact: true })
           .click();
         const after = await doc();
@@ -634,14 +623,17 @@ try {
           .isDisabled(),
         true,
       );
+      await openLibrary("Templates");
       await page
-        .locator('[data-library-key="simple-header"]')
-        .getByRole("button", { name: "Preview Simple navigation", exact: true })
+        .getByRole("button", {
+          name: "Preview Growth Bottleneck Audit",
+          exact: true,
+        })
         .click();
       assert.equal(
         await page
           .getByRole("dialog")
-          .getByRole("button", { name: "Insert block", exact: true })
+          .getByRole("button", { name: "Apply template", exact: true })
           .isDisabled(),
         true,
       );
@@ -687,7 +679,7 @@ try {
         .locator("[data-library-key]")
         .filter({ hasText: "Browser saved image" });
       await card
-        .getByRole("button", { name: "Insert block", exact: true })
+        .getByRole("button", { name: "Browser saved image", exact: true })
         .click();
       const after = await doc();
       const copies = Object.values(after.elements).filter(
@@ -702,7 +694,7 @@ try {
       await openLibrary("Blocks");
       await card
         .getByRole("button", {
-          name: "Delete Browser saved image",
+          name: "Delete saved block Browser saved image",
           exact: true,
         })
         .click();
@@ -1025,8 +1017,12 @@ try {
           .fill("Simple navigation");
         await snap(`library-blocks-${name}`);
         await axe(`library-blocks-${name}`, true);
+        await page
+          .getByRole("textbox", { name: "Search library", exact: true })
+          .fill("");
+        await openLibrary("Templates");
         const preview = page.getByRole("button", {
-          name: "Preview Simple navigation",
+          name: "Preview Growth Bottleneck Audit",
           exact: true,
         });
         await preview.focus();

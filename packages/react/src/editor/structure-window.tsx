@@ -59,7 +59,7 @@ import {
   resolveClickInsertion,
   resolveKeyboardMove,
 } from "./canvas-placement.js";
-import { usePagebldrEditor } from "./context.js";
+import { usePagebldrEditor, useElementDragSession } from "./context.js";
 import { readBlockDrag } from "./block-drag.js";
 import { SaveBlockDialog } from "./save-block-dialog.js";
 import { useMovableOverlay } from "./movable-overlay.js";
@@ -89,6 +89,7 @@ export function StructureWindow({
   styleClipboard,
 }: StructureWindowProps) {
   const editor = usePagebldrEditor();
+  const elementDrag = useElementDragSession();
   const editorRef = useRef(editor);
   editorRef.current = editor;
   const [dropError, setDropError] = useState<string | null>(null);
@@ -269,12 +270,12 @@ export function StructureWindow({
                       !element.locked
                     }
                     onDragStart={(event) => {
-                      event.dataTransfer.effectAllowed = "move";
-                      event.dataTransfer.setData(
-                        pagebldrExistingDragType,
-                        row.id,
-                      );
+                      elementDrag.start(event.dataTransfer, {
+                        kind: "existing",
+                        elementId: row.id,
+                      });
                     }}
+                    onDragEnd={() => elementDrag.end()}
                   >
                     {!element.hidden &&
                     !element.locked &&

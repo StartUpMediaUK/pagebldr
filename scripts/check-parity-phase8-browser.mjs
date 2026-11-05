@@ -21,13 +21,18 @@ const playwright = require("playwright");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 const output = resolve(evidence);
 await mkdir(output, { recursive: true });
-const browser = await playwright[engine].launch();
+const browser = await playwright[engine].launch({
+  ...(engine === "chromium" && process.env.PAGEBLDR_CHROMIUM_EXECUTABLE
+    ? { executablePath: process.env.PAGEBLDR_CHROMIUM_EXECUTABLE }
+    : {}),
+});
 const context = await browser.newContext();
 const page = await context.newPage();
 page.setDefaultTimeout(8000);
 const results = [],
   errors = [],
-  accessibility = [];
+  accessibility = [],
+  libraryPresentation = [];
 page.on("pageerror", (error) => errors.push(error.message));
 const viewports = [
   ["desktop-l", 1440, 900],
@@ -72,11 +77,17 @@ async function fresh(
     route.includes("editor") ||
     route.includes("readonly") ||
     route === "/edit"
-  )
+  ) {
     await page
       .frameLocator("iframe")
       .locator("[data-pagebldr-renderer]")
       .waitFor();
+    const box = await page
+      .getByRole("region", { name: "Page builder", exact: true })
+      .boundingBox();
+    assert.equal(box.y, 0, "Editor starts at the viewport top");
+    assert.equal(box.height, height, "Editor fills the viewport height");
+  }
 }
 async function menu(name) {
   await page
@@ -218,6 +229,22 @@ try {
         .last()
         .isVisible();
       assert.equal(compact, width < 1024);
+      if (!compact)
+        libraryPresentation.push({
+          viewport: name,
+          cards: await page
+            .locator(
+              '[data-pagebldr-library] [role="tabpanel"] button[draggable]',
+            )
+            .evaluateAll((cards) =>
+              cards.map((card) => ({
+                label: card.textContent.trim(),
+                width: card.getBoundingClientRect().width,
+                height: card.getBoundingClientRect().height,
+                icon: card.querySelector("svg")?.getAttribute("class"),
+              })),
+            ),
+        });
       await capture(`${name}-VIS-01`);
       const title = page.getByRole("textbox", {
         name: "Page title",
@@ -291,7 +318,29 @@ try {
         await fresh(width, height, "/#/editor/elements");
         await select("All standard Elements");
         await page.getByRole("tab", { name: "Style", exact: true }).click();
+        await page
+          .getByRole("combobox", { name: "Authored breakpoint", exact: true })
+          .click();
+        await page.getByRole("option", { name: "Tablet", exact: true }).click();
+        await page.getByRole("radio", { name: "Hover", exact: true }).click();
+        assert.equal(
+          await page
+            .getByRole("radio", { name: "Hover", exact: true })
+            .getAttribute("aria-checked"),
+          "true",
+        );
+        assert.equal(
+          await page
+            .getByRole("combobox", { name: "Authored breakpoint", exact: true })
+            .getAttribute("data-value"),
+          "tablet",
+        );
+        await page
+          .frameLocator("iframe")
+          .locator('[data-pagebldr-force-state="hover"]')
+          .waitFor();
         await capture(`${name}-VIS-05`);
+        await page.getByRole("radio", { name: "Normal", exact: true }).click();
         await page.getByRole("tab", { name: "Advanced", exact: true }).click();
         await capture(`${name}-VIS-06`);
         await select("Image");
@@ -315,9 +364,34 @@ try {
         await capture(`${name}-VIS-08`);
         await page.keyboard.press("Escape");
         await save();
+        await page
+          .getByRole("button", { name: "Publish", exact: true })
+          .click();
+        const publishAnyway = page.getByRole("button", {
+          name: "Publish anyway",
+          exact: true,
+        });
+        await Promise.race([
+          page.getByRole("button", { name: "Update", exact: true }).waitFor(),
+          publishAnyway.waitFor(),
+        ]);
+        if (await publishAnyway.isVisible()) await publishAnyway.click();
+        await page
+          .getByRole("button", { name: "Update", exact: true })
+          .waitFor();
         await menu("History");
         await page.getByRole("tab", { name: "Revisions", exact: true }).click();
+        await page.getByText("Live", { exact: true }).waitFor();
         await capture(`${name}-VIS-09`);
+        const revision = page.getByRole("group", {
+          name: /^publish Revision /,
+        });
+        await revision
+          .getByRole("button", { name: "Restore", exact: true })
+          .click();
+        await page.getByRole("alertdialog").waitFor();
+        await capture(`${name}-VIS-09-restore`);
+        await page.getByRole("button", { name: "Cancel", exact: true }).click();
         await page.keyboard.press("Escape");
         await fresh(width, height, "/#/readonly");
         await capture(`${name}-VIS-11`);
@@ -378,7 +452,7 @@ try {
       : await (await page.request.get(`${origin}/packed-artifact.json`)).json();
   await writeFile(
     join(output, "results.json"),
-    `${JSON.stringify({ engine, suite, viewportFilter, artifact, results, errors }, null, 2)}\n`,
+    `${JSON.stringify({ engine, suite, viewportFilter, artifact, results, errors, libraryPresentation }, null, 2)}\n`,
   );
   await writeFile(
     join(output, "accessibility.json"),

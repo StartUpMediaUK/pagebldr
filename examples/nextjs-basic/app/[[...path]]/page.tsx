@@ -14,6 +14,7 @@ interface RouteProps {
 
 async function resolveRoute(params: RouteProps["params"]) {
   const { path = [] } = await params;
+  if (path.length === 0) redirect("/edit");
   return runtime.resolve({ path: `/${path.join("/")}` });
 }
 

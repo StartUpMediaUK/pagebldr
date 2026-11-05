@@ -38,6 +38,7 @@ type CanvasMessageBody =
   | { readonly type: "ready" }
   | { readonly type: "error"; readonly message: string }
   | { readonly type: "selection.change"; readonly elementId: string }
+  | { readonly type: "history.request"; readonly action: "undo" | "redo" }
   | { readonly type: "hover.change"; readonly elementId: string | null }
   | {
       readonly type: "geometry.change";
@@ -99,6 +100,8 @@ export function isCanvasToShellMessage(
 ): value is CanvasToShellMessage {
   if (!isEnvelope(value, canvasId)) return false;
   switch (value.type) {
+    case "history.request":
+      return value.action === "undo" || value.action === "redo";
     case "ready":
       return true;
     case "error":

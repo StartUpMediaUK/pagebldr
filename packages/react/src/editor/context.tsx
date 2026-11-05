@@ -24,6 +24,7 @@ import type {
 
 import { CanvasDimensionsProvider } from "./canvas-dimensions-context.js";
 import type { EditorLibrarySource } from "./library-source.js";
+import { createElementDragSession } from "./element-drag.js";
 
 export type EditorMode = "edit" | "preview" | "readOnly";
 export type EditorViewport = "desktop" | "desktop-fill" | "tablet" | "mobile";
@@ -72,6 +73,15 @@ export interface EditorContextValue {
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null);
+const ElementDragContext = createContext<ReturnType<
+  typeof createElementDragSession
+> | null>(null);
+/** Private drag identity, never part of public editor selectors or state. */
+export function useElementDragSession() {
+  const drag = useContext(ElementDragContext);
+  if (!drag) throw new Error("Element dragging requires editor context.");
+  return drag;
+}
 const SelectionVersionContext = createContext(0);
 interface LibraryBrowsingState {
   readonly query: string;
@@ -117,6 +127,7 @@ export function EditorProvider({
   onChange,
   resolveApplicationDestination,
 }: EditorProviderProps) {
+  const [elementDrag] = useState(createElementDragSession);
   const [libraryBrowsing, setLibraryBrowsing] = useState<LibraryBrowsingState>({
     query: "",
     tab: "elements",
@@ -145,6 +156,10 @@ export function EditorProvider({
   }, []);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState(mode === "preview");
+  useEffect(() => {
+    elementDrag.end();
+    return () => elementDrag.end();
+  }, [elementDrag, document.id, mode, previewing]);
   const [styleState, setStyleState] = useState<StyleState>("normal");
   const [viewport, setViewport] = useState<EditorViewport>("desktop");
   const emitted = useRef<PageDocument | null>(null);
@@ -291,7 +306,9 @@ export function EditorProvider({
         <LibraryBrowsingContext.Provider
           value={{ value: libraryBrowsing, update: setLibraryBrowsing }}
         >
-          <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
+          <ElementDragContext.Provider value={elementDrag}>
+            <CanvasDimensionsProvider>{children}</CanvasDimensionsProvider>
+          </ElementDragContext.Provider>
         </LibraryBrowsingContext.Provider>
       </EditorContext.Provider>
     </SelectionVersionContext.Provider>

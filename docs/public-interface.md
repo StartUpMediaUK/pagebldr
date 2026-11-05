@@ -338,12 +338,10 @@ interface PagebldrEditorProps {
   builder: Pagebldr;
   document: PageDocument;
   onChange(event: DocumentChangeEvent): void;
-  onSave?: (
-    request: SaveRequest,
-  ) => void | SaveResult | Promise<void | SaveResult>;
-  onPublish?: (
-    request: PublishRequest,
-  ) => void | PublishResult | Promise<void | PublishResult>;
+  onSave?: (request: SaveRequest) => void | Promise<void>;
+  onPublish?: (request: PublishRequest) => void | Promise<void>;
+  lifecycle?: ReturnType<typeof createEditorLifecycle>;
+  librarySource?: EditorLibrarySource;
   mode?: "edit" | "preview" | "readOnly";
   applicationDestinations?: readonly ApplicationDestinationOption[];
   resolveApplicationDestination?: (
@@ -352,9 +350,14 @@ interface PagebldrEditorProps {
   preset?: EditorPreset;
   contributions?: readonly EditorContribution[];
   className?: string;
-  children?: ReactNode;
 }
 ```
+
+`PagebldrEditor` always mounts the complete controlled editor. Extend it with
+Contributions and Presets; the provisional `children` replacement prop has been
+removed because it bypassed the editor controller. Basic save/publish callbacks
+signal Host intent and return no result. Use the optional lifecycle controller
+for versioned saves, Revisions, publication and recovery.
 
 `applicationDestinations` supplies the neutral Host-owned pages or records that
 can be selected by a definition-owned `destination` Content control. Each option

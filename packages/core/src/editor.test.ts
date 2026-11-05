@@ -20,7 +20,7 @@ const definition = defineElement({
   type: "container",
   version: 1,
   label: "Container",
-  props: z.record(z.unknown()),
+  props: z.record(z.string(), z.unknown()),
   defaults: () => ({}),
   styles: standardStyleCapabilities.map(({ key }) => key),
 });

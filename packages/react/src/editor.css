@@ -35,22 +35,21 @@
 /* Package-owned library/media compositions; Hosts need no extra stylesheet. */
 .pb-library-thumbnail {
   display: flex;
-  min-height: 108px;
+  min-height: 112px;
   flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px;
   border-radius: 8px;
-  color: #171a2b;
 }
 .pb-library-thumbnail span {
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.025em;
 }
 .pb-library-thumbnail strong {
-  font-size: 16px;
-  line-height: 1.2;
+  font-size: 14px;
+  line-height: 1.375;
 }
 .pb-library-preview,
 .pb-media-picker,

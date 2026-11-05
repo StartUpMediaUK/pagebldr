@@ -9,6 +9,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  realpathSync,
   rmSync,
   statSync,
   writeFileSync,
@@ -25,13 +26,17 @@ const temporaryDirectory = mkdtempSync(join(tmpdir(), "pagebldr-pack-"));
 // Opt-in browser acceptance mode; normal CI continues to clean up its consumer.
 const keepReferenceHost =
   process.env.PAGEBLDR_KEEP_PACKED_REFERENCE_HOST === "1";
-const npmCli = join(
-  dirname(process.execPath),
-  "node_modules",
-  "npm",
-  "bin",
-  "npm-cli.js",
-);
+const checkNextHost = process.env.PAGEBLDR_CHECK_PACKED_NEXT === "1";
+const npmCli =
+  process.platform === "win32"
+    ? join(
+        dirname(process.execPath),
+        "node_modules",
+        "npm",
+        "bin",
+        "npm-cli.js",
+      )
+    : realpathSync(join(dirname(process.execPath), "npm"));
 const cleanEnvironment = Object.fromEntries(
   Object.entries(process.env).filter(
     ([name]) => !name.toLowerCase().startsWith("npm_config_"),
@@ -87,7 +92,9 @@ try {
   // Phase 7 adds the lifecycle/History/recovery UI, publication validation and
   // transactional Audit outbox. Measured checkpoint: 1,678,118 bytes; retain
   // an explicit ceiling for these required features, not an unbounded waiver.
-  assertMaximumSize(archivePath, 1_720_000, "Packed archive");
+  // Patched Zod 4 increases the complete embedded source maps. Measured:
+  // 2,318,192 bytes, with core and React JavaScript still below their ceilings.
+  assertMaximumSize(archivePath, 2_400_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -113,8 +120,9 @@ try {
       ...reactTypes,
       "esbuild@0.28.2",
       "jsdom@30.0.1",
-      "vite@7.3.1",
+      "vite@7.3.7",
       "@vitejs/plugin-react@5.1.4",
+      ...(checkNextHost ? ["next@16.4.1", "@types/node@22.19.7"] : []),
     ],
     {
       cwd: consumerDirectory,
@@ -147,7 +155,7 @@ export const builder = createPagebldr({ namespace: "tree-shake-check" });
   writeFileSync(
     join(consumerDirectory, "vite-consumer.tsx"),
     `import { createPagebldr } from "pagebldr";
-import { PagebldrEditor, PagebldrRenderer } from "pagebldr/react";
+import { PagebldrEditor, PagebldrRenderer, defineEditorContribution, defineEditorPreset, standardEditorPreset, usePagebldrEditor } from "pagebldr/react";
 import { standardBlocks } from "pagebldr/library";
 void standardBlocks;
 
@@ -155,6 +163,23 @@ const builder = createPagebldr({ namespace: "vite-app" });
 const document = builder.documents.create({ id: "home", title: "Home" });
 export const editor = <PagebldrEditor builder={builder} document={document} onChange={() => undefined} />;
 export const page = <PagebldrRenderer builder={builder} document={document} />;
+const contribution = defineEditorContribution({
+  id: "consumer.document-status", kind: "statusItem", label: "Document status",
+  render: ({ context }) => {
+    const editor = usePagebldrEditor();
+    return <span>{editor.document.id}: {context.selectedId}</span>;
+  },
+});
+const preset = defineEditorPreset({
+  id: "consumer.standard", label: "Consumer standard",
+  placements: standardEditorPreset.placements.map((placement) => ({
+    ...placement,
+    contributionIds: placement.slot === "status" ? [...placement.contributionIds, contribution.id] : placement.contributionIds,
+  })),
+});
+export const extendedEditor = <PagebldrEditor builder={builder} document={document} onChange={() => undefined} contributions={[contribution]} preset={preset} />;
+// @ts-expect-error Extend through Contributions; arbitrary children cannot replace the editor.
+export const unsupportedReplacement = <PagebldrEditor builder={builder} document={document} onChange={() => undefined}><span>Replacement</span></PagebldrEditor>;
 `,
   );
   writeFileSync(
@@ -195,8 +220,8 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    // Measured Phase 6 factory-only consumer: 127,253 bytes.
-    128_000,
+    // Patched Zod 4 factory-only consumer: 164,506 bytes (+37,253 bytes).
+    170_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -315,6 +340,43 @@ if (errors.length > 0) throw errors[0];
   if (!existsSync(join(referenceHostDirectory, "dist", "index.html")))
     throw new Error("The packed Reference Host did not produce a Vite build.");
 
+  if (checkNextHost) {
+    const nextHostDirectory = join(
+      consumerDirectory,
+      "examples",
+      "nextjs-basic",
+    );
+    mkdirSync(nextHostDirectory, { recursive: true });
+    for (const directory of ["app", "lib"])
+      cpSync(
+        join(workspace, "examples", "nextjs-basic", directory),
+        join(nextHostDirectory, directory),
+        { recursive: true },
+      );
+    for (const file of ["tsconfig.json", "next.config.ts", "next-env.d.ts"])
+      copyFileSync(
+        join(workspace, "examples", "nextjs-basic", file),
+        join(nextHostDirectory, file),
+      );
+    writeFileSync(
+      join(nextHostDirectory, "package.json"),
+      JSON.stringify({
+        name: "packed-next-host",
+        private: true,
+        type: "module",
+      }),
+    );
+    execFileSync(
+      process.execPath,
+      [
+        join(consumerDirectory, "node_modules", "next", "dist", "bin", "next"),
+        "build",
+      ],
+      { cwd: nextHostDirectory, stdio: "inherit" },
+    );
+    console.log(`Packed Next.js Host: ${nextHostDirectory}`);
+  }
+
   const installedManifest = JSON.parse(
     readFileSync(
       join(consumerDirectory, "node_modules", "pagebldr", "package.json"),
@@ -345,6 +407,17 @@ if (errors.length > 0) throw errors[0];
       ),
     );
     console.log(`Packed Reference Host: ${referenceHostDirectory}`);
+    if (checkNextHost)
+      copyFileSync(
+        join(referenceHostDirectory, "dist", "packed-artifact.json"),
+        join(
+          consumerDirectory,
+          "examples",
+          "nextjs-basic",
+          ".next",
+          "packed-artifact.json",
+        ),
+      );
   }
   const installedPackage = join(consumerDirectory, "node_modules", "pagebldr");
   assertTemplateBoundary(installedPackage);
@@ -386,7 +459,7 @@ if (errors.length > 0) throw errors[0];
   const distributionDirectory = join(installedPackage, "dist");
   const distributionFiles = readdirSync(distributionDirectory);
   for (const entry of distributionFiles) {
-    if (!/\.(?:css|d\.ts|js|js\.map)$/u.test(entry))
+    if (!/\.(?:css|d\.ts|d\.ts\.map|js|js\.map)$/u.test(entry))
       throw new Error(`Unexpected distribution file: ${entry}.`);
     if (entry.endsWith(".js")) {
       const mapFile = `${entry}.map`;
@@ -397,6 +470,21 @@ if (errors.length > 0) throw errors[0];
       );
       if (!Array.isArray(sourceMap.sourcesContent))
         throw new Error(`${mapFile} does not contain sourcesContent.`);
+      if (
+        !Array.isArray(sourceMap.sources) ||
+        sourceMap.sources.length !== sourceMap.sourcesContent.length ||
+        sourceMap.sourcesContent.some((source) => typeof source !== "string")
+      )
+        throw new Error(`${mapFile} has incomplete source contents.`);
+    }
+    if (entry.endsWith(".d.ts")) {
+      const declaration = readFileSync(
+        join(distributionDirectory, entry),
+        "utf8",
+      );
+      const map = declaration.match(/sourceMappingURL=(\S+)/u)?.[1];
+      if (map && !distributionFiles.includes(map))
+        throw new Error(`${entry} advertises a missing declaration map.`);
     }
   }
   const reactBundle = readFileSync(
@@ -429,6 +517,28 @@ if (errors.length > 0) throw errors[0];
   if (!packageCss.includes("--pagebldr-focus")) {
     throw new Error(
       "The packed package must contain the documented theme CSS.",
+    );
+  }
+  if (process.env.PAGEBLDR_PACKED_RESULT) {
+    if (!keepReferenceHost)
+      throw new Error(
+        "PAGEBLDR_PACKED_RESULT requires keeping the packed consumer.",
+      );
+    writeFileSync(
+      resolve(process.env.PAGEBLDR_PACKED_RESULT),
+      `${JSON.stringify(
+        {
+          consumer: consumerDirectory,
+          archive: archivePath,
+          sha256: createHash("sha256")
+            .update(readFileSync(archivePath))
+            .digest("hex"),
+          reactVersion,
+          next: checkNextHost,
+        },
+        null,
+        2,
+      )}\n`,
     );
   }
 } finally {

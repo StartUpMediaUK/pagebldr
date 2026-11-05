@@ -12,7 +12,7 @@ execFileSync(
   [
     npm,
     "install",
-    "next@16.3.0",
+    "next@16.4.1",
     "@types/node@22.19.7",
     "playwright@1.63.0",
     "@axe-core/playwright@4.13.0",

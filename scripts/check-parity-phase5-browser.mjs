@@ -426,9 +426,7 @@ try {
     assert.equal(props.itemHoverBackground, "#654321");
   });
   await screenshot("menu-style-configured-desktop");
-  await page
-    .getByRole("link", { name: "Open published rendering", exact: true })
-    .click();
+  await page.goto("http://localhost:5173/#/published");
   await page.setViewportSize({ width: 390, height: 844 });
   const publishedMenu = page.getByRole("navigation", {
     name: "Primary navigation",
@@ -614,9 +612,7 @@ try {
     .getByRole("radio", { name: "Tablet", exact: true })
     .click();
   await choose(page.getByLabel("Collapse style", { exact: true }), "dropdown");
-  await page
-    .getByRole("link", { name: "Open published rendering", exact: true })
-    .click();
+  await page.goto("http://localhost:5173/#/published");
   await page.setViewportSize({ width: 820, height: 1000 });
   await toggle.click();
   await check(

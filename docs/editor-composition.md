@@ -3,6 +3,10 @@
 Hosts can rearrange editor regions and add product actions without importing
 internal React modules or accessing the editor store.
 
+`PagebldrEditor` always mounts its controller and standard shell. Add or move
+surfaces through Contributions and Presets. The provisional `children` prop that
+replaced the editor with a plain wrapper is no longer supported.
+
 ## Public model
 
 - A Slot is a stable logical placement location with an allowed Contribution

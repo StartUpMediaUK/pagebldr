@@ -389,7 +389,7 @@ describe("builder.documents", () => {
       type: "container",
       version: 2,
       label: "Container",
-      props: z.record(z.unknown()),
+      props: z.record(z.string(), z.unknown()),
       defaults: () => ({}),
       migrate: (_props, fromVersion) => ({ migratedFrom: fromVersion }),
     });
