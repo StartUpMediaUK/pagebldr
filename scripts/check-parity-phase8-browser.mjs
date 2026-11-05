@@ -224,11 +224,11 @@ try {
     if (viewportFilter && !viewportFilter.split(",").includes(name)) continue;
     await check(`${name} shell boundary and ${suite} authoring`, async () => {
       await fresh(width, height);
-      const compact = await page
+      const compact = width < 1024;
+      await page
         .getByRole("button", { name: "Open Add panel", exact: true })
         .last()
-        .isVisible();
-      assert.equal(compact, width < 1024);
+        .waitFor({ state: compact ? "visible" : "hidden" });
       if (!compact)
         libraryPresentation.push({
           viewport: name,
