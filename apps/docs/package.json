@@ -17,13 +17,13 @@
     "fumadocs-ui": "16.14.5",
     "next": "16.4.1",
     "@startupmedia/pagebldr": "workspace:*",
-    "react": "19.2.8",
+    "react": "19.3.1",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "22.19.7",
-    "@types/react": "19.2.18",
+    "@types/react": "19.3.0",
     "@types/react-dom": "19.2.4",
     "cspell": "10.0.1",
     "tailwindcss": "4.3.3",
