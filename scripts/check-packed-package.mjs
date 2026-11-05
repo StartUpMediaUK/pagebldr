@@ -61,6 +61,9 @@ try {
       npmCli,
       "pack",
       packageDirectory,
+      // Verify the preceding build without rebuilding under the consumer's
+      // runtime (which can be older than the development toolchain).
+      "--ignore-scripts",
       "--pack-destination",
       temporaryDirectory,
     ],
