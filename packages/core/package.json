@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "fast-check": "4.9.0",
-    "zod": "4.6.6"
+    "zod": "4.6.7"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
