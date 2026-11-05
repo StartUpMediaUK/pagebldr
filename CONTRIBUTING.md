@@ -5,9 +5,9 @@ guides and integration examples live in [apps/docs](apps/docs).
 
 ## Development
 
-Use Node.js 22.18 or newer and pnpm 10.8.0 through Corepack for development.
-The published package supports Node.js 20.19 or newer; CI verifies packed
-consumers on that minimum separately from the development toolchain:
+Use Node.js 22.18 or newer and pnpm 10.8.0 through Corepack for development. The
+published package supports Node.js 20.19 or newer; CI verifies packed consumers
+on that minimum separately from the development toolchain:
 
 ```sh
 corepack enable
