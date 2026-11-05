@@ -252,6 +252,10 @@ try {
     await page
       .getByRole("menuitem", { name: "Save as Block", exact: true })
       .click();
+    // Wait for the dialog's default-name effect before replacing its value.
+    await page.waitForFunction(
+      () => document.querySelector('input[value="Image"]') !== null,
+    );
     await page
       .getByRole("textbox", { name: "Block name", exact: true })
       .fill("Library saved image");
