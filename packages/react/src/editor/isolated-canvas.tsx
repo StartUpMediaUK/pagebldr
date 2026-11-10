@@ -1132,6 +1132,13 @@ function CanvasRuntime({
       ref={rootRef}
       data-pagebldr-isolated-canvas
       onClickCapture={(event) => {
+        if (
+          closestElement(
+            event.target,
+            '[data-slot="scroll-area-scrollbar"], [data-pagebldr-ui]',
+          )
+        )
+          return;
         const anchor = closestElement(event.target, "a[href]");
         if (anchor) event.preventDefault();
         if (mode === "edit") activate(event.target);

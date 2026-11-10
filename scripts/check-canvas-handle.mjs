@@ -113,6 +113,11 @@ async function snap(name) {
   assert.deepEqual(control.violations, []);
 }
 async function check(name, run) {
+  if (
+    process.env.PAGEBLDR_CANVAS_FILTER &&
+    !new RegExp(process.env.PAGEBLDR_CANVAS_FILTER, "u").test(name)
+  )
+    return;
   try {
     await run();
     results.push({ name, status: "pass" });
@@ -198,6 +203,28 @@ try {
       await undo(before);
     },
   );
+  await check("canvas scrollbar preserves the selected Element", async () => {
+    await start();
+    const viewport = frame().locator("[data-radix-scroll-area-viewport]");
+    await viewport.evaluate((element) => {
+      element.scrollTop = 1;
+    });
+    const thumb = frame().locator('[data-slot="scroll-area-thumb"]');
+    await thumb.waitFor({ state: "visible" });
+    await thumb.click();
+    await page.waitForTimeout(100);
+    assert.equal(
+      await frame().locator("[data-pagebldr-selection-outline]").count(),
+      1,
+      "Scrollbar interaction must retain the Element selection",
+    );
+    assert.equal(
+      await page
+        .getByRole("complementary", { name: "Element inspector", exact: true })
+        .isVisible(),
+      true,
+    );
+  });
   await check("self drops and locked/root Elements do not move", async () => {
     await start();
     const before = await order();

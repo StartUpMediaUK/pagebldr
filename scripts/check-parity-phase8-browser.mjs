@@ -330,7 +330,7 @@ try {
         await capture(`${name}-template-preview`);
         await page.keyboard.press("Escape");
         await fresh(width, height, "/#/editor/elements");
-        await select("All standard Elements");
+        await select("Heading");
         await page.getByRole("tab", { name: "Style", exact: true }).click();
         await page
           .getByRole("combobox", { name: "Authored breakpoint", exact: true })
