@@ -774,6 +774,7 @@ function CanvasRuntime({
     dragging: boolean;
   } | null>(null);
   const ignoreHandleClick = useRef(false);
+  const ignoreCanceledReleaseClick = useRef(false);
   const cancelPointerMove = useCallback(() => {
     const active = pointerMove.current;
     pointerMove.current = null;
@@ -1131,7 +1132,16 @@ function CanvasRuntime({
     <div
       ref={rootRef}
       data-pagebldr-isolated-canvas
+      onPointerDownCapture={() => {
+        ignoreCanceledReleaseClick.current = false;
+      }}
       onClickCapture={(event) => {
+        if (ignoreCanceledReleaseClick.current && event.detail !== 0) {
+          ignoreCanceledReleaseClick.current = false;
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
         if (
           closestElement(
             event.target,
@@ -1217,6 +1227,7 @@ function CanvasRuntime({
           event.preventDefault();
           event.stopPropagation();
           ignoreHandleClick.current = true;
+          ignoreCanceledReleaseClick.current = true;
           cancelPointerMove();
           return;
         }
