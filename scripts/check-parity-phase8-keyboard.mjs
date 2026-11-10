@@ -84,8 +84,8 @@ try {
         .getByRole("status")
         .filter({ hasText: /^Saved$/ })
         .waitFor();
-      await activate("Close Structure");
-      if (width < 1024) await activate("Open Add panel");
+      if (width >= 1024) await activate("Close Structure");
+      if (width < 1024) await activate("Add to page");
       await activate("Heading");
       await key("Control+i");
       await reach(
@@ -95,6 +95,13 @@ try {
       );
       await key("Enter");
       await activate("Close Structure");
+      if (
+        width < 1024 &&
+        !(await page
+          .getByRole("textbox", { name: "Text", exact: true })
+          .isVisible())
+      )
+        await activate("Edit selected element");
       const text = page.getByRole("textbox", { name: "Text", exact: true });
       await reach(text);
       await key("Control+a");

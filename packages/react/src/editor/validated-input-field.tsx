@@ -110,10 +110,11 @@ export function ValidatedInputField({
 
   return (
     <Field
+      className="gap-1.5"
       data-invalid={Boolean(current.error) || undefined}
       data-disabled={inputProps?.disabled || undefined}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <FieldLabel htmlFor={id} className="flex-1">
           {label}
         </FieldLabel>
@@ -190,4 +191,20 @@ export function parseNumberDraft(
   if (max !== undefined && value > max)
     throw new Error(`Enter a value of ${max} or less.`);
   return value;
+}
+
+/** Convert an instant to the native input's local wall time, preserving precision. */
+export function formatLocalDateTime(value: string): string {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "";
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+    .toISOString()
+    .slice(0, -1);
+}
+
+export function parseLocalDateTime(value: string): string {
+  const date = new Date(value);
+  if (!value || !Number.isFinite(date.getTime()))
+    throw new Error("Enter a valid date and time.");
+  return date.toISOString();
 }

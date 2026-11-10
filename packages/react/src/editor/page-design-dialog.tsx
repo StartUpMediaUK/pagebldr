@@ -151,8 +151,8 @@ export function PageDesignDialog({
           <DialogHeader className="px-6 pt-6">
             <DialogTitle>Page design</DialogTitle>
             <DialogDescription>
-              Edit page-wide layout, Host chrome intent, and search/social
-              metadata.
+              Adjust page layout, settings, search metadata and design
+              variables.
             </DialogDescription>
           </DialogHeader>
           <Tabs
@@ -160,7 +160,7 @@ export function PageDesignDialog({
             onValueChange={(value) => setActiveTab(value as PageDesignTab)}
             className="min-h-0 gap-0"
           >
-            <TabsList className="mx-6 grid w-auto grid-cols-4">
+            <TabsList variant="line" className="mx-6 grid w-auto grid-cols-4">
               <TabsTrigger value="design">Design</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="seo">SEO &amp; social</TabsTrigger>

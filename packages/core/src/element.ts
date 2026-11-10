@@ -95,7 +95,7 @@ export type ElementControl<Props> =
   | (ElementControlBase<Props> & {
       readonly kind: "text";
       readonly placeholder?: string;
-      readonly presentation?: "input" | "color";
+      readonly presentation?: "input" | "color" | "textarea" | "datetime";
       readonly allowAlpha?: boolean;
     })
   | (ElementControlBase<Props> & {

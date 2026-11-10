@@ -400,7 +400,7 @@ export function LibraryPanel() {
                   return (
                     <Button
                       key={definition.type}
-                      variant="outline"
+                      variant="secondary"
                       className="h-20 flex-col"
                       disabled={readOnly}
                       draggable={!readOnly}

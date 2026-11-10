@@ -7,3 +7,19 @@ description:
 Style capabilities explicitly list properties an Element may expose. The
 compiler scopes deterministic CSS to the Document and supports desktop, tablet,
 mobile, hover, and focus-visible states.
+
+The inspector separates Content, Style, and Advanced controls. Container Content
+offers Vertical, Horizontal, 2 columns, and 3 columns layout presets. A preset
+changes the current device's normal styles and can be undone in one step.
+Container HTML tag and raw Layout controls are available under Advanced.
+
+Fixed Desktop uses a 1201px-wide canvas with a 16:9 aspect ratio. Full-width
+desktop continues to follow the available workspace width. Zoom scales the
+canvas without changing its viewport dimensions. Scroll to selection reveals the
+selected Element inside the canvas and pans the workspace to bring it into view.
+
+Below 1024px editor width, the canvas fits automatically while retaining its
+authored breakpoint width. Add and Structure use floating, collapsible panels;
+Page view opens the device picker. Below 600px, opening either panel closes the
+other. Canvas zoom controls remain anchored at the bottom; Scroll to selection
+is also available in Page view.

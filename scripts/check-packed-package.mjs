@@ -524,7 +524,9 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    85_000,
+    // Compact floating panels, device popover and shared overlay scrollbars
+    // bring compiled CSS to about 87.6 KB; retain a small growth allowance.
+    90_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

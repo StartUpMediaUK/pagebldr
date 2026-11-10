@@ -19,6 +19,10 @@ inspector supplies the complete labelled control without Host UI. Select options
 carry both their stored value and user-facing label; numeric controls may
 declare `min`, `max`, and `step`.
 
+Text controls may set `presentation: "textarea"` for multiline authored copy,
+such as a testimonial quote. The stored property remains a string and uses the
+same command validation and undo behavior as a single-line text control.
+
 Use `kind: "destination"` for typed navigation rather than storing an href
 string. The installed editor supplies External URL, Anchor, Email, Telephone,
 and Host-provided Application page forms. Set `nullable: true` when an Element,
@@ -27,3 +31,7 @@ such as an Image, may have no destination.
 The standard Image definition uses these same descriptors for alternative-text
 confirmation, decorative status, optional Destination, fit, and focal position.
 Its source picker remains a Resource capability rather than a string field.
+
+Text controls may use `presentation: "datetime"` for ISO timestamps. The editor
+displays local date and time, commits on blur or Enter, and stores a UTC ISO
+timestamp. Countdown uses this control for its target date.

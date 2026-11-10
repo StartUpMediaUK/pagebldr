@@ -35,9 +35,16 @@ type ShellMessageBody =
 export type ShellToCanvasMessage = CanvasEnvelope & ShellMessageBody;
 
 type CanvasMessageBody =
+  | {
+      readonly type: "element.context";
+      readonly elementId: string;
+      readonly x: number;
+      readonly y: number;
+    }
+  | { readonly type: "element.delete"; readonly elementId: string }
   | { readonly type: "ready" }
   | { readonly type: "error"; readonly message: string }
-  | { readonly type: "selection.change"; readonly elementId: string }
+  | { readonly type: "selection.change"; readonly elementId: string | null }
   | { readonly type: "history.request"; readonly action: "undo" | "redo" }
   | { readonly type: "hover.change"; readonly elementId: string | null }
   | {
@@ -100,6 +107,16 @@ export function isCanvasToShellMessage(
 ): value is CanvasToShellMessage {
   if (!isEnvelope(value, canvasId)) return false;
   switch (value.type) {
+    case "element.context":
+      return (
+        typeof value.elementId === "string" &&
+        typeof value.x === "number" &&
+        Number.isFinite(value.x) &&
+        typeof value.y === "number" &&
+        Number.isFinite(value.y)
+      );
+    case "element.delete":
+      return typeof value.elementId === "string";
     case "history.request":
       return value.action === "undo" || value.action === "redo";
     case "ready":
@@ -107,7 +124,7 @@ export function isCanvasToShellMessage(
     case "error":
       return typeof value.message === "string";
     case "selection.change":
-      return typeof value.elementId === "string";
+      return value.elementId === null || typeof value.elementId === "string";
     case "hover.change":
       return value.elementId === null || typeof value.elementId === "string";
     case "geometry.change":

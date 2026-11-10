@@ -65,7 +65,9 @@ async function fresh(
   route = suite === "next" ? "/edit" : "/#/editor",
 ) {
   await page.setViewportSize({ width, height });
-  await page.goto(`${origin}${route}`);
+  await page.goto(
+    `${origin}${suite === "full" ? "/?lifecycle-tools=1" : ""}${route}`,
+  );
   if (suite !== "next") {
     await page.evaluate(() => {
       localStorage.clear();
@@ -113,9 +115,12 @@ async function library(tab) {
   const target = page.getByRole("tab", { name: tab, exact: true });
   if (!(await target.isVisible()))
     await page
-      .getByRole("button", { name: /^(Open Add panel|Add to page|Add)$/ })
+      .getByRole("button", {
+        name: /^(Open Add panel|Add to page|Add|Edit selected element)$/,
+      })
       .first()
       .click();
+  if (await back.isVisible()) await back.click();
   await target.click();
 }
 async function select(name) {
@@ -139,6 +144,15 @@ async function select(name) {
     await page
       .getByRole("button", { name: "Close Structure", exact: true })
       .first()
+      .click();
+  if (
+    page.viewportSize().width < 1024 &&
+    !(await page
+      .getByRole("complementary", { name: "Element inspector", exact: true })
+      .isVisible())
+  )
+    await page
+      .getByRole("button", { name: "Edit selected element", exact: true })
       .click();
 }
 async function capture(name) {
@@ -194,11 +208,13 @@ async function capture(name) {
             box.width > 0 &&
             box.height > 0 &&
             !el.closest('[aria-hidden="true"], [inert]') &&
-            (box.width < 43.9 || box.height < 43.9)
+            (box.width < 23.9 || box.height < 23.9)
           );
         })
         .map((el) => ({
           name: el.getAttribute("aria-label") || el.textContent,
+          slot: el.getAttribute("data-slot"),
+          role: el.getAttribute("role"),
           width: el.getBoundingClientRect().width,
           height: el.getBoundingClientRect().height,
         })),
@@ -211,7 +227,7 @@ async function capture(name) {
   }
 }
 async function save() {
-  const button = page.getByRole("button", { name: "Save", exact: true });
+  const button = page.getByRole("button", { name: "Update", exact: true });
   if (await button.isVisible()) await button.click();
   else await menu("Save draft");
   await page
@@ -226,7 +242,7 @@ try {
       await fresh(width, height);
       const compact = width < 1024;
       await page
-        .getByRole("button", { name: "Open Add panel", exact: true })
+        .getByRole("button", { name: "Add to page", exact: true })
         .last()
         .waitFor({ state: compact ? "visible" : "hidden" });
       if (!compact)
@@ -316,7 +332,7 @@ try {
         await capture(`${name}-template-preview`);
         await page.keyboard.press("Escape");
         await fresh(width, height, "/#/editor/elements");
-        await select("All standard Elements");
+        await select("Heading");
         await page.getByRole("tab", { name: "Style", exact: true }).click();
         await page
           .getByRole("combobox", { name: "Authored breakpoint", exact: true })

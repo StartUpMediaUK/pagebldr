@@ -35,7 +35,15 @@ async function ids() {
   );
 }
 async function undo(before) {
-  await page.getByRole("button", { name: "Undo", exact: true }).click();
+  const button = page.getByRole("button", { name: "Undo", exact: true });
+  if (await button.isVisible()) await button.click();
+  else {
+    await page
+      .getByRole("button", { name: "More editor actions", exact: true })
+      .click();
+    await page.getByRole("menuitem", { name: "Undo", exact: true }).click();
+    await page.getByRole("menu").waitFor({ state: "hidden" });
+  }
   await page.waitForFunction(
     (count) =>
       document
@@ -59,9 +67,12 @@ async function library(tab) {
   const target = page.getByRole("tab", { name: tab, exact: true });
   if (!(await target.isVisible()))
     await page
-      .getByRole("button", { name: /^(Open Add panel|Add to page|Add)$/ })
+      .getByRole("button", {
+        name: /^(Open Add panel|Add to page|Add|Edit selected element)$/,
+      })
       .first()
       .click();
+  if (await back.isVisible()) await back.click();
   await target.click();
 }
 async function capture(name) {

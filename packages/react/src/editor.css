@@ -16,22 +16,6 @@
   }
 }
 
-/* Compact targets must override primitive sizing utilities. */
-@media (max-width: 1023px) {
-  :is([data-pagebldr-editor], [data-pagebldr-ui])
-    :is(
-      button,
-      input:not([type="file"]),
-      select,
-      [role="tab"],
-      [role^="menuitem"],
-      [role="option"]
-    ) {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
 /* Package-owned library/media compositions; Hosts need no extra stylesheet. */
 .pb-library-thumbnail {
   display: flex;
@@ -259,8 +243,8 @@
   color: var(--primary);
 }
 .pb-media-usage {
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--pagebldr-border);
+  border-radius: var(--pagebldr-radius);
   padding: 12px;
 }
 @media (max-width: 767px) {
@@ -384,7 +368,7 @@
     --pagebldr-destructive: #dc2626;
     --pagebldr-border: #e4e4e7;
     --pagebldr-focus: #2563eb;
-    --pagebldr-radius: 0.625rem;
+    --pagebldr-radius: 1rem;
   }
 
   [data-pagebldr-editor],
@@ -421,9 +405,17 @@
     box-sizing: border-box;
     border-color: var(--pagebldr-border);
   }
+
+  [data-pagebldr-ui] * {
+    border-color: var(--pagebldr-border);
+  }
 }
 
 @layer components {
+  [data-pagebldr-editor] {
+    --pagebldr-radius: 1rem;
+  }
+
   [data-pagebldr-canvas-workspace] {
     background-image: radial-gradient(
       circle,
@@ -753,4 +745,130 @@
   [data-pagebldr-renderer] .pagebldr-gallery[data-layout="carousel"] {
     display: block;
   }
+}
+
+/* One native scrollbar treatment for editor scroll surfaces, including Radix
+   viewports and the isolated canvas. Published pages are unaffected. */
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll]),
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+  * {
+  scrollbar-width: auto !important;
+}
+:is(
+  [data-pagebldr-editor],
+  [data-pagebldr-ui],
+  [data-pagebldr-canvas-scroll]
+)::-webkit-scrollbar,
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+  *::-webkit-scrollbar {
+  display: block !important;
+  width: 6px;
+  height: 6px;
+}
+:is(
+  [data-pagebldr-editor],
+  [data-pagebldr-ui],
+  [data-pagebldr-canvas-scroll]
+)::-webkit-scrollbar-track,
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+  *::-webkit-scrollbar-track,
+:is(
+  [data-pagebldr-editor],
+  [data-pagebldr-ui],
+  [data-pagebldr-canvas-scroll]
+)::-webkit-scrollbar-corner,
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+  *::-webkit-scrollbar-corner {
+  background: transparent;
+}
+:is(
+  [data-pagebldr-editor],
+  [data-pagebldr-ui],
+  [data-pagebldr-canvas-scroll]
+)::-webkit-scrollbar-thumb,
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+  *::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: transparent;
+}
+:is(
+    [data-pagebldr-editor],
+    [data-pagebldr-ui],
+    [data-pagebldr-canvas-scroll]
+  ):is(
+    :hover,
+    :focus-visible,
+    [data-pagebldr-scrolling]
+  )::-webkit-scrollbar-thumb,
+:is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+  *:is(
+    :hover,
+    :focus-visible,
+    [data-pagebldr-scrolling]
+  )::-webkit-scrollbar-thumb {
+  background: var(--pagebldr-border, #d4d4d8);
+}
+@supports not selector(::-webkit-scrollbar) {
+  :is(
+    [data-pagebldr-editor],
+    [data-pagebldr-ui],
+    [data-pagebldr-canvas-scroll]
+  ),
+  :is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+    * {
+    scrollbar-width: thin !important;
+    scrollbar-color: transparent transparent;
+  }
+  :is(
+    [data-pagebldr-editor],
+    [data-pagebldr-ui],
+    [data-pagebldr-canvas-scroll]
+  ):is(:hover, :focus-visible, [data-pagebldr-scrolling]),
+  :is([data-pagebldr-editor], [data-pagebldr-ui], [data-pagebldr-canvas-scroll])
+    *:is(:hover, :focus-visible, [data-pagebldr-scrolling]) {
+    scrollbar-color: var(--pagebldr-border, #d4d4d8) transparent;
+  }
+}
+
+/* Canvas scrolling uses the same primitive thumb, overlaid on page content. */
+html[data-pagebldr-canvas-scroll] {
+  overflow: hidden;
+}
+[data-pagebldr-canvas-scroll-area] [data-radix-scroll-area-viewport] {
+  scrollbar-width: none !important;
+}
+[data-pagebldr-canvas-scroll-area]
+  [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  display: none !important;
+}
+[data-pagebldr-canvas-scroll-area] [data-slot="scroll-area-scrollbar"] {
+  width: 6px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+[data-pagebldr-canvas-scroll-area] [data-slot="scroll-area-thumb"] {
+  background: var(--pagebldr-border, #e4e4e7);
+}
+
+/* All package ScrollAreas use overlay thumbs, never a second native bar. */
+:is([data-pagebldr-editor], [data-pagebldr-ui])
+  [data-radix-scroll-area-viewport] {
+  scrollbar-width: none !important;
+}
+:is([data-pagebldr-editor], [data-pagebldr-ui])
+  [data-radix-scroll-area-viewport][data-slot="scroll-area-viewport"]::-webkit-scrollbar {
+  display: none !important;
+}
+:is([data-pagebldr-editor], [data-pagebldr-ui])
+  [data-slot="scroll-area-scrollbar"] {
+  width: 6px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+:is([data-pagebldr-editor], [data-pagebldr-ui])
+  [data-slot="scroll-area-scrollbar"][data-orientation="horizontal"] {
+  width: auto;
+  height: 6px;
 }

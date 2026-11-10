@@ -25,7 +25,7 @@ const results = [];
 const regionsPath =
   regionFile ||
   (process.env.PAGEBLDR_VISUAL_BASELINE
-    ? resolve("etc/canvas-visual-regions.json")
+    ? resolve("etc/canvas-visual-regions-fixed-desktop.json")
     : null);
 const regions = regionsPath
   ? JSON.parse(await readFile(regionsPath, "utf8"))

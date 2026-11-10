@@ -155,3 +155,31 @@ describe("canvas protocol", () => {
     ).toBe(false);
   });
 });
+
+describe("canvas element actions", () => {
+  it("accepts scoped context and deletion requests and rejects invalid coordinates", () => {
+    const context = canvasMessage("canvas-a", {
+      type: "element.context",
+      elementId: "heading",
+      x: 12,
+      y: 24,
+    });
+    expect(isCanvasToShellMessage(context, "canvas-a")).toBe(true);
+    expect(isCanvasToShellMessage(context, "canvas-b")).toBe(false);
+    expect(
+      isCanvasToShellMessage({ ...context, x: Infinity }, "canvas-a"),
+    ).toBe(false);
+    expect(isCanvasToShellMessage({ ...context, y: "24" }, "canvas-a")).toBe(
+      false,
+    );
+    expect(
+      isCanvasToShellMessage(
+        canvasMessage("canvas-a", {
+          type: "element.delete",
+          elementId: "heading",
+        }),
+        "canvas-a",
+      ),
+    ).toBe(true);
+  });
+});

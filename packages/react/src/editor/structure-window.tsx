@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   type DragEvent,
@@ -19,15 +20,13 @@ import {
   CopyIcon,
   EyeIcon,
   EyeOffIcon,
-  GripVerticalIcon,
-  Layers3Icon,
   Link2OffIcon,
   LockIcon,
   MenuIcon,
   MonitorOffIcon,
-  Minimize2Icon,
+  ChevronUpIcon,
+  ChevronsUpIcon,
   PackagePlusIcon,
-  PanelTopCloseIcon,
   PencilIcon,
   Trash2Icon,
   UnlockIcon,
@@ -36,6 +35,16 @@ import {
 
 import type { PagebldrClipboard, PagebldrStyleClipboard } from "@pagebldr/core";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../components/ui/dialog.js";
+import { Field, FieldLabel, FieldError } from "../components/ui/field.js";
+import { Input } from "../components/ui/input.js";
 import { Button } from "../components/ui/button.js";
 import {
   DropdownMenu,
@@ -93,7 +102,7 @@ export function StructureWindow({
   const editorRef = useRef(editor);
   editorRef.current = editor;
   const [dropError, setDropError] = useState<string | null>(null);
-  const movable = useMovableOverlay();
+  const movable = useMovableOverlay({ preserveSize: true });
   const [minimized, setMinimized] = useState(false);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() =>
     defaultExpandedStructureIds(editor.document),
@@ -150,27 +159,31 @@ export function StructureWindow({
   return (
     <div
       ref={movable.ref}
-      className="absolute bottom-16 right-5 z-30 flex h-[min(28rem,calc(100%-2.5rem))] w-[22rem] min-w-72 max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-xl border bg-background shadow-xl [resize:both]"
+      className="absolute bottom-16 right-5 z-30 flex h-[min(28rem,calc(100%-2.5rem))] w-[22rem] min-w-72 max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-xl border bg-background shadow-xl [resize:both] @max-[1024px]:bottom-auto @max-[1024px]:top-4 @max-[1024px]:right-4 @max-[1024px]:w-[min(31rem,50vw)] @max-[600px]:w-[calc(100%-2rem)] @max-[1024px]:h-[min(42rem,calc(100%-6rem))]"
       style={{
         ...movable.style,
-        ...(minimized ? { height: "auto", resize: "none" } : {}),
+        ...(minimized
+          ? {
+              height: "auto",
+              width: "16rem",
+              minWidth: "16rem",
+              resize: "none",
+            }
+          : {}),
       }}
       data-pagebldr-structure-window
     >
       <div
         className="flex cursor-move touch-none items-center gap-2 border-b px-3 py-2"
-        onDoubleClick={resetWindow}
+        onDoubleClick={(event) => {
+          if (!(event.target as HTMLElement).closest("button")) resetWindow();
+        }}
         onPointerDown={movable.beginMove}
       >
-        <GripVerticalIcon className="size-4 text-muted-foreground" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 text-sm font-semibold">
-            <Layers3Icon className="size-4" />
             Structure
           </div>
-          <p className="truncate text-xs text-muted-foreground">
-            Page hierarchy and element controls
-          </p>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -180,7 +193,7 @@ export function StructureWindow({
               variant="ghost"
               onClick={() => setExpanded(new Set([editor.document.rootId]))}
             >
-              <PanelTopCloseIcon />
+              <ChevronsUpIcon />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Collapse all</TooltipContent>
@@ -191,7 +204,7 @@ export function StructureWindow({
           variant="ghost"
           onClick={() => setMinimized((current) => !current)}
         >
-          <Minimize2Icon />
+          {minimized ? <ChevronDownIcon /> : <ChevronUpIcon />}
         </Button>
         <Button
           aria-label="Close Structure"
@@ -399,13 +412,21 @@ export function StructureWindow({
   }
 }
 
-function StructureMenu({
+export function StructureMenu({
   clipboard,
   elementId,
   onCopy,
   onCopyStyles,
   styleClipboard,
+  contextPoint,
+  onEdit,
 }: {
+  readonly onEdit?: () => void;
+  readonly contextPoint?: {
+    readonly x: number;
+    readonly y: number;
+    readonly sequence: number;
+  };
   readonly clipboard: PagebldrClipboard | null;
   readonly elementId: string;
   readonly onCopy: (clipboard: PagebldrClipboard) => void;
@@ -416,6 +437,14 @@ function StructureMenu({
   const element = editor.document.elements[elementId]!;
   const root = elementId === editor.document.rootId;
   const [savingBlock, setSavingBlock] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [name, setName] = useState(element.name);
+  const [renameError, setRenameError] = useState<string | null>(null);
+  const [contextOpen, setContextOpen] = useState(!!contextPoint);
+  const renameId = useId();
+  useEffect(() => {
+    if (contextPoint) setContextOpen(true);
+  }, [contextPoint]);
   const readOnly = editor.mode !== "edit";
   const movePlacements = {
     up: resolveKeyboardMove({
@@ -463,27 +492,62 @@ function StructureMenu({
     : null;
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu
+        {...(contextPoint
+          ? { open: contextOpen, onOpenChange: setContextOpen }
+          : {})}
+      >
         <DropdownMenuTrigger asChild>
           <Button
             aria-label={`Actions for ${element.name}`}
-            className="mr-0.5 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            style={
+              contextPoint
+                ? {
+                    position: "fixed",
+                    left: contextPoint.x,
+                    top: contextPoint.y,
+                    width: 1,
+                    height: 1,
+                    opacity: 0,
+                    pointerEvents: "none",
+                  }
+                : undefined
+            }
+            className={
+              contextPoint
+                ? ""
+                : "mr-0.5 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+            }
             size="icon-xs"
             variant="ghost"
           >
             <MenuIcon />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>{element.name}</DropdownMenuLabel>
-          <DropdownMenuItem onSelect={() => editor.select(elementId)}>
+        <DropdownMenuContent
+          align={contextPoint ? "start" : "end"}
+          className="w-56 border-0"
+          onCloseAutoFocus={
+            contextPoint ? (event) => event.preventDefault() : undefined
+          }
+        >
+          {!contextPoint ? (
+            <DropdownMenuLabel>{element.name}</DropdownMenuLabel>
+          ) : null}
+          <DropdownMenuItem
+            onSelect={() => {
+              editor.select(elementId);
+              onEdit?.();
+            }}
+          >
             <PencilIcon /> Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={readOnly || root || element.locked}
             onSelect={() => {
-              const name = window.prompt("Element name", element.name)?.trim();
-              if (name) editor.dispatch({ type: "rename", elementId, name });
+              setName(element.name);
+              setRenameError(null);
+              setRenaming(true);
             }}
           >
             <PencilIcon /> Rename
@@ -548,31 +612,35 @@ function StructureMenu({
             <ClipboardPasteIcon /> Paste styles
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            disabled={readOnly || !movePlacements.up}
-            onSelect={() => move("up")}
-          >
-            <ArrowUpIcon /> Move up
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={readOnly || !movePlacements.down}
-            onSelect={() => move("down")}
-          >
-            <ArrowDownIcon /> Move down
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={readOnly || !movePlacements.in}
-            onSelect={() => move("in")}
-          >
-            <ArrowRightIcon /> Indent
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={readOnly || !movePlacements.out}
-            onSelect={() => move("out")}
-          >
-            <ArrowLeftIcon /> Outdent
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          {!contextPoint ? (
+            <>
+              <DropdownMenuItem
+                disabled={readOnly || !movePlacements.up}
+                onSelect={() => move("up")}
+              >
+                <ArrowUpIcon /> Move up
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={readOnly || !movePlacements.down}
+                onSelect={() => move("down")}
+              >
+                <ArrowDownIcon /> Move down
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={readOnly || !movePlacements.in}
+                onSelect={() => move("in")}
+              >
+                <ArrowRightIcon /> Indent
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={readOnly || !movePlacements.out}
+                onSelect={() => move("out")}
+              >
+                <ArrowLeftIcon /> Outdent
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          ) : null}
           <DropdownMenuItem
             disabled={readOnly || root || element.locked}
             onSelect={() =>
@@ -628,6 +696,62 @@ function StructureMenu({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <Dialog open={renaming} onOpenChange={setRenaming}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename element</DialogTitle>
+            <DialogDescription>
+              Change the label shown in Structure.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              try {
+                editor.dispatch({
+                  type: "rename",
+                  elementId,
+                  name: name.trim(),
+                });
+                setRenaming(false);
+              } catch (error) {
+                setRenameError(
+                  error instanceof Error
+                    ? error.message
+                    : "Enter a valid name.",
+                );
+              }
+            }}
+          >
+            <Field>
+              <FieldLabel htmlFor={renameId}>Name</FieldLabel>
+              <Input
+                id={renameId}
+                value={name}
+                maxLength={120}
+                onChange={(event) => setName(event.target.value)}
+                aria-invalid={!!renameError}
+                aria-describedby={renameError ? `${renameId}-error` : undefined}
+              />
+              {renameError ? (
+                <FieldError id={`${renameId}-error`}>{renameError}</FieldError>
+              ) : null}
+            </Field>
+            <DialogFooter className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setRenaming(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!name.trim()}>
+                Rename
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <SaveBlockDialog
         elementId={elementId}
         open={savingBlock}

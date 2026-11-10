@@ -157,6 +157,29 @@ function App() {
 
   return (
     <main>
+      {new URLSearchParams(window.location.search).has("lifecycle-tools") ? (
+        <button
+          type="button"
+          style={{
+            position: "fixed",
+            top: 8,
+            left: "45%",
+            zIndex: 100,
+            background: "#fff",
+            color: "#18181b",
+            padding: "4px 12px",
+            border: "1px solid #e4e4e7",
+            borderRadius: 6,
+          }}
+          onClick={() => {
+            void lifecycle?.publish().catch(() => {
+              /* Lifecycle surfaces the failure and recovery UI. */
+            });
+          }}
+        >
+          Publish
+        </button>
+      ) : null}
       <PagebldrEditor
         key={document.id}
         {...(lifecycle && lifecycle.exportLocalDocument().id === document.id

@@ -1,7 +1,13 @@
 "use client";
 
 import { useId, useState } from "react";
-import { ChevronDownIcon, PaletteIcon, RotateCcwIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  LinkIcon,
+  UnlinkIcon,
+  PaletteIcon,
+  RotateCcwIcon,
+} from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -33,6 +39,7 @@ import {
   InspectorSelectOption as NativeSelectOption,
 } from "./inspector-select.js";
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group.js";
+import { Toggle } from "../components/ui/toggle.js";
 import { usePagebldrEditor, type EditorViewport } from "./context.js";
 import { StyleValueField } from "./style-value-field.js";
 import { Switch } from "../components/ui/switch.js";
@@ -213,8 +220,8 @@ export function StyleControls({
   const readOnly = editor.mode !== "edit" || element.locked;
 
   return (
-    <FieldGroup className="pb-6">
-      <div className="flex items-center gap-2">
+    <FieldGroup className="@container gap-0 pb-6">
+      <div className="flex flex-wrap items-center gap-1 border-b pb-3">
         <div className="w-26 shrink-0">
           <NativeSelect
             size="sm"
@@ -251,10 +258,14 @@ export function StyleControls({
               editor.setStyleState(value);
           }}
           aria-label="Authored interaction state"
-          className="order-first flex-1"
+          className="order-first w-max shrink-0"
         >
           {(Object.keys(stateLabels) as StyleState[]).map((value) => (
-            <ToggleGroupItem key={value} value={value} className="px-2">
+            <ToggleGroupItem
+              key={value}
+              value={value}
+              className="shrink-0 px-2"
+            >
               {stateLabels[value]}
             </ToggleGroupItem>
           ))}
@@ -340,9 +351,11 @@ export function StyleControls({
           <CollapsibleContent>
             <FieldGroup
               className={
-                capability.key === "typography"
-                  ? "grid grid-cols-2 gap-4 px-3 pb-4"
-                  : "gap-4 px-3 pb-4"
+                ["typography", "size", "border", "position"].includes(
+                  capability.key,
+                )
+                  ? "grid grid-cols-1 gap-4 pb-4 @min-[400px]:grid-cols-2"
+                  : "gap-4 pb-4"
               }
             >
               {capability.key === "spacing" ? (
@@ -367,9 +380,15 @@ export function StyleControls({
                       element={element}
                       property={property}
                       className={
-                        capability.key === "typography" &&
-                        !["fontSize", "lineHeight"].includes(property)
-                          ? "col-span-2"
+                        (capability.key === "typography" &&
+                          !["fontSize", "lineHeight"].includes(property)) ||
+                        (capability.key === "size" &&
+                          property === "overflow") ||
+                        (capability.key === "border" &&
+                          !["borderWidth", "borderStyle"].includes(property)) ||
+                        (capability.key === "position" &&
+                          ["position", "zIndex"].includes(property))
+                          ? "col-span-full"
                           : undefined
                       }
                       readOnly={readOnly}
@@ -472,13 +491,24 @@ function StylePropertyField({
         }
         onCommit={(draft) => setValue(draft === "" ? null : draft)}
         labelAction={
-          <div className="flex items-center gap-1">
+          <div className="flex min-w-0 items-center justify-end gap-1">
+            {local === undefined && resolved ? (
+              <span className="min-w-0 break-words text-xs text-muted-foreground">
+                {resolved.source.sourceType === "class"
+                  ? `Class: ${editor.document.classes[resolved.source.sourceId]?.name ?? resolved.source.sourceId}`
+                  : resolved.source.breakpoint !== breakpoint
+                    ? breakpointLabels[resolved.source.breakpoint]
+                    : resolved.source.state !== editor.styleState
+                      ? "Normal state"
+                      : "Inherited"}
+              </span>
+            ) : null}
             {variables.length > 0 || localVariable ? (
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
-                    size="icon-sm"
+                    size="icon-xs"
                     variant="ghost"
                     disabled={readOnly}
                     aria-label={`Choose ${label} value source`}
@@ -528,7 +558,7 @@ function StylePropertyField({
             {local === undefined ? null : (
               <Button
                 type="button"
-                size="icon-sm"
+                size="icon-xs"
                 variant="ghost"
                 aria-label={`Reset ${label}`}
                 disabled={readOnly}
@@ -611,20 +641,23 @@ function LinkedSpacing({
   );
   return (
     <FieldSet className="gap-3">
-      <FieldLegend variant="label">
+      <FieldLegend
+        variant="label"
+        className="mb-0 flex w-full items-center justify-between"
+      >
         {kind === "margin"
           ? "Margin (outside space)"
           : "Padding (inside space)"}
-      </FieldLegend>
-      <Field orientation="horizontal">
-        <FieldLabel>Link {kind} sides</FieldLabel>
-        <Switch
+        <Toggle
+          size="sm"
           aria-label={`Link ${kind} sides`}
           disabled={readOnly}
-          checked={linked}
-          onCheckedChange={setLinked}
-        />
-      </Field>
+          pressed={linked}
+          onPressedChange={setLinked}
+        >
+          {linked ? <LinkIcon /> : <UnlinkIcon />}
+        </Toggle>
+      </FieldLegend>
       <div className="grid grid-cols-2 gap-3">
         {properties.map((property) => (
           <StylePropertyField

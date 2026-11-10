@@ -18,17 +18,22 @@ import {
 } from "./composition.js";
 import {
   ChevronLeftIcon,
+  Columns2Icon,
+  Columns3Icon,
+  Grid2X2Icon,
+  Rows3Icon,
   EyeIcon,
-  HomeIcon,
   LaptopIcon,
   Layers3Icon,
   MoreHorizontalIcon,
   PaletteIcon,
   PanelLeftIcon,
+  ChevronDownIcon,
   PlusIcon,
+  PencilIcon,
   Redo2Icon,
   SaveIcon,
-  SendIcon,
+  HistoryIcon,
   SmartphoneIcon,
   TabletIcon,
   Undo2Icon,
@@ -56,11 +61,17 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuItem,
   DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu.js";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../components/ui/popover.js";
 import { ScrollArea } from "../components/ui/scroll-area.js";
 import { Separator } from "../components/ui/separator.js";
 import { Switch } from "../components/ui/switch.js";
@@ -97,7 +108,7 @@ import {
 import { standardEditorPreset } from "./presets.js";
 import { IsolatedCanvas } from "./isolated-canvas.js";
 import { useMovableOverlay } from "./movable-overlay.js";
-import { StructureWindow } from "./structure-window.js";
+import { StructureWindow, StructureMenu } from "./structure-window.js";
 import { WorkspacePanels } from "./workspace-panels.js";
 import {
   resolveClickInsertion,
@@ -116,13 +127,16 @@ import {
   propertyControlLabel,
   propertyOptionIcon,
 } from "./property-presentation.js";
-import { StyleControls } from "./style-control.js";
+import { StyleControls, styleBreakpointFromViewport } from "./style-control.js";
+import { replaceStyleProperties } from "./style-layer.js";
 import { PageDesignDialog } from "./page-design-dialog.js";
 import { HistorySheet } from "./history-sheet.js";
 import { LifecycleDialogs } from "./lifecycle-dialogs.js";
 import {
   ValidatedInputField,
   parseNumberDraft,
+  formatLocalDateTime,
+  parseLocalDateTime,
 } from "./validated-input-field.js";
 
 const emptySubscribe = () => () => undefined;
@@ -203,6 +217,12 @@ function EditorWorkspace({
   const [compact, setCompact] = useState(false);
   const [panelMode, setPanelMode] = useState<"add" | "inspector">("add");
   const [structureOpen, setStructureOpen] = useState(true);
+  const [elementContext, setElementContext] = useState<{
+    elementId: string;
+    x: number;
+    y: number;
+    sequence: number;
+  } | null>(null);
   const [pageDesignOpen, setPageDesignOpen] = useState(false);
   const [clipboard, setClipboard] = useState<PagebldrClipboard | null>(null);
   const [styleClipboard, setStyleClipboard] =
@@ -212,6 +232,7 @@ function EditorWorkspace({
   const initializedLayout = useRef(false);
   const savedDocument = useRef(editor.document);
   const panelOverlay = useMovableOverlay<HTMLElement>({
+    preserveSize: true,
     enabled: (element) =>
       (element.closest<HTMLElement>("[data-pagebldr-editor]")?.clientWidth ??
         1024) < 1024,
@@ -375,6 +396,7 @@ function EditorWorkspace({
         (event.key === "Delete" || event.key === "Backspace") &&
         editor.selectedId &&
         editor.selectedId !== editor.document.rootId &&
+        !editor.selected?.locked &&
         !readOnly
       ) {
         event.preventDefault();
@@ -398,21 +420,30 @@ function EditorWorkspace({
       setCompact(entry.contentRect.width < 1024);
       if (initializedLayout.current) return;
       initializedLayout.current = true;
-      if (entry.contentRect.width < 1024) setPanelOpen(false);
+      if (entry.contentRect.width < 1024) {
+        setPanelOpen(false);
+        setStructureOpen(false);
+      }
     });
     observer.observe(root);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
+    const compactLayout = (editorRootRef.current?.clientWidth ?? 1024) < 1024;
+    const hasElement =
+      !!editor.selectedId && editor.selectedId !== editor.document.rootId;
     if (
-      editor.selectedId &&
-      (selectionVersion > 0 || editor.selectedId !== editor.document.rootId)
+      hasElement ||
+      (!compactLayout && editor.selectedId && selectionVersion > 0)
     ) {
       setPanelMode("inspector");
-      setPanelOpen(true);
+      if (!compactLayout) setPanelOpen(true);
+    } else {
+      setPanelMode("add");
+      if (!compactLayout && !editor.selectedId) setPanelOpen(true);
     }
-  }, [editor.document.rootId, editor.selectedId, selectionVersion]);
+  }, [compact, editor.document.rootId, editor.selectedId, selectionVersion]);
 
   useEffect(() => {
     if (editor.document !== savedDocument.current) setStatus("Unsaved");
@@ -470,10 +501,18 @@ function EditorWorkspace({
         onUnpublish={() => setUnpublishOpen(true)}
         onSave={() => void perform("save")}
         panelOpen={panelOpen}
-        onPanelOpenChange={setPanelOpen}
+        onPanelOpenChange={(open) => {
+          setPanelOpen(open);
+          if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+            setStructureOpen(false);
+        }}
         onPageDesign={() => setPageDesignOpen(true)}
         structureOpen={structureOpen}
-        onStructureOpenChange={setStructureOpen}
+        onStructureOpenChange={(open) => {
+          setStructureOpen(open);
+          if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+            setPanelOpen(false);
+        }}
         status={status}
         start={
           editor.previewing ? (
@@ -508,15 +547,24 @@ function EditorWorkspace({
                 panelOpen ? (
                   <aside
                     ref={panelOverlay.ref}
-                    style={compact ? panelOverlay.style : { height: "100%" }}
-                    className="z-20 flex w-full shrink-0 flex-col border-r bg-background @max-[1024px]:absolute @max-[1024px]:bottom-14 @max-[1024px]:left-3 @max-[1024px]:top-3 @max-[1024px]:w-[min(22rem,calc(100%-1.5rem))] @max-[1024px]:rounded-xl @max-[1024px]:border @max-[1024px]:shadow-xl"
+                    style={
+                      compact
+                        ? {
+                            ...panelOverlay.style,
+                          }
+                        : { height: "100%" }
+                    }
+                    className="z-20 flex w-full shrink-0 flex-col border-r bg-background @max-[1024px]:absolute @max-[1024px]:bottom-auto @max-[1024px]:left-4 @max-[1024px]:top-4 @max-[1024px]:h-[min(42rem,calc(100%-6rem))] @max-[1024px]:w-[min(26rem,calc(100%-2rem))] @max-[600px]:w-[calc(100%-2rem)] @max-[1024px]:rounded-xl @max-[1024px]:border @max-[1024px]:shadow-xl"
                     aria-label={
                       panelMode === "add" ? "Add to page" : "Element inspector"
                     }
                   >
                     <div
-                      className="flex min-h-16 items-center gap-2 border-b px-4 py-3 @max-[1024px]:cursor-move @max-[1024px]:touch-none"
-                      onDoubleClick={panelOverlay.reset}
+                      className="flex min-h-14 items-center gap-2 border-b px-2 py-2 @max-[1024px]:cursor-move @max-[1024px]:touch-none"
+                      onDoubleClick={(event) => {
+                        if (!(event.target as HTMLElement).closest("button"))
+                          panelOverlay.reset();
+                      }}
                       onPointerDown={panelOverlay.beginMove}
                     >
                       {panelMode === "inspector" ? (
@@ -544,9 +592,19 @@ function EditorWorkspace({
                                       editor.selected.type,
                                     )?.label ?? editor.selected.type)
                                   : "Element"
-                              } · Content, style, and advanced`}
+                              }`}
                         </p>
                       </div>
+                      {compact ? (
+                        <Button
+                          size="icon-sm"
+                          variant="ghost"
+                          aria-label="Hide editor panel"
+                          onClick={() => setPanelOpen(false)}
+                        >
+                          <ChevronDownIcon />
+                        </Button>
+                      ) : null}
                     </div>
                     <div className="min-h-0 flex-1">
                       {panelMode === "add"
@@ -567,7 +625,17 @@ function EditorWorkspace({
                 aria-label="Page canvas"
                 className="relative h-full min-w-0 flex-1"
               >
-                <IsolatedCanvas>
+                <IsolatedCanvas
+                  compact={compact}
+                  onElementContextMenu={(elementId, x, y) =>
+                    setElementContext((current) => ({
+                      elementId,
+                      x,
+                      y,
+                      sequence: (current?.sequence ?? 0) + 1,
+                    }))
+                  }
+                >
                   {composition.render("canvas.overlay", contributionContext)}
                 </IsolatedCanvas>
                 <StructureWindow
@@ -582,9 +650,17 @@ function EditorWorkspace({
             </WorkspacePanels>
             <CompactToolbar
               panelOpen={panelOpen}
-              onPanelOpenChange={setPanelOpen}
+              onPanelOpenChange={(open) => {
+                setPanelOpen(open);
+                if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+                  setStructureOpen(false);
+              }}
               structureOpen={structureOpen}
-              onStructureOpenChange={setStructureOpen}
+              onStructureOpenChange={(open) => {
+                setStructureOpen(open);
+                if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+                  setPanelOpen(false);
+              }}
             />
             <div className="sr-only" aria-live="polite">
               {composition.render("status", contributionContext)}
@@ -592,6 +668,21 @@ function EditorWorkspace({
           </div>
         </>
       )}
+      {elementContext && editor.document.elements[elementContext.elementId] ? (
+        <StructureMenu
+          key={elementContext.elementId}
+          elementId={elementContext.elementId}
+          contextPoint={elementContext}
+          onEdit={() => {
+            setPanelMode("inspector");
+            setPanelOpen(true);
+          }}
+          clipboard={clipboard}
+          styleClipboard={styleClipboard}
+          onCopy={setClipboard}
+          onCopyStyles={setStyleClipboard}
+        />
+      ) : null}
       <PageDesignDialog
         open={pageDesignOpen}
         onOpenChange={setPageDesignOpen}
@@ -706,7 +797,7 @@ function EditorToolbar({
 }) {
   const editor = usePagebldrEditor();
   return (
-    <header className="flex min-h-14 items-center gap-2 px-2">
+    <header className="relative flex min-h-14 items-center gap-2 px-2">
       {!editor.previewing ? (
         <div className="@max-[1024px]:hidden">
           <ToolButton
@@ -716,10 +807,10 @@ function EditorToolbar({
           />
         </div>
       ) : null}
-      <div className="min-w-0 max-w-64 px-1 @max-[720px]:max-w-36">
+      <div className="flex min-w-0 max-w-80 items-center gap-3 px-1">
         <Input
           aria-label="Page title"
-          className="h-6 border-0 bg-transparent p-0 text-sm font-semibold shadow-none focus-visible:ring-1"
+          className="h-8 min-w-0 border-0 bg-transparent px-2 text-sm font-semibold shadow-none focus-visible:ring-1"
           disabled={editor.mode !== "edit"}
           value={editor.document.title}
           onChange={(event) => {
@@ -728,9 +819,9 @@ function EditorToolbar({
               editor.dispatch({ type: "update-page", title }, "page-title");
           }}
         />
-        <span className="flex items-center gap-1 truncate text-[11px] text-muted-foreground @max-[720px]:hidden">
-          <HomeIcon className="size-3" /> Home · {status}
-        </span>
+        <Badge variant="secondary" className="shrink-0">
+          {status}
+        </Badge>
       </div>
       {editor.previewing || editor.mode !== "edit" ? (
         <Badge className="@max-[1024px]:hidden" variant="secondary">
@@ -751,25 +842,27 @@ function EditorToolbar({
         <>
           <Button
             className="@max-[1024px]:hidden"
-            size="sm"
+            aria-label="Structure"
+            title="Structure"
+            size="icon-sm"
             variant={structureOpen ? "secondary" : "ghost"}
             onClick={() => onStructureOpenChange(!structureOpen)}
           >
             <Layers3Icon data-icon="inline-start" />
-            Structure
           </Button>
           <Button
             className="@max-[1024px]:hidden"
-            size="sm"
+            aria-label="Preview"
+            title="Preview"
+            size="icon-sm"
             variant="ghost"
             onClick={() => editor.setPreviewing(true)}
           >
             <EyeIcon data-icon="inline-start" />
-            Preview
           </Button>
         </>
       ) : null}
-      <div className="ml-auto">{end}</div>
+      <div className="ml-auto flex items-center gap-2">{end}</div>
       {!editor.previewing ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -782,7 +875,14 @@ function EditorToolbar({
               <MoreHorizontalIcon />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-64 border-0">
+            <DropdownMenuLabel className="flex justify-between">
+              Editor actions{" "}
+              <span className="font-normal text-muted-foreground">
+                {status}
+              </span>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
                 disabled={!editor.canUndo}
@@ -809,15 +909,36 @@ function EditorToolbar({
               <DropdownMenuItem disabled={!canSave} onSelect={onSave}>
                 <SaveIcon /> Save draft
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onHistory}>History</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onHistory}>
+                <HistoryIcon />
+                History
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onPageDesign}>
+                <PaletteIcon /> Page design
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  const root = moreActionsRef.current?.closest(
+                    "[data-pagebldr-editor]",
+                  );
+                  requestAnimationFrame(() => {
+                    const input = root?.querySelector<HTMLInputElement>(
+                      'input[aria-label="Page title"]',
+                    );
+                    input?.focus();
+                    input?.select();
+                  });
+                }}
+              >
+                <PencilIcon />
+                Rename page
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               {canUnpublish ? (
                 <DropdownMenuItem variant="destructive" onSelect={onUnpublish}>
                   Unpublish
                 </DropdownMenuItem>
               ) : null}
-              <DropdownMenuItem onSelect={onPageDesign}>
-                <PaletteIcon /> Page design
-              </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -829,8 +950,10 @@ function EditorToolbar({
 function HistoryControls() {
   const editor = usePagebldrEditor();
   return (
-    <div className="flex items-center gap-2">
-      <ViewportToggle />
+    <div className="flex w-full items-center justify-end gap-1">
+      <div className="absolute left-1/2 -translate-x-1/2">
+        <ViewportToggle />
+      </div>
       <ToolButton
         label="Undo"
         disabled={!editor.canUndo}
@@ -848,12 +971,9 @@ function HistoryControls() {
 }
 
 function PersistenceControls({
-  published,
-  canPublish,
   canSave,
   pending,
   onSave,
-  onPublish,
 }: {
   readonly published: boolean;
   readonly canPublish: boolean;
@@ -863,31 +983,11 @@ function PersistenceControls({
   readonly onPublish: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        className="@max-[720px]:hidden"
-        size="sm"
-        variant="outline"
-        disabled={!canSave || pending !== null}
-        onClick={onSave}
-      >
-        <SaveIcon data-icon="inline-start" />
-        {pending === "save" ? "Saving…" : "Save"}
-      </Button>
-      <Button
-        className="@max-[1024px]:h-11"
-        size="sm"
-        disabled={!canPublish || pending !== null}
-        onClick={onPublish}
-      >
-        <SendIcon data-icon="inline-start" />
-        {pending === "publish"
-          ? "Publishing…"
-          : published
-            ? "Update"
-            : "Publish"}
-      </Button>
-    </div>
+    <Button size="sm" disabled={!canSave || pending !== null} onClick={onSave}>
+      <span className="relative -top-px leading-none">
+        {pending === "save" ? "Updating?" : "Update"}
+      </span>
+    </Button>
   );
 }
 
@@ -903,42 +1003,118 @@ function CompactToolbar({
   readonly structureOpen: boolean;
 }) {
   const editor = usePagebldrEditor();
+  const hasElement =
+    !!editor.selectedId && editor.selectedId !== editor.document.rootId;
   return (
-    <div className="absolute inset-x-0 bottom-0 z-40 hidden h-14 items-center justify-around border-t bg-background/95 px-2 backdrop-blur @max-[1024px]:flex">
+    <div className="pointer-events-none absolute inset-x-0 bottom-3 z-40 hidden items-center justify-between px-3 @max-[1024px]:flex">
       <Button
-        aria-label={panelOpen ? "Close Add panel" : "Open Add panel"}
-        className="size-11"
+        aria-label={
+          panelOpen
+            ? "Hide editor panel"
+            : hasElement
+              ? "Edit selected element"
+              : "Add to page"
+        }
+        className="pointer-events-auto rounded-full shadow-lg"
         size="icon-lg"
-        variant={panelOpen ? "secondary" : "ghost"}
+        variant={panelOpen ? "secondary" : "outline"}
         onClick={() => onPanelOpenChange(!panelOpen)}
       >
-        <PlusIcon />
+        {hasElement ? <PencilIcon /> : <PlusIcon />}
       </Button>
-      <ToolButton
-        large
-        label="Undo"
-        disabled={!editor.canUndo}
-        onClick={editor.undo}
-        icon={Undo2Icon}
-      />
-      <ViewportToggle compact />
-      <Button
-        aria-label={structureOpen ? "Close Structure" : "Open Structure"}
-        className="size-11"
-        size="icon-lg"
-        variant={structureOpen ? "secondary" : "ghost"}
-        onClick={() => onStructureOpenChange(!structureOpen)}
-      >
-        <Layers3Icon />
-      </Button>
-      <ToolButton
-        large
-        label="Redo"
-        disabled={!editor.canRedo}
-        onClick={editor.redo}
-        icon={Redo2Icon}
-      />
+      <div className="pointer-events-auto flex items-center gap-2">
+        <Button
+          aria-label={structureOpen ? "Close Structure" : "Open Structure"}
+          className="rounded-full shadow-lg"
+          size="icon-lg"
+          variant={structureOpen ? "secondary" : "outline"}
+          onClick={() => onStructureOpenChange(!structureOpen)}
+        >
+          <Layers3Icon />
+        </Button>
+        <CompactPageView />
+      </div>
     </div>
+  );
+}
+
+function CompactPageView() {
+  const editor = usePagebldrEditor();
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const items = [
+    ["desktop", "Desktop", LaptopIcon],
+    ["tablet", "Tablet", TabletIcon],
+    ["mobile", "Mobile", SmartphoneIcon],
+  ] as const;
+  const desktop =
+    editor.viewport === "desktop" || editor.viewport === "desktop-fill";
+  const Icon = desktop
+    ? LaptopIcon
+    : editor.viewport === "tablet"
+      ? TabletIcon
+      : SmartphoneIcon;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          size="icon-lg"
+          variant="outline"
+          className="rounded-full shadow-lg"
+          ref={triggerRef}
+          aria-label="Page view"
+        >
+          <Icon />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent side="top" align="end" className="w-64 border-0">
+        <p className="font-semibold">Page view</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Choose the canvas size you want to edit.
+        </p>
+        <div className="mt-3 flex flex-col gap-2">
+          {items.map(([value, label, ItemIcon]) => (
+            <Button
+              key={value}
+              variant={
+                (value === "desktop" ? desktop : editor.viewport === value)
+                  ? "secondary"
+                  : "outline"
+              }
+              aria-pressed={
+                value === "desktop" ? desktop : editor.viewport === value
+              }
+              className="justify-start"
+              onClick={() => {
+                editor.setViewport(
+                  value === "desktop" && desktop
+                    ? editor.viewport === "desktop"
+                      ? "desktop-fill"
+                      : "desktop"
+                    : value,
+                );
+                setOpen(false);
+              }}
+            >
+              <ItemIcon data-icon="inline-start" />
+              {label}
+            </Button>
+          ))}
+        </div>
+        <Button
+          variant="ghost"
+          className="mt-2 w-full justify-start"
+          onClick={() => {
+            triggerRef.current
+              ?.closest("[data-pagebldr-editor]")
+              ?.dispatchEvent(new CustomEvent("pagebldr:reveal-selection"));
+            setOpen(false);
+          }}
+        >
+          Scroll to selection
+        </Button>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -1047,33 +1223,42 @@ function Inspector() {
   );
   return (
     <Tabs defaultValue="properties" className="h-full gap-0">
-      <TabsList className="m-2 grid w-auto grid-cols-3">
+      <TabsList
+        variant="line"
+        className="mx-3 mt-2 grid w-auto grid-cols-3 @max-[1024px]:min-h-11"
+      >
         <TabsTrigger value="properties">Content</TabsTrigger>
         <TabsTrigger value="styles">Style</TabsTrigger>
         <TabsTrigger value="advanced">Advanced</TabsTrigger>
       </TabsList>
       <TabsContent value="properties" className="min-h-0">
-        <ScrollArea className="h-full px-3">
-          <FieldGroup className="pb-6">
-            {definition?.controls?.map((control) => (
-              <PropertyField
-                key={control.key}
-                element={element}
-                control={control}
-                applicationDestinations={editor.applicationDestinations}
-              />
-            ))}
+        <ScrollArea className="h-full px-4 pt-4">
+          <FieldGroup className="gap-5 pb-6">
+            {element.type === "container" ? (
+              <ContainerLayoutPresets element={element} />
+            ) : null}
+            {definition?.controls
+              ?.filter(
+                (control) =>
+                  element.type !== "container" ||
+                  !["tag", "layout"].includes(control.key),
+              )
+              .map((control) => (
+                <PropertyField
+                  key={control.key}
+                  element={element}
+                  control={control}
+                  applicationDestinations={editor.applicationDestinations}
+                />
+              ))}
           </FieldGroup>
         </ScrollArea>
       </TabsContent>
       <TabsContent value="styles" className="min-h-0">
-        <ScrollArea className="h-full px-3">
+        <ScrollArea className="h-full px-4 pt-4">
           {elementStyleControls.length ? (
             <>
-              <FieldGroup className="pb-5">
-                <FieldDescription>
-                  Visual options specific to this Element.
-                </FieldDescription>
+              <FieldGroup className="gap-5 pb-5">
                 {elementStyleControls.map((control) => (
                   <PropertyField
                     key={control.key}
@@ -1090,15 +1275,115 @@ function Inspector() {
         </ScrollArea>
       </TabsContent>
       <TabsContent value="advanced" className="min-h-0">
-        <ScrollArea className="h-full px-3">
-          <FieldGroup className="pb-6">
+        <ScrollArea className="h-full px-4 pt-4">
+          <FieldGroup className="gap-5 pb-6">
             <AnchorControl element={element} />
+            {element.type === "container"
+              ? definition?.controls
+                  ?.filter((control) => ["tag", "layout"].includes(control.key))
+                  .map((control) => (
+                    <PropertyField
+                      key={control.key}
+                      element={element}
+                      control={control}
+                      applicationDestinations={editor.applicationDestinations}
+                    />
+                  ))
+              : null}
             <Separator />
             <StyleControls element={element} section="advanced" />
           </FieldGroup>
         </ScrollArea>
       </TabsContent>
     </Tabs>
+  );
+}
+
+function ContainerLayoutPresets({
+  element,
+}: {
+  readonly element: PageElement;
+}) {
+  const editor = usePagebldrEditor();
+  const breakpoint = styleBreakpointFromViewport(editor.viewport);
+  return (
+    <Field>
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel>Layout preset</FieldLabel>
+        <Badge variant="outline">{breakpoint}</Badge>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          {
+            label: "Vertical",
+            icon: Rows3Icon,
+            columns: 0,
+            direction: "column",
+          },
+          {
+            label: "Horizontal",
+            icon: Columns2Icon,
+            columns: 0,
+            direction: "row",
+          },
+          {
+            label: "2 columns",
+            icon: Grid2X2Icon,
+            columns: 2,
+            direction: "row",
+          },
+          {
+            label: "3 columns",
+            icon: Columns3Icon,
+            columns: 3,
+            direction: "row",
+          },
+        ].map(({ label, icon: Icon, columns, direction }) => (
+          <Button
+            key={label}
+            type="button"
+            variant="outline"
+            className="h-16 flex-col gap-1.5"
+            disabled={editor.mode !== "edit" || element.locked}
+            onClick={() => {
+              let styles = replaceStyleProperties(
+                element.styles,
+                breakpoint,
+                "normal",
+                ["display"],
+                columns ? "grid" : "flex",
+              );
+              styles = replaceStyleProperties(
+                styles,
+                breakpoint,
+                "normal",
+                ["gridTemplateColumns"],
+                columns ? `repeat(${columns}, minmax(0, 1fr))` : null,
+              );
+              if (!columns)
+                styles = replaceStyleProperties(
+                  styles,
+                  breakpoint,
+                  "normal",
+                  ["flexDirection"],
+                  direction,
+                );
+              editor.dispatch({
+                type: "replace-styles",
+                elementId: element.id,
+                styles,
+              });
+            }}
+          >
+            <Icon data-icon="inline-start" />
+            {label}
+          </Button>
+        ))}
+      </div>
+      <FieldDescription>
+        Presets only change this device and undo in one step.
+      </FieldDescription>
+    </Field>
   );
 }
 
@@ -1301,16 +1586,28 @@ function PropertyField({
         {description}
       </SliderField>
     );
+  const isDateTime =
+    control.kind === "text" && control.presentation === "datetime";
   return (
     <ValidatedInputField
       key={`${element.id}:${control.key}`}
       label={label}
-      value={String(value)}
+      value={isDateTime ? formatLocalDateTime(String(value)) : String(value)}
+      commitOnBlur={isDateTime}
+      multiline={control.kind === "text" && control.presentation === "textarea"}
       inputProps={{
-        type: control.kind === "number" ? "number" : "text",
+        type: isDateTime
+          ? "datetime-local"
+          : control.kind === "number"
+            ? "number"
+            : "text",
         min: control.kind === "number" ? control.min : undefined,
         max: control.kind === "number" ? control.max : undefined,
-        step: control.kind === "number" ? control.step : undefined,
+        step: isDateTime
+          ? "0.001"
+          : control.kind === "number"
+            ? control.step
+            : undefined,
         placeholder: control.kind === "text" ? control.placeholder : undefined,
         disabled: editor.mode !== "edit" || element.locked,
       }}
@@ -1318,11 +1615,18 @@ function PropertyField({
         update(
           control.kind === "number"
             ? parseNumberDraft(draft, control.min, control.max)
-            : draft,
+            : isDateTime
+              ? parseLocalDateTime(draft)
+              : draft,
         )
       }
     >
       {description}
+      {isDateTime ? (
+        <p className="text-xs text-muted-foreground">
+          Uses your local time zone.
+        </p>
+      ) : null}
     </ValidatedInputField>
   );
 }

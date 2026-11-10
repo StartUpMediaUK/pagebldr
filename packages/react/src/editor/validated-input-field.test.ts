@@ -6,7 +6,12 @@ import {
   standardStyleCapabilities,
 } from "@pagebldr/core";
 
-import { commitInputDraft, parseNumberDraft } from "./validated-input-field.js";
+import {
+  commitInputDraft,
+  parseNumberDraft,
+  formatLocalDateTime,
+  parseLocalDateTime,
+} from "./validated-input-field.js";
 
 describe("validated inspector drafts", () => {
   it("rejects empty, non-finite and out-of-range numeric drafts without coercing them to zero", () => {
@@ -73,5 +78,27 @@ describe("validated inspector drafts", () => {
       history.present.elements[document.rootId]?.styles.desktop?.normal
         ?.backgroundColor,
     ).toBe("#223344");
+  });
+});
+
+describe("date/time controls", () => {
+  it("preserves instants and precision through local wall time", () => {
+    for (const value of [
+      "2030-01-15T12:34:56.123Z",
+      "2030-07-15T12:34:56.123Z",
+      "2030-07-15T12:34:56.123+05:30",
+    ]) {
+      expect(parseLocalDateTime(formatLocalDateTime(value))).toBe(
+        new Date(value).toISOString(),
+      );
+    }
+  });
+  it("rejects empty and invalid drafts", () => {
+    expect(() => parseLocalDateTime("")).toThrow(
+      "Enter a valid date and time.",
+    );
+    expect(() => parseLocalDateTime("invalid")).toThrow(
+      "Enter a valid date and time.",
+    );
   });
 });

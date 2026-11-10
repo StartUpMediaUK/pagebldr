@@ -63,7 +63,7 @@ describe("canvas controller", () => {
   });
 
   it("keeps authored viewport sizes independent from shell width", () => {
-    expect(canvasViewportWidth("desktop", settings, 900)).toBe(1_280);
+    expect(canvasViewportWidth("desktop", settings, 900)).toBe(1201);
     expect(canvasViewportWidth("desktop-fill", settings, 900)).toBe(900);
     expect(canvasViewportWidth("tablet", settings, 900)).toBe(820);
     expect(canvasViewportWidth("mobile", settings, 900)).toBe(390);

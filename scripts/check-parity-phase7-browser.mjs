@@ -54,7 +54,7 @@ async function fresh(
   viewport = { width: 1440, height: 900 },
 ) {
   await page.setViewportSize(viewport);
-  await page.goto(`${origin}/${route}`);
+  await page.goto(`${origin}/?lifecycle-tools=1${route}`);
   await page.evaluate(() => {
     for (const key of Object.keys(localStorage))
       if (key.startsWith("pagebldr:reference:")) localStorage.removeItem(key);
@@ -97,7 +97,7 @@ async function saved() {
   await eventually(
     async () => {
       const save = page.getByRole("button", {
-        name: "Save",
+        name: "Update",
         exact: true,
         includeHidden: true,
       });
@@ -180,7 +180,7 @@ try {
     async () => {
       await fresh();
       await title().fill("Saved design");
-      await page.getByRole("button", { name: "Save", exact: true }).click();
+      await page.getByRole("button", { name: "Update", exact: true }).click();
       await saved();
       let current = await state();
       assert.equal(current.revisions.length, 1);
@@ -205,7 +205,7 @@ try {
     async () => {
       await fresh();
       await title().fill("First design");
-      await page.getByRole("button", { name: "Save", exact: true }).click();
+      await page.getByRole("button", { name: "Update", exact: true }).click();
       await saved();
       const first = (await state()).revisions[0];
       await page.getByRole("button", { name: "Publish", exact: true }).click();
@@ -216,7 +216,7 @@ try {
         1,
       );
       await title().fill("Second design");
-      await page.getByRole("button", { name: "Save", exact: true }).click();
+      await page.getByRole("button", { name: "Update", exact: true }).click();
       await saved();
       await history();
       const card = page.getByRole("group", {
@@ -281,7 +281,7 @@ try {
         );
         await page
           .getByRole("button", {
-            name: kind === "save" ? "Save" : "Publish",
+            name: kind === "save" ? "Update" : "Publish",
             exact: true,
           })
           .click();
@@ -306,7 +306,7 @@ try {
     async () => {
       await fresh();
       const second = await context.newPage();
-      await second.goto(`${origin}/#/editor`);
+      await second.goto(`${origin}/?lifecycle-tools=1#/editor`);
       await second.getByRole("textbox", { name: "Page title" }).waitFor();
       await title().fill("Session A");
       await saved();
@@ -566,7 +566,7 @@ try {
     },
   );
   await check(
-    "retention keeps newest 50 plus protected Live; Update releases the old protected snapshot",
+    "retention keeps newest 50 plus protected Live; Publish releases the old protected snapshot",
     async () => {
       await fresh("#/editor/lifecycle");
       await page.evaluate(() =>
@@ -578,7 +578,7 @@ try {
       for (let index = 0; index < 51; index++) {
         const version = (await state()).document.version;
         await title().fill(`Retained ${index}`);
-        await page.getByRole("button", { name: "Save", exact: true }).click();
+        await page.getByRole("button", { name: "Update", exact: true }).click();
         await eventually(
           state,
           (value) => value?.document.version === version + 1,
@@ -589,6 +589,8 @@ try {
       assert.equal(retained.revisions.length, 51);
       assert(retained.revisions.some((revision) => revision.id === liveId));
       await page.getByRole("button", { name: "Update", exact: true }).click();
+      await saved();
+      await page.getByRole("button", { name: "Publish", exact: true }).click();
       await saved();
       const updated = await state();
       assert.equal(updated.revisions.length, 50);
@@ -605,7 +607,7 @@ try {
       async () => {
         await fresh("#/editor", { width, height });
         async function tabTo(locator) {
-          for (let step = 0; step < 100; step++) {
+          for (let step = 0; step < 300; step++) {
             if (
               await locator.evaluate(
                 (element) => element === document.activeElement,
