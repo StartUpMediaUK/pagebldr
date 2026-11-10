@@ -566,7 +566,7 @@ try {
     },
   );
   await check(
-    "retention keeps newest 50 plus protected Live; Update releases the old protected snapshot",
+    "retention keeps newest 50 plus protected Live; Publish releases the old protected snapshot",
     async () => {
       await fresh("#/editor/lifecycle");
       await page.evaluate(() =>
@@ -590,6 +590,8 @@ try {
       assert(retained.revisions.some((revision) => revision.id === liveId));
       await page.getByRole("button", { name: "Update", exact: true }).click();
       await saved();
+      await page.getByRole("button", { name: "Publish", exact: true }).click();
+      await saved();
       const updated = await state();
       assert.equal(updated.revisions.length, 50);
       assert(!updated.revisions.some((revision) => revision.id === liveId));
@@ -605,7 +607,7 @@ try {
       async () => {
         await fresh("#/editor", { width, height });
         async function tabTo(locator) {
-          for (let step = 0; step < 100; step++) {
+          for (let step = 0; step < 300; step++) {
             if (
               await locator.evaluate(
                 (element) => element === document.activeElement,
