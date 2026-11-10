@@ -115,9 +115,12 @@ async function library(tab) {
   const target = page.getByRole("tab", { name: tab, exact: true });
   if (!(await target.isVisible()))
     await page
-      .getByRole("button", { name: /^(Open Add panel|Add to page|Add)$/ })
+      .getByRole("button", {
+        name: /^(Open Add panel|Add to page|Add|Edit selected element)$/,
+      })
       .first()
       .click();
+  if (await back.isVisible()) await back.click();
   await target.click();
 }
 async function select(name) {
@@ -142,7 +145,12 @@ async function select(name) {
       .getByRole("button", { name: "Close Structure", exact: true })
       .first()
       .click();
-  if (page.viewportSize().width < 1024)
+  if (
+    page.viewportSize().width < 1024 &&
+    !(await page
+      .getByRole("complementary", { name: "Element inspector", exact: true })
+      .isVisible())
+  )
     await page
       .getByRole("button", { name: "Edit selected element", exact: true })
       .click();

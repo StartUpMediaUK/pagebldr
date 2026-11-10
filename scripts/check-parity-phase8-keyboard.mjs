@@ -95,7 +95,13 @@ try {
       );
       await key("Enter");
       await activate("Close Structure");
-      if (width < 1024) await activate("Edit selected element");
+      if (
+        width < 1024 &&
+        !(await page
+          .getByRole("textbox", { name: "Text", exact: true })
+          .isVisible())
+      )
+        await activate("Edit selected element");
       const text = page.getByRole("textbox", { name: "Text", exact: true });
       await reach(text);
       await key("Control+a");
