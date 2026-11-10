@@ -213,6 +213,8 @@ async function capture(name) {
         })
         .map((el) => ({
           name: el.getAttribute("aria-label") || el.textContent,
+          slot: el.getAttribute("data-slot"),
+          role: el.getAttribute("role"),
           width: el.getBoundingClientRect().width,
           height: el.getBoundingClientRect().height,
         })),
