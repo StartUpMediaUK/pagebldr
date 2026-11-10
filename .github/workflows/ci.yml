@@ -173,7 +173,7 @@ jobs:
           release-evidence/browser chromium smoke
         env:
           PAGEBLDR_VISUAL_BASELINE:
-            ${{ github.workspace }}/fixtures/visual/editor-canvas
+            ${{ github.workspace }}/fixtures/visual/editor-canvas-fixed-desktop
       - uses: actions/upload-artifact@v4
         if: always()
         with:

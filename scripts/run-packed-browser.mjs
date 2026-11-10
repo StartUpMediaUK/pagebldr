@@ -190,7 +190,7 @@ try {
           join(output, "pencil"),
           join(output, "visual-diff"),
           "-",
-          resolve("etc/canvas-visual-regions.json"),
+          resolve("etc/canvas-visual-regions-fixed-desktop.json"),
         ],
         { stdio: "inherit", timeout: 120_000 },
       );

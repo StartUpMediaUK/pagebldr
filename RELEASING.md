@@ -46,12 +46,13 @@ current behavior and capture screenshots; they are not a pixel-difference
 certification against every historical source screenshot.
 
 `PAGEBLDR_VISUAL_BASELINE` enables comparison against the accepted editor-canvas
-captures in `fixtures/visual/editor-canvas`. `etc/canvas-visual-regions.json`
-defines the upper 430px editor regions and separate 24px pencil targets. This
-excludes a remote authored image whose earlier capture was partially loaded.
-Baselines are never rewritten; reports disclose the exact regions and
-changed-pixel ratios. Windows CI uses the same platform family as those
-captures. Broader pixel parity remains a documented limit.
+captures in `fixtures/visual/editor-canvas-fixed-desktop`.
+`etc/canvas-visual-regions-fixed-desktop.json` defines the upper 430px editor
+regions and separate 24px pencil targets. This excludes a remote authored image
+whose earlier capture was partially loaded. Baselines are never rewritten;
+reports disclose the exact regions and changed-pixel ratios. Windows CI uses the
+same platform family as those captures. Broader pixel parity remains a
+documented limit.
 
 ## Public interface review
 
