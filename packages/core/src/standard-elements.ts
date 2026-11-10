@@ -1318,7 +1318,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     },
     references: (props) => sourceReferences([props.image]),
     controls: [
-      { kind: "text", key: "quote", label: "Quote" },
+      { kind: "text", key: "quote", label: "Quote", presentation: "textarea" },
       { kind: "text", key: "author", label: "Author" },
       { kind: "text", key: "role", label: "Role" },
       {
@@ -1452,6 +1452,15 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
   definition({
     type: "countdown",
     label: "Countdown",
+    controls: [
+      {
+        kind: "text",
+        key: "targetDate",
+        label: "Target date and time",
+        presentation: "datetime",
+      },
+      { kind: "text", key: "expiredText", label: "Expired message" },
+    ],
     schema: z.object({
       targetDate: z.string().datetime({ offset: true }),
       expiredText: z.string().min(1).max(300),

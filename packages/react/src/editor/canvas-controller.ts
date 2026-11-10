@@ -59,14 +59,7 @@ export function canvasViewportWidth(
     case "desktop-fill":
       return Math.max(320, availableWidth);
     case "desktop":
-      return Math.min(
-        1_920,
-        Math.max(
-          1_280,
-          settings.contentWidth,
-          settings.breakpoints.tabletMax + 1,
-        ),
-      );
+      return 1201;
     case "tablet":
       return Math.min(820, settings.breakpoints.tabletMax);
     case "mobile":

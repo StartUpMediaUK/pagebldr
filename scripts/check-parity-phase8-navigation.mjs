@@ -32,7 +32,7 @@ try {
       .frameLocator("iframe")
       .locator("[data-pagebldr-renderer]")
       .waitFor();
-    const save = page.getByRole("button", { name: "Save", exact: true });
+    const save = page.getByRole("button", { name: "Update", exact: true });
     if (await save.count()) await save.click();
     else {
       await page

@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Separator } from "../components/ui/separator.js";
 
-const minimumWidth = 280;
+const minimumWidth = 384;
 const maximumWidth = 430;
 const clamp = (width: number) =>
   Math.min(maximumWidth, Math.max(minimumWidth, width));
@@ -18,7 +18,7 @@ export function WorkspacePanels({
   readonly panel: ReactNode;
   readonly children: ReactNode;
 }) {
-  const [width, setWidth] = useState(340);
+  const [width, setWidth] = useState(384);
   const id = useId();
   const drag = useRef<{ pointerId: number; x: number; width: number } | null>(
     null,

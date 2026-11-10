@@ -43,7 +43,7 @@ export function SliderField({
     >
       <div className="flex items-center justify-between gap-3">
         <FieldLabel id={id}>{label}</FieldLabel>
-        <span className="text-xs text-muted-foreground">
+        <span className="ml-auto text-xs text-muted-foreground">
           {value}
           {unit}
         </span>

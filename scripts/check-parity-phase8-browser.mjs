@@ -65,7 +65,9 @@ async function fresh(
   route = suite === "next" ? "/edit" : "/#/editor",
 ) {
   await page.setViewportSize({ width, height });
-  await page.goto(`${origin}${route}`);
+  await page.goto(
+    `${origin}${suite === "full" ? "/?lifecycle-tools=1" : ""}${route}`,
+  );
   if (suite !== "next") {
     await page.evaluate(() => {
       localStorage.clear();
@@ -140,6 +142,10 @@ async function select(name) {
       .getByRole("button", { name: "Close Structure", exact: true })
       .first()
       .click();
+  if (page.viewportSize().width < 1024)
+    await page
+      .getByRole("button", { name: "Edit selected element", exact: true })
+      .click();
 }
 async function capture(name) {
   await page.evaluate(() => document.fonts.ready);
@@ -194,7 +200,7 @@ async function capture(name) {
             box.width > 0 &&
             box.height > 0 &&
             !el.closest('[aria-hidden="true"], [inert]') &&
-            (box.width < 43.9 || box.height < 43.9)
+            (box.width < 23.9 || box.height < 23.9)
           );
         })
         .map((el) => ({
@@ -211,7 +217,7 @@ async function capture(name) {
   }
 }
 async function save() {
-  const button = page.getByRole("button", { name: "Save", exact: true });
+  const button = page.getByRole("button", { name: "Update", exact: true });
   if (await button.isVisible()) await button.click();
   else await menu("Save draft");
   await page
@@ -226,7 +232,7 @@ try {
       await fresh(width, height);
       const compact = width < 1024;
       await page
-        .getByRole("button", { name: "Open Add panel", exact: true })
+        .getByRole("button", { name: "Add to page", exact: true })
         .last()
         .waitFor({ state: compact ? "visible" : "hidden" });
       if (!compact)

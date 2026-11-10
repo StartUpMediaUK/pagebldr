@@ -21,22 +21,13 @@ import {
   PencilIcon,
   SmartphoneIcon,
   TabletIcon,
-  ZoomInIcon,
 } from "lucide-react";
 
 import type { Pagebldr, PageDocument, ResourceReference } from "@pagebldr/core";
 
+import { ScrollArea } from "../components/ui/scroll-area.js";
 import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu.js";
 import {
   Empty,
   EmptyDescription,
@@ -82,8 +73,16 @@ type CanvasStatus = "loading" | "ready" | "error";
 
 export function IsolatedCanvas({
   children,
+  compact = false,
+  onElementContextMenu,
 }: {
   readonly children?: ReactNode;
+  readonly compact?: boolean;
+  readonly onElementContextMenu?: (
+    elementId: string,
+    x: number,
+    y: number,
+  ) => void;
 }) {
   const editor = usePagebldrEditor();
   const editorRef = useRef(editor);
@@ -93,6 +92,52 @@ export function IsolatedCanvas({
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [frameDocument, setFrameDocument] = useState<Document | null>(null);
   const [status, setStatus] = useState<CanvasStatus>("loading");
+  useEffect(() => {
+    const documents = [
+      window.document,
+      ...(frameDocument ? [frameDocument] : []),
+    ];
+    const timers = new Map<Element, ReturnType<typeof setTimeout>>();
+    const scrolling = (event: Event) => {
+      const target = event.target;
+      const element =
+        target && "nodeType" in target && target.nodeType === 1
+          ? (target as Element)
+          : frameDocument && target === frameDocument
+            ? frameDocument.documentElement
+            : null;
+      if (!element) return;
+      element.setAttribute("data-pagebldr-scrolling", "");
+      clearTimeout(timers.get(element));
+      timers.set(
+        element,
+        setTimeout(() => {
+          element.removeAttribute("data-pagebldr-scrolling");
+          timers.delete(element);
+        }, 700),
+      );
+    };
+    frameDocument?.documentElement.setAttribute(
+      "data-pagebldr-canvas-scroll",
+      "",
+    );
+    documents.forEach((document) =>
+      document.addEventListener("scroll", scrolling, true),
+    );
+    return () => {
+      documents.forEach((document) =>
+        document.removeEventListener("scroll", scrolling, true),
+      );
+      timers.forEach((timer, element) => {
+        clearTimeout(timer);
+        element.removeAttribute("data-pagebldr-scrolling");
+      });
+      frameDocument?.documentElement.removeAttribute(
+        "data-pagebldr-canvas-scroll",
+      );
+    };
+  }, [frameDocument]);
+
   const [error, setError] = useState("");
   const [contentHeight, setContentHeight] = useState(900);
   const [workspaceSize, setWorkspaceSize] = useState({
@@ -111,6 +156,8 @@ export function IsolatedCanvas({
   const revealTarget = useRef<string | null>(null);
   const previousSelection = useRef(editor.selectedId);
   editorRef.current = editor;
+  const contextMenuRef = useRef(onElementContextMenu);
+  contextMenuRef.current = onElementContextMenu;
   zoomRef.current = zoom;
 
   const send = useCallback(
@@ -147,6 +194,37 @@ export function IsolatedCanvas({
       const message = event.data;
       const current = editorRef.current;
       switch (message.type) {
+        case "element.context": {
+          if (
+            current.mode !== "edit" ||
+            current.previewing ||
+            !current.document.elements[message.elementId]
+          )
+            break;
+          current.select(message.elementId);
+          const frame = frameRef.current?.getBoundingClientRect();
+          if (frame)
+            contextMenuRef.current?.(
+              message.elementId,
+              frame.left + message.x * zoomRef.current,
+              frame.top + message.y * zoomRef.current,
+            );
+          break;
+        }
+        case "element.delete": {
+          const element = current.document.elements[message.elementId];
+          if (
+            current.mode === "edit" &&
+            !current.previewing &&
+            element &&
+            !element.locked &&
+            message.elementId !== current.document.rootId
+          ) {
+            current.dispatch({ type: "remove", elementId: message.elementId });
+            current.select(null);
+          }
+          break;
+        }
         case "ready":
           setStatus("ready");
           setError("");
@@ -169,7 +247,12 @@ export function IsolatedCanvas({
           setGeometry({ elementId: message.elementId, rect: message.rect });
           if (revealTarget.current === message.elementId) {
             revealTarget.current = null;
-            revealRect(workspaceRef.current, message.rect, zoomRef.current);
+            revealRect(
+              workspaceRef.current,
+              frameRef.current,
+              message.rect,
+              zoomRef.current,
+            );
           }
           break;
         case "content.resize":
@@ -329,12 +412,34 @@ export function IsolatedCanvas({
     Math.max(320, workspaceSize.width - 32),
   );
   const scaledWidth = canvasWidth * zoom;
-  const scaledHeight = contentHeight * zoom;
+  const frameHeight =
+    editor.viewport === "desktop" ? (canvasWidth * 9) / 16 : contentHeight;
+  const scaledHeight = frameHeight * zoom;
   const fitZoom = fitCanvasZoom({
     canvasWidth,
     availableWidth: workspaceSize.width,
   });
-  const visibleCanvasHeight = canvasViewportHeight(workspaceSize.height, zoom);
+  const visibleCanvasHeight =
+    editor.viewport === "desktop"
+      ? frameHeight
+      : canvasViewportHeight(workspaceSize.height, zoom);
+  const wasCompact = useRef(false);
+  useEffect(() => {
+    if (compact && !wasCompact.current) setFitEnabled(true);
+    wasCompact.current = compact;
+  }, [compact]);
+  const revealSelection = useCallback(() => {
+    if (editor.selectedId) {
+      revealTarget.current = editor.selectedId;
+      send({ type: "reveal", elementId: editor.selectedId });
+    }
+  }, [editor.selectedId, send]);
+  useEffect(() => {
+    const root = workspaceRef.current?.closest("[data-pagebldr-editor]");
+    root?.addEventListener("pagebldr:reveal-selection", revealSelection);
+    return () =>
+      root?.removeEventListener("pagebldr:reveal-selection", revealSelection);
+  }, [revealSelection]);
   const enableFit = () => {
     setFitEnabled(true);
     setZoom(fitZoom);
@@ -496,78 +601,86 @@ export function IsolatedCanvas({
   }, [loadFrame]);
 
   return (
-    <div
-      ref={workspaceRef}
-      className="relative h-full overflow-auto bg-muted p-4"
-      data-pagebldr-canvas-workspace
-      data-canvas-status={status}
-      tabIndex={0}
-      role="region"
-      aria-label="Canvas workspace"
-      aria-describedby={`${canvasId}-navigation`}
-      style={{
-        cursor: panning ? "grabbing" : spaceHeld ? "grab" : undefined,
-        userSelect: spaceHeld ? "none" : undefined,
-      }}
-    >
-      <p id={`${canvasId}-navigation`} className="sr-only">
-        Hold Space and drag to pan. Alt and mouse wheel zooms. Arrow keys scroll
-        the focused workspace; zoom controls also work with the keyboard.
-      </p>
-      {children ? (
-        <div className="pointer-events-none absolute inset-0">{children}</div>
-      ) : null}
-      <CanvasViewportIndicator
-        height={visibleCanvasHeight}
-        settings={editor.document.settings}
-        width={canvasWidth}
-      />
+    <div className="relative h-full min-h-0">
       <div
-        className="relative mx-auto origin-top overflow-visible transition-[width,height]"
-        style={{ width: scaledWidth, height: scaledHeight }}
+        ref={workspaceRef}
+        className="relative h-full overflow-auto bg-muted p-4 @max-[1024px]:p-8"
+        onClick={(event) => {
+          if (event.target === event.currentTarget && !spaceHeld)
+            editor.select(null);
+        }}
+        data-pagebldr-canvas-workspace
+        data-canvas-status={status}
+        tabIndex={0}
+        role="region"
+        aria-label="Canvas workspace"
+        aria-describedby={`${canvasId}-navigation`}
+        style={{
+          cursor: panning ? "grabbing" : spaceHeld ? "grab" : undefined,
+          userSelect: spaceHeld ? "none" : undefined,
+        }}
       >
-        <iframe
-          ref={frameRef}
-          title="Page canvas"
-          sandbox="allow-same-origin allow-scripts"
-          srcDoc={frameHtml}
-          onLoad={loadFrame}
-          className="absolute left-0 top-0 block rounded-md border-0 bg-background shadow-sm"
-          style={{
-            width: canvasWidth,
-            height: contentHeight,
-            transform: `scale(${zoom})`,
-            transformOrigin: "top left",
-            pointerEvents: spaceHeld ? "none" : undefined,
-          }}
-        />
-      </div>
-      {status === "loading" ? (
-        <Badge
-          className="absolute left-1/2 top-6 -translate-x-1/2"
-          variant="secondary"
-        >
-          Preparing canvas…
-        </Badge>
-      ) : null}
-      {error && status !== "error" ? (
-        <p
-          role="alert"
-          className="absolute top-2 left-2 z-20 rounded-md bg-background p-2 text-sm text-destructive"
-        >
-          {error}
+        <p id={`${canvasId}-navigation`} className="sr-only">
+          Hold Space and drag to pan. Alt and mouse wheel zooms. Arrow keys
+          scroll the focused workspace; zoom controls also work with the
+          keyboard.
         </p>
-      ) : null}
-      {status === "error" ? (
-        <div className="absolute inset-4 flex items-center justify-center rounded-md bg-background">
-          <Empty>
-            <EmptyHeader>
-              <EmptyTitle>Canvas unavailable</EmptyTitle>
-              <EmptyDescription>{error}</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+        {children ? (
+          <div className="pointer-events-none absolute inset-0">{children}</div>
+        ) : null}
+        <CanvasViewportIndicator
+          fixedDesktop={editor.viewport === "desktop"}
+          height={visibleCanvasHeight}
+          settings={editor.document.settings}
+          width={canvasWidth}
+        />
+        <div
+          className="relative mx-auto origin-top overflow-visible transition-[width,height]"
+          style={{ width: scaledWidth, height: scaledHeight }}
+        >
+          <iframe
+            ref={frameRef}
+            title="Page canvas"
+            sandbox="allow-same-origin allow-scripts"
+            srcDoc={frameHtml}
+            onLoad={loadFrame}
+            className="absolute left-0 top-0 block border-0 bg-background shadow-lg"
+            style={{
+              width: canvasWidth,
+              height: frameHeight,
+              transform: `scale(${zoom})`,
+              transformOrigin: "top left",
+              pointerEvents: spaceHeld ? "none" : undefined,
+            }}
+          />
         </div>
-      ) : null}
+        {status === "loading" ? (
+          <Badge
+            className="absolute left-1/2 top-6 -translate-x-1/2"
+            variant="secondary"
+          >
+            Preparing canvas…
+          </Badge>
+        ) : null}
+        {error && status !== "error" ? (
+          <p
+            role="alert"
+            className="absolute top-2 left-2 z-20 rounded-md bg-background p-2 text-sm text-destructive"
+          >
+            {error}
+          </p>
+        ) : null}
+        {status === "error" ? (
+          <div className="absolute inset-4 flex items-center justify-center rounded-md bg-background">
+            <Empty>
+              <EmptyHeader>
+                <EmptyTitle>Canvas unavailable</EmptyTitle>
+                <EmptyDescription>{error}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </div>
+        ) : null}
+      </div>
       <CanvasZoomControls
         fitEnabled={fitEnabled}
         zoom={zoom}
@@ -576,9 +689,7 @@ export function IsolatedCanvas({
         onFit={enableFit}
         onToggleFit={toggleFit}
         onReveal={() => {
-          if (geometry?.elementId === editor.selectedId)
-            revealRect(workspaceRef.current, geometry.rect, zoom);
-          else if (editor.selectedId) {
+          if (editor.selectedId) {
             revealTarget.current = editor.selectedId;
             send({ type: "reveal", elementId: editor.selectedId });
           }
@@ -649,6 +760,7 @@ function CanvasRuntime({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [rendererEpoch, setRendererEpoch] = useState(0);
+
   const [dropTarget, setDropTarget] = useState<
     (CanvasPlacement & { readonly rect: DOMRect }) | null
   >(null);
@@ -692,6 +804,27 @@ function CanvasRuntime({
     },
     [canvasId, frameWindow],
   );
+
+  useEffect(() => {
+    const removeSelected = (event: globalThis.KeyboardEvent) => {
+      if (
+        mode !== "edit" ||
+        !selectedId ||
+        (event.key !== "Delete" && event.key !== "Backspace") ||
+        event.defaultPrevented ||
+        closestElement(
+          event.target,
+          "input, textarea, select, [contenteditable=true], [role=textbox]",
+        )
+      )
+        return;
+      event.preventDefault();
+      post({ type: "element.delete", elementId: selectedId });
+    };
+    frameWindow.document.addEventListener("keydown", removeSelected);
+    return () =>
+      frameWindow.document.removeEventListener("keydown", removeSelected);
+  }, [mode, selectedId, frameWindow, post]);
 
   const findElement = useCallback(
     (elementId: string) =>
@@ -772,12 +905,22 @@ function CanvasRuntime({
           break;
         case "reveal": {
           const element = findElement(message.elementId);
-          if (element)
+          if (element) {
+            element.scrollIntoView({
+              block: "center",
+              inline: "nearest",
+              behavior: frameWindow.matchMedia(
+                "(prefers-reduced-motion: reduce)",
+              ).matches
+                ? "instant"
+                : "smooth",
+            });
             post({
               type: "geometry.change",
               elementId: message.elementId,
               rect: rectValue(element.getBoundingClientRect()),
             });
+          }
           break;
         }
         case "inline.start":
@@ -810,10 +953,12 @@ function CanvasRuntime({
 
   const activate = (target: EventTarget | null) => {
     const element = closestPageElement(target);
-    if (!element) return;
     post({
       type: "selection.change",
-      elementId: element.dataset.pagebldrElement!,
+      elementId:
+        element?.dataset.pagebldrElement === document?.rootId
+          ? null
+          : (element?.dataset.pagebldrElement ?? null),
     });
   };
 
@@ -1033,7 +1178,34 @@ function CanvasRuntime({
         )
           finishEditing(true);
       }}
+      onContextMenuCapture={(event) => {
+        if (mode !== "edit" || activeEdit.current) return;
+        const element = closestPageElement(event.target);
+        if (!element) return;
+        event.preventDefault();
+        event.stopPropagation();
+        post({
+          type: "element.context",
+          elementId: element.dataset.pagebldrElement!,
+          x: event.clientX,
+          y: event.clientY,
+        });
+      }}
       onKeyDownCapture={(event) => {
+        if (
+          (event.key === "Delete" || event.key === "Backspace") &&
+          mode === "edit" &&
+          selectedId &&
+          !activeEdit.current &&
+          !closestElement(
+            event.target,
+            "input, textarea, select, [contenteditable=true], [role=textbox]",
+          )
+        ) {
+          event.preventDefault();
+          post({ type: "element.delete", elementId: selectedId });
+          return;
+        }
         if (event.key === "Escape" && pointerMove.current) {
           event.preventDefault();
           event.stopPropagation();
@@ -1070,16 +1242,23 @@ function CanvasRuntime({
       }}
     >
       <PagebldrRuntimeInteractions />
-      <PagebldrRenderer
-        key={rendererEpoch}
-        builder={builder}
-        document={document}
-        mode={mode}
-        {...(forcedStyleState ? { forcedStyleState } : {})}
-        {...(resolveApplicationDestination
-          ? { resolveApplicationDestination }
-          : {})}
-      />
+      <ScrollArea
+        className="h-screen"
+        data-pagebldr-canvas-scroll-area
+        type="scroll"
+        scrollHideDelay={700}
+      >
+        <PagebldrRenderer
+          key={rendererEpoch}
+          builder={builder}
+          document={document}
+          mode={mode}
+          {...(forcedStyleState ? { forcedStyleState } : {})}
+          {...(resolveApplicationDestination
+            ? { resolveApplicationDestination }
+            : {})}
+        />
+      </ScrollArea>
       {mode === "edit" ? (
         <CanvasChrome
           frameWindow={frameWindow}
@@ -1308,7 +1487,7 @@ function CanvasZoomControls({
   return (
     <>
       <div
-        className="sticky bottom-3 mx-auto flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[1024px]:hidden"
+        className="absolute bottom-3 left-1/2 -translate-x-1/2 flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[1024px]:bottom-3 @max-[600px]:left-[calc(50%-1.25rem)] @max-[1024px]:rounded-xl @max-[1024px]:shadow-lg"
         onPointerEnter={dimensions.show}
         onPointerLeave={dimensions.hideSoon}
         onFocusCapture={dimensions.show}
@@ -1322,6 +1501,7 @@ function CanvasZoomControls({
           variant="ghost"
           onClick={onFit}
         >
+          {fitEnabled ? "Fit " : ""}
           {Math.round(zoom * 100)}%
         </Button>
         <CanvasTool label="Zoom in" icon={PlusIcon} onClick={onIncrease} />
@@ -1331,44 +1511,13 @@ function CanvasZoomControls({
           pressed={fitEnabled}
           onClick={onToggleFit}
         />
-        <CanvasTool
-          label="Scroll to selection"
-          icon={LocateFixedIcon}
-          onClick={onReveal}
-        />
-      </div>
-      <div className="sticky bottom-16 mx-auto hidden w-fit @max-[1024px]:block">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              aria-label={`Canvas zoom ${Math.round(zoom * 100)}%`}
-              className="h-11 shadow-sm"
-              variant="outline"
-            >
-              <ZoomInIcon data-icon="inline-start" />
-              {Math.round(zoom * 100)}%
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" side="top">
-            <DropdownMenuLabel>Canvas zoom</DropdownMenuLabel>
-            <DropdownMenuItem onSelect={onDecrease}>
-              <MinusIcon /> Zoom out
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={onIncrease}>
-              <PlusIcon /> Zoom in
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={fitEnabled}
-              onSelect={onToggleFit}
-            >
-              <Maximize2Icon /> Fit canvas
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuItem onSelect={onReveal}>
-              <LocateFixedIcon /> Scroll to selection
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="@max-[600px]:hidden">
+          <CanvasTool
+            label="Scroll to selection"
+            icon={LocateFixedIcon}
+            onClick={onReveal}
+          />
+        </div>
       </div>
     </>
   );
@@ -1405,10 +1554,12 @@ function CanvasTool({
 }
 
 function CanvasViewportIndicator({
+  fixedDesktop,
   height,
   settings,
   width,
 }: {
+  readonly fixedDesktop: boolean;
   readonly height: number;
   readonly settings: PageDocument["settings"];
   readonly width: number;
@@ -1440,7 +1591,7 @@ function CanvasViewportIndicator({
         onBlurCapture={dimensions.hideSoon}
       >
         <span>
-          {Math.round(width)}px × {height}px
+          {Math.round(width)}px × {height}px{fixedDesktop ? " (16:9)" : ""}
         </span>
         {Icon && breakpointLabel ? (
           <Tooltip>
@@ -1486,18 +1637,40 @@ function rectValue(rect: DOMRect): CanvasRect {
 
 function revealRect(
   workspace: HTMLDivElement | null,
+  frame: HTMLIFrameElement | null,
   rect: CanvasRect,
   zoom: number,
 ) {
-  if (!workspace) return;
-  const top = rect.y * zoom;
+  if (!workspace || !frame) return;
+  const workspaceRect = workspace.getBoundingClientRect();
+  const frameRect = frame.getBoundingClientRect();
+  const left =
+    frameRect.left -
+    workspaceRect.left -
+    workspace.clientLeft +
+    workspace.scrollLeft +
+    rect.x * zoom;
+  const top =
+    frameRect.top -
+    workspaceRect.top -
+    workspace.clientTop +
+    workspace.scrollTop +
+    rect.y * zoom;
+  const width = rect.width * zoom;
   const height = rect.height * zoom;
-  const target =
-    height >= workspace.clientHeight
-      ? top - 24
-      : top - (workspace.clientHeight - height) / 2;
   workspace.scrollTo({
-    top: Math.max(0, target),
+    left: Math.max(
+      0,
+      width >= workspace.clientWidth
+        ? left - 24
+        : left - (workspace.clientWidth - width) / 2,
+    ),
+    top: Math.max(
+      0,
+      height >= workspace.clientHeight
+        ? top - 24
+        : top - (workspace.clientHeight - height) / 2,
+    ),
     behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ? "auto"
       : "smooth",

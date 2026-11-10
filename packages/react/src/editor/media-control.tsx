@@ -173,9 +173,11 @@ export function MediaControl({
     }
   };
   return (
-    <FieldSet>
-      <FieldLegend>{control.label}</FieldLegend>
-      <FieldGroup>
+    <FieldSet className="gap-4">
+      <FieldLegend variant="label" className="mb-0">
+        {control.label}
+      </FieldLegend>
+      <FieldGroup className="gap-4">
         {!collection ? (
           <FieldDescription>
             {sourceReference(value)
@@ -242,13 +244,13 @@ export function MediaControl({
         ) : null}
         {collection
           ? items.map((item, index) => (
-              <FieldSet key={String(item.id)} className="pb-media-usage">
-                <FieldLegend>
-                  {control.usage === "logos"
-                    ? `Logo ${index + 1}`
-                    : `Media ${index + 1} · ${String(item.kind)}`}
-                </FieldLegend>
-                <FieldGroup>
+              <FieldSet key={String(item.id)} className="pb-media-usage gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <FieldLegend variant="label" className="mb-0">
+                    {control.usage === "logos"
+                      ? `Logo ${index + 1}`
+                      : `Media ${index + 1} · ${String(item.kind)}`}
+                  </FieldLegend>
                   <div className="flex flex-wrap gap-1">
                     <Button
                       size="sm"
@@ -268,7 +270,7 @@ export function MediaControl({
                       Preview
                     </Button>
                     <Button
-                      size="icon"
+                      size="icon-sm"
                       variant="ghost"
                       aria-label={`Move media ${index + 1} up`}
                       disabled={disabled || index === 0}
@@ -277,7 +279,7 @@ export function MediaControl({
                       <ArrowUpIcon data-icon="inline-start" />
                     </Button>
                     <Button
-                      size="icon"
+                      size="icon-sm"
                       variant="ghost"
                       aria-label={`Move media ${index + 1} down`}
                       disabled={disabled || index === items.length - 1}
@@ -286,7 +288,7 @@ export function MediaControl({
                       <ArrowDownIcon data-icon="inline-start" />
                     </Button>
                     <Button
-                      size="icon"
+                      size="icon-sm"
                       variant="ghost"
                       aria-label={`Remove media ${index + 1}`}
                       disabled={disabled || items.length <= 1}
@@ -301,6 +303,8 @@ export function MediaControl({
                       <Trash2Icon data-icon="inline-start" />
                     </Button>
                   </div>
+                </div>
+                <FieldGroup className="gap-3">
                   {control.usage === "logos" ? (
                     <ValidatedInputField
                       label="Logo name"

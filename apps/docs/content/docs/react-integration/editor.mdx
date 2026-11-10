@@ -48,3 +48,9 @@ changes the workspace view, never the Document or its save state.
 Editor controls follow system colors in forced-colors mode. Reduced-motion
 preference disables editor transitions and smooth selection scrolling. Neither
 setting rewrites authored Document colors.
+
+The default toolbar labels its save action **Update** and invokes `onSave` (or
+the configured lifecycle save). Publication remains a separate Host-controlled
+capability. Right-click an Element for editing, clipboard, lock, visibility,
+rename and deletion actions. Save as Block uses the Host library source. Delete
+also works when the canvas has focus, excluding text fields and locked Elements.

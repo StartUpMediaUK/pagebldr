@@ -9,9 +9,16 @@ import {
   AlignJustifyIcon,
   Rows3Icon,
   Columns2Icon,
-  StretchHorizontalIcon,
-  BetweenHorizontalStartIcon,
-  SpaceIcon,
+  AlignHorizontalJustifyStartIcon,
+  AlignHorizontalJustifyCenterIcon,
+  AlignHorizontalJustifyEndIcon,
+  AlignHorizontalSpaceBetweenIcon,
+  AlignHorizontalSpaceAroundIcon,
+  AlignHorizontalDistributeCenterIcon,
+  AlignVerticalJustifyStartIcon,
+  AlignVerticalJustifyCenterIcon,
+  AlignVerticalJustifyEndIcon,
+  AlignVerticalSpaceBetweenIcon,
 } from "lucide-react";
 import {
   Field,
@@ -136,22 +143,42 @@ const iconChoices = {
     { value: "row", label: "Place side by side", icon: Columns2Icon },
   ],
   alignItems: [
-    { value: "flex-start", label: "Start", icon: AlignLeftIcon },
-    { value: "center", label: "Centre", icon: AlignCenterIcon },
-    { value: "flex-end", label: "End", icon: AlignRightIcon },
-    { value: "stretch", label: "Stretch", icon: StretchHorizontalIcon },
+    {
+      value: "flex-start",
+      label: "Start",
+      icon: AlignVerticalJustifyStartIcon,
+    },
+    { value: "center", label: "Centre", icon: AlignVerticalJustifyCenterIcon },
+    { value: "flex-end", label: "End", icon: AlignVerticalJustifyEndIcon },
+    { value: "stretch", label: "Stretch", icon: AlignVerticalSpaceBetweenIcon },
   ],
   justifyContent: [
-    { value: "flex-start", label: "Start", icon: AlignLeftIcon },
-    { value: "center", label: "Centre", icon: AlignCenterIcon },
-    { value: "flex-end", label: "End", icon: AlignRightIcon },
+    {
+      value: "flex-start",
+      label: "Start",
+      icon: AlignHorizontalJustifyStartIcon,
+    },
+    {
+      value: "center",
+      label: "Centre",
+      icon: AlignHorizontalJustifyCenterIcon,
+    },
+    { value: "flex-end", label: "End", icon: AlignHorizontalJustifyEndIcon },
     {
       value: "space-between",
       label: "Space between",
-      icon: BetweenHorizontalStartIcon,
+      icon: AlignHorizontalSpaceBetweenIcon,
     },
-    { value: "space-around", label: "Space around", icon: SpaceIcon },
-    { value: "space-evenly", label: "Space evenly", icon: AlignJustifyIcon },
+    {
+      value: "space-around",
+      label: "Space around",
+      icon: AlignHorizontalSpaceAroundIcon,
+    },
+    {
+      value: "space-evenly",
+      label: "Space evenly",
+      icon: AlignHorizontalDistributeCenterIcon,
+    },
   ],
 };
 const switches: Readonly<Record<string, readonly [string, string]>> = {
@@ -242,7 +269,7 @@ export function StyleValueField(props: ValueProps) {
   const switchValues = switches[property];
   if (switchValues)
     return (
-      <ValueFrame {...props} footer={props.children}>
+      <ValueFrame {...props} footer={props.children} horizontal>
         {(id, commit, validity) => (
           <Switch
             {...validity}
@@ -267,7 +294,10 @@ export function StyleValueField(props: ValueProps) {
             onChange={(event) => commit(event.currentTarget.value)}
           >
             <NativeSelectOption value="">
-              {resolvedValue ? `Inherited: ${resolvedValue}` : "Default"}
+              {resolvedValue
+                ? (choices.find((option) => option.value === resolvedValue)
+                    ?.label ?? resolvedValue)
+                : "Default"}
             </NativeSelectOption>
             {value && !choices.some((option) => option.value === value) ? (
               <NativeSelectOption value={value}>
@@ -295,6 +325,7 @@ export function StyleValueField(props: ValueProps) {
 
 function ValueFrame({
   children: control,
+  horizontal = false,
   ...props
 }: Omit<ValueProps, "children"> & {
   readonly children: (
@@ -306,6 +337,7 @@ function ValueFrame({
     },
   ) => ReactNode;
   readonly footer?: ReactNode;
+  readonly horizontal?: boolean;
 }) {
   const id = useId();
   const [error, setError] = useState<{
@@ -315,16 +347,18 @@ function ValueFrame({
   const message = error.source === props.value ? error.message : null;
   return (
     <Field
+      orientation={horizontal ? "horizontal" : "vertical"}
+      className="gap-1.5"
       data-disabled={props.disabled || undefined}
       data-invalid={Boolean(message) || undefined}
     >
-      <div className="flex items-center gap-2">
-        <FieldLabel htmlFor={id} className="flex-1">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <FieldLabel htmlFor={id} className="flex-1 whitespace-nowrap">
           {props.label}
         </FieldLabel>
         {props.labelAction}
       </div>
-      <div>
+      <div className={horizontal ? "w-auto shrink-0" : undefined}>
         {control(
           id,
           (value) => {
@@ -638,6 +672,7 @@ function EffectField(
             type="button"
             variant="outline"
             size="sm"
+            className="w-full"
             disabled={props.disabled}
             onClick={() => change({})}
           >

@@ -4,7 +4,10 @@ import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
 
 export function useMovableOverlay<
   Element extends HTMLElement = HTMLDivElement,
->(options?: { readonly enabled?: (element: HTMLElement) => boolean }) {
+>(options?: {
+  readonly enabled?: (element: HTMLElement) => boolean;
+  readonly preserveSize?: boolean;
+}) {
   const ref = useRef<Element>(null);
   const [style, setStyle] = useState<CSSProperties | undefined>();
 
@@ -20,11 +23,13 @@ export function useMovableOverlay<
     const offsetX = event.clientX - rect.left;
     const offsetY = event.clientY - rect.top;
     const move = (moveEvent: globalThis.PointerEvent) => {
-      setStyle({
+      setStyle((current) => ({
+        ...current,
         right: "auto",
         bottom: "auto",
-        width: rect.width,
-        height: rect.height,
+        ...(options?.preserveSize
+          ? {}
+          : { width: rect.width, height: rect.height }),
         left: Math.max(
           8,
           Math.min(
@@ -39,7 +44,7 @@ export function useMovableOverlay<
             moveEvent.clientY - boundaryRect.top - offsetY,
           ),
         ),
-      });
+      }));
     };
     const finish = () => {
       window.removeEventListener("pointermove", move);
