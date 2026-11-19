@@ -84,4 +84,6 @@ authentication, authorization, deployment, Resources and operational policy.
 - Keep credentials, private Host data and unlicensed assets out of commits.
 - Commit, push, publish, deploy or rewrite shared history only when explicitly
   authorized. Preserve unrelated work and create a recoverable backup before
-  destructive Git operations. See RELEASING.md for release procedures.
+  destructive Git operations.
+- Merge feature and fix PRs into `master` first. Promote merged changes through
+  the release branches in order. See RELEASING.md for the promotion path.
