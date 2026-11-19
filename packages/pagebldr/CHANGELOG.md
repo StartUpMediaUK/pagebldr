@@ -1,5 +1,12 @@
 # @startupmedia/pagebldr
 
+## 0.0.0-alpha.3
+
+### Patch Changes
+
+- ef8ee47: Keep keyboard focus in the editor when entering Preview so Escape
+  returns to editing.
+
 ## 0.0.0-alpha.2
 
 ### Minor Changes
