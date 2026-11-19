@@ -189,7 +189,7 @@ const switches: Readonly<Record<string, readonly [string, string]>> = {
 export function styleUnits(property: string): readonly string[] | undefined {
   if (
     /^(margin|padding)(Top|Right|Bottom|Left)?$/.test(property) ||
-    property === "gap"
+    ["gap", "scrollMarginTop"].includes(property)
   )
     return ["%", "px", "rem"];
   if (
@@ -258,8 +258,13 @@ export function StyleValueField(props: ValueProps) {
             onValueChange={commit}
           >
             {toggle.map(({ value: option, label, icon: Icon }) => (
-              <ToggleGroupItem key={option} value={option} aria-label={label}>
-                <Icon data-icon="inline-start" />
+              <ToggleGroupItem
+                key={option}
+                value={option}
+                aria-label={label}
+                title={label}
+              >
+                <Icon data-icon="inline-start" aria-hidden="true" />
               </ToggleGroupItem>
             ))}
           </ToggleGroup>

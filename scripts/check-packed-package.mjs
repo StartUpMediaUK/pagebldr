@@ -98,7 +98,9 @@ try {
   // an explicit ceiling for these required features, not an unbounded waiver.
   // Patched Zod 4 increases the complete embedded source maps. Measured:
   // 2,318,192 bytes, with core and React JavaScript still below their ceilings.
-  assertMaximumSize(archivePath, 2_400_000, "Packed archive");
+  // Modular content and the panel canvas measure about 2.46 MB with complete
+  // embedded sources. Keep a bounded archive allowance and the entry budgets.
+  assertMaximumSize(archivePath, 2_480_000, "Packed archive");
   const consumerDirectory = join(temporaryDirectory, "consumer");
   mkdirSync(consumerDirectory, { recursive: true });
   writeFileSync(
@@ -224,8 +226,8 @@ void pagebldrMetadata;
   );
   assertMaximumSize(
     join(consumerDirectory, "tree-shake.js"),
-    // Patched Zod 4 factory-only consumer: 164,506 bytes (+37,253 bytes).
-    170_000,
+    // Owned panel metadata and bounded navigation schemas: about 172 KB.
+    180_000,
     "Tree-shaken core consumer",
   );
   const treeShakenBundle = readFileSync(
@@ -306,6 +308,11 @@ if (errors.length > 0) throw errors[0];
   cpSync(
     join(workspace, "examples", "vite-basic", "src"),
     join(referenceHostDirectory, "src"),
+    { recursive: true },
+  );
+  cpSync(
+    join(workspace, "examples", "vite-basic", "public"),
+    join(referenceHostDirectory, "public"),
     { recursive: true },
   );
   const fixtureDirectory = join(consumerDirectory, "fixtures", "parity");
@@ -511,8 +518,8 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "index.js"),
-    // Phase 6 adds media contracts and upload queue, not catalogue data, to core.
-    260_000,
+    // Content panels and gallery/navigation contracts keep catalogue data separate.
+    280_000,
     "Core entry",
   );
   if (!/from ["']react["']/u.test(reactBundle)) {
@@ -524,9 +531,8 @@ if (errors.length > 0) throw errors[0];
   );
   assertMaximumSize(
     join(distributionDirectory, "styles.css"),
-    // Compact floating panels, device popover and shared overlay scrollbars
-    // bring compiled CSS to about 87.6 KB; retain a small growth allowance.
-    90_000,
+    // Panel canvas and tab header controls bring compiled CSS to about 100 KB.
+    102_000,
     "Package stylesheet",
   );
   if (!packageCss.includes("--pagebldr-focus")) {

@@ -98,6 +98,7 @@ export function structureKeyAction(input: {
 }
 
 function parentOf(document: PageDocument, elementId: string): string | null {
+  if (elementId === document.rootId) return null;
   for (const element of Object.values(document.elements))
     if (element.children.includes(elementId)) return element.id;
   return null;

@@ -68,7 +68,11 @@ import {
   resolveClickInsertion,
   resolveKeyboardMove,
 } from "./canvas-placement.js";
-import { usePagebldrEditor, useElementDragSession } from "./context.js";
+import {
+  editingDocument,
+  usePagebldrEditor,
+  useElementDragSession,
+} from "./context.js";
 import { readBlockDrag } from "./block-drag.js";
 import { SaveBlockDialog } from "./save-block-dialog.js";
 import { useMovableOverlay } from "./movable-overlay.js";
@@ -105,16 +109,16 @@ export function StructureWindow({
   const movable = useMovableOverlay({ preserveSize: true });
   const [minimized, setMinimized] = useState(false);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() =>
-    defaultExpandedStructureIds(editor.document),
+    defaultExpandedStructureIds(editingDocument(editor)),
   );
 
   useEffect(() => {
     setExpanded((current) => {
       const next = new Set(current);
-      next.add(editor.document.rootId);
+      next.add(editor.rootId);
       return next;
     });
-  }, [editor.document.rootId]);
+  }, [editor.rootId]);
 
   if (!open) return null;
 
@@ -133,12 +137,12 @@ export function StructureWindow({
       return next;
     });
 
-  const rows = visibleStructureRows(editor.document, expanded);
+  const rows = visibleStructureRows(editingDocument(editor), expanded);
   const onTreeKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.altKey || !editor.selectedId) return;
     if (!isTreeArrow(event.key)) return;
     const action = structureKeyAction({
-      document: editor.document,
+      document: editingDocument(editor),
       expanded,
       selectedId: editor.selectedId,
       key: event.key,
@@ -159,7 +163,7 @@ export function StructureWindow({
   return (
     <div
       ref={movable.ref}
-      className="absolute bottom-16 right-5 z-30 flex h-[min(28rem,calc(100%-2.5rem))] w-[22rem] min-w-72 max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-xl border bg-background shadow-xl [resize:both] @max-[1024px]:bottom-auto @max-[1024px]:top-4 @max-[1024px]:right-4 @max-[1024px]:w-[min(31rem,50vw)] @max-[600px]:w-[calc(100%-2rem)] @max-[1024px]:h-[min(42rem,calc(100%-6rem))]"
+      className="absolute bottom-16 right-5 z-30 flex h-[min(28rem,calc(100%-2.5rem))] w-[22rem] min-w-72 max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-xl border bg-background shadow-xl [resize:both] editor-compact:bottom-auto editor-compact:top-4 editor-compact:right-4 editor-compact:w-[min(31rem,50vw)] editor-narrow:w-[calc(100%-2rem)] editor-compact:h-[min(42rem,calc(100%-6rem))]"
       style={{
         ...movable.style,
         ...(minimized
@@ -191,7 +195,7 @@ export function StructureWindow({
               aria-label="Collapse all structure rows"
               size="icon-xs"
               variant="ghost"
-              onClick={() => setExpanded(new Set([editor.document.rootId]))}
+              onClick={() => setExpanded(new Set([editor.rootId]))}
             >
               <ChevronsUpIcon />
             </Button>
@@ -279,7 +283,7 @@ export function StructureWindow({
                     onClick={() => editor.select(row.id)}
                     draggable={
                       editor.mode === "edit" &&
-                      row.id !== editor.document.rootId &&
+                      row.id !== editor.rootId &&
                       !element.locked
                     }
                     onDragStart={(event) => {
@@ -351,7 +355,7 @@ export function StructureWindow({
     const position =
       ratio < 0.25 ? "before" : ratio > 0.75 ? "after" : "inside";
     const placement = resolveCanvasPlacement({
-      document: editor.document,
+      document: editingDocument(editor),
       definitions: editor.builder.elements,
       elementType: type,
       targetId,
@@ -435,7 +439,7 @@ export function StructureMenu({
 }) {
   const editor = usePagebldrEditor();
   const element = editor.document.elements[elementId]!;
-  const root = elementId === editor.document.rootId;
+  const root = elementId === editor.rootId;
   const [savingBlock, setSavingBlock] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(element.name);
@@ -448,25 +452,25 @@ export function StructureMenu({
   const readOnly = editor.mode !== "edit";
   const movePlacements = {
     up: resolveKeyboardMove({
-      document: editor.document,
+      document: editingDocument(editor),
       definitions: editor.builder.elements,
       elementId,
       direction: "up",
     }),
     down: resolveKeyboardMove({
-      document: editor.document,
+      document: editingDocument(editor),
       definitions: editor.builder.elements,
       elementId,
       direction: "down",
     }),
     in: resolveKeyboardMove({
-      document: editor.document,
+      document: editingDocument(editor),
       definitions: editor.builder.elements,
       elementId,
       direction: "in",
     }),
     out: resolveKeyboardMove({
-      document: editor.document,
+      document: editingDocument(editor),
       definitions: editor.builder.elements,
       elementId,
       direction: "out",
@@ -484,7 +488,7 @@ export function StructureMenu({
   };
   const pastePlacement = clipboard
     ? resolveClickInsertion({
-        document: editor.document,
+        document: editingDocument(editor),
         definitions: editor.builder.elements,
         elementType: clipboard.elements[clipboard.rootId]!.type,
         selectedId: elementId,
@@ -689,7 +693,7 @@ export function StructureMenu({
             disabled={readOnly || root || element.locked}
             onSelect={() => {
               editor.dispatch({ type: "remove", elementId });
-              editor.select(editor.document.rootId);
+              editor.select(editor.rootId);
             }}
           >
             <Trash2Icon /> Delete

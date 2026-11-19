@@ -1,3 +1,4 @@
+import { createId } from "@pagebldr/core";
 import type {
   ElementDefinition,
   PagebldrClipboard,
@@ -22,7 +23,7 @@ export type KeyboardMoveDirection = "up" | "down" | "in" | "out";
 export function createElementClipboard(
   definition: ElementDefinition,
 ): PagebldrClipboard {
-  const temporaryId = `new-${definition.type}`;
+  const temporaryId = createId("element");
   const element: PageElement = {
     id: temporaryId,
     type: definition.type,
@@ -35,11 +36,28 @@ export function createElementClipboard(
     locked: false,
     hidden: false,
   };
+  const elements: Record<string, PageElement> = { [temporaryId]: element };
+  if (definition.type === "content-tabs") {
+    const panels = ["Tab 1", "Tab 2", "Tab 3"].map((label, index) => {
+      const id = createId("element");
+      elements[id] = {
+        ...element,
+        id,
+        type: "tab-panel",
+        name: label,
+        elementVersion: 1,
+        props: { label, defaultOpen: index === 0 },
+        children: [],
+      };
+      return id;
+    });
+    elements[temporaryId] = { ...element, children: panels };
+  }
   return {
     format: "pagebldr-clipboard",
     schemaVersion: 1,
     rootId: temporaryId,
-    elements: { [temporaryId]: element },
+    elements,
     classes: {},
     classOrder: [],
     variables: {},
@@ -57,6 +75,8 @@ export function resolveCanvasPlacement(input: {
 }): CanvasPlacement | null {
   const target = input.document.elements[input.targetId];
   if (!target) return null;
+  if (input.targetId === input.document.rootId && input.position !== "inside")
+    return null;
   const moving = input.movingId
     ? input.document.elements[input.movingId]
     : null;
@@ -78,6 +98,7 @@ export function resolveCanvasPlacement(input: {
         target,
         input.elementType,
         input.movingId,
+        input.definitions.get(input.elementType),
       )
     )
       return null;
@@ -99,6 +120,7 @@ export function resolveCanvasPlacement(input: {
       parent,
       input.elementType,
       input.movingId,
+      input.definitions.get(input.elementType),
     )
   )
     return null;
@@ -137,6 +159,7 @@ export function resolveKeyboardMove(input: {
   readonly elementId: string;
   readonly direction: KeyboardMoveDirection;
 }): CanvasPlacement | null {
+  if (input.elementId === input.document.rootId) return null;
   const element = input.document.elements[input.elementId];
   const parent = element ? findParent(input.document, element.id) : undefined;
   if (!element || !parent || element.locked) return null;
@@ -182,7 +205,13 @@ function canContain(
   parent: PageElement,
   elementType: string,
   movingId?: string,
+  childDefinition?: ElementDefinition,
 ) {
+  if (
+    childDefinition?.parentTypes &&
+    !childDefinition.parentTypes.includes(parent.type)
+  )
+    return false;
   const policy = definition?.childPolicy ?? { kind: "any" as const };
   if (policy.kind === "none") return false;
   const childCount = parent.children.filter((id) => id !== movingId).length;

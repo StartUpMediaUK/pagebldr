@@ -18,8 +18,9 @@ export default defineConfig({
   },
   external: ["react", "react-dom"],
   esbuildOptions(options) {
-    // Remove compiler whitespace without renaming public/debug symbols.
+    // Compress syntax without renaming public/debug symbols.
     options.minifyWhitespace = true;
+    options.minifySyntax = true;
   },
   noExternal: [/^@pagebldr\//u],
   onSuccess: async () => {

@@ -4,6 +4,7 @@ import type {
   DocumentChangeEvent,
   Pagebldr,
   PageDocument,
+  PreparedResources,
   ResourceReference,
 } from "@pagebldr/core";
 import type {
@@ -34,9 +35,14 @@ import type { createEditorLifecycle } from "./editor/lifecycle.js";
 export { MediaPicker, MediaViewer } from "./editor/media-picker.js";
 export type { MediaPickerProps } from "./editor/media-picker.js";
 
-export { PagebldrRenderer } from "./renderer.js";
+export { PagebldrRenderer, defineReactElementRenderer } from "./renderer.js";
 export { PagebldrRuntimeInteractions } from "./runtime-interactions.js";
-export type { PagebldrRendererProps } from "./renderer.js";
+export type {
+  PagebldrRendererProps,
+  ReactElementRenderer,
+  ReactElementRenderProps,
+} from "./renderer.js";
+import type { ReactElementRenderer } from "./renderer.js";
 
 export type { DocumentChangeEvent } from "@pagebldr/core";
 export { usePagebldrEditor } from "./editor/context.js";
@@ -76,6 +82,8 @@ export interface PublishRequest {
 }
 
 export interface PagebldrEditorProps {
+  readonly elementRenderers?: readonly ReactElementRenderer[];
+  readonly resources?: PreparedResources;
   readonly lifecycle?: ReturnType<typeof createEditorLifecycle>;
   readonly librarySource?: EditorLibrarySource;
   readonly builder: Pagebldr;
@@ -98,6 +106,7 @@ export function PagebldrEditor(props: PagebldrEditorProps): ReactElement {
 }
 
 export interface PagebldrPageProps {
+  readonly elementRenderers?: readonly ReactElementRenderer[];
   readonly builder: Pagebldr;
   readonly page: PublishedPage;
   readonly events?: EventDelivery;
@@ -113,6 +122,7 @@ export function PagebldrPage({
   analyticsConsent = false,
   visit = "mount",
   styleNonce,
+  elementRenderers,
 }: PagebldrPageProps): ReactElement {
   useEffect(() => {
     if (!events || !analyticsConsent || visit !== "mount") return;
@@ -138,6 +148,7 @@ export function PagebldrPage({
       document: page.document,
       resources: page.resources,
       mode: "published",
+      ...(elementRenderers ? { elementRenderers } : {}),
       ...(styleNonce ? { styleNonce } : {}),
     }),
   );

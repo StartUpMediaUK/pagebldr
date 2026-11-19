@@ -32,6 +32,13 @@ export interface RenderElement {
 export interface ElementRenderContext {
   /** Stable Element identity for definition-owned descendant IDs. */
   readonly elementId?: string;
+  /** Metadata in the same order as children; children remain ordinary Elements. */
+  readonly childElements?: readonly {
+    readonly id: string;
+    readonly props: Readonly<Record<string, unknown>>;
+  }[];
+  /** Direct child containing the editor selection, if any. */
+  readonly selectedChildId?: string;
   readonly children: readonly RenderNode[];
   readonly mode: "edit" | "preview" | "published";
   readonly now: Date;
@@ -143,6 +150,10 @@ export type ElementControl<Props> =
     })
   | (ElementControlBase<Props> & {
       readonly kind: "collection";
+      readonly hierarchy?: {
+        readonly childrenKey: string;
+        readonly maxDepth: number;
+      };
       readonly itemLabel: string;
       readonly minItems?: number;
       readonly maxItems?: number;
@@ -174,6 +185,8 @@ export interface ElementDefinition<
   readonly controls?: readonly ElementControl<InferSchemaOutput<Schema>>[];
   readonly styleControls?: readonly ElementControl<InferSchemaOutput<Schema>>[];
   readonly childPolicy?: ElementChildPolicy;
+  /** Restrict ownership without introducing a second, non-Document tree. */
+  readonly parentTypes?: readonly string[];
   readonly styles?: readonly StyleCapabilityDefinition["key"][];
   readonly accessibility?: ElementAccessibility;
   readonly inlineEditing?: ElementInlineEditing<InferSchemaOutput<Schema>>;

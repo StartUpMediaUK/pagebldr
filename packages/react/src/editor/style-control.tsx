@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import {
   ChevronDownIcon,
   LinkIcon,
@@ -98,7 +98,15 @@ const inspectorProperties: Readonly<Record<string, readonly string[]>> = {
     "transition",
     "cursor",
   ],
-  position: ["position", "top", "right", "bottom", "left", "zIndex"],
+  position: [
+    "position",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "zIndex",
+    "scrollMarginTop",
+  ],
 };
 
 const advancedCapabilities = new Set([
@@ -163,12 +171,60 @@ export function describeStyleOrigin(
   return `${owner} · ${breakpointLabels[source.breakpoint]} · ${stateLabels[source.state]}${inherited}`;
 }
 
+export interface StyleSectionExtension {
+  readonly label?: string;
+  readonly content: ReactNode;
+  readonly propKeys: readonly string[];
+  readonly omitStyleProperties?: readonly string[];
+}
+
+/** Reset definition-owned controls and local CSS together as one undoable edit. */
+export function resetStyleSection(
+  document: PageDocument,
+  elementId: string,
+  defaults: Readonly<Record<string, unknown>>,
+  propKeys: readonly string[],
+  styleProperties: readonly string[],
+  breakpoint: Breakpoint,
+  state: StyleState,
+): PageDocument {
+  const element = document.elements[elementId]!;
+  const props = { ...element.props };
+  for (const key of propKeys) {
+    if (defaults[key] === undefined) delete props[key];
+    else props[key] = defaults[key];
+  }
+  const styles = replaceStyleProperties(
+    element.styles,
+    breakpoint,
+    state,
+    styleProperties,
+    null,
+  );
+  if (
+    JSON.stringify(props) === JSON.stringify(element.props) &&
+    JSON.stringify(styles) === JSON.stringify(element.styles)
+  )
+    return document;
+  return {
+    ...document,
+    elements: {
+      ...document.elements,
+      [elementId]: { ...element, props, styles },
+    },
+  };
+}
+
 export function StyleControls({
   element,
   section,
+  sections,
+  showStateControls = true,
 }: {
   readonly element: PageElement;
   readonly section: "style" | "advanced";
+  readonly sections?: Readonly<Record<string, StyleSectionExtension>>;
+  readonly showStateControls?: boolean;
 }) {
   const editor = usePagebldrEditor();
   const breakpoint = styleBreakpointFromViewport(editor.viewport);
@@ -180,16 +236,25 @@ export function StyleControls({
     }),
     section,
   );
+  const allCapabilities = [
+    ...registeredCapabilities,
+    ...Object.entries(sections ?? {})
+      .filter(
+        ([key]) => !registeredCapabilities.some((item) => item.key === key),
+      )
+      .map(([key, value]) => ({
+        key,
+        label: value.label ?? key,
+        properties: [],
+      })),
+  ];
   const moveWidth = registeredCapabilities.some(
     ({ key, properties }) => key === "size" && properties.includes("width"),
   );
   const layoutCapabilities =
-    moveWidth && !registeredCapabilities.some(({ key }) => key === "layout")
-      ? [
-          { key: "layout", label: "Layout", properties: [] },
-          ...registeredCapabilities,
-        ]
-      : registeredCapabilities;
+    moveWidth && !allCapabilities.some(({ key }) => key === "layout")
+      ? [{ key: "layout", label: "Layout", properties: [] }, ...allCapabilities]
+      : allCapabilities;
   const order = [
     "typography",
     "background",
@@ -200,6 +265,7 @@ export function StyleControls({
     "effects",
     "position",
     "responsive-visibility",
+    "behaviour",
   ];
   const capabilities = layoutCapabilities
     .map((capability) =>
@@ -218,9 +284,59 @@ export function StyleControls({
     )
     .sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
   const readOnly = editor.mode !== "edit" || element.locked;
+  const defaults = (definition?.defaults() ?? {}) as Record<string, unknown>;
+  const reset = (
+    properties: readonly string[],
+    propKeys: readonly string[],
+  ) => {
+    if (!sections) {
+      editor.dispatch({
+        type: "replace-styles",
+        elementId: element.id,
+        styles: replaceStyleProperties(
+          element.styles,
+          breakpoint,
+          editor.styleState,
+          properties,
+          null,
+        ),
+      });
+      return;
+    }
+    const draft = resetStyleSection(
+      editor.document,
+      element.id,
+      defaults,
+      propKeys,
+      properties,
+      breakpoint,
+      editor.styleState,
+    );
+    if (draft !== editor.document)
+      editor.dispatch({
+        type: "apply-subtree",
+        elementId: element.id,
+        baseDocument: editor.document,
+        document: draft,
+      });
+  };
+  const hasPropChanges = (keys: readonly string[]) =>
+    keys.some(
+      (key) =>
+        element.props[key] !== undefined &&
+        element.props[key] !== defaults[key],
+    );
 
   return (
-    <FieldGroup className="@container gap-0 pb-6">
+    <FieldGroup
+      className="@container gap-0 pb-6"
+      style={{
+        containerName:
+          editor.rootId === editor.document.rootId
+            ? "pagebldr-inspector"
+            : "pagebldr-panel-inspector",
+      }}
+    >
       <div className="flex flex-wrap items-center gap-1 border-b pb-3">
         <div className="w-26 shrink-0">
           <NativeSelect
@@ -244,32 +360,34 @@ export function StyleControls({
             ))}
           </NativeSelect>
         </div>
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          value={editor.styleState}
-          onValueChange={(value) => {
-            if (
-              value === "normal" ||
-              value === "hover" ||
-              value === "focusVisible"
-            )
-              editor.setStyleState(value);
-          }}
-          aria-label="Authored interaction state"
-          className="order-first w-max shrink-0"
-        >
-          {(Object.keys(stateLabels) as StyleState[]).map((value) => (
-            <ToggleGroupItem
-              key={value}
-              value={value}
-              className="shrink-0 px-2"
-            >
-              {stateLabels[value]}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        {showStateControls ? (
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            value={editor.styleState}
+            onValueChange={(value) => {
+              if (
+                value === "normal" ||
+                value === "hover" ||
+                value === "focusVisible"
+              )
+                editor.setStyleState(value);
+            }}
+            aria-label="Authored interaction state"
+            className="order-first w-max shrink-0"
+          >
+            {(Object.keys(stateLabels) as StyleState[]).map((value) => (
+              <ToggleGroupItem
+                key={value}
+                value={value}
+                className="shrink-0 px-2"
+              >
+                {stateLabels[value]}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        ) : null}
         {editor.styleState === "normal" ? null : (
           <FieldDescription className="sr-only">
             The selected Element is forced into this state on the editor canvas.
@@ -302,7 +420,7 @@ export function StyleControls({
       {capabilities.map((capability) => (
         <Collapsible
           key={capability.key}
-          defaultOpen={capability.key !== "responsive-visibility"}
+          defaultOpen={!sections && capability.key !== "responsive-visibility"}
           className="border-b"
         >
           <div className="flex items-center gap-2 py-2">
@@ -323,26 +441,20 @@ export function StyleControls({
               size="sm"
               disabled={
                 readOnly ||
-                !capability.properties.some(
-                  (property) =>
-                    element.styles[breakpoint]?.[editor.styleState]?.[
-                      property
-                    ] !== undefined,
-                )
+                (!hasPropChanges(sections?.[capability.key]?.propKeys ?? []) &&
+                  !capability.properties.some(
+                    (property) =>
+                      element.styles[breakpoint]?.[editor.styleState]?.[
+                        property
+                      ] !== undefined,
+                  ))
               }
               aria-label={`Reset ${capability.label} section`}
               onClick={() =>
-                editor.dispatch({
-                  type: "replace-styles",
-                  elementId: element.id,
-                  styles: replaceStyleProperties(
-                    element.styles,
-                    breakpoint,
-                    editor.styleState,
-                    capability.properties,
-                    null,
-                  ),
-                })
+                reset(
+                  capability.properties,
+                  sections?.[capability.key]?.propKeys ?? [],
+                )
               }
             >
               Reset
@@ -354,10 +466,15 @@ export function StyleControls({
                 ["typography", "size", "border", "position"].includes(
                   capability.key,
                 )
-                  ? "grid grid-cols-1 gap-4 pb-4 @min-[400px]:grid-cols-2"
+                  ? "grid grid-cols-1 gap-4 pb-4 editor-fields-wide:grid-cols-2"
                   : "gap-4 pb-4"
               }
             >
+              {sections?.[capability.key] ? (
+                <div className="col-span-full">
+                  {sections[capability.key]!.content}
+                </div>
+              ) : null}
               {capability.key === "spacing" ? (
                 <SpacingControls
                   element={element}
@@ -370,8 +487,12 @@ export function StyleControls({
                 <VisibilityControls element={element} readOnly={readOnly} />
               ) : (
                 (inspectorProperties[capability.key] ?? capability.properties)
-                  .filter((property) =>
-                    capability.properties.includes(property),
+                  .filter(
+                    (property) =>
+                      capability.properties.includes(property) &&
+                      !sections?.[
+                        capability.key
+                      ]?.omitStyleProperties?.includes(property),
                   )
                   .map((property) => (
                     <StylePropertyField
@@ -758,6 +879,7 @@ function propertyLabel(property: string): string {
     cursor: "Pointer",
     position: "Position type",
     zIndex: "Stack order",
+    scrollMarginTop: "Anchor top clearance",
   };
   if (sourceLabels[property]) return sourceLabels[property];
   return property

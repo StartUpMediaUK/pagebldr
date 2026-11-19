@@ -99,7 +99,22 @@ function collectVariables(value: unknown, ids: Set<string>): void {
 export function remapClipboard(
   input: PagebldrClipboard,
   idFactory: IdFactory,
+  reservedAnchors: readonly string[] = [],
 ): PagebldrClipboard {
+  const anchors = new Set(reservedAnchors);
+  const copyProps = (props: Readonly<Record<string, unknown>>) => {
+    const copied = remapReferences(props, idMap) as Record<string, unknown>;
+    if (typeof props.anchorId === "string") {
+      let counter = 1;
+      let anchor: string;
+      do {
+        anchor = `${props.anchorId.slice(0, 60)}-copy-${counter++}`;
+      } while (anchors.has(anchor));
+      anchors.add(anchor);
+      copied.anchorId = anchor;
+    }
+    return copied;
+  };
   const idMap = new Map(
     Object.keys(input.elements).map((id) => [id, idFactory("element")]),
   );
@@ -116,11 +131,9 @@ export function remapClipboard(
         {
           ...structuredClone(element),
           id,
-          name: `${element.name} copy`,
+          name: `${element.name.slice(0, 115)} copy`,
           children: element.children.map((child) => idMap.get(child) ?? child),
-          props: remapReferences(element.props, idMap) as Readonly<
-            Record<string, unknown>
-          >,
+          props: copyProps(element.props),
         },
       ];
     }),
@@ -138,6 +151,9 @@ function remapReferences(
   if (Array.isArray(value))
     return value.map((child) => remapReferences(child, ids));
   if (!value || typeof value !== "object") return value;
+  // A Resource's opaque Host identity is not a Document reference.
+  if ("kind" in value && typeof value.kind === "string" && "value" in value)
+    return structuredClone(value);
   return Object.fromEntries(
     Object.entries(value).map(([key, child]) => [
       key,

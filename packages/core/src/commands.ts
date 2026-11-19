@@ -1,4 +1,4 @@
-import { cloneDocument } from "./document.js";
+import { cloneDocument, serializeDocument } from "./document.js";
 import type {
   PageDocument,
   PageElement,
@@ -28,6 +28,12 @@ import { PagebldrError } from "./types.js";
 import { assertValidDocument } from "./validation.js";
 
 export type EditorCommand =
+  | {
+      readonly type: "apply-subtree";
+      readonly elementId: string;
+      readonly baseDocument: PageDocument;
+      readonly document: PageDocument;
+    }
   | {
       readonly type: "insert";
       readonly parentId: string;
@@ -195,6 +201,47 @@ export function executeCommand(
   assertValidDocument(source, definitions, styles);
   if (command.type === "apply-template")
     assertValidDocument(command.template, definitions, styles);
+  if (command.type === "apply-subtree") {
+    assertValidDocument(command.document, definitions, styles);
+    if (
+      source !== command.baseDocument &&
+      serializeDocument(source) !== serializeDocument(command.baseDocument)
+    )
+      refusal(
+        "The page changed while editing this content. Reopen the panel before saving.",
+      );
+    if (
+      command.document.id !== source.id ||
+      command.document.rootId !== source.rootId ||
+      command.document.schemaVersion !== source.schemaVersion
+    )
+      refusal("A content edit must preserve the page identity.");
+    const owned = new Set([
+      command.elementId,
+      ...descendants(source as MutableDocument, command.elementId),
+    ]);
+    const nextOwned = new Set([
+      command.elementId,
+      ...descendants(command.document as MutableDocument, command.elementId),
+    ]);
+    if (!command.document.elements[command.elementId])
+      refusal("The content root cannot be removed.");
+    assertUnlocked(element(source as MutableDocument, command.elementId));
+    for (const patch of diffDocuments(source, command.document)) {
+      if (patch.op === "page" || patch.op === "settings")
+        refusal("Content editing cannot change page settings.");
+      if (patch.op === "element") {
+        if (
+          (patch.before && !owned.has(patch.id)) ||
+          (patch.after && !nextOwned.has(patch.id))
+        )
+          refusal(
+            "Content editing cannot change Elements outside its subtree.",
+          );
+        if (patch.before) assertUnlocked(patch.before);
+      }
+    }
+  }
   const document = cloneDocument(source) as MutableDocument;
   mutate(document, command, definitions);
   assertValidDocument(document, definitions, styles);
@@ -221,6 +268,15 @@ function mutate(
   command: EditorCommand,
   definitions: ReadonlyMap<string, ElementDefinition>,
 ): void {
+  if (command.type === "apply-subtree") {
+    const next = cloneDocument(command.document) as MutableDocument;
+    document.elements = next.elements;
+    document.classes = next.classes;
+    document.classOrder = next.classOrder;
+    document.variables = next.variables;
+    document.variableOrder = next.variableOrder;
+    return;
+  }
   if (command.type === "insert")
     return insert(document, command.parentId, command.index, command.clipboard);
   if (command.type === "paste")
@@ -228,7 +284,15 @@ function mutate(
       document,
       command.parentId,
       command.index,
-      remapClipboard(command.clipboard, command.idFactory ?? createId),
+      remapClipboard(
+        command.clipboard,
+        command.idFactory ?? createId,
+        Object.values(document.elements).flatMap((element) =>
+          typeof element.props.anchorId === "string"
+            ? [element.props.anchorId]
+            : [],
+        ),
+      ),
     );
   if (command.type === "duplicate") {
     if (command.elementId === document.rootId) rootRefusal("duplicated");
@@ -238,6 +302,11 @@ function mutate(
     const clipboard = remapClipboard(
       serializeSubtree(document, command.elementId),
       command.idFactory ?? createId,
+      Object.values(document.elements).flatMap((element) =>
+        typeof element.props.anchorId === "string"
+          ? [element.props.anchorId]
+          : [],
+      ),
     );
     return insert(document, location.parent.id, location.index + 1, clipboard);
   }
@@ -642,6 +711,7 @@ function rootRefusal(action: string): never {
 }
 
 const labels: Record<EditorCommand["type"], string> = {
+  "apply-subtree": "Edit panel content",
   insert: "Add element",
   paste: "Paste element",
   move: "Move element",

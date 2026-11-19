@@ -77,6 +77,7 @@ const variableProperties: Readonly<Record<VariableKind, readonly string[]>> = {
     "paddingRight",
     "paddingBottom",
     "paddingLeft",
+    "scrollMarginTop",
     "top",
     "right",
     "bottom",

@@ -84,6 +84,8 @@ export function CollectionControl({
   elementId,
   onChange,
   value,
+  depth = 1,
+  onOutdent,
 }: {
   readonly applicationDestinations: readonly ApplicationDestinationOption[];
   readonly control: CollectionControlDefinition;
@@ -92,11 +94,20 @@ export function CollectionControl({
   readonly elementId: string;
   readonly onChange: (value: readonly CollectionItem[]) => void;
   readonly value: unknown;
+  readonly depth?: number;
+  readonly onOutdent?: (index: number) => void;
 }) {
   const id = useId();
   const items = Array.isArray(value)
     ? (value as readonly CollectionItem[])
     : [];
+  const hierarchy = control.hierarchy;
+  const childrenOf = (item: CollectionItem): readonly CollectionItem[] =>
+    hierarchy && Array.isArray(item[hierarchy.childrenKey])
+      ? (item[hierarchy.childrenKey] as CollectionItem[])
+      : [];
+  const height = (item: CollectionItem): number =>
+    1 + Math.max(0, ...childrenOf(item).map(height));
   const atMinimum = items.length <= (control.minItems ?? 0);
   const atMaximum =
     items.length >= (control.maxItems ?? Number.POSITIVE_INFINITY);
@@ -125,7 +136,56 @@ export function CollectionControl({
                 <FieldLegend className="m-0" variant="label">
                   {control.itemLabel} {index + 1}
                 </FieldLegend>
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1">
+                  {hierarchy ? (
+                    <>
+                      <Button
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        aria-label={`Indent ${control.itemLabel.toLowerCase()} ${index + 1}`}
+                        disabled={
+                          disabled ||
+                          index === 0 ||
+                          depth + height(item) > hierarchy.maxDepth
+                        }
+                        onClick={() => {
+                          const previous = items[index - 1]!;
+                          onChange(
+                            items.flatMap((candidate, candidateIndex) =>
+                              candidateIndex === index
+                                ? []
+                                : [
+                                    candidateIndex === index - 1
+                                      ? {
+                                          ...previous,
+                                          [hierarchy.childrenKey]: [
+                                            ...childrenOf(previous),
+                                            item,
+                                          ],
+                                        }
+                                      : candidate,
+                                  ],
+                            ),
+                          );
+                        }}
+                      >
+                        Indent
+                      </Button>
+                      {onOutdent ? (
+                        <Button
+                          type="button"
+                          size="xs"
+                          variant="ghost"
+                          aria-label={`Outdent ${control.itemLabel.toLowerCase()} ${index + 1}`}
+                          disabled={disabled}
+                          onClick={() => onOutdent(index)}
+                        >
+                          Outdent
+                        </Button>
+                      ) : null}
+                    </>
+                  ) : null}
                   <Button
                     aria-label={`Move ${control.itemLabel.toLowerCase()} ${index + 1} up`}
                     disabled={disabled || index === 0}
@@ -253,6 +313,41 @@ export function CollectionControl({
                   />
                 );
               })}
+              {hierarchy && depth < hierarchy.maxDepth ? (
+                <CollectionControl
+                  applicationDestinations={applicationDestinations}
+                  control={{
+                    ...control,
+                    label: `Children of ${typeof item.label === "string" ? item.label : itemId}`,
+                    minItems: 0,
+                  }}
+                  disabled={disabled}
+                  document={document}
+                  elementId={`${elementId}:${itemId}`}
+                  value={childrenOf(item)}
+                  depth={depth + 1}
+                  onChange={(children) =>
+                    updateItem(index, hierarchy.childrenKey, children)
+                  }
+                  onOutdent={(childIndex) => {
+                    const children = childrenOf(item);
+                    const child = children[childIndex];
+                    if (!child) return;
+                    const next = items.map((candidate, candidateIndex) =>
+                      candidateIndex === index
+                        ? {
+                            ...item,
+                            [hierarchy.childrenKey]: children.filter(
+                              (_, i) => i !== childIndex,
+                            ),
+                          }
+                        : candidate,
+                    );
+                    next.splice(index + 1, 0, child);
+                    onChange(next);
+                  }}
+                />
+              ) : null}
             </FieldSet>
           );
         })}

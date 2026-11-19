@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useContext,
   useEffect,
   useId,
   useRef,
@@ -9,6 +10,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { TabHeaderStyleControl } from "./tab-header-style-control.js";
 import {
   createEditorComposition,
   defineEditorContribution,
@@ -100,6 +102,8 @@ import type {
 import type { PagebldrEditorProps } from "../index.js";
 import {
   EditorProvider,
+  editingDocument,
+  PanelEditingActions,
   usePagebldrEditor,
   useEditorSelectionVersion,
   type ApplicationDestinationOption,
@@ -119,6 +123,10 @@ import { DestinationControl } from "./destination-control.js";
 import { AnchorControl } from "./anchor-control.js";
 import { CollectionControl } from "./collection-control.js";
 import { RichTextControl } from "./rich-text-control.js";
+import {
+  PanelContentControl,
+  convertTextTabs,
+} from "./panel-content-control.js";
 import { LibraryPanel } from "./library-panel.js";
 import { MediaControl } from "./media-control.js";
 import { SliderField } from "./slider-field.js";
@@ -162,6 +170,10 @@ export function EditorShell(props: PagebldrEditorProps) {
           : (props.mode ?? "edit")
       }
       onChange={props.onChange}
+      {...(props.elementRenderers
+        ? { elementRenderers: props.elementRenderers }
+        : {})}
+      {...(props.resources ? { resources: props.resources } : {})}
       {...(props.resolveApplicationDestination
         ? {
             resolveApplicationDestination: props.resolveApplicationDestination,
@@ -189,6 +201,11 @@ function EditorWorkspace({
     lifecycle?.getSnapshot ?? emptySnapshot,
   );
   const editor = usePagebldrEditor();
+  const panelActions = useContext(PanelEditingActions);
+  // Match the named container queries in editor.css. Panel dialogs occupy 80%.
+  const layoutScale = editor.rootId === editor.document.rootId ? 1 : 0.8;
+  const compactBreakpoint = 1024 * layoutScale;
+  const narrowBreakpoint = 600 * layoutScale;
   const selectionVersion = useEditorSelectionVersion();
   const [pending, setPending] = useState<"save" | "publish" | null>(null);
   const [legacyStatus, setStatus] = useState("Ready");
@@ -235,7 +252,7 @@ function EditorWorkspace({
     preserveSize: true,
     enabled: (element) =>
       (element.closest<HTMLElement>("[data-pagebldr-editor]")?.clientWidth ??
-        1024) < 1024,
+        compactBreakpoint) < compactBreakpoint,
   });
   const readOnly = editor.mode !== "edit" || editor.previewing;
 
@@ -279,7 +296,20 @@ function EditorWorkspace({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
+      const active =
+        event.target instanceof Element
+          ? event.target
+          : window.document.activeElement;
+      if (active?.closest("[data-pagebldr-editor]") !== editorRootRef.current)
+        return;
+      if (editorRootRef.current?.closest('[inert], [aria-hidden="true"]'))
+        return;
       const modifier = event.ctrlKey || event.metaKey;
+      if (modifier && event.key.toLowerCase() === "s" && panelActions) {
+        event.preventDefault();
+        panelActions.save();
+        return;
+      }
       if (event.key === "Escape" && editor.previewing) {
         event.preventDefault();
         editor.setPreviewing(false);
@@ -307,7 +337,7 @@ function EditorWorkspace({
         modifier &&
         event.key.toLowerCase() === "c" &&
         editor.selectedId &&
-        editor.selectedId !== editor.document.rootId
+        editor.selectedId !== editor.rootId
       ) {
         event.preventDefault();
         setClipboard(
@@ -327,7 +357,7 @@ function EditorWorkspace({
         const copied = clipboard.elements[clipboard.rootId];
         const placement = copied
           ? resolveClickInsertion({
-              document: editor.document,
+              document: editingDocument(editor),
               definitions: editor.builder.elements,
               elementType: copied.type,
               selectedId: editor.selectedId,
@@ -348,7 +378,7 @@ function EditorWorkspace({
         modifier &&
         event.key.toLowerCase() === "d" &&
         editor.selectedId &&
-        editor.selectedId !== editor.document.rootId &&
+        editor.selectedId !== editor.rootId &&
         !readOnly &&
         !editor.selected?.locked
       ) {
@@ -366,7 +396,7 @@ function EditorWorkspace({
         const direction = keyboardMoveDirection(event.key);
         const placement = direction
           ? resolveKeyboardMove({
-              document: editor.document,
+              document: editingDocument(editor),
               definitions: editor.builder.elements,
               elementId: editor.selectedId,
               direction,
@@ -395,44 +425,54 @@ function EditorWorkspace({
       if (
         (event.key === "Delete" || event.key === "Backspace") &&
         editor.selectedId &&
-        editor.selectedId !== editor.document.rootId &&
+        editor.selectedId !== editor.rootId &&
         !editor.selected?.locked &&
         !readOnly
       ) {
         event.preventDefault();
         editor.dispatch({ type: "remove", elementId: editor.selectedId });
-        editor.select(editor.document.rootId);
+        editor.select(editor.rootId);
       }
       if (event.key === "Escape") {
-        editor.select(editor.document.rootId);
+        editor.select(editor.rootId);
         setPanelMode("add");
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [clipboard, editor, canSave, lifecycleBlocked, perform, readOnly]);
+  }, [
+    clipboard,
+    editor,
+    canSave,
+    lifecycleBlocked,
+    perform,
+    readOnly,
+    panelActions,
+  ]);
 
   useEffect(() => {
     const root = editorRootRef.current;
     if (!root) return;
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return;
-      setCompact(entry.contentRect.width < 1024);
+      setCompact(entry.contentRect.width < compactBreakpoint);
       if (initializedLayout.current) return;
       initializedLayout.current = true;
-      if (entry.contentRect.width < 1024) {
+      if (entry.contentRect.width < compactBreakpoint) {
         setPanelOpen(false);
         setStructureOpen(false);
       }
     });
     observer.observe(root);
     return () => observer.disconnect();
-  }, []);
+  }, [compactBreakpoint]);
 
   useEffect(() => {
-    const compactLayout = (editorRootRef.current?.clientWidth ?? 1024) < 1024;
+    const compactLayout =
+      (editorRootRef.current?.clientWidth ?? compactBreakpoint) <
+      compactBreakpoint;
     const hasElement =
-      !!editor.selectedId && editor.selectedId !== editor.document.rootId;
+      !!editor.selectedId && editor.selectedId !== editor.rootId;
     if (
       hasElement ||
       (!compactLayout && editor.selectedId && selectionVersion > 0)
@@ -443,7 +483,13 @@ function EditorWorkspace({
       setPanelMode("add");
       if (!compactLayout && !editor.selectedId) setPanelOpen(true);
     }
-  }, [compact, editor.document.rootId, editor.selectedId, selectionVersion]);
+  }, [
+    compact,
+    compactBreakpoint,
+    editor.rootId,
+    editor.selectedId,
+    selectionVersion,
+  ]);
 
   useEffect(() => {
     if (editor.document !== savedDocument.current) setStatus("Unsaved");
@@ -485,6 +531,10 @@ function EditorWorkspace({
         "@container flex h-dvh min-h-0 flex-col overflow-hidden bg-background text-foreground",
         className,
       )}
+      style={{
+        containerName:
+          layoutScale === 1 ? "pagebldr-editor" : "pagebldr-panel-editor",
+      }}
       data-pagebldr-editor={editor.builder.namespace}
       data-pagebldr-document={editor.document.id}
       data-pagebldr-mode={editor.mode}
@@ -503,14 +553,20 @@ function EditorWorkspace({
         panelOpen={panelOpen}
         onPanelOpenChange={(open) => {
           setPanelOpen(open);
-          if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+          if (
+            open &&
+            (editorRootRef.current?.clientWidth ?? 0) <= narrowBreakpoint
+          )
             setStructureOpen(false);
         }}
         onPageDesign={() => setPageDesignOpen(true)}
         structureOpen={structureOpen}
         onStructureOpenChange={(open) => {
           setStructureOpen(open);
-          if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+          if (
+            open &&
+            (editorRootRef.current?.clientWidth ?? 0) <= narrowBreakpoint
+          )
             setPanelOpen(false);
         }}
         status={status}
@@ -528,7 +584,7 @@ function EditorWorkspace({
           )
         }
         end={
-          editor.previewing
+          editor.previewing || editor.rootId !== editor.document.rootId
             ? null
             : composition.render("toolbar.trailing", contributionContext)
         }
@@ -554,13 +610,13 @@ function EditorWorkspace({
                           }
                         : { height: "100%" }
                     }
-                    className="z-20 flex w-full shrink-0 flex-col border-r bg-background @max-[1024px]:absolute @max-[1024px]:bottom-auto @max-[1024px]:left-4 @max-[1024px]:top-4 @max-[1024px]:h-[min(42rem,calc(100%-6rem))] @max-[1024px]:w-[min(26rem,calc(100%-2rem))] @max-[600px]:w-[calc(100%-2rem)] @max-[1024px]:rounded-xl @max-[1024px]:border @max-[1024px]:shadow-xl"
+                    className="z-20 flex w-full shrink-0 flex-col border-r bg-background editor-compact:absolute editor-compact:bottom-auto editor-compact:left-4 editor-compact:top-4 editor-compact:h-[min(42rem,calc(100%-6rem))] editor-compact:w-[min(26rem,calc(100%-2rem))] editor-narrow:w-[calc(100%-2rem)] editor-compact:rounded-xl editor-compact:border editor-compact:shadow-xl"
                     aria-label={
                       panelMode === "add" ? "Add to page" : "Element inspector"
                     }
                   >
                     <div
-                      className="flex min-h-14 items-center gap-2 border-b px-2 py-2 @max-[1024px]:cursor-move @max-[1024px]:touch-none"
+                      className="flex min-h-14 items-center gap-2 border-b px-2 py-2 editor-compact:cursor-move editor-compact:touch-none"
                       onDoubleClick={(event) => {
                         if (!(event.target as HTMLElement).closest("button"))
                           panelOverlay.reset();
@@ -652,13 +708,19 @@ function EditorWorkspace({
               panelOpen={panelOpen}
               onPanelOpenChange={(open) => {
                 setPanelOpen(open);
-                if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+                if (
+                  open &&
+                  (editorRootRef.current?.clientWidth ?? 0) <= narrowBreakpoint
+                )
                   setStructureOpen(false);
               }}
               structureOpen={structureOpen}
               onStructureOpenChange={(open) => {
                 setStructureOpen(open);
-                if (open && (editorRootRef.current?.clientWidth ?? 0) <= 600)
+                if (
+                  open &&
+                  (editorRootRef.current?.clientWidth ?? 0) <= narrowBreakpoint
+                )
                   setPanelOpen(false);
               }}
             />
@@ -796,10 +858,11 @@ function EditorToolbar({
   readonly structureOpen: boolean;
 }) {
   const editor = usePagebldrEditor();
+  const panelActions = useContext(PanelEditingActions);
   return (
     <header className="relative flex min-h-14 items-center gap-2 px-2">
       {!editor.previewing ? (
-        <div className="@max-[1024px]:hidden">
+        <div className="editor-compact:hidden">
           <ToolButton
             label={panelOpen ? "Close Add panel" : "Open Add panel"}
             onClick={() => onPanelOpenChange(!panelOpen)}
@@ -808,23 +871,34 @@ function EditorToolbar({
         </div>
       ) : null}
       <div className="flex min-w-0 max-w-80 items-center gap-3 px-1">
-        <Input
-          aria-label="Page title"
-          className="h-8 min-w-0 border-0 bg-transparent px-2 text-sm font-semibold shadow-none focus-visible:ring-1"
-          disabled={editor.mode !== "edit"}
-          value={editor.document.title}
-          onChange={(event) => {
-            const title = event.currentTarget.value;
-            if (title.trim())
-              editor.dispatch({ type: "update-page", title }, "page-title");
-          }}
-        />
-        <Badge variant="secondary" className="shrink-0">
+        {editor.rootId !== editor.document.rootId ? (
+          <span className="truncate text-sm font-semibold">
+            {editor.document.elements[editor.rootId]?.name ?? "Panel content"}
+          </span>
+        ) : (
+          <Input
+            aria-label="Page title"
+            className="h-8 min-w-0 border-0 bg-transparent px-2 text-sm font-semibold shadow-none focus-visible:ring-1"
+            disabled={
+              editor.mode !== "edit" || editor.rootId !== editor.document.rootId
+            }
+            value={editor.document.title}
+            onChange={(event) => {
+              const title = event.currentTarget.value;
+              if (title.trim())
+                editor.dispatch({ type: "update-page", title }, "page-title");
+            }}
+          />
+        )}
+        <Badge
+          variant="secondary"
+          className={cn("shrink-0", panelActions && "editor-narrow:hidden")}
+        >
           {status}
         </Badge>
       </div>
       {editor.previewing || editor.mode !== "edit" ? (
-        <Badge className="@max-[1024px]:hidden" variant="secondary">
+        <Badge className="editor-compact:hidden" variant="secondary">
           {editor.previewing || editor.mode === "preview"
             ? "Preview"
             : "Read only"}
@@ -833,7 +907,7 @@ function EditorToolbar({
       <div
         className={cn(
           "flex flex-1 items-center justify-center",
-          !editor.previewing && "@max-[1024px]:hidden",
+          !editor.previewing && "editor-compact:hidden",
         )}
       >
         {start}
@@ -841,7 +915,7 @@ function EditorToolbar({
       {!editor.previewing ? (
         <>
           <Button
-            className="@max-[1024px]:hidden"
+            className="editor-compact:hidden"
             aria-label="Structure"
             title="Structure"
             size="icon-sm"
@@ -851,7 +925,7 @@ function EditorToolbar({
             <Layers3Icon data-icon="inline-start" />
           </Button>
           <Button
-            className="@max-[1024px]:hidden"
+            className="editor-compact:hidden"
             aria-label="Preview"
             title="Preview"
             size="icon-sm"
@@ -862,7 +936,28 @@ function EditorToolbar({
           </Button>
         </>
       ) : null}
-      <div className="ml-auto flex items-center gap-2">{end}</div>
+      <div className="ml-auto flex items-center gap-2">
+        {panelActions ? (
+          <>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => panelActions.cancel()}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              disabled={editor.mode !== "edit"}
+              onClick={() => panelActions.save()}
+            >
+              Save changes
+            </Button>
+          </>
+        ) : (
+          end
+        )}
+      </div>
       {!editor.previewing ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -913,10 +1008,14 @@ function EditorToolbar({
                 <HistoryIcon />
                 History
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onPageDesign}>
+              <DropdownMenuItem
+                disabled={editor.rootId !== editor.document.rootId}
+                onSelect={onPageDesign}
+              >
                 <PaletteIcon /> Page design
               </DropdownMenuItem>
               <DropdownMenuItem
+                disabled={editor.rootId !== editor.document.rootId}
                 onSelect={() => {
                   const root = moreActionsRef.current?.closest(
                     "[data-pagebldr-editor]",
@@ -1003,10 +1102,9 @@ function CompactToolbar({
   readonly structureOpen: boolean;
 }) {
   const editor = usePagebldrEditor();
-  const hasElement =
-    !!editor.selectedId && editor.selectedId !== editor.document.rootId;
+  const hasElement = !!editor.selectedId && editor.selectedId !== editor.rootId;
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-3 z-40 hidden items-center justify-between px-3 @max-[1024px]:flex">
+    <div className="pointer-events-none absolute inset-x-0 bottom-3 z-40 hidden items-center justify-between px-3 editor-compact:flex">
       <Button
         aria-label={
           panelOpen
@@ -1225,7 +1323,7 @@ function Inspector() {
     <Tabs defaultValue="properties" className="h-full gap-0">
       <TabsList
         variant="line"
-        className="mx-3 mt-2 grid w-auto grid-cols-3 @max-[1024px]:min-h-11"
+        className="mx-3 mt-2 grid w-auto grid-cols-3 editor-compact:min-h-11"
       >
         <TabsTrigger value="properties">Content</TabsTrigger>
         <TabsTrigger value="styles">Style</TabsTrigger>
@@ -1234,6 +1332,40 @@ function Inspector() {
       <TabsContent value="properties" className="min-h-0">
         <ScrollArea className="h-full px-4 pt-4">
           <FieldGroup className="gap-5 pb-6">
+            {[
+              "content-tabs",
+              "tab-panel",
+              "content-accordion",
+              "accordion-panel",
+            ].includes(element.type) ? (
+              <PanelContentControl
+                key={element.id}
+                element={element}
+                renderEditor={(props) => <EditorShell {...props} />}
+              />
+            ) : element.type === "tabs" &&
+              editor.builder.elements.has("content-tabs") ? (
+              <Button
+                variant="outline"
+                disabled={element.locked || editor.mode !== "edit"}
+                onClick={() =>
+                  editor.dispatch({
+                    type: "apply-subtree",
+                    elementId: element.id,
+                    baseDocument: editor.document,
+                    document: convertTextTabs(
+                      editor.document,
+                      element.id,
+                      editor.builder.elements
+                        .get("content-tabs")!
+                        .defaults() as Record<string, unknown>,
+                    ),
+                  })
+                }
+              >
+                Use editable panels
+              </Button>
+            ) : null}
             {element.type === "container" ? (
               <ContainerLayoutPresets element={element} />
             ) : null}
@@ -1258,20 +1390,40 @@ function Inspector() {
         <ScrollArea className="h-full px-4 pt-4">
           {elementStyleControls.length ? (
             <>
-              <FieldGroup className="gap-5 pb-5">
-                {elementStyleControls.map((control) => (
-                  <PropertyField
-                    key={control.key}
-                    element={element}
-                    control={control}
-                    applicationDestinations={editor.applicationDestinations}
-                  />
-                ))}
-              </FieldGroup>
-              <Separator className="mb-5" />
+              {element.type === "content-tabs" ? (
+                <TabHeaderStyleControl
+                  key={element.id}
+                  element={element}
+                  controls={elementStyleControls}
+                  renderControl={(control) => (
+                    <PropertyField
+                      key={control.key}
+                      element={element}
+                      control={control}
+                      applicationDestinations={editor.applicationDestinations}
+                    />
+                  )}
+                />
+              ) : (
+                <FieldGroup className="gap-5 pb-5">
+                  {elementStyleControls.map((control) => (
+                    <PropertyField
+                      key={control.key}
+                      element={element}
+                      control={control}
+                      applicationDestinations={editor.applicationDestinations}
+                    />
+                  ))}
+                </FieldGroup>
+              )}
+              {element.type !== "content-tabs" ? (
+                <Separator className="mb-5" />
+              ) : null}
             </>
           ) : null}
-          <StyleControls element={element} section="style" />
+          {element.type !== "content-tabs" ? (
+            <StyleControls element={element} section="style" />
+          ) : null}
         </ScrollArea>
       </TabsContent>
       <TabsContent value="advanced" className="min-h-0">
@@ -1398,7 +1550,14 @@ function PropertyField({
 }) {
   const editor = usePagebldrEditor();
   const id = useId();
-  const value = element.props[control.key];
+  const value =
+    (element.type === "content-tabs" || element.type === "gallery-carousel") &&
+    element.props[control.key] === undefined
+      ? (
+          editor.builder.elements.get(element.type)?.defaults() as
+            Record<string, unknown> | undefined
+        )?.[control.key]
+      : element.props[control.key];
   const label = propertyControlLabel(control, element.props);
   if (!isPropertyControlVisible(control, element.props)) return null;
   if (control.kind === "media")
