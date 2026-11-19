@@ -274,7 +274,14 @@ describe.each(["tabs", "accordion"] as const)(
         ...source,
         elements: {
           ...source.elements,
-          tabs: { ...source.elements.tabs!, classIds: ["incoming"] },
+          tabs: {
+            ...source.elements.tabs!,
+            props: {
+              ...source.elements.tabs!.props,
+              anchorId: `${"a".repeat(59)}-b`,
+            },
+            classIds: ["incoming"],
+          },
         },
       };
       let destination: PageDocument = {

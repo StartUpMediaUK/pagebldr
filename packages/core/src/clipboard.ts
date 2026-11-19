@@ -105,10 +105,11 @@ export function remapClipboard(
   const copyProps = (props: Readonly<Record<string, unknown>>) => {
     const copied = remapReferences(props, idMap) as Record<string, unknown>;
     if (typeof props.anchorId === "string") {
+      const prefix = props.anchorId.slice(0, 60).replace(/-+$/u, "");
       let counter = 1;
       let anchor: string;
       do {
-        anchor = `${props.anchorId.slice(0, 60)}-copy-${counter++}`;
+        anchor = `${prefix}-copy-${counter++}`;
       } while (anchors.has(anchor));
       anchors.add(anchor);
       copied.anchorId = anchor;
