@@ -575,6 +575,7 @@ function EditorWorkspace({
             <Button
               size="sm"
               variant="outline"
+              autoFocus
               onClick={() => editor.setPreviewing(false)}
             >
               Return to editor

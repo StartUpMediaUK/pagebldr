@@ -179,6 +179,9 @@ try {
     async () => {
       await start();
       const before = await order();
+      await page
+        .getByRole("button", { name: "Close Add panel", exact: true })
+        .click();
       await pressMove(true);
       assert.deepEqual(await order(), before);
       assert.equal(
