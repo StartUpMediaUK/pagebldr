@@ -4,6 +4,15 @@ Only `packages/pagebldr` is published. Documentation and examples remain private
 workspace consumers. Preparing a candidate does not authorize a commit, push,
 npm publish or docs deployment. Obtain product-owner review before each release.
 
+## Branch promotion
+
+Open feature and fix PRs against `master`. Merge and verify them there before
+promoting `master` to `release/alpha` through a promotion PR. If a staging gate
+is introduced, promote `master` to `release/staging` first, then promote staging
+to the approved release branch. Apply fixes on feature branches and repeat the
+same promotion path. Keep release versioning and publishing in the dedicated
+alpha workflow.
+
 ## Local candidate
 
 Use a supported Node version and pnpm 10.8.0. Start from the intended source
