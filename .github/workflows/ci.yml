@@ -41,7 +41,13 @@ jobs:
       - run:
           node scripts/check-public-api.mjs --since origin/${{ github.base_ref
           }}
-        if: github.event_name == 'pull_request'
+        # pnpm check already verifies the API baseline. This extra comparison
+        # requires a new Changeset, which version PRs have already consumed.
+        if: >-
+          ${{ github.event_name == 'pull_request' && !(github.base_ref ==
+          'release/alpha' && github.head_ref ==
+          'changeset-release/release/alpha' &&
+          github.event.pull_request.head.repo.full_name == github.repository) }}
 
   packed-react:
     if: inputs.release-matrix
@@ -88,7 +94,12 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Changesets v3 archives consumed notes under .changeset/pre during versioning.
       - run: pnpm changeset status --since=origin/${{ github.base_ref }}
+        if: >-
+          ${{ !(github.base_ref == 'release/alpha' && github.head_ref ==
+          'changeset-release/release/alpha' &&
+          github.event.pull_request.head.repo.full_name == github.repository) }}
 
   dependency-review:
     name: Dependency review
