@@ -88,7 +88,12 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Changesets v3 archives consumed notes under .changeset/pre during versioning.
       - run: pnpm changeset status --since=origin/${{ github.base_ref }}
+        if: >-
+          ${{ !(github.base_ref == 'release/alpha' && github.head_ref ==
+          'changeset-release/release/alpha' &&
+          github.event.pull_request.head.repo.full_name == github.repository) }}
 
   dependency-review:
     name: Dependency review
