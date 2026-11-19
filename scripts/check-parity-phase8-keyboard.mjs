@@ -194,6 +194,10 @@ try {
         true,
       );
       await menu("Preview");
+      await page.waitForFunction(
+        () =>
+          document.activeElement?.textContent?.trim() === "Return to editor",
+      );
       await key("Escape");
       await button("More editor actions").waitFor();
       await page.emulateMedia({
