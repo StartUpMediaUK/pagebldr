@@ -2,9 +2,11 @@
 
 import {
   useCallback,
+  useContext,
   useEffect,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -12,6 +14,7 @@ import {
   type DragEvent,
   type ReactNode,
 } from "react";
+import { PanelEditingActions } from "./context.js";
 import { createPortal } from "react-dom";
 import {
   LocateFixedIcon,
@@ -23,7 +26,12 @@ import {
   TabletIcon,
 } from "lucide-react";
 
-import type { Pagebldr, PageDocument, ResourceReference } from "@pagebldr/core";
+import type {
+  Pagebldr,
+  PageDocument,
+  ResourceReference,
+  PreparedResources,
+} from "@pagebldr/core";
 
 import { ScrollArea } from "../components/ui/scroll-area.js";
 import { Badge } from "../components/ui/badge.js";
@@ -39,8 +47,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../components/ui/tooltip.js";
-import { PagebldrRenderer } from "../renderer.js";
-import { PagebldrRuntimeInteractions } from "../runtime-interactions.js";
+import { PagebldrRenderer, type PagebldrRendererProps } from "../renderer.js";
+import { RuntimeInteractions } from "../runtime-interactions.js";
 import {
   canvasBreakpointRange,
   canvasViewportHeight,
@@ -218,7 +226,7 @@ export function IsolatedCanvas({
             !current.previewing &&
             element &&
             !element.locked &&
-            message.elementId !== current.document.rootId
+            message.elementId !== current.rootId
           ) {
             current.dispatch({ type: "remove", elementId: message.elementId });
             current.select(null);
@@ -291,7 +299,7 @@ export function IsolatedCanvas({
               : moving?.type;
           if (!elementType) break;
           const placement = resolveCanvasPlacement({
-            document: current.document,
+            document: { ...current.document, rootId: current.rootId },
             definitions: current.builder.elements,
             elementType,
             targetId: message.targetId,
@@ -604,7 +612,7 @@ export function IsolatedCanvas({
     <div className="relative h-full min-h-0">
       <div
         ref={workspaceRef}
-        className="relative h-full overflow-auto bg-muted p-4 @max-[1024px]:p-8"
+        className="relative h-full overflow-auto bg-muted p-4 editor-compact:p-8"
         onClick={(event) => {
           if (event.target === event.currentTarget && !spaceHeld)
             editor.select(null);
@@ -703,7 +711,10 @@ export function IsolatedCanvas({
       {frameDocument
         ? createPortal(
             <CanvasRuntime
+              rootId={editor.rootId}
               builder={editor.builder}
+              elementRenderers={editor.elementRenderers}
+              resources={editor.resources}
               canvasId={canvasId}
               zoom={zoom}
               workspace={workspaceRef.current}
@@ -733,6 +744,9 @@ export function IsolatedCanvas({
 }
 
 function CanvasRuntime({
+  rootId,
+  elementRenderers,
+  resources,
   builder,
   canvasId,
   frameWindow,
@@ -743,7 +757,10 @@ function CanvasRuntime({
   resolveApplicationDestination,
 }: {
   readonly builder: Pagebldr;
+  readonly elementRenderers: PagebldrRendererProps["elementRenderers"];
+  readonly resources: PreparedResources | undefined;
   readonly canvasId: string;
+  readonly rootId: string;
   readonly frameWindow: Window;
   readonly mode: "edit" | "preview";
   readonly zoom: number;
@@ -756,7 +773,14 @@ function CanvasRuntime({
     ((reference: ResourceReference) => string | null) | undefined;
 }) {
   const elementDrag = useElementDragSession();
-  const [document, setDocument] = useState<PageDocument | null>(null);
+  const panelActions = useContext(PanelEditingActions);
+  const panelActionsRef = useRef(panelActions);
+  panelActionsRef.current = panelActions;
+  const [sourceDocument, setDocument] = useState<PageDocument | null>(null);
+  const document = useMemo(
+    () => (sourceDocument ? { ...sourceDocument, rootId } : null),
+    [sourceDocument, rootId],
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [rendererEpoch, setRendererEpoch] = useState(0);
@@ -952,6 +976,11 @@ function CanvasRuntime({
     return () => observer.disconnect();
   }, [document, frameWindow, post]);
 
+  const selectTabPanel = useCallback(
+    (elementId: string) => post({ type: "selection.change", elementId }),
+    [post],
+  );
+
   const activate = (target: EventTarget | null) => {
     const element = closestPageElement(target);
     post({
@@ -1132,6 +1161,12 @@ function CanvasRuntime({
     <div
       ref={rootRef}
       data-pagebldr-isolated-canvas
+      onSubmitCapture={(event) => {
+        if (mode === "edit") {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }}
       onPointerDownCapture={() => {
         ignoreCanceledReleaseClick.current = false;
       }}
@@ -1150,8 +1185,12 @@ function CanvasRuntime({
         )
           return;
         const anchor = closestElement(event.target, "a[href]");
-        if (anchor) event.preventDefault();
-        if (mode === "edit") activate(event.target);
+        if (anchor && mode === "edit") event.preventDefault();
+        if (
+          mode === "edit" &&
+          !closestElement(event.target, "[data-tab-element-id]")
+        )
+          activate(event.target);
       }}
       onDoubleClickCapture={(event) => {
         const element = closestPageElement(event.target);
@@ -1210,6 +1249,28 @@ function CanvasRuntime({
       }}
       onKeyDownCapture={(event) => {
         if (
+          panelActions &&
+          (event.ctrlKey || event.metaKey) &&
+          event.key.toLowerCase() === "s"
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          finishEditing(true);
+          window.setTimeout(() => panelActionsRef.current?.save(), 0);
+          return;
+        }
+        if (
+          panelActions &&
+          event.key === "Escape" &&
+          !activeEdit.current &&
+          !pointerMove.current
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          panelActions.cancel();
+          return;
+        }
+        if (
           (event.key === "Delete" || event.key === "Backspace") &&
           mode === "edit" &&
           selectedId &&
@@ -1259,7 +1320,7 @@ function CanvasRuntime({
         }
       }}
     >
-      <PagebldrRuntimeInteractions />
+      <RuntimeInteractions onTabPanelActivate={selectTabPanel} />
       <ScrollArea
         className="h-screen"
         data-pagebldr-canvas-scroll-area
@@ -1269,8 +1330,12 @@ function CanvasRuntime({
         <PagebldrRenderer
           key={rendererEpoch}
           builder={builder}
-          document={document}
+          document={sourceDocument!}
+          rootElementId={rootId}
           mode={mode}
+          selectedElementId={selectedId}
+          {...(elementRenderers ? { elementRenderers } : {})}
+          {...(resources ? { resources } : {})}
           {...(forcedStyleState ? { forcedStyleState } : {})}
           {...(resolveApplicationDestination
             ? { resolveApplicationDestination }
@@ -1505,7 +1570,7 @@ function CanvasZoomControls({
   return (
     <>
       <div
-        className="absolute bottom-3 left-1/2 -translate-x-1/2 flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm @max-[1024px]:bottom-3 @max-[600px]:left-[calc(50%-1.25rem)] @max-[1024px]:rounded-xl @max-[1024px]:shadow-lg"
+        className="absolute bottom-3 left-1/2 -translate-x-1/2 flex w-fit items-center gap-1 rounded-md border bg-background p-1 shadow-sm editor-compact:bottom-3 editor-narrow:left-[calc(50%-1.25rem)] editor-compact:rounded-xl editor-compact:shadow-lg"
         onPointerEnter={dimensions.show}
         onPointerLeave={dimensions.hideSoon}
         onFocusCapture={dimensions.show}
@@ -1513,7 +1578,7 @@ function CanvasZoomControls({
       >
         <CanvasTool label="Zoom out" icon={MinusIcon} onClick={onDecrease} />
         <Button
-          aria-label="Fit canvas width"
+          aria-label={`${fitEnabled ? "Fit " : ""}${Math.round(zoom * 100)}%, fit canvas width`}
           className="min-w-12 px-1 text-xs tabular-nums"
           size="sm"
           variant="ghost"
@@ -1529,7 +1594,7 @@ function CanvasZoomControls({
           pressed={fitEnabled}
           onClick={onToggleFit}
         />
-        <div className="@max-[600px]:hidden">
+        <div className="editor-narrow:hidden">
           <CanvasTool
             label="Scroll to selection"
             icon={LocateFixedIcon}
@@ -1600,7 +1665,7 @@ function CanvasViewportIndicator({
   if (!dimensions.visible) return null;
 
   return (
-    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit @max-[1024px]:hidden">
+    <div className="pointer-events-none sticky top-3 z-20 ml-auto h-0 w-fit editor-compact:hidden">
       <div
         className="pointer-events-auto flex h-9 items-center gap-1 rounded-lg border bg-background px-3 text-xs tabular-nums shadow-sm"
         onPointerEnter={dimensions.show}

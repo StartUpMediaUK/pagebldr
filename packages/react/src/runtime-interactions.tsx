@@ -1,9 +1,20 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { attachTabInteractions } from "./tab-interactions.js";
+import { attachAccordionInteractions } from "./accordion-interactions.js";
+import { attachGalleryInteractions } from "./gallery-interactions.js";
 import { attachMenuInteractions } from "./menu-interactions.js";
 
 export function PagebldrRuntimeInteractions() {
+  return <RuntimeInteractions />;
+}
+
+export function RuntimeInteractions({
+  onTabPanelActivate,
+}: {
+  readonly onTabPanelActivate?: (id: string) => void;
+}) {
   const marker = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -11,22 +22,9 @@ export function PagebldrRuntimeInteractions() {
     if (!root) return;
     const cleanupMenus = attachMenuInteractions(root);
 
-    const activateTab = (tab: HTMLElement) => {
-      const widget = tab.closest<HTMLElement>('[data-pagebldr-widget="tabs"]');
-      const id = tab.dataset.tabId;
-      if (!widget || !id) return;
-      for (const candidate of widget.querySelectorAll<HTMLElement>(
-        '[role="tab"]',
-      )) {
-        const active = candidate === tab;
-        candidate.setAttribute("aria-selected", String(active));
-        candidate.tabIndex = active ? 0 : -1;
-      }
-      for (const panel of widget.querySelectorAll<HTMLElement>(
-        '[role="tabpanel"]',
-      ))
-        panel.hidden = panel.dataset.tabPanel !== id;
-    };
+    const cleanupTabs = attachTabInteractions(root, onTabPanelActivate);
+    const cleanupAccordions = attachAccordionInteractions(root);
+    const cleanupGallery = attachGalleryInteractions(root);
 
     const showSlide = (gallery: HTMLElement, offset: number) => {
       const slides = [
@@ -46,11 +44,6 @@ export function PagebldrRuntimeInteractions() {
 
     const onClick = (event: Event) => {
       const target = isDomElement(event.target) ? event.target : null;
-      const tab = target?.closest<HTMLElement>('[role="tab"]');
-      if (tab) {
-        activateTab(tab);
-        return;
-      }
       const galleryAction = target?.closest<HTMLElement>(
         "[data-gallery-action]",
       );
@@ -62,35 +55,6 @@ export function PagebldrRuntimeInteractions() {
           gallery,
           galleryAction.dataset.galleryAction === "next" ? 1 : -1,
         );
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      const tab = isDomElement(event.target)
-        ? event.target.closest<HTMLElement>('[role="tab"]')
-        : null;
-      if (
-        !tab ||
-        !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
-      )
-        return;
-      const tabs = [
-        ...(tab.parentElement?.querySelectorAll<HTMLElement>('[role="tab"]') ??
-          []),
-      ];
-      const current = tabs.indexOf(tab);
-      const next =
-        event.key === "Home"
-          ? 0
-          : event.key === "End"
-            ? tabs.length - 1
-            : (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) %
-              tabs.length;
-      event.preventDefault();
-      const nextTab = tabs[next];
-      if (nextTab) {
-        activateTab(nextTab);
-        nextTab.focus();
-      }
     };
 
     const updateCountdowns = () => {
@@ -111,16 +75,17 @@ export function PagebldrRuntimeInteractions() {
     };
 
     root.addEventListener("click", onClick);
-    root.addEventListener("keydown", onKeyDown);
     updateCountdowns();
     const timer = window.setInterval(updateCountdowns, 1_000);
     return () => {
       cleanupMenus();
+      cleanupTabs();
+      cleanupAccordions();
+      cleanupGallery();
       root.removeEventListener("click", onClick);
-      root.removeEventListener("keydown", onKeyDown);
       window.clearInterval(timer);
     };
-  }, []);
+  }, [onTabPanelActivate]);
 
   return <span ref={marker} hidden data-pagebldr-interactions />;
 }

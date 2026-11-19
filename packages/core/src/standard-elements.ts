@@ -84,6 +84,35 @@ const destinationSchema = z.discriminatedUnion("type", [
     })
     .strict(),
 ]);
+// Three levels, at most 100 items in total, with IDs unique within a Menu.
+function menuItemsSchema(depth: number): z.ZodType {
+  return z
+    .array(
+      z
+        .object({
+          id: authoredId,
+          label: z.string().min(1).max(200),
+          destination: destinationSchema.nullable().optional(),
+          ...(depth < 3
+            ? { children: menuItemsSchema(depth + 1).optional() }
+            : { children: z.array(z.never()).max(0).optional() }),
+        })
+        .strict(),
+    )
+    .max(30);
+}
+function menuItems(items: readonly Props[]): Props[] {
+  return items.flatMap((item) => [item, ...menuItems(array(item, "children"))]);
+}
+const navigationItemsSchema = menuItemsSchema(1).refine((value) => {
+  const items = menuItems(value as Props[]);
+  return (
+    items.length > 0 &&
+    items.length <= 100 &&
+    new Set(items.map((item) => item.id)).size === items.length
+  );
+}, "Menu must contain 1 to 100 items with unique IDs.");
+
 const iconNames = [
   "sparkles",
   "activity",
@@ -114,6 +143,22 @@ const colorValue = z.union([
     .object({ type: z.literal("variable"), variableId: z.string().min(1) })
     .strict(),
 ]);
+
+const tabHeaderColour = z
+  .string()
+  .max(100)
+  .regex(
+    /^(?:|#[0-9a-f]{3,8}|rgba?\([\d.,%\s]+\)|transparent|inherit|currentColor)$/iu,
+  );
+
+const tabHeaderAlignments = [
+  { value: "flex-start", label: "Start" },
+  { value: "center", label: "Centre" },
+  { value: "flex-end", label: "End" },
+  { value: "space-between", label: "Space between" },
+  { value: "space-around", label: "Space around" },
+  { value: "space-evenly", label: "Space evenly" },
+] as const;
 
 export const standardStyleCapabilities = Object.freeze([
   defineStyleCapability({
@@ -183,7 +228,15 @@ export const standardStyleCapabilities = Object.freeze([
   defineStyleCapability({
     key: "position",
     label: "Position",
-    properties: ["position", "top", "right", "bottom", "left", "zIndex"],
+    properties: [
+      "position",
+      "top",
+      "right",
+      "bottom",
+      "left",
+      "zIndex",
+      "scrollMarginTop",
+    ],
   }),
   defineStyleCapability({
     key: "typography",
@@ -272,6 +325,7 @@ function definition(config: {
   defaults: Props;
   render: (props: Props, context: ElementRenderContext) => RenderNode;
   childPolicy?: ElementDefinition["childPolicy"];
+  parentTypes?: readonly string[];
   controls?: readonly ElementControl<Props>[];
   styleControls?: readonly ElementControl<Props>[];
   styles?: readonly string[];
@@ -292,6 +346,7 @@ function definition(config: {
     controls: config.controls ?? scalarControls(config.defaults),
     ...(config.styleControls ? { styleControls: config.styleControls } : {}),
     childPolicy: config.childPolicy ?? none,
+    ...(config.parentTypes ? { parentTypes: config.parentTypes } : {}),
     styles: config.styles ?? allStyles,
     accessibility: config.accessibility ?? {},
     ...(config.inlineEditing ? { inlineEditing: config.inlineEditing } : {}),
@@ -691,18 +746,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         .regex(/^#[0-9a-fA-F]{6}$/u)
         .optional(),
       breakpointPosition: z.enum(["none", "start", "center", "end"]).optional(),
-      items: z
-        .array(
-          z
-            .object({
-              id: authoredId,
-              label: z.string().min(1).max(200),
-              destination: destinationSchema,
-            })
-            .strict(),
-        )
-        .min(1)
-        .max(30),
+      items: navigationItemsSchema,
     }),
     defaults: menuDefaults(),
     controls: [
@@ -744,6 +788,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         kind: "collection",
         key: "items",
         label: "Links",
+        hierarchy: { childrenKey: "children", maxDepth: 3 },
         itemLabel: "Link",
         minItems: 1,
         maxItems: 30,
@@ -764,6 +809,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
             key: "destination",
             label: "Destination",
             preferFirstAnchor: true,
+            nullable: true,
           },
         ],
       },
@@ -866,10 +912,14 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       },
     ],
     destinations: (props) =>
-      array(props, "items").map((item) => item.destination),
+      menuItems(array(props, "items")).flatMap((item) =>
+        item.destination ? [item.destination] : [],
+      ),
     references: (props) =>
       destinationReferences(
-        array(props, "items").map((item) => item.destination),
+        menuItems(array(props, "items")).flatMap((item) =>
+          item.destination ? [item.destination] : [],
+        ),
       ),
     render: renderMenu,
   }),
@@ -1223,7 +1273,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         ],
       },
     ],
-    render: (props) =>
+    render: (props, context) =>
       node(
         "div",
         { className: "pagebldr-accordion" },
@@ -1234,7 +1284,7 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
               open: index === 0,
               name: boolean(props, "allowMultiple")
                 ? undefined
-                : "pagebldr-accordion",
+                : `pagebldr-accordion-${context.elementId ?? "standalone"}`,
             },
             [
               node("summary", {}, [text(item, "question")]),
@@ -1245,8 +1295,42 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
       ),
   }),
   definition({
+    type: "content-accordion",
+    label: "Content accordion",
+    schema: z.object({ allowMultiple: z.boolean() }),
+    defaults: { allowMultiple: false },
+    childPolicy: { kind: "types", types: ["accordion-panel"], max: 30 },
+    controls: [
+      { kind: "boolean", key: "allowMultiple", label: "Allow multiple open" },
+    ],
+    accessibility: { keyboardInteractive: true },
+    render: renderContentAccordion,
+  }),
+  definition({
+    type: "accordion-panel",
+    label: "Accordion panel",
+    schema: z.object({
+      question: z.string().min(1).max(500),
+      defaultOpen: z.boolean(),
+    }),
+    defaults: { question: "New question", defaultOpen: false },
+    parentTypes: ["content-accordion"],
+    childPolicy: { kind: "any" },
+    controls: [
+      { kind: "text", key: "question", label: "Question" },
+      {
+        kind: "boolean",
+        key: "defaultOpen",
+        label: "Open by default",
+        description:
+          "In single-open groups, only the first preferred visible panel opens. With no preference, all panels start closed.",
+      },
+    ],
+    render: (_props, context) => node("div", {}, context.children),
+  }),
+  definition({
     type: "tabs",
-    label: "Tabs",
+    label: "Tabs (text)",
     schema: z.object({
       items: z
         .array(
@@ -1300,6 +1384,242 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     ],
     accessibility: { role: "tablist", keyboardInteractive: true },
     render: renderTabs,
+  }),
+  definition({
+    type: "content-tabs",
+    label: "Tabs",
+    schema: z.object({
+      ariaLabel: z.string().min(1).max(200),
+      orientation: z.enum(["horizontal", "vertical"]),
+      labelLayout: z.enum(["wrap", "scroll"]),
+      activation: z.enum(["automatic", "manual"]),
+      tabColor: tabHeaderColour.optional(),
+      tabBackground: tabHeaderColour.optional(),
+      tabActiveColor: tabHeaderColour.optional(),
+      tabActiveBackground: tabHeaderColour.optional(),
+      tabHoverColor: tabHeaderColour.optional(),
+      tabHoverBackground: tabHeaderColour.optional(),
+      tabFocusColor: tabHeaderColour.optional(),
+      tabIndicatorColor: tabHeaderColour.optional(),
+      tabListBackground: tabHeaderColour.optional(),
+      tabFontSize: z.number().min(8).max(96).optional(),
+      tabPaddingX: z.number().min(0).max(96).optional(),
+      tabPaddingY: z.number().min(0).max(96).optional(),
+      tabGap: z.number().min(0).max(96).optional(),
+      tabJustifyContent: z
+        .enum(tabHeaderAlignments.map(({ value }) => value))
+        .optional(),
+      tabRadius: z.number().min(0).max(100).optional(),
+      tabIndicatorWidth: z.number().min(0).max(12).optional(),
+      tabFontWeight: z.enum(["400", "500", "600", "700"]).optional(),
+      tabActiveFontWeight: z.enum(["400", "500", "600", "700"]).optional(),
+    }),
+    defaults: {
+      ariaLabel: "Content sections",
+      orientation: "horizontal",
+      labelLayout: "wrap",
+      activation: "automatic",
+      tabColor: "",
+      tabBackground: "",
+      tabActiveColor: "",
+      tabActiveBackground: "",
+      tabHoverColor: "",
+      tabHoverBackground: "",
+      tabFocusColor: "",
+      tabIndicatorColor: "",
+      tabListBackground: "",
+      tabFontSize: 16,
+      tabPaddingX: 16,
+      tabPaddingY: 12,
+      tabGap: 8,
+      tabJustifyContent: "flex-start",
+      tabRadius: 0,
+      tabIndicatorWidth: 2,
+      tabFontWeight: "400",
+      tabActiveFontWeight: "700",
+    },
+    childPolicy: { kind: "types", types: ["tab-panel"], max: 12 },
+    controls: [{ kind: "text", key: "ariaLabel", label: "Accessible label" }],
+    styleControls: [
+      {
+        kind: "text",
+        key: "tabColor",
+        label: "Tab text colour",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabBackground",
+        label: "Tab background",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabActiveColor",
+        label: "Tab active text colour",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabActiveBackground",
+        label: "Tab active background",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabHoverColor",
+        label: "Tab hover text colour",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabHoverBackground",
+        label: "Tab hover background",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabFocusColor",
+        label: "Tab focus ring colour",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabIndicatorColor",
+        label: "Tab active indicator colour",
+        presentation: "color",
+      },
+      {
+        kind: "text",
+        key: "tabListBackground",
+        label: "Tab header background",
+        presentation: "color",
+      },
+      {
+        kind: "number",
+        key: "tabFontSize",
+        label: "Tab font size",
+        min: 8,
+        max: 96,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "number",
+        key: "tabPaddingX",
+        label: "Tab horizontal padding",
+        min: 0,
+        max: 96,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "number",
+        key: "tabPaddingY",
+        label: "Tab vertical padding",
+        min: 0,
+        max: 96,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "select",
+        key: "tabJustifyContent",
+        label: "Header alignment",
+        options: tabHeaderAlignments,
+      },
+      {
+        kind: "number",
+        key: "tabGap",
+        label: "Tab gap",
+        min: 0,
+        max: 96,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "number",
+        key: "tabRadius",
+        label: "Tab corner radius",
+        min: 0,
+        max: 100,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "number",
+        key: "tabIndicatorWidth",
+        label: "Tab active indicator width",
+        min: 0,
+        max: 12,
+        step: 1,
+        unit: "px",
+      },
+      {
+        kind: "select",
+        key: "tabFontWeight",
+        label: "Tab font weight",
+        options: [
+          { label: "Regular", value: "400" },
+          { label: "Medium", value: "500" },
+          { label: "Semibold", value: "600" },
+          { label: "Bold", value: "700" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "tabActiveFontWeight",
+        label: "Tab active font weight",
+        options: [
+          { label: "Regular", value: "400" },
+          { label: "Medium", value: "500" },
+          { label: "Semibold", value: "600" },
+          { label: "Bold", value: "700" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "orientation",
+        label: "Orientation",
+        options: [
+          { label: "Horizontal", value: "horizontal" },
+          { label: "Vertical", value: "vertical" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "labelLayout",
+        label: "Label layout",
+        options: [
+          { label: "Wrap", value: "wrap" },
+          { label: "Scroll", value: "scroll" },
+        ],
+      },
+      {
+        kind: "select",
+        key: "activation",
+        label: "Activation",
+        options: [
+          { label: "Automatic", value: "automatic" },
+          { label: "Manual", value: "manual" },
+        ],
+      },
+    ],
+    accessibility: { keyboardInteractive: true, requiresLabel: true },
+    render: renderContentTabs,
+  }),
+  definition({
+    type: "tab-panel",
+    label: "Tab panel",
+    schema: z.object({
+      label: z.string().min(1).max(120),
+      defaultOpen: z.boolean(),
+    }),
+    defaults: { label: "New tab", defaultOpen: false },
+    parentTypes: ["content-tabs"],
+    childPolicy: { kind: "any" },
+    controls: [{ kind: "text", key: "label", label: "Tab label" }],
+    render: (_props, context) => node("div", {}, context.children),
   }),
   definition({
     type: "testimonial",
@@ -1590,7 +1910,18 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
     label: "Gallery / Carousel",
     styles: mediaStyles,
     schema: z.object({
-      layout: z.enum(["square", "masonry", "carousel"]),
+      layout: z.enum(["square", "grid", "masonry", "carousel"]),
+      columns: z.number().int().min(1).max(8).optional(),
+      tabletColumns: z.number().int().min(1).max(8).optional(),
+      mobileColumns: z.number().int().min(1).max(8).optional(),
+      gap: z.number().min(0).max(96).optional(),
+      radius: z.number().min(0).max(200).optional(),
+      showCaptions: z.boolean().optional(),
+      aspectRatio: z.enum(["1 / 1", "4 / 3", "16 / 9", "3 / 4"]).optional(),
+      imagePosition: z
+        .enum(["center", "top", "bottom", "left", "right"])
+        .optional(),
+      lightbox: z.boolean().optional(),
       items: z
         .array(
           z
@@ -1602,6 +1933,9 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
               altConfirmed: z.boolean(),
               decorative: z.boolean(),
               caption: z.string().max(500),
+              width: z.number().int().positive().max(100000).optional(),
+              height: z.number().int().positive().max(100000).optional(),
+              destination: destinationSchema.nullable().optional(),
             })
             .strict(),
         )
@@ -1620,13 +1954,63 @@ export const standardElements: readonly ElementDefinition[] = Object.freeze([
         presentation: "segmented",
         options: [
           { label: "Square", value: "square" },
+          { label: "Grid", value: "grid" },
           { label: "Masonry", value: "masonry" },
           { label: "Carousel", value: "carousel" },
         ],
       },
+      ...["columns", "tabletColumns", "mobileColumns"].map((key) => ({
+        kind: "number" as const,
+        key,
+        label:
+          key === "columns"
+            ? "Desktop columns"
+            : key === "tabletColumns"
+              ? "Tablet columns"
+              : "Mobile columns",
+        min: 1,
+        max: 8,
+        step: 1,
+      })),
+      { kind: "number", key: "gap", label: "Gap", min: 0, max: 96 },
+      {
+        kind: "number",
+        key: "radius",
+        label: "Image radius",
+        min: 0,
+        max: 200,
+      },
+      { kind: "boolean", key: "showCaptions", label: "Show captions" },
+      { kind: "boolean", key: "lightbox", label: "Image lightbox" },
+      {
+        kind: "select",
+        key: "aspectRatio",
+        label: "Grid aspect ratio",
+        options: ["1 / 1", "4 / 3", "16 / 9", "3 / 4"].map((value) => ({
+          label: value,
+          value,
+        })),
+      },
+      {
+        kind: "select",
+        key: "imagePosition",
+        label: "Crop position",
+        options: ["center", "top", "bottom", "left", "right"].map((value) => ({
+          label: value,
+          value,
+        })),
+      },
     ],
-    references: (props) =>
-      sourceReferences(array(props, "items").map((item) => item.source)),
+    destinations: (props) =>
+      array(props, "items").flatMap((item) =>
+        item.destination ? [item.destination] : [],
+      ),
+    references: (props) => [
+      ...sourceReferences(array(props, "items").map((item) => item.source)),
+      ...destinationReferences(
+        array(props, "items").map((item) => item.destination),
+      ),
+    ],
     migrate: migrateGallery,
     publicationIssues: (props) =>
       array(props as Props, "items").flatMap((item, index) =>
@@ -1814,18 +2198,7 @@ function renderMenu(props: Props, context: ElementRenderContext) {
         node(
           "ul",
           { className: "pagebldr-menu-list" },
-          array(props, "items").map((item) =>
-            node("li", {}, [
-              node(
-                "a",
-                {
-                  ...linkAttributes(context, item.destination),
-                  className: "pagebldr-menu-link",
-                },
-                [text(item, "label")],
-              ),
-            ]),
-          ),
+          renderMenuItems(array(props, "items"), context),
         ),
       ]),
     ],
@@ -1849,6 +2222,44 @@ function renderMenu(props: Props, context: ElementRenderContext) {
       ),
     },
   );
+}
+
+function renderMenuItems(
+  items: readonly Props[],
+  context: ElementRenderContext,
+): RenderNode[] {
+  return items.map((item) => {
+    const children = array(item, "children");
+    const id = `pagebldr-${context.elementId ?? "menu"}-submenu-${text(item, "id")}`;
+    return node("li", {}, [
+      item.destination
+        ? node(
+            "a",
+            {
+              ...linkAttributes(context, item.destination),
+              className: "pagebldr-menu-link",
+            },
+            [text(item, "label")],
+          )
+        : children.length === 0
+          ? node("span", {}, [text(item, "label")])
+          : null,
+      children.length
+        ? node("details", { "data-pagebldr-submenu": true }, [
+            node("summary", { "aria-controls": id }, [
+              item.destination
+                ? `More ${text(item, "label")}`
+                : text(item, "label"),
+            ]),
+            node(
+              "ul",
+              { id, className: "pagebldr-menu-submenu" },
+              renderMenuItems(children, context),
+            ),
+          ])
+        : null,
+    ]);
+  });
 }
 
 function migrateImage(props: unknown, from: number): Props {
@@ -1912,41 +2323,207 @@ function renderVideo(props: Props, context: ElementRenderContext): RenderNode {
   });
 }
 
-function renderTabs(props: Props) {
-  const items = array(props, "items");
+function renderContentAccordion(props: Props, context: ElementRenderContext) {
+  const children = context.childElements ?? [];
+  const multiple = boolean(props, "allowMultiple");
+  const selected =
+    context.mode === "edit" ? context.selectedChildId : undefined;
+  const preferred = children.find((child) => child.props.defaultOpen === true);
+  const prefix = `pagebldr-accordion-${context.elementId ?? "standalone"}`;
   return node(
     "div",
-    { className: "pagebldr-tabs", "data-pagebldr-widget": "tabs" },
+    {
+      className: "pagebldr-accordion",
+      "data-pagebldr-widget": "accordion",
+      "data-accordion-selected": selected ?? "",
+    },
+    children.map((child, index) => {
+      const panelId = `${prefix}-panel-${child.id}`;
+      const questionId = `${prefix}-question-${child.id}`;
+      return node(
+        "details",
+        {
+          name: multiple ? undefined : prefix,
+          open: selected
+            ? child.id === selected ||
+              (multiple && child.props.defaultOpen === true)
+            : multiple
+              ? child.props.defaultOpen === true
+              : child.id === preferred?.id,
+          "data-accordion-panel": child.id,
+        },
+        [
+          node("summary", { id: questionId, "aria-controls": panelId }, [
+            text(child.props, "question"),
+          ]),
+          node("div", { id: panelId, "aria-labelledby": questionId }, [
+            context.children[index] ?? null,
+          ]),
+        ],
+      );
+    }),
+  );
+}
+
+function renderTabs(props: Props, context: ElementRenderContext) {
+  const items = array(props, "items");
+  return tabsMarkup(
+    props,
+    context,
+    items.map((item) => ({
+      id: `${context.elementId ?? "tabs"}-${text(item, "id")}`,
+      label: text(item, "label"),
+      content: text(item, "content"),
+    })),
+    0,
+  );
+}
+
+function renderContentTabs(props: Props, context: ElementRenderContext) {
+  const children = context.childElements ?? [];
+  const preferred = Math.max(
+    0,
+    children.findIndex((child) => child.props.defaultOpen === true),
+  );
+  const selected = children.findIndex(
+    (child) => child.id === context.selectedChildId,
+  );
+  return tabsMarkup(
+    props,
+    context,
+    children.map((child, index) => ({
+      id: child.id,
+      elementId: child.id,
+      label: text(child.props, "label"),
+      content: context.children[index] ?? null,
+    })),
+    context.mode === "edit" && selected >= 0 ? selected : preferred,
+  );
+}
+
+function tabsMarkup(
+  props: Props,
+  context: ElementRenderContext,
+  items: readonly {
+    id: string;
+    elementId?: string;
+    label: string;
+    content: RenderNode;
+  }[],
+  active: number,
+) {
+  // Expose all content before client enhancement, including without JavaScript.
+  const prefix = `pagebldr-tabs-${context.elementId ?? "standalone"}`;
+  const alignment = text(props, "tabJustifyContent", "flex-start");
+  // Keep the first header reachable when centred or end-aligned labels overflow.
+  const justification =
+    alignment === "center" || alignment === "flex-end"
+      ? `safe ${alignment}`
+      : alignment;
+  return node(
+    "div",
+    {
+      className: "pagebldr-tabs",
+      "data-pagebldr-widget": "tabs",
+      "data-tabs-active": items[active]?.id,
+      "data-orientation": text(props, "orientation", "horizontal"),
+      "data-label-layout": text(props, "labelLayout", "wrap"),
+      "data-activation": text(props, "activation", "automatic"),
+      "data-render-mode": context.mode,
+    },
     [
       node(
         "div",
-        { role: "tablist", className: "pagebldr-tabs-list" },
+        {
+          role: "tablist",
+          className: "pagebldr-tabs-list",
+          "aria-label": text(props, "ariaLabel", "Content sections"),
+          "aria-orientation": text(props, "orientation", "horizontal"),
+        },
         items.map((item, index) =>
           node(
             "button",
             {
               type: "button",
               role: "tab",
-              "data-tab-id": text(item, "id"),
-              "aria-selected": index === 0,
-              tabIndex: index === 0 ? 0 : -1,
+              id: `${prefix}-tab-${item.id}`,
+              "data-tab-id": item.id,
+              "data-tab-element-id": item.elementId,
+              "aria-controls": `${prefix}-panel-${item.id}`,
+              "aria-selected": index === active,
+              tabIndex: index === active ? 0 : -1,
             },
-            [text(item, "label")],
+            [item.label],
           ),
         ),
       ),
-      ...items.map((item, index) =>
+      ...items.map((item) =>
         node(
-          "div",
+          "section",
           {
             role: "tabpanel",
-            "data-tab-panel": text(item, "id"),
-            hidden: index === 0 ? undefined : true,
+            id: `${prefix}-panel-${item.id}`,
+            "aria-labelledby": `${prefix}-tab-${item.id}`,
+            "data-tab-panel": item.id,
+            tabIndex: 0,
           },
-          [text(item, "content")],
+          [
+            node("p", { "data-tab-fallback-label": true }, [item.label]),
+            item.content,
+          ],
         ),
       ),
     ],
+    Object.fromEntries([
+      ["--pagebldr-tab-authored-color", text(props, "tabColor") || "initial"],
+      [
+        "--pagebldr-tab-authored-background",
+        text(props, "tabBackground") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-active-color",
+        text(props, "tabActiveColor") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-active-background",
+        text(props, "tabActiveBackground") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-hover-color",
+        text(props, "tabHoverColor") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-hover-background",
+        text(props, "tabHoverBackground") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-focus-color",
+        text(props, "tabFocusColor") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-indicator-color",
+        text(props, "tabIndicatorColor") || "initial",
+      ],
+      [
+        "--pagebldr-tab-authored-list-background",
+        text(props, "tabListBackground") || "initial",
+      ],
+      ["--pagebldr-tab-font-size", `${number(props, "tabFontSize", 16)}px`],
+      ["--pagebldr-tab-padding-x", `${number(props, "tabPaddingX", 16)}px`],
+      ["--pagebldr-tab-padding-y", `${number(props, "tabPaddingY", 12)}px`],
+      ["--pagebldr-tab-gap", `${number(props, "tabGap", 8)}px`],
+      ["--pagebldr-tab-justify-content", justification],
+      ["--pagebldr-tab-radius", `${number(props, "tabRadius", 0)}px`],
+      [
+        "--pagebldr-tab-indicator-width",
+        `${number(props, "tabIndicatorWidth", 2)}px`,
+      ],
+      ["--pagebldr-tab-font-weight", text(props, "tabFontWeight", "400")],
+      [
+        "--pagebldr-tab-active-font-weight",
+        text(props, "tabActiveFontWeight", "700"),
+      ],
+    ]),
   );
 }
 
@@ -2086,6 +2663,15 @@ function renderLogoCloud(props: Props, context: ElementRenderContext) {
 
 function galleryDefaults(): Props {
   return {
+    columns: 3,
+    tabletColumns: 2,
+    mobileColumns: 1,
+    gap: 16,
+    radius: 12,
+    showCaptions: true,
+    aspectRatio: "1 / 1",
+    imagePosition: "center",
+    lightbox: false,
     layout: "square",
     items: [
       {
@@ -2164,66 +2750,160 @@ function migrateGallery(props: unknown, from: number): Props {
 
 function renderGallery(props: Props, context: ElementRenderContext) {
   const carousel = text(props, "layout") === "carousel";
+  const masonry = text(props, "layout") === "masonry";
   const slides = array(props, "items").map((item, index) => {
     const src = sourceUrl(item.source, context);
     if (!src) return null;
-    const media =
-      text(item, "kind") === "video"
-        ? node("video", { src, controls: true, preload: "metadata" })
-        : node("img", {
+    const image = text(item, "kind") !== "video";
+    const media = image
+      ? node(
+          "img",
+          {
             src,
             alt: boolean(item, "decorative") ? "" : text(item, "alt"),
+            width: typeof item.width === "number" ? item.width : undefined,
+            height: typeof item.height === "number" ? item.height : undefined,
             loading: index === 0 ? "eager" : "lazy",
-          });
+            decoding: "async",
+          },
+          [],
+          {
+            ...(masonry
+              ? { height: "auto" }
+              : {
+                  aspectRatio:
+                    text(props, "layout") === "square"
+                      ? "1 / 1"
+                      : text(props, "aspectRatio", "1 / 1"),
+                  objectFit: "cover",
+                }),
+            objectPosition: text(props, "imagePosition", "center"),
+            borderRadius: `${number(props, "radius", 12)}px`,
+          },
+        )
+      : node("video", {
+          src,
+          controls: context.mode !== "edit",
+          preload: "metadata",
+        });
+    const lightbox =
+      image &&
+      boolean(props, "lightbox") &&
+      !item.destination &&
+      context.mode !== "edit";
+    const content =
+      item.destination && context.mode !== "edit"
+        ? node(
+            "a",
+            {
+              ...linkAttributes(context, item.destination),
+              ...(image &&
+              (boolean(item, "decorative") || !text(item, "alt").trim())
+                ? {
+                    "aria-label":
+                      text(item, "caption").trim() ||
+                      `Open destination for image ${index + 1}`,
+                  }
+                : {}),
+            },
+            [media],
+          )
+        : lightbox
+          ? node(
+              "button",
+              {
+                type: "button",
+                "data-gallery-open": index,
+                "aria-label": `Enlarge ${text(item, "alt") || text(item, "caption") || `image ${index + 1}`}`,
+              },
+              [media],
+            )
+          : media;
     return node(
       "figure",
       {
         "data-gallery-slide": index,
+        "data-gallery-item-caption": text(item, "caption"),
         hidden: carousel && index > 0 ? true : undefined,
       },
       [
-        media,
-        text(item, "caption")
+        content,
+        boolean(props, "showCaptions", true) && text(item, "caption")
           ? node("figcaption", {}, [text(item, "caption")])
           : null,
       ],
     );
   });
-  return node(
-    "div",
-    {
-      className: "pagebldr-gallery",
-      "data-layout": text(props, "layout", "square"),
-      "data-pagebldr-widget": carousel ? "gallery" : undefined,
-    },
-    [
-      ...slides,
-      ...(carousel
-        ? [
-            node("div", { className: "pagebldr-gallery-controls" }, [
-              node(
-                "button",
-                {
-                  type: "button",
-                  "data-gallery-action": "previous",
-                  "aria-label": "Previous slide",
-                },
-                ["←"],
-              ),
-              node(
-                "button",
-                {
-                  type: "button",
-                  "data-gallery-action": "next",
-                  "aria-label": "Next slide",
-                },
-                ["→"],
-              ),
+  const dialog =
+    boolean(props, "lightbox") && context.mode !== "edit"
+      ? node(
+          "dialog",
+          {
+            "data-gallery-dialog": true,
+            "aria-label": "Image viewer",
+          },
+          [
+            node("button", { type: "button", "data-gallery-close": true }, [
+              "Close image viewer",
             ]),
-          ]
-        : []),
-    ],
-  );
+            node("figure", {}, [
+              node("img", { "data-gallery-image": true, alt: "" }),
+              node("figcaption", { "data-gallery-caption": true }),
+            ]),
+            node("button", { type: "button", "data-lightbox-step": -1 }, [
+              "Previous image",
+            ]),
+            node("button", { type: "button", "data-lightbox-step": 1 }, [
+              "Next image",
+            ]),
+          ],
+        )
+      : null;
+  return node("div", { className: "pagebldr-gallery-frame" }, [
+    node(
+      "div",
+      {
+        className: "pagebldr-gallery",
+        "data-layout": text(props, "layout", "square"),
+        "data-pagebldr-widget": "gallery",
+        "data-render-mode": context.mode,
+      },
+      [
+        ...slides,
+        ...(carousel
+          ? [
+              node("div", { className: "pagebldr-gallery-controls" }, [
+                node(
+                  "button",
+                  {
+                    type: "button",
+                    "data-gallery-action": "previous",
+                    "aria-label": "Previous slide",
+                  },
+                  ["Previous"],
+                ),
+                node(
+                  "button",
+                  {
+                    type: "button",
+                    "data-gallery-action": "next",
+                    "aria-label": "Next slide",
+                  },
+                  ["Next"],
+                ),
+              ]),
+            ]
+          : []),
+        dialog,
+      ],
+      {
+        "--gallery-columns": number(props, "columns", 3),
+        "--gallery-tablet-columns": number(props, "tabletColumns", 2),
+        "--gallery-mobile-columns": number(props, "mobileColumns", 1),
+        "--gallery-gap": `${number(props, "gap", 16)}px`,
+      },
+    ),
+  ]);
 }
 
 function destinationReferences(destinations: readonly unknown[]) {

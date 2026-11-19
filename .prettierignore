@@ -1,4 +1,6 @@
 .changeset/pre.json
+/.designr-research/
+/.local/
 .next
 .source
 apps/docs/AGENTS.md

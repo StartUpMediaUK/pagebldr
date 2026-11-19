@@ -11,7 +11,41 @@ const builder = createPagebldr({
   elements: standardElements,
   styleCapabilities: standardStyleCapabilities,
 });
-const document = builder.documents.migrate(fixture);
+const base = builder.documents.migrate(fixture);
+const panel = (type: string, id: string, children: readonly string[] = []) => ({
+  ...base.elements[base.rootId]!,
+  id,
+  type,
+  elementVersion: 1,
+  props: builder.elements.get(type)!.defaults() as Record<string, unknown>,
+  children,
+  classIds: [],
+  styles: {},
+});
+const document = {
+  ...base,
+  elements: {
+    ...base.elements,
+    [base.rootId]: {
+      ...base.elements[base.rootId]!,
+      children: [
+        ...base.elements[base.rootId]!.children,
+        "content-tabs-test",
+        "content-accordion-test",
+      ],
+    },
+    "content-tabs-test": panel("content-tabs", "content-tabs-test", [
+      "panel-test",
+    ]),
+    "panel-test": panel("tab-panel", "panel-test"),
+    "content-accordion-test": panel(
+      "content-accordion",
+      "content-accordion-test",
+      ["answer-test"],
+    ),
+    "answer-test": panel("accordion-panel", "answer-test"),
+  },
+};
 
 describe("standard scalar inspector field command contracts", () => {
   for (const definition of standardElements) {
@@ -25,7 +59,9 @@ describe("standard scalar inspector field command contracts", () => {
       if (!["text", "number", "boolean", "select"].includes(control.kind))
         continue;
       it(`${definition.type}.${String(control.key)} validates, coalesces and undoes at the public interface`, async () => {
-        const current = element.props[control.key];
+        const current =
+          element.props[control.key] ??
+          (definition.defaults() as Record<string, unknown>)[control.key];
         const candidates =
           control.kind === "select"
             ? control.options.map(({ value }) => value)

@@ -3,10 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   createPagebldr,
   standardStyleCapabilities,
+  standardElements,
   type PageDocument,
   type ResolvedStyleValue,
 } from "@pagebldr/core";
 import {
+  resetStyleSection,
   applicableStyleVariables,
   describeStyleOrigin,
   styleBreakpointFromViewport,
@@ -14,6 +16,81 @@ import {
 } from "./style-control.js";
 
 describe("Style inspector controls", () => {
+  it("resets a composed section atomically without clearing other styling or panel content", () => {
+    const builder = createPagebldr({
+      namespace: "tab-style-reset",
+      elements: standardElements,
+      styleCapabilities: standardStyleCapabilities,
+    });
+    const base = builder.documents.create({ id: "page" });
+    const definition = builder.elements.get("content-tabs")!;
+    const defaults = definition.defaults() as Record<string, unknown>;
+    const source: PageDocument = {
+      ...base,
+      elements: {
+        ...base.elements,
+        [base.rootId]: { ...base.elements[base.rootId]!, children: ["tabs"] },
+        tabs: {
+          ...base.elements[base.rootId]!,
+          id: "tabs",
+          type: "content-tabs",
+          children: [],
+          props: {
+            ...defaults,
+            tabFontSize: 26,
+            tabColor: "#123456",
+            tabActiveBackground: "#334455",
+          },
+          styles: {
+            desktop: {
+              normal: { fontFamily: "serif", backgroundColor: "#eeeeee" },
+            },
+            mobile: { normal: { fontFamily: "sans-serif" } },
+          },
+        },
+      },
+    };
+    const draft = resetStyleSection(
+      source,
+      "tabs",
+      defaults,
+      ["tabFontSize", "tabColor"],
+      ["fontFamily"],
+      "desktop",
+      "normal",
+    );
+    expect(draft.elements.tabs!.props.tabFontSize).toBe(defaults.tabFontSize);
+    expect(draft.elements.tabs!.props.tabColor).toBe("");
+    expect(draft.elements.tabs!.props.tabActiveBackground).toBe("#334455");
+    expect(draft.elements.tabs!.styles.desktop?.normal).toEqual({
+      backgroundColor: "#eeeeee",
+    });
+    expect(draft.elements.tabs!.styles.mobile).toEqual(
+      source.elements.tabs!.styles.mobile,
+    );
+    expect(source.elements.tabs!.props.tabFontSize).toBe(26);
+    const history = builder.editor.history.commit(
+      builder.editor.history.create(source),
+      {
+        type: "apply-subtree",
+        elementId: "tabs",
+        baseDocument: source,
+        document: draft,
+      },
+    );
+    expect(builder.editor.history.undo(history).present).toEqual(source);
+    expect(
+      resetStyleSection(
+        draft,
+        "tabs",
+        defaults,
+        ["tabFontSize", "tabColor"],
+        ["fontFamily"],
+        "desktop",
+        "normal",
+      ),
+    ).toBe(draft);
+  });
   it("maps editor viewports to authored breakpoints", () => {
     expect(styleBreakpointFromViewport("desktop")).toBe("desktop");
     expect(styleBreakpointFromViewport("desktop-fill")).toBe("desktop");

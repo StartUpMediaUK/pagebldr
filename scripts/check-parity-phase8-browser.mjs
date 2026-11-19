@@ -288,7 +288,10 @@ try {
       );
       await menu("Preview");
       await capture(`${name}-VIS-10`);
-      await page.keyboard.press("Escape");
+      // WebKit can retain focus in the canvas iframe when preview opens.
+      await page
+        .getByRole("button", { name: "Return to editor", exact: true })
+        .press("Escape");
       await page
         .getByRole("button", { name: "More editor actions", exact: true })
         .waitFor();

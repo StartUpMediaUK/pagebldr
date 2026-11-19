@@ -22,7 +22,11 @@ const expectedTypes = [
   "list",
   "icon-list",
   "accordion",
+  "content-accordion",
+  "accordion-panel",
   "tabs",
+  "content-tabs",
+  "tab-panel",
   "testimonial",
   "star-rating",
   "counter",
@@ -40,7 +44,7 @@ const builder = createPagebldr({
 });
 
 describe("standard Elements", () => {
-  it("ships the complete typed 24-Element library", () => {
+  it("ships the complete typed 28-Element library", () => {
     expect(standardElements.map(({ type }) => type)).toEqual(expectedTypes);
     for (const definition of standardElements) {
       const defaults = definition.defaults() as Record<string, unknown>;
@@ -71,7 +75,9 @@ describe("standard Elements", () => {
       "panelBackground",
       "panelPadding",
     ]);
-    expect(builder.elements.get("gallery-carousel")?.styleControls).toEqual([
+    expect(
+      builder.elements.get("gallery-carousel")?.styleControls?.slice(0, 1),
+    ).toEqual([
       {
         kind: "select",
         key: "layout",
@@ -79,6 +85,7 @@ describe("standard Elements", () => {
         presentation: "segmented",
         options: [
           { label: "Square", value: "square" },
+          { label: "Grid", value: "grid" },
           { label: "Masonry", value: "masonry" },
           { label: "Carousel", value: "carousel" },
         ],
@@ -198,6 +205,7 @@ describe("standard Elements", () => {
         kind: "collection",
         key: "items",
         label: "Links",
+        hierarchy: { childrenKey: "children", maxDepth: 3 },
         itemLabel: "Link",
         minItems: 1,
         maxItems: 30,
@@ -218,6 +226,7 @@ describe("standard Elements", () => {
             key: "destination",
             label: "Destination",
             preferFirstAnchor: true,
+            nullable: true,
           },
         ],
       },

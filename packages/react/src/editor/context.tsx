@@ -1,5 +1,7 @@
 "use client";
 
+import type { PagebldrRendererProps } from "../renderer.js";
+
 import {
   createContext,
   useCallback,
@@ -18,6 +20,7 @@ import type {
   Pagebldr,
   PageDocument,
   PageElement,
+  PreparedResources,
   ResourceReference,
   StyleState,
 } from "@pagebldr/core";
@@ -36,6 +39,8 @@ export interface ApplicationDestinationOption {
 }
 
 export interface EditorContextValue {
+  readonly elementRenderers: PagebldrRendererProps["elementRenderers"];
+  readonly resources: PreparedResources | undefined;
   readonly librarySource: EditorLibrarySource | undefined;
   readonly libraryVersion: number;
   readonly refreshLibrary: () => void;
@@ -43,6 +48,7 @@ export interface EditorContextValue {
   readonly fitCanvas: () => void;
   readonly builder: Pagebldr;
   readonly document: PageDocument;
+  readonly rootId: string;
   readonly mode: EditorMode;
   readonly viewport: EditorViewport;
   readonly selectedId: string | null;
@@ -70,6 +76,19 @@ export interface EditorContextValue {
   readonly resolveApplicationDestination?: (
     reference: ResourceReference,
   ) => string | null;
+}
+
+export const PanelEditingScope = createContext<string | null>(null);
+export const PanelEditingActions = createContext<{
+  save(): void;
+  cancel(): void;
+} | null>(null);
+export function editingDocument(
+  editor: Pick<EditorContextValue, "document" | "rootId">,
+): PageDocument {
+  return editor.rootId === editor.document.rootId
+    ? editor.document
+    : { ...editor.document, rootId: editor.rootId };
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null);
@@ -105,6 +124,8 @@ export function useEditorSelectionVersion(): number {
 }
 
 export interface EditorProviderProps {
+  readonly elementRenderers?: PagebldrRendererProps["elementRenderers"];
+  readonly resources?: PreparedResources;
   readonly librarySource?: EditorLibrarySource;
   readonly builder: Pagebldr;
   readonly document: PageDocument;
@@ -118,6 +139,8 @@ export interface EditorProviderProps {
 }
 
 export function EditorProvider({
+  elementRenderers,
+  resources,
   librarySource,
   applicationDestinations,
   builder,
@@ -127,6 +150,8 @@ export function EditorProvider({
   onChange,
   resolveApplicationDestination,
 }: EditorProviderProps) {
+  const scopedRootId = useContext(PanelEditingScope);
+  const rootId = scopedRootId ?? document.rootId;
   const [elementDrag] = useState(createElementDragSession);
   const [libraryBrowsing, setLibraryBrowsing] = useState<LibraryBrowsingState>({
     query: "",
@@ -148,12 +173,25 @@ export function EditorProvider({
   const [history, setHistory] = useState<LocalHistory>(() =>
     builder.editor.history.create(document),
   );
-  const [selectedId, setSelectedId] = useState<string | null>(document.rootId);
+  const selectionHistory = useRef(
+    new WeakMap<object, { before: string | null; after: string | null }>(),
+  );
+  const [selectedId, setSelectedId] = useState<string | null>(rootId);
   const [selectionVersion, setSelectionVersion] = useState(0);
-  const select = useCallback((elementId: string | null) => {
-    setSelectedId(elementId);
-    setSelectionVersion((current) => current + 1);
-  }, []);
+  const select = useCallback(
+    (elementId: string | null) => {
+      const contains = (id: string): boolean =>
+        id === elementId ||
+        (history.present.elements[id]?.children.some(contains) ?? false);
+      setSelectedId(
+        scopedRootId && elementId && !contains(scopedRootId)
+          ? scopedRootId
+          : elementId,
+      );
+      setSelectionVersion((current) => current + 1);
+    },
+    [scopedRootId, history.present],
+  );
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState(mode === "preview");
   useEffect(() => {
@@ -171,9 +209,9 @@ export function EditorProvider({
     }
     setHistory(builder.editor.history.create(document));
     setSelectedId((current) =>
-      current && document.elements[current] ? current : document.rootId,
+      current && document.elements[current] ? current : rootId,
     );
-  }, [builder, document]);
+  }, [builder, document, rootId]);
 
   useEffect(() => setPreviewing(mode === "preview"), [mode]);
 
@@ -192,19 +230,58 @@ export function EditorProvider({
       const next = builder.editor.history.commit(history, command, {
         ...(coalesceKey ? { coalesceKey } : {}),
       });
+      if (scopedRootId)
+        builder.editor.dispatch(history.present, {
+          type: "apply-subtree",
+          elementId: scopedRootId,
+          baseDocument: history.present,
+          document: next.present,
+        });
       const entry = next.past.at(-1)!;
+      let after = selectedId;
+      while (after && !next.present.elements[after]) {
+        after =
+          Object.values(history.present.elements).find((element) =>
+            element.children.includes(after!),
+          )?.id ?? null;
+      }
+      const previous = history.past.at(-1);
+      const coalesced =
+        previous &&
+        entry.coalesceKey !== null &&
+        entry.coalesceKey === previous.coalesceKey &&
+        next.past.length === history.past.length &&
+        entry.timestamp - previous.timestamp <= 750;
+      const previousSelection = previous
+        ? selectionHistory.current.get(previous)
+        : undefined;
+      selectionHistory.current.set(entry, {
+        before:
+          coalesced && previousSelection
+            ? previousSelection.before
+            : selectedId,
+        after,
+      });
+      setSelectedId(after);
       emit(next, {
         command: command.type,
         label: entry.label,
         changedElementIds: entry.changedElementIds,
       });
     },
-    [builder, emit, history, mode],
+    [builder, emit, history, mode, selectedId, scopedRootId],
   );
 
   const undo = useCallback(() => {
     if (!builder.editor.selectors.canUndo(history) || mode !== "edit") return;
     const next = builder.editor.history.undo(history);
+    const selection = selectionHistory.current.get(history.past.at(-1)!);
+    if (selection)
+      setSelectedId(
+        selection.before && next.present.elements[selection.before]
+          ? selection.before
+          : next.present.rootId,
+      );
     emit(next, {
       command: history.past.at(-1)!.command,
       label: "Undo",
@@ -215,6 +292,13 @@ export function EditorProvider({
   const redo = useCallback(() => {
     if (!builder.editor.selectors.canRedo(history) || mode !== "edit") return;
     const next = builder.editor.history.redo(history);
+    const selection = selectionHistory.current.get(history.future[0]!);
+    if (selection)
+      setSelectedId(
+        selection.after && next.present.elements[selection.after]
+          ? selection.after
+          : next.present.rootId,
+      );
     emit(next, {
       command: history.future.at(-1)!.command,
       label: "Redo",
@@ -224,6 +308,8 @@ export function EditorProvider({
 
   const value = useMemo<EditorContextValue>(
     () => ({
+      elementRenderers,
+      resources,
       librarySource,
       libraryVersion,
       refreshLibrary,
@@ -231,6 +317,7 @@ export function EditorProvider({
       fitCanvas,
       builder,
       document: history.present,
+      rootId,
       mode,
       viewport,
       selectedId,
@@ -277,12 +364,15 @@ export function EditorProvider({
         : {}),
     }),
     [
+      elementRenderers,
+      resources,
       librarySource,
       libraryVersion,
       refreshLibrary,
       canvasFitVersion,
       fitCanvas,
       builder,
+      rootId,
       applicationDestinations,
       dispatch,
       history,

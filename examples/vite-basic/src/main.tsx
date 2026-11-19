@@ -1,3 +1,4 @@
+import { ModularContentExample } from "./modular-content-example.js";
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -130,6 +131,7 @@ function App() {
     );
   }, [extensionOptions, route]);
 
+  if (route === "#/capabilities") return <ModularContentExample />;
   if (route === "#/media") return <MediaExample builder={builder} />;
   if (
     route === "#/preview" ||

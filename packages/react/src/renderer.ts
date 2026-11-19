@@ -3,9 +3,10 @@ import {
   Fragment,
   type ReactElement,
   type ReactNode,
+  type ComponentType,
 } from "react";
 
-import { resolveDestination, resourceKey } from "@pagebldr/core";
+import { PagebldrError, resolveDestination, resourceKey } from "@pagebldr/core";
 import type {
   Pagebldr,
   PageDocument,
@@ -14,6 +15,10 @@ import type {
   RenderNode,
   ResourceReference,
   StyleState,
+  ElementDefinition,
+  ElementRenderContext,
+  InferSchemaOutput,
+  StandardSchemaV1,
 } from "@pagebldr/core";
 import { menuResponsiveStyles } from "./menu-styles.js";
 
@@ -30,7 +35,39 @@ function cssAttribute(value: string): string {
   );
 }
 
+export interface ReactElementRenderProps<
+  Props = Readonly<Record<string, unknown>>,
+> {
+  readonly props: Props;
+  readonly context: Omit<ElementRenderContext, "children"> & {
+    readonly children: ReactNode;
+  };
+}
+
+export interface ReactElementRenderer {
+  readonly type: string;
+  readonly version: number;
+  readonly component: ComponentType<ReactElementRenderProps>;
+}
+
+/** Register application code, never executable Document content. */
+export function defineReactElementRenderer<Schema extends StandardSchemaV1>(
+  definition: ElementDefinition<string, Schema>,
+  component: ComponentType<ReactElementRenderProps<InferSchemaOutput<Schema>>>,
+): ReactElementRenderer {
+  return Object.freeze({
+    type: definition.type,
+    version: definition.version,
+    component: component as ComponentType<ReactElementRenderProps>,
+  });
+}
+
 export interface PagebldrRendererProps {
+  /** Render one owned subtree while retaining page-wide styles and link resolution. */
+  readonly rootElementId?: string;
+  readonly elementRenderers?: readonly ReactElementRenderer[];
+  /** Reveal the ancestor panels of the selected Element in edit mode. */
+  readonly selectedElementId?: string | null;
   readonly builder: Pagebldr;
   readonly document: PageDocument;
   readonly resources?: PreparedResources;
@@ -47,6 +84,7 @@ export interface PagebldrRendererProps {
 }
 
 export function PagebldrRenderer({
+  rootElementId,
   builder,
   document,
   resources = { values: new Map() },
@@ -55,13 +93,45 @@ export function PagebldrRenderer({
   resolveApplicationDestination,
   styleNonce,
   forcedStyleState,
+  elementRenderers = [],
+  selectedElementId,
 }: PagebldrRendererProps): ReactElement {
   const compiled = builder.styles.compile(document);
+  const renderers = new Map<string, ReactElementRenderer>();
+  for (const renderer of elementRenderers) {
+    const definition = builder.elements.get(renderer.type);
+    if (
+      !definition ||
+      definition.version !== renderer.version ||
+      renderers.has(renderer.type)
+    )
+      throw new PagebldrError(
+        "INVALID_CONFIGURATION",
+        `Invalid or duplicate React Element renderer: ${renderer.type}.`,
+      );
+    renderers.set(renderer.type, renderer);
+  }
+  const selectedPath = new Set<string>();
+  const findSelected = (id: string): boolean => {
+    const selected =
+      id === selectedElementId ||
+      document.elements[id]!.children.some(findSelected);
+    if (selected) selectedPath.add(id);
+    return selected;
+  };
+  const renderRootId = rootElementId ?? document.rootId;
+  if (!document.elements[renderRootId])
+    throw new PagebldrError(
+      "BROKEN_REFERENCE",
+      "The rendering root is missing.",
+    );
+  if (mode === "edit" && selectedElementId) findSelected(renderRootId);
   const renderElement = (id: string): ReactNode => {
     const element = document.elements[id]!;
     if (element.hidden && mode !== "edit") return null;
     const definition = builder.elements.get(element.type);
-    if (!definition?.render) {
+    const renderer = renderers.get(element.type);
+    if (!definition || (!definition.render && !renderer)) {
       return mode === "edit"
         ? createElement(
             "div",
@@ -75,19 +145,28 @@ export function PagebldrRenderer({
           )
         : null;
     }
-    const rendered = definition.render(element.props, {
+    const childIds = element.children.filter(
+      (childId) => mode === "edit" || !document.elements[childId]!.hidden,
+    );
+    const context: ElementRenderContext = {
       elementId: id,
-      children: element.children.map(
-        (childId) => renderElement(childId) as RenderNode,
-      ),
+      childElements: childIds.map((childId) => document.elements[childId]!),
+      ...(childIds.find((childId) => selectedPath.has(childId))
+        ? {
+            selectedChildId: childIds.find((childId) =>
+              selectedPath.has(childId),
+            )!,
+          }
+        : {}),
+      children: childIds.map((childId) => renderElement(childId) as RenderNode),
       mode,
       now,
       resource: (reference) =>
         resources.values.get(resourceKey(reference)) ?? null,
       destination: (value) =>
         resolveDestination(document, value, resolveApplicationDestination),
-    });
-    return toReact(rendered, id, {
+    };
+    const attributes = {
       "data-pagebldr-element": id,
       id:
         typeof element.props.anchorId === "string"
@@ -100,7 +179,17 @@ export function PagebldrRenderer({
       ...(mode === "edit" && forcedStyleState?.elementId === id
         ? { "data-pagebldr-force-state": forcedStyleState.state }
         : {}),
-    });
+    };
+    if (renderer)
+      return createElement(
+        "div",
+        { key: id, ...attributes },
+        createElement(renderer.component, {
+          props: element.props,
+          context: { ...context, children: context.children as ReactNode },
+        }),
+      );
+    return toReact(definition.render!(element.props, context), id, attributes);
   };
   return createElement(
     Fragment,
@@ -136,8 +225,11 @@ export function PagebldrRenderer({
         [compiled.scopeAttribute]: compiled.scopeValue,
         [compiled.documentAttribute]: compiled.documentValue,
         "data-pagebldr-renderer": builder.namespace,
+        ...(mode === "edit" && selectedElementId
+          ? { "data-pagebldr-selection": selectedElementId }
+          : {}),
       },
-      renderElement(document.rootId),
+      renderElement(renderRootId),
     ),
   );
 }
