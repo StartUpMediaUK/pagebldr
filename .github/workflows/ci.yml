@@ -4,6 +4,15 @@ on:
   pull_request:
   push:
     branches: [master, release/alpha]
+  workflow_call:
+    inputs:
+      release-matrix:
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -15,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [22, 24]
+        node: ${{ fromJSON(inputs.release-matrix && '[22, 24]' || '[22]') }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -35,6 +44,7 @@ jobs:
         if: github.event_name == 'pull_request'
 
   packed-react:
+    if: inputs.release-matrix
     name: Packed consumer / Node ${{ matrix.node }} / React ${{ matrix.react }}
     runs-on: ubuntu-latest
     strategy:
@@ -91,6 +101,7 @@ jobs:
           fail-on-severity: moderate
 
   packed-browser:
+    if: inputs.release-matrix
     name: Packed browser / React ${{ matrix.react }} / ${{ matrix.browser }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -148,6 +159,7 @@ jobs:
       - run: pnpm audit --audit-level high
 
   visual-regression:
+    if: inputs.release-matrix
     name: Accepted canvas visual regression / Windows Chromium
     runs-on: windows-latest
     timeout-minutes: 30
