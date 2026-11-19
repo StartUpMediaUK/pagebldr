@@ -162,10 +162,16 @@ try {
         "A completed drag does not trigger the edit click",
       );
       await snap("mouse-moved");
-      await undo(before);
-      await page.keyboard.press("Control+Shift+z");
+      const undoButton = page.getByRole("button", {
+        name: "Undo",
+        exact: true,
+      });
+      await undoButton.click();
+      await waitOrder(before);
+      await page.getByRole("button", { name: "Redo", exact: true }).click();
       await waitOrder([before[1], before[0], ...before.slice(2)]);
-      await undo(before);
+      await undoButton.click();
+      await waitOrder(before);
     },
   );
   await check(

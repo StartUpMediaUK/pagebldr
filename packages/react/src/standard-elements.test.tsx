@@ -29,7 +29,9 @@ function standardDocument(): PageDocument {
       ...base.elements.root!,
       elementVersion: container.version,
       props: container.defaults() as Readonly<Record<string, unknown>>,
-      children: definitions.map(({ type }) => type),
+      children: definitions
+        .filter(({ type }) => !["tab-panel", "accordion-panel"].includes(type))
+        .map(({ type }) => type),
     },
   };
   for (const definition of definitions)
@@ -39,7 +41,12 @@ function standardDocument(): PageDocument {
       elementVersion: definition.version,
       name: definition.label,
       props: definition.defaults() as Readonly<Record<string, unknown>>,
-      children: [],
+      children:
+        definition.type === "content-tabs"
+          ? ["tab-panel"]
+          : definition.type === "content-accordion"
+            ? ["accordion-panel"]
+            : [],
       classIds: [],
       styles: {},
       locked: false,
@@ -49,6 +56,130 @@ function standardDocument(): PageDocument {
 }
 
 describe("standard Element renderer", () => {
+  it("serializes tab header appearance for editor, preview and server rendering without changing panel styles", () => {
+    const source = standardDocument();
+    const tabs = source.elements["content-tabs"]!;
+    const document = {
+      ...source,
+      elements: {
+        ...source.elements,
+        [tabs.id]: {
+          ...tabs,
+          props: {
+            ...tabs.props,
+            tabColor: "#123456",
+            tabActiveColor: "#ffffff",
+            tabActiveBackground: "rgba(10, 20, 30, 0.5)",
+            tabFocusColor: "#ff0000",
+            tabFontSize: 22,
+            tabPaddingX: 24,
+            tabJustifyContent: "space-evenly",
+            tabRadius: 8,
+            tabIndicatorWidth: 4,
+          },
+        },
+      },
+    };
+    expect(builder.documents.validate(document).valid).toBe(true);
+    for (const mode of ["edit", "preview", "published"] as const) {
+      const html = renderToString(
+        <PagebldrRenderer builder={builder} document={document} mode={mode} />,
+      );
+      expect(html).toContain("--pagebldr-tab-authored-color:#123456");
+      expect(html).toContain(
+        "--pagebldr-tab-authored-active-background:rgba(10, 20, 30, 0.5)",
+      );
+      expect(html).toContain("--pagebldr-tab-font-size:22px");
+      expect(html).toContain("--pagebldr-tab-padding-x:24px");
+      expect(html).toContain("--pagebldr-tab-justify-content:space-evenly");
+      expect(html).toContain("--pagebldr-tab-radius:8px");
+      expect(html).toContain("--pagebldr-tab-indicator-width:4px");
+    }
+    expect(document.elements["tab-panel"]).toEqual(
+      source.elements["tab-panel"],
+    );
+    expect(
+      builder.documents.parse(JSON.parse(JSON.stringify(document))),
+    ).toEqual(document);
+    const legacy = {
+      ...source,
+      elements: {
+        ...source.elements,
+        [tabs.id]: {
+          ...tabs,
+          props: {
+            ariaLabel: "Legacy",
+            orientation: "horizontal",
+            labelLayout: "wrap",
+            activation: "automatic",
+          },
+        },
+      },
+    };
+    expect(builder.documents.validate(legacy).valid).toBe(true);
+    const invalid = {
+      ...document,
+      elements: {
+        ...document.elements,
+        [tabs.id]: {
+          ...tabs,
+          props: {
+            ...tabs.props,
+            tabBackground: "url(https://example.com/tracker)",
+          },
+        },
+      },
+    };
+    expect(builder.documents.validate(invalid).valid).toBe(false);
+  });
+  it("gives a linked decorative gallery image an accessible destination name", () => {
+    const source = standardDocument();
+    const gallery = source.elements["gallery-carousel"]!;
+    const document = {
+      ...source,
+      elements: {
+        ...source.elements,
+        [gallery.id]: {
+          ...gallery,
+          props: {
+            ...gallery.props,
+            items: [
+              {
+                id: "decorative-link",
+                kind: "image",
+                source: {
+                  type: "external",
+                  url: "https://example.com/photo.jpg",
+                },
+                alt: "",
+                altConfirmed: true,
+                decorative: true,
+                caption: "View the collection",
+                destination: {
+                  type: "external",
+                  url: "https://example.com/collection",
+                  newTab: false,
+                },
+              },
+            ],
+            lightbox: true,
+          },
+        },
+      },
+    };
+    expect(builder.documents.validate(document).valid).toBe(true);
+    const html = renderToString(
+      <PagebldrRenderer
+        builder={builder}
+        document={document}
+        mode="published"
+      />,
+    );
+    expect(html).toMatch(
+      /<a [^>]*aria-label="View the collection"[^>]*><img [^>]*alt=""/u,
+    );
+    expect(html).not.toContain("data-gallery-open");
+  });
   it("emits hydration-safe raw CSS without permitting style-tag termination", () => {
     const document = {
       ...standardDocument(),

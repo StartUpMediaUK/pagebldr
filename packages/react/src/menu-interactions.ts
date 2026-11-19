@@ -113,9 +113,9 @@ function bindMenu(menu: HTMLElement, root: HTMLElement) {
         const focusable = [
           toggle,
           ...panel.querySelectorAll<HTMLElement>(
-            'a[href], button, [tabindex="0"]',
+            'a[href], button, summary, [tabindex="0"]',
           ),
-        ];
+        ].filter((element) => element.getClientRects().length > 0);
         const last = focusable.at(-1)!;
         if (event.shiftKey && document.activeElement === toggle) {
           event.preventDefault();
@@ -217,6 +217,21 @@ function bindMenu(menu: HTMLElement, root: HTMLElement) {
     }
     const link = target?.closest<HTMLAnchorElement>("a");
     if (!link || !panel.contains(link)) return;
+    const openDisclosures = panel.querySelectorAll<HTMLDetailsElement>(
+      "details[data-pagebldr-submenu][open]",
+    );
+    const focused = document.activeElement;
+    const enclosing = [...openDisclosures].find((details) =>
+      details.contains(focused),
+    );
+    if (enclosing) {
+      const returnFocus =
+        menu.dataset.open === "true"
+          ? toggle
+          : enclosing.querySelector("summary");
+      returnFocus?.focus({ preventScroll: true });
+    }
+    for (const details of openDisclosures) details.open = false;
     close(false);
     if (menu.dataset.renderMode === "edit") {
       event.preventDefault();
@@ -261,6 +276,18 @@ function bindMenu(menu: HTMLElement, root: HTMLElement) {
     });
     view.history.pushState(null, "", href);
   };
+  const submenuKeydown = (event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    const details = (
+      event.target as Element | null
+    )?.closest<HTMLDetailsElement>("details[data-pagebldr-submenu][open]");
+    if (!details || !menu.contains(details)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    details.open = false;
+    details.querySelector<HTMLElement>("summary")?.focus();
+  };
+  menu.addEventListener("keydown", submenuKeydown);
   menu.addEventListener("click", click);
   const configurationObserver = new view.MutationObserver(() => close(false));
   configurationObserver.observe(menu, {
@@ -271,6 +298,7 @@ function bindMenu(menu: HTMLElement, root: HTMLElement) {
     close(false);
     configurationObserver.disconnect();
     menu.removeEventListener("click", click);
+    menu.removeEventListener("keydown", submenuKeydown);
   };
 }
 

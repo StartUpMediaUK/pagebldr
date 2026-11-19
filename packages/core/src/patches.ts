@@ -1,4 +1,4 @@
-import { cloneDocument } from "./document.js";
+import { cloneDocument, sortObject } from "./document.js";
 import type {
   PageDocument,
   PageElement,
@@ -48,7 +48,9 @@ export type DocumentPatch =
     };
 
 const equal = (left: unknown, right: unknown) =>
-  JSON.stringify(left) === JSON.stringify(right);
+  left === right ||
+  JSON.stringify(left) === JSON.stringify(right) ||
+  JSON.stringify(sortObject(left)) === JSON.stringify(sortObject(right));
 
 export function diffDocuments(
   before: PageDocument,

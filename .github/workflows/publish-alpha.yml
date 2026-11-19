@@ -19,6 +19,14 @@ env:
   EXPECTED_VERSION: ${{ inputs.version }}
 
 jobs:
+  compatibility:
+    if:
+      github.ref == 'refs/heads/release/alpha' && vars.PAGEBLDR_NPM_PUBLISHING
+      == 'enabled' && github.event.repository.private == false
+    uses: ./.github/workflows/ci.yml
+    with:
+      release-matrix: true
+
   verify:
     if:
       github.ref == 'refs/heads/release/alpha' && vars.PAGEBLDR_NPM_PUBLISHING
@@ -65,7 +73,7 @@ jobs:
           retention-days: 14
 
   publish:
-    needs: verify
+    needs: [verify, compatibility]
     runs-on: ubuntu-latest
     environment: npm-alpha
     permissions:
@@ -78,6 +86,7 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
+      - run: npm install --global npm@11.21.2
       - uses: actions/download-artifact@v4
         with:
           name: approved-alpha-candidate
@@ -88,6 +97,6 @@ jobs:
       # OIDC configuration requires the one-time manual bootstrap to exist first.
       - run: npm view @startupmedia/pagebldr name
       - run:
-          npm publish
+          npm stage publish
           "release-evidence/distribution/startupmedia-pagebldr-${EXPECTED_VERSION}.tgz"
           --tag alpha --provenance --ignore-scripts

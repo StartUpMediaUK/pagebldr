@@ -1,4 +1,4 @@
 {
   "title": "Extending pagebldr",
-  "pages": ["index", "elements", "composition"]
+  "pages": ["index", "elements", "composition", "modular-content"]
 }

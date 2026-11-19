@@ -1,0 +1,429 @@
+---
+title: Modular content and interactive Hosts
+description:
+  Editable panels, media layouts, navigation, sticky compositions and React
+  element renderers.
+---
+
+## Capability contracts
+
+| Capability                | Public interface                                                      | Compatibility                                                                  |
+| ------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Editable content panels   | `standardElements`: `content-tabs` and `tab-panel`                    | New version 1 types; existing text `tabs` version 1 remains supported          |
+| Gallery layouts           | `gallery-carousel` version 2: `square`, `grid`, `masonry`, `carousel` | Additional optional props; existing v1 migration and v2 Documents remain valid |
+| Nested navigation         | `menu` version 1, recursive `items[].children`                        | Existing flat items remain valid; new fields are optional                      |
+| Sticky compositions       | `standardStyleCapabilities`: `position`, `top`, `zIndex`              | Existing CSS capability; no new header Element                                 |
+| Rich accordion answers    | `standardElements`: `content-accordion` and `accordion-panel`         | New version 1 types; existing plain-text FAQs remain supported                 |
+| FAQs                      | `accordion` version 1 with native `details`/`summary`                 | Independent single-open groups per Element; plain-text answers preserved       |
+| Interactive Host elements | `defineElement`, `defineReactElementRenderer`, `elementRenderers`     | Additive React interface; core remains framework independent                   |
+| Blocks and Templates      | `defineBlock`, `defineTemplate`, `builder.editor.library`             | Existing insertion model; safer anchor, Resource and dependency copying        |
+
+The runnable Reference Host route `#/capabilities` is implemented in
+`examples/vite-basic/src/modular-content-example.tsx`. It contains small
+independent compositions, nested panels, a stub Host form, unavailable
+Resources, grid/masonry, text FAQs, nested rich accordions, old text Tabs and a
+sticky navigation header. Run the Reference Host with
+`pnpm --filter @pagebldr-example/vite-basic dev` after building the package.
+
+## Content panels and ownership
+
+`content-tabs` owns only `tab-panel` children, with a maximum of twelve. A panel
+can own any registered Element, including another `content-tabs` or a Host form.
+`tab-panel` must have a `content-tabs` parent. Ownership is the normalized
+Document tree; there is no second tree inside props. Empty tab groups are valid
+while authoring. A hidden panel is omitted in preview/published modes.
+
+```ts
+import { defineBlock } from "@startupmedia/pagebldr";
+
+export const enquiryPanels = defineBlock({
+  key: "enquiry-panels",
+  label: "Enquiry panels",
+  create: () => ({
+    type: "content-tabs",
+    props: { activation: "manual" },
+    children: [
+      {
+        type: "tab-panel",
+        props: { label: "Details" },
+        children: [{ type: "heading", props: { content: "Details" } }],
+      },
+      {
+        type: "tab-panel",
+        props: { label: "Enquire", defaultOpen: true },
+        children: [{ type: "host-demo-form" }],
+      },
+    ],
+  }),
+});
+```
+
+Register `host-demo-form` before inserting this example. ElementTree factories
+merge definition defaults when the editor materializes them. Hosts inserting
+clipboard values directly must include complete validated Element props.
+
+Panel IDs are Element IDs. Each panel's `label` supplies exactly one tab label;
+changing order moves the label with its subtree. The first panel whose
+`defaultOpen` is true is preferred; otherwise the first visible panel opens.
+This deterministic preference permits duplication without an invalid default
+reference. The editor?s **Default tab** selector beneath the tab list chooses
+one panel and clears the other preferences in one undoable change. Removing a
+preferred panel falls back to the next preferred panel or the first panel.
+
+In the editor, **Tabs** inserts `content-tabs` with three empty `tab-panel`
+Elements and selects the group. Its Content inspector provides labels, a single
+Default tab selector, Add tab, reordering, duplication and removal. Icon actions
+include accessible labels and tooltips. Each panel has **Edit content**, opening
+a centred dialog occupying 80% of the viewport focused on that panel's ordinary
+Element subtree. The modal scales editor UI breakpoints down by 20% to match its
+size; the page's authored responsive breakpoints are unchanged. The same action
+is available when selecting an individual panel. Add core Elements or registered
+Host Elements using the normal library and edit their content and layout on the
+canvas.
+
+Select the Tabs group and open **Style** to customize its tab headers. Choose an
+Underline, Pills or Segmented preset, then switch between Normal, Active, Hover
+and Focus to edit the relevant colours. Typography, spacing/corners, additional
+styling and behaviour expand on demand. Controls cover normal, active and hover
+text/background colours, focus ring and active indicator colour, header
+background, font size and weights, horizontal/vertical padding, gap, corner
+radius and indicator width. Clear a colour to inherit the page?s theme;
+transparency is supported. These settings apply to every header in that Tabs
+group, independently of its panel content and nested Tabs groups. They render
+consistently in edit, preview, published and server output.
+
+In **Style → Layout**, **Header alignment** positions the headings at the start,
+centre or end, or distributes them with Space between, Space around or Space
+evenly. It follows the header orientation, across a row or down a column. **Tab
+gap** sets the minimum gap between headings.
+
+The appearance props are optional additions to `content-tabs` version 1:
+`tabColor`, `tabBackground`, `tabActiveColor`, `tabActiveBackground`,
+`tabHoverColor`, `tabHoverBackground`, `tabFocusColor`, `tabIndicatorColor`,
+`tabListBackground`, `tabFontSize`, `tabFontWeight`, `tabActiveFontWeight`,
+`tabPaddingX`, `tabPaddingY`, `tabGap`, `tabRadius`, `tabIndicatorWidth`, and
+`tabJustifyContent`. Alignment defaults to `flex-start` and also accepts
+`center`, `flex-end`, `space-between`, `space-around`, and `space-evenly`. Sizes
+use pixels; font weights are `"400"`, `"500"`, `"600"`, or `"700"`. Existing
+Documents need no migration.
+
+Handles on all four edges resize the dialog while keeping it centred. Left and
+right handles adjust width; top and bottom handles adjust height independently.
+Both dimensions have an 80% viewport minimum and a full-viewport maximum. With a
+handle focused, the matching Arrow keys resize, Shift uses larger steps, Home
+resets that dimension to 80%, and End fills the viewport on that axis. Resizing
+is local presentation state and creates no Document changes or history entries.
+
+**Save changes** in the canvas toolbar applies the session to the owning page as
+one undoable Action; **Cancel** or Escape discards it. Reopening reads the
+current saved page content. There is no separate panel Document, backend record
+or reusable reference. The Host's ordinary page save/Update persists the
+complete Document. Inside the dialog, undo/redo belongs to the draft; after
+applying it, page undo/redo covers the whole session. Page identity, settings
+and Elements outside the selected subtree cannot be changed by a panel save.
+Stale saves are refused if the Host changes the page while the dialog is open.
+Shared Classes and Variables keep their existing page-wide semantics, including
+when edited in a panel session.
+
+The dialog receives the same builder, Host React registrations, prepared
+Resources, media adapters and Destination resolution as the page. The canvas
+renders only the panel but resolves links and styles against the complete page,
+so anchors outside the panel remain valid. New Resource references use the
+Host's normal preparation flow when the page changes. Editing still uses Host
+placeholders; preview exercises the registered interactive rendering.
+
+Existing `tabs` Documents remain text-based and require no migration. The
+standard Add palette offers the editable version; existing text Tabs expose
+**Use editable panels**. This explicit conversion preserves labels, text,
+Element identity, authored anchor and styles as ordinary panel/Rich Text
+Elements, and is reversible through page Undo. Register both standard types when
+upgrading existing Documents.
+
+Duplication regenerates all descendant Element IDs. Removal deletes the entire
+owned subtree. Undo/redo restores structure and the editor's recorded selection.
+Structure selection reveals all ancestor panels. Host integrations using
+`PagebldrRenderer` for their own editing surface pass `selectedElementId`.
+
+Group props and controls:
+
+| Prop          | Values/default                                          |
+| ------------- | ------------------------------------------------------- |
+| `ariaLabel`   | Nonempty accessible name, default `Content sections`    |
+| `orientation` | `horizontal` (default), `vertical`                      |
+| `labelLayout` | `wrap` (default), `scroll`; all labels remain reachable |
+| `activation`  | `automatic` (default), `manual`                         |
+
+Arrow keys follow orientation. Home/End focus the first/last tab. Automatic
+activation opens on focus movement; manual activation requires Enter/Space or a
+click and suits expensive panels. Tab uses roving focus. Inactive panels use
+`hidden` and have no focusable visible descendants. Switching preserves mounted
+form controls and React state. Nested tab groups operate independently.
+
+Normal/active appearance inherits authored typography and supports Host theme
+tokens `--pagebldr-tab-color`, `--pagebldr-tab-background`,
+`--pagebldr-tab-active-color`, `--pagebldr-tab-active-background`. Focus uses
+`--pagebldr-tab-focus-color` or the shared `--pagebldr-focus` fallback. A colour
+authored on a Tabs group overrides its theme token. Section Reset clears the
+selected header colour state and any shared appearance settings in that section.
+**Reset all local styles** clears the Element's responsive style declarations.
+Group/panel layout, spacing, borders and typography use the standard Style
+capabilities. Tokens contain presentation only, never Host data.
+
+Server markup exposes every panel with a visible label so content remains
+available without JavaScript. Server and initial client markup match. After
+hydration `PagebldrRuntimeInteractions` hides inactive panels and fallback
+labels, keeping all descendants mounted. Without that client module, all panels
+remain readable; tab switching is unavailable. This progressive enhancement can
+cause an initial content contraction. Reserve space at the Host level when that
+behaviour matters.
+
+## Interactive React elements
+
+Define validated serialisable props, defaults, controls and Resource extraction
+with `defineElement` from the package root. Use the same definition to register
+React application code with `defineReactElementRenderer` from
+`@startupmedia/pagebldr/react` (client) or `@startupmedia/pagebldr/react/server`
+(SSR). The helper infers props from the definition's Standard Schema.
+
+```tsx
+import {
+  defineReactElementRenderer,
+  PagebldrRenderer,
+} from "@startupmedia/pagebldr/react";
+
+const formRenderer = defineReactElementRenderer(
+  formDefinition,
+  function HostForm({ props, context }) {
+    const endpoint = context.resource({ kind: "form", value: props.formId });
+    if (context.mode === "edit")
+      return <p>Form preview; submissions disabled.</p>;
+    if (!endpoint) return <p role="status">This form is unavailable.</p>;
+    return <YourHostForm endpoint={endpoint} label={props.label} />;
+  },
+);
+
+<PagebldrRenderer
+  builder={builder}
+  document={document}
+  resources={preparedResources}
+  elementRenderers={[formRenderer]}
+/>;
+```
+
+`ReactElementRenderProps<Props>` contains `props` and `context`. Context exposes
+`elementId`, `mode`, `now`, `children` as React content, `childElements`
+metadata, `selectedChildId`, `resource(reference)` and `destination(value)`. The
+package owns the outer Element wrapper and its style/selection attributes. The
+renderer is a React component, so hooks, accessible event handlers and Host
+context work normally, including inside panel subtrees. Keep registrations
+stable at module scope. Duplicate registrations, unregistered types and version
+mismatches fail. The normal framework-neutral `render` remains a useful
+unavailable-interaction fallback when a Host omits its React registration.
+
+Pass the same `elementRenderers` to `PagebldrEditor` (including its preview and
+library preview) and `PagebldrPage` for Runtime publication. The editor also
+accepts `resources`. Resolve them in the Host with
+`resolveDocumentResources(builder, document, { scope, signal })`, cancel stale
+work and supply the resulting map. Resource fetching never runs inside React
+rendering. Null resolutions render safe unavailable states; missing adapters or
+invalid references reject preparation. Hosts retain authorization and scope. An
+opaque Resource value containing `elementId` survives copying unchanged.
+
+The complete demo form shows pending, error, success and retry using a stub
+service. `fail@example.com` exercises error recovery. In edit mode it renders
+only a placeholder, so author clicks cannot submit. The canvas also blocks form
+submissions in edit mode. Preview and published modes run real interactions.
+Host renderers must check `context.mode` before enabling other side effects.
+
+For SSR, resolve Resources first and render with the server import. Send only
+the Document and a serialisable representation of prepared Resource entries;
+reconstruct `new Map(entries)` on the client. Hydrate with the same Document,
+Resources, registrations and `now` value. React registrations and service
+functions live in Host code and never enter the Document. In a React Server
+Components Host, put hook-based registrations behind a Host client component; do
+not pass component functions across the server/client serialisation seam. Mount
+`PagebldrRuntimeInteractions` adjacent to a direct renderer, under one parent.
+`PagebldrPage` and the editor mount it automatically. Import
+`@startupmedia/pagebldr/styles.css` once in the Host.
+
+## Galleries
+
+`gallery-carousel` retains its version 2 media items: `id`, `kind`, opaque
+`source`, `alt`, `altConfirmed`, `decorative`, `caption`. Optional positive
+integer `width`/`height` reserve intrinsic dimensions; `MediaItem.width` and
+`MediaItem.height` supplied by an adapter are copied when selecting media.
+Authors can set dimensions in the media inspector. Supply actual dimensions for
+masonry to avoid layout shifts as images load. Unknown dimensions cannot reserve
+an exact intrinsic ratio. All but the first image load lazily.
+
+Optional item `destination` uses the standard Destination contract. When set, it
+always takes precedence over lightbox behaviour for that item. Decorative images
+use empty alt text. Managed images retain publication checks for confirmed alt
+text or decorative intent. Video keeps its native controls.
+
+| Prop                                        | Values/default                                       |
+| ------------------------------------------- | ---------------------------------------------------- |
+| `layout`                                    | `square`, `grid`, `masonry`, `carousel`              |
+| `columns`, `tabletColumns`, `mobileColumns` | 1–8; defaults 3, 2, 1                                |
+| `gap`                                       | 0–96 pixels, default 16                              |
+| `radius`                                    | 0–200 pixels, default 12                             |
+| `aspectRatio`                               | `1 / 1`, `4 / 3`, `16 / 9`, `3 / 4`; default `1 / 1` |
+| `imagePosition`                             | `center`, `top`, `bottom`, `left`, `right`           |
+| `showCaptions`, `lightbox`                  | Defaults true, false                                 |
+
+Counts respond to gallery **container** widths: mobile at or below 48rem, tablet
+at or below 64rem, desktop above 64rem. They are independent of page viewport
+breakpoints. Square always crops to 1:1; grid uses `aspectRatio`; masonry
+retains intrinsic proportions. CSS columns provide masonry in ordinary browsers,
+with column-major reading and keyboard focus order matching Document order.
+Resizing lays out columns without reordering the DOM. No experimental browser
+masonry or measurement loop is required.
+
+Lightbox uses a native modal dialog, with its accessible name, caption,
+previous/next buttons, arrow keys, Escape, browser focus containment and
+restored trigger focus. Images with destinations do not appear in its sequence.
+Edit mode selects Elements and edits media without opening
+destinations/lightbox.
+
+## Nested navigation and sticky headers
+
+Menu items have unique `id`, nonempty `label`, optional nullable `destination`,
+and optional `children`. Limits are three levels, thirty siblings and one
+hundred items total per Menu. Existing flat Documents need no migration. The
+Content inspector adds and removes items, reorders siblings and supplies Indent
+and Outdent buttons. Moving an item to another parent preserves the full subtree
+and IDs. Destination and Resource extraction walks all levels; Hosts can
+populate `items` through ordinary `update-props` commands to adapt their
+authorized navigation data.
+
+Submenus use disclosure navigation (`details`/`summary`), with native expanded
+state, keyboard and touch activation. A parent link is separate from the
+labelled submenu disclosure. Escape closes the innermost open disclosure and
+returns focus to it. Existing collapse breakpoint, dropdown/fullscreen,
+scrolling and dismissal behaviour remains. This is site navigation, not an ARIA
+application menu; normal Tab order remains available. Avoid adding a second
+hover-only interaction layer in Host CSS.
+
+The example composes a semantic header from Container, Logo, Menu and Button.
+Its outer header has `position: sticky`, `top: 12px`, `zIndex: 30`; a rounded
+inset child owns the visual background. The header is a direct child of the
+full-height page container, with content following it. A wrapper only as tall as
+the header would constrain sticky travel. Ancestor scrolling/overflow chooses
+the sticky containing block; transforms, clipping and stacking contexts affect
+menus. Keep overflow visible on header ancestors and choose a stacking level
+appropriate to Host chrome. Fixed positioning instead leaves normal flow. The
+editor's own scroll viewport is the sticky scroll container in edit and preview.
+Apply `scrollMarginTop` through the standard Position capability to leave room
+below a sticky header when an anchor target receives focus.
+
+## Rich accordion answers
+
+Existing `accordion` version 1 keeps its question/answer strings and requires no
+migration. For editable answer trees, use the new version 1 `content-accordion`
+and `accordion-panel` types from `standardElements`. Document schemaVersion
+stays 2. Both FAQ types use native `details`/`summary` semantics for keyboard
+activation, expanded state and closed-content focus exclusion, including without
+JavaScript. Enter or Space toggles a focused question; Tab follows normal
+Document order. Closed content stays mounted, preserving form values.
+
+```ts
+export const enquiryAnswers = defineBlock({
+  key: "enquiry-answers",
+  label: "Enquiry answers",
+  create: () => ({
+    type: "content-accordion",
+    props: { allowMultiple: false },
+    children: [
+      {
+        type: "accordion-panel",
+        props: { question: "What happens next?", defaultOpen: true },
+        children: [{ type: "rich-text" }],
+      },
+      {
+        type: "accordion-panel",
+        props: { question: "Can I enquire here?" },
+        children: [{ type: "host-demo-form" }],
+      },
+    ],
+  }),
+});
+```
+
+Import `defineBlock` as in the tab example and register the Host Element before
+inserting this Block. The runnable Reference Host includes this form
+integration, a nested accordion and a multiple-open group with an unavailable
+Resource.
+
+`content-accordion` owns only `accordion-panel` children, at most thirty; an
+empty group is valid while authoring. An `accordion-panel` must belong to a
+`content-accordion` and accepts any registered Element as answer content,
+including Host Elements, tabs and nested accordions. The panel's Element ID is
+its stable identity; `question` labels exactly its own answer subtree. There is
+no secondary answer tree in props. Hidden panels are omitted in
+preview/published output and remain selectable in edit mode.
+
+| Element             | Prop            | Contract                                                                      |
+| ------------------- | --------------- | ----------------------------------------------------------------------------- |
+| `content-accordion` | `allowMultiple` | Boolean, default `false`; exposes Allow multiple open                         |
+| `accordion-panel`   | `question`      | Required string of 1?500 characters, default `New question`; exposes Question |
+| `accordion-panel`   | `defaultOpen`   | Boolean, default `false`; exposes Open by default                             |
+
+With no preferences all panels start closed. Single-open mode opens only the
+first visible preferred panel in Document order; multiple-open mode opens every
+preferred panel. Grouping is scoped to the owning Element, so separate and
+nested groups operate independently. Duplicating a preferred panel keeps its
+preference; order determines the winner in single-open mode. Removing or hiding
+that winner uses the next visible preference, or starts closed. Visitor open
+state is local interaction state and does not update the Document or Local
+history.
+
+In the editor, insert Content accordion, select it in Structure and insert
+Accordion panel. Select that panel to add ordinary answer Elements. Content
+controls edit the question and initial-open preference. Structure provides
+reordering, duplication, removal and keyboard movement using standard commands.
+Duplication regenerates all owned Element IDs; removal deletes the whole answer
+subtree; undo/redo restores structure and recorded selection. Selecting an
+answer or descendant reveals all ancestor panels, including across nested tabs.
+The same `selectedElementId` prop supports Host editing surfaces. Native
+disclosure interaction remains available while editing; Host forms still use
+edit-mode placeholders and the editor suppresses submission and navigation.
+
+SSR and hydration use the same deterministic defaults, question/answer DOM IDs
+and grouping names. Native disclosures work before hydration and without the
+runtime. Mount `PagebldrRuntimeInteractions` when implementing a custom editor
+surface so subsequent selection changes can reveal closed answers. The standard
+editor and `PagebldrPage` already mount it. Runtime enhancement never unmounts
+answer content or resets visitor state on unrelated changes. Question IDs and
+answer relationships derive from group/panel Element IDs, so repeated Block
+insertion remains independent.
+
+Both Elements accept the standard Style capabilities and optional authored
+anchors. Group styles control inherited typography, color and spacing; panel
+styles apply to the answer content wrapper. The package stylesheet supplies
+neutral disclosure borders and a visible question focus ring using
+`--pagebldr-focus`. It adds no Host-specific branding.
+
+## Insertion and upgrading
+
+No new catalogue or template engine is required. `prepareBlock` and
+`cloneTemplate` allocate fresh Element IDs, including panel IDs. Runtime tab DOM
+IDs derive from the owning group and panel. Copies allocate fresh authored
+anchor names (`original-copy-1`, then the next free suffix); internal anchor
+Destinations follow remapped Element IDs. Links outside the copied subtree
+retain their existing targets. Host Resource values are preserved verbatim for
+Host adaptation before insertion.
+
+Shared Class/Variable **IDs** reuse destination values, including customized
+tokens. Different IDs with case-insensitively colliding names receive a free
+display-name suffix such as `Brand (2)`; their IDs and bindings remain distinct.
+No unrelated destination style is overwritten. Direct `insert` remains strict;
+call `prepareBlock` for dependency merging first. Template application replaces
+the design with the existing command and preserves destination identity/SEO.
+
+This work does not change Document `schemaVersion` (2), text Tabs (1), FAQ (1),
+Menu (1) or Gallery (2). Existing Gallery v1 migration remains sequential and
+deterministic. New optional gallery and navigation fields do not require a
+rewrite of older Documents. Existing static custom Elements remain supported.
+Hosts opt into React registrations where interaction is needed. Copied anchor
+names and collision-name suffixing are changed copy behaviours; do not depend on
+copies retaining externally addressable authored anchor strings.

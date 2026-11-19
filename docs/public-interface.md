@@ -111,7 +111,7 @@ pagebldr does not weaken the Host policy.
 
 The standard engine exposes the nine Layout, Spacing, Size, Position,
 Typography, Background, Border, Effects, and Responsive visibility groups. It
-accepts the 91-property Quizr-derived allowlist, resolves Desktop → Tablet →
+accepts the 92-property Quizr-derived allowlist, resolves Desktop → Tablet →
 Mobile inheritance and Normal-state fallback, and reports each winning value's
 Class/local, breakpoint, state, and inherited origin. CSS includes editor-only
 forced-state selectors and rejects rule delimiters, comments, script/expression
@@ -194,13 +194,14 @@ The Host resolves Resources before synchronous SSR and passes the resulting map
 to `PagebldrRenderer`. Missing adapters and invalid references fail explicitly.
 The renderer never browses, uploads, or fetches Resources while rendering.
 
-The standard library is the complete 24-Element baseline: Container, Heading,
+The standard library is the complete 28-Element library: Container, Heading,
 Rich Text, Button, Logo, Menu, Copyright, Image, Video, Icon, Divider, Spacer,
-List, Icon List, Accordion, Tabs, Testimonial, Star Rating, Counter, Progress,
-Countdown, Social Links, Logo Cloud, and Gallery / Carousel. Their schemas are
-strict. Image, Video, Progress, and Gallery / Carousel are currently version 2
-and include deterministic v1 migrations. Definitions expose nested Resource
-references and Destinations rather than hiding them in renderer code.
+List, Icon List, Accordion, Content Accordion, Accordion Panel, Tabs, Content
+Tabs, Tab Panel, Testimonial, Star Rating, Counter, Progress, Countdown, Social
+Links, Logo Cloud, and Gallery / Carousel. Their schemas are strict. Image,
+Video, Progress, and Gallery / Carousel are currently version 2 and include
+deterministic v1 migrations. Definitions expose nested Resource references and
+Destinations rather than hiding them in renderer code.
 
 Standard media uses either a safe HTTP(S) source or a neutral
 `ResourceReference`. Resource adapters remain the only route from a Host asset
@@ -906,3 +907,30 @@ safe details. Error messages themselves are not compatibility contracts. Public
 exports are maintained through explicit package `exports`, an API-extractor or
 equivalent snapshot, and compile fixtures for supported TypeScript/React
 combinations.
+
+Content Tabs and Content Accordion own ordinary Tab Panel and Accordion Panel
+Elements respectively; `parentTypes` enforces panel ownership.
+`ElementRenderContext.childElements` aligns child metadata with rendered
+children, and `selectedChildId` reveals selected ancestor panels. The React
+entries export `defineReactElementRenderer`, `ReactElementRenderer` and
+`ReactElementRenderProps`; `elementRenderers` is shared by PagebldrRenderer,
+PagebldrEditor and PagebldrPage. Prepared editor Resources are supplied by the
+Host. See the public modular-content guide for the complete serialisation, SSR
+and compatibility contract.
+
+Panel content editing uses the same normalized page Document. The default Tabs
+insertion creates `content-tabs` with three `tab-panel` children; the legacy
+`tabs` type remains readable and can be explicitly converted. Edit with canvas
+opens a staged workspace initially occupying 80% of the viewport; Save changes
+dispatches `apply-subtree` with `elementId`, `baseDocument` and the edited
+`document`. This command refuses stale bases, changed page identity/settings,
+changes outside the owned subtree, and changes to locked Elements. Classes and
+Variables retain their page-wide semantics. One page-history Action covers the
+complete accepted edit. The Host continues to save the owning page through its
+normal controlled interface.
+
+`EditorContextValue.rootId` identifies the current editing surface's root; it
+usually equals `document.rootId` and differs inside a panel workspace. The
+Document itself remains complete and valid. `PagebldrRenderer.rootElementId`
+optionally renders just an owned subtree while preserving full-page styles,
+Resources and Destination resolution; omitted, it renders the complete page.

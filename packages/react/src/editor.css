@@ -1,5 +1,102 @@
 @import "tailwindcss";
 
+/* Keep modal UI thresholds at 80% of the main editor's thresholds. These named
+   containers isolate editor chrome from authored page/media breakpoints. */
+@custom-variant editor-compact {
+  @container pagebldr-editor (width < 1024px) {
+    @slot;
+  }
+  @container pagebldr-panel-editor (width < 819.2px) {
+    @slot;
+  }
+}
+@custom-variant editor-narrow {
+  @container pagebldr-editor (width < 600px) {
+    @slot;
+  }
+  @container pagebldr-panel-editor (width < 480px) {
+    @slot;
+  }
+}
+@custom-variant editor-fields-wide {
+  @container pagebldr-inspector (width >= 400px) {
+    @slot;
+  }
+  @container pagebldr-panel-inspector (width >= 320px) {
+    @slot;
+  }
+}
+
+.pagebldr-panel-canvas-dialog {
+  inset: 10dvh 10dvw;
+  width: 80dvw;
+  min-width: 80dvw;
+  max-width: 100dvw;
+  height: 80dvh;
+  min-height: 80dvh;
+  max-height: 100dvh;
+  transform: none;
+  translate: none;
+  transition: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+.pagebldr-panel-resize-handle {
+  position: absolute;
+  touch-action: none;
+}
+.pagebldr-panel-resize-handle[data-edge="left"],
+.pagebldr-panel-resize-handle[data-edge="right"] {
+  top: 50%;
+  translate: 0 -50%;
+  width: 12px;
+  height: 48px;
+  cursor: ew-resize;
+}
+.pagebldr-panel-resize-handle[data-edge="left"] {
+  left: 0;
+}
+.pagebldr-panel-resize-handle[data-edge="right"] {
+  right: 0;
+}
+.pagebldr-panel-resize-handle[data-edge="top"],
+.pagebldr-panel-resize-handle[data-edge="bottom"] {
+  left: 50%;
+  translate: -50% 0;
+  width: 48px;
+  height: 12px;
+  cursor: ns-resize;
+}
+.pagebldr-panel-resize-handle[data-edge="top"] {
+  top: 0;
+}
+.pagebldr-panel-resize-handle[data-edge="bottom"] {
+  bottom: 0;
+}
+.pagebldr-panel-resize-handle[data-edge="top"] svg,
+.pagebldr-panel-resize-handle[data-edge="bottom"] svg {
+  rotate: 90deg;
+}
+[data-pagebldr-panel-resizing="true"] iframe {
+  pointer-events: none;
+}
+.pagebldr-panel-canvas-dialog > [data-pagebldr-editor] {
+  isolation: isolate;
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+[data-pagebldr-isolated-canvas]
+  [data-pagebldr-renderer]
+  > [data-pagebldr-element]:empty {
+  min-height: 12rem;
+}
+
 /* Accessibility preferences must override primitive motion utilities. */
 @media (prefers-reduced-motion: reduce) {
   [data-pagebldr-ui],
@@ -657,6 +754,11 @@
     font-weight: 650;
   }
 
+  [data-pagebldr-renderer] .pagebldr-accordion summary:focus-visible {
+    outline: 2px solid var(--pagebldr-focus, currentColor);
+    outline-offset: 4px;
+  }
+
   [data-pagebldr-renderer] .pagebldr-tabs-list {
     display: flex;
     flex-wrap: wrap;
@@ -744,6 +846,210 @@
 
   [data-pagebldr-renderer] .pagebldr-gallery[data-layout="carousel"] {
     display: block;
+  }
+}
+
+/* Content panels remain mounted; hidden must win over authored display rules. */
+[data-pagebldr-renderer] [role="tabpanel"][hidden] {
+  display: none !important;
+}
+[data-pagebldr-renderer] .pagebldr-tabs {
+  min-width: 0;
+}
+[data-pagebldr-renderer] .pagebldr-tabs[data-orientation="vertical"] {
+  display: grid;
+  grid-template-columns: minmax(6rem, 30%) minmax(0, 1fr);
+  gap: 1rem;
+}
+[data-pagebldr-renderer]
+  .pagebldr-tabs[data-orientation="vertical"]
+  > .pagebldr-tabs-list {
+  flex-direction: column;
+  align-content: start;
+}
+[data-pagebldr-renderer]
+  .pagebldr-tabs[data-label-layout="scroll"]
+  > .pagebldr-tabs-list {
+  flex-wrap: nowrap;
+  overflow: auto;
+}
+[data-pagebldr-renderer] .pagebldr-tabs > .pagebldr-tabs-list {
+  --_pb-tab-color: var(
+    --pagebldr-tab-authored-color,
+    var(--pagebldr-tab-color)
+  );
+  --_pb-tab-background: var(
+    --pagebldr-tab-authored-background,
+    var(--pagebldr-tab-background)
+  );
+  --_pb-tab-active-color: var(
+    --pagebldr-tab-authored-active-color,
+    var(--pagebldr-tab-active-color)
+  );
+  --_pb-tab-active-background: var(
+    --pagebldr-tab-authored-active-background,
+    var(--pagebldr-tab-active-background)
+  );
+  --_pb-tab-hover-color: var(
+    --pagebldr-tab-authored-hover-color,
+    var(--pagebldr-tab-hover-color)
+  );
+  --_pb-tab-hover-background: var(
+    --pagebldr-tab-authored-hover-background,
+    var(--pagebldr-tab-hover-background)
+  );
+  --_pb-tab-focus-color: var(
+    --pagebldr-tab-authored-focus-color,
+    var(--pagebldr-tab-focus-color)
+  );
+  --_pb-tab-indicator-color: var(
+    --pagebldr-tab-authored-indicator-color,
+    var(--pagebldr-tab-indicator-color)
+  );
+  --_pb-tab-list-background: var(
+    --pagebldr-tab-authored-list-background,
+    var(--pagebldr-tab-list-background)
+  );
+  justify-content: var(--pagebldr-tab-justify-content, flex-start);
+  gap: var(--pagebldr-tab-gap, 8px);
+  background: var(--_pb-tab-list-background, transparent);
+}
+[data-pagebldr-renderer] .pagebldr-tabs > .pagebldr-tabs-list > [role="tab"] {
+  color: var(--_pb-tab-color, inherit);
+  background: var(--_pb-tab-background, transparent);
+  font-size: var(--pagebldr-tab-font-size, 16px);
+  font-weight: var(--pagebldr-tab-font-weight, 400);
+  padding: var(--pagebldr-tab-padding-y, 12px)
+    var(--pagebldr-tab-padding-x, 16px);
+  border-radius: var(--pagebldr-tab-radius, 0px);
+  border-bottom-width: var(--pagebldr-tab-indicator-width, 2px);
+}
+[data-pagebldr-renderer]
+  .pagebldr-tabs
+  > .pagebldr-tabs-list
+  > [role="tab"][aria-selected="true"] {
+  color: var(--_pb-tab-active-color, var(--_pb-tab-color, inherit));
+  background: var(
+    --_pb-tab-active-background,
+    var(--_pb-tab-background, transparent)
+  );
+  font-weight: var(--pagebldr-tab-active-font-weight, 700);
+  border-bottom-color: var(--_pb-tab-indicator-color, currentColor);
+}
+[data-pagebldr-renderer]
+  .pagebldr-tabs
+  > .pagebldr-tabs-list
+  > [role="tab"]:hover {
+  color: var(--_pb-tab-hover-color, var(--_pb-tab-color, inherit));
+  background: var(
+    --_pb-tab-hover-background,
+    var(--_pb-tab-background, transparent)
+  );
+}
+[data-pagebldr-renderer]
+  .pagebldr-tabs
+  > .pagebldr-tabs-list
+  > [role="tab"]:focus-visible {
+  outline: 2px solid
+    var(--_pb-tab-focus-color, var(--pagebldr-focus, currentColor));
+  outline-offset: -2px;
+}
+[data-pagebldr-renderer]
+  .pagebldr-tabs
+  > .pagebldr-tabs-list
+  > [role="tab"][aria-selected="true"]:hover {
+  color: var(
+    --_pb-tab-hover-color,
+    var(--_pb-tab-active-color, var(--_pb-tab-color, inherit))
+  );
+  background: var(
+    --_pb-tab-hover-background,
+    var(--_pb-tab-active-background, var(--_pb-tab-background, transparent))
+  );
+}
+[data-pagebldr-renderer] .pagebldr-menu-submenu {
+  list-style: none;
+  padding-inline-start: 1rem;
+  max-height: 50dvh;
+  overflow: auto;
+}
+[data-pagebldr-renderer] .pagebldr-menu-submenu > li {
+  padding-block: 0.5rem;
+}
+[data-pagebldr-renderer] [data-pagebldr-submenu] > summary {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+[data-pagebldr-renderer] .pagebldr-gallery-frame {
+  container-type: inline-size;
+  min-width: 0;
+}
+[data-pagebldr-renderer] .pagebldr-gallery {
+  grid-template-columns: repeat(var(--gallery-columns, 3), minmax(0, 1fr));
+  gap: var(--gallery-gap, 1rem);
+}
+[data-pagebldr-renderer] .pagebldr-gallery[data-layout="masonry"] {
+  column-count: var(--gallery-columns, 3);
+  column-width: auto;
+  column-gap: var(--gallery-gap, 1rem);
+}
+[data-pagebldr-renderer] .pagebldr-gallery figure {
+  min-width: 0;
+  margin: 0;
+}
+[data-pagebldr-renderer] .pagebldr-gallery[data-layout="masonry"] > figure {
+  margin-bottom: var(--gallery-gap, 1rem);
+}
+[data-pagebldr-renderer] .pagebldr-gallery img {
+  height: auto;
+}
+
+[data-pagebldr-renderer] [data-gallery-open] {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+[data-pagebldr-renderer] [data-gallery-dialog] {
+  max-width: min(90vw, 70rem);
+  max-height: 90dvh;
+  overflow: auto;
+  padding: 1rem;
+  color: var(--pagebldr-foreground);
+  background: var(--pagebldr-background);
+}
+[data-pagebldr-renderer] [data-gallery-dialog]::backdrop {
+  background: rgb(0 0 0 / 0.7);
+}
+[data-pagebldr-renderer] [data-gallery-dialog] img {
+  max-height: 70dvh;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin-inline: auto;
+}
+@container (max-width: 64rem) {
+  [data-pagebldr-renderer] .pagebldr-gallery {
+    grid-template-columns: repeat(
+      var(--gallery-tablet-columns, 2),
+      minmax(0, 1fr)
+    );
+  }
+  [data-pagebldr-renderer] .pagebldr-gallery[data-layout="masonry"] {
+    column-count: var(--gallery-tablet-columns, 2);
+  }
+}
+@container (max-width: 48rem) {
+  [data-pagebldr-renderer] .pagebldr-gallery {
+    grid-template-columns: repeat(
+      var(--gallery-mobile-columns, 1),
+      minmax(0, 1fr)
+    );
+  }
+  [data-pagebldr-renderer] .pagebldr-gallery[data-layout="masonry"] {
+    column-count: var(--gallery-mobile-columns, 1);
   }
 }
 

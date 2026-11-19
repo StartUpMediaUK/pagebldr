@@ -24,6 +24,7 @@ import { Switch } from "../components/ui/switch.js";
 import { InspectorSelect, InspectorSelectOption } from "./inspector-select.js";
 import { ValidatedInputField } from "./validated-input-field.js";
 import { MediaPicker, MediaViewer } from "./media-picker.js";
+import { DestinationControl } from "./destination-control.js";
 import { usePagebldrEditor } from "./context.js";
 
 type MediaControlDefinition = Extract<
@@ -109,6 +110,8 @@ export function MediaControl({
                 altConfirmed: false,
                 decorative: false,
                 caption: "",
+                ...(item.width ? { width: item.width } : {}),
+                ...(item.height ? { height: item.height } : {}),
               },
         );
       update({ [control.key]: [...items, ...added].slice(0, 30) });
@@ -324,6 +327,46 @@ export function MediaControl({
                       onCommit={(caption) => updateItem(index, { caption })}
                     />
                   )}
+                  {control.usage === "gallery" ? (
+                    <>
+                      <DestinationControl
+                        applicationDestinations={editor.applicationDestinations}
+                        control={{ label: "Item destination", nullable: true }}
+                        disabled={disabled}
+                        document={editor.document}
+                        elementId={`${element.id}:${String(item.id)}`}
+                        value={item.destination ?? null}
+                        onChange={(destination) =>
+                          updateItem(index, { destination })
+                        }
+                      />
+                      {(["width", "height"] as const).map((key) => (
+                        <ValidatedInputField
+                          key={key}
+                          label={`Intrinsic ${key}`}
+                          value={
+                            typeof item[key] === "number"
+                              ? String(item[key])
+                              : ""
+                          }
+                          inputProps={{ disabled, inputMode: "numeric" }}
+                          commitOnBlur
+                          onCommit={(value) => {
+                            const dimension = Number(value);
+                            if (
+                              !Number.isInteger(dimension) ||
+                              dimension < 1 ||
+                              dimension > 100000
+                            )
+                              throw new Error(
+                                "Enter a dimension from 1 to 100000 pixels.",
+                              );
+                            updateItem(index, { [key]: dimension });
+                          }}
+                        />
+                      ))}
+                    </>
+                  ) : null}
                   {item.kind !== "video" ? (
                     <>
                       <ValidatedInputField

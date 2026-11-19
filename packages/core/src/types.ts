@@ -36,6 +36,8 @@ export interface MediaBrowseOptions {
   readonly sort: "newest" | "oldest" | "name-asc" | "name-desc";
 }
 export interface MediaItem {
+  readonly width?: number;
+  readonly height?: number;
   readonly reference: ResourceReference;
   readonly kind: MediaKind;
   readonly displayName: string;

@@ -1,5 +1,7 @@
 "use client";
 
+import { editingDocument } from "./context.js";
+
 import { useEffect, useRef, useState } from "react";
 import { startBlockDrag, endBlockDrag } from "./block-drag.js";
 import {
@@ -125,7 +127,9 @@ const elementIcons: Readonly<Record<string, LucideIcon>> = {
   list: ListIcon,
   "icon-list": ListChecksIcon,
   accordion: CircleHelpIcon,
+  "content-accordion": CircleHelpIcon,
   tabs: PanelsTopLeftIcon,
+  "content-tabs": PanelsTopLeftIcon,
   testimonial: QuoteIcon,
   "star-rating": StarIcon,
   counter: GaugeIcon,
@@ -135,6 +139,21 @@ const elementIcons: Readonly<Record<string, LucideIcon>> = {
   "logo-cloud": Building2Icon,
   "gallery-carousel": ImagesIcon,
 };
+const elementGroups = [
+  { label: "Layout", types: ["container", "divider", "spacer"] },
+  { label: "Typography", types: ["heading", "rich-text", "list", "icon-list"] },
+  { label: "Media", types: ["image", "video", "gallery-carousel", "icon"] },
+  { label: "Navigation & Actions", types: ["button", "menu", "social-links"] },
+  { label: "Branding", types: ["logo", "logo-cloud", "copyright"] },
+  {
+    label: "Interactive Content",
+    types: ["content-tabs", "tabs", "accordion", "content-accordion"],
+  },
+  { label: "Social Proof", types: ["testimonial", "star-rating"] },
+  { label: "Stats & Timers", types: ["counter", "progress", "countdown"] },
+];
+const groupedTypes = new Set(elementGroups.flatMap(({ types }) => types));
+
 export function LibraryPanel() {
   const editor = usePagebldrEditor();
   const elementDrag = useElementDragSession();
@@ -143,6 +162,30 @@ export function LibraryPanel() {
   const browsing = useLibraryBrowsing();
   const { query, tab, category, templateSource, favouritesOnly } =
     browsing.value;
+  const matchingElements = new Map(
+    [...editor.builder.elements].filter(
+      ([type, definition]) =>
+        type !== "tab-panel" &&
+        type !== "accordion-panel" &&
+        (type !== "tabs" || !editor.builder.elements.has("content-tabs")) &&
+        definition.label.toLowerCase().includes(query.trim().toLowerCase()),
+    ),
+  );
+  const visibleElementGroups = [
+    ...elementGroups,
+    {
+      label: "Custom Elements",
+      types: [...matchingElements.keys()].filter(
+        (type) => !groupedTypes.has(type),
+      ),
+    },
+  ].flatMap(({ label, types }) => {
+    const definitions = types.flatMap((type) => {
+      const definition = matchingElements.get(type);
+      return definition ? [definition] : [];
+    });
+    return definitions.length ? [{ label, definitions }] : [];
+  });
   const setQuery = (query: string) =>
     browsing.update((value) => ({ ...value, query }));
   const setTab = (tab: string) =>
@@ -269,7 +312,7 @@ export function LibraryPanel() {
         editor.document,
       );
       const placement = resolveClickInsertion({
-        document: editor.document,
+        document: editingDocument(editor),
         definitions: editor.builder.elements,
         selectedId: editor.selectedId,
         elementType: clipboard.elements[clipboard.rootId]!.type,
@@ -304,7 +347,7 @@ export function LibraryPanel() {
         );
       template = editor.builder.editor.library.cloneTemplate(template);
       editor.dispatch({ type: "apply-template", template });
-      editor.select(editor.document.rootId);
+      editor.select(editor.rootId);
       editor.fitCanvas();
       setPreview(null);
     });
@@ -384,54 +427,71 @@ export function LibraryPanel() {
         <TabsList variant="line" className="mx-3 grid w-auto grid-cols-3">
           <TabsTrigger value="elements">Elements</TabsTrigger>
           <TabsTrigger value="blocks">Blocks</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger
+            value="templates"
+            disabled={editor.rootId !== editor.document.rootId}
+          >
+            Templates
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="elements" className="min-h-0">
           <ScrollArea className="h-full p-3">
-            <div className="grid grid-cols-2 gap-2">
-              {[...editor.builder.elements.values()]
-                .filter((definition) =>
-                  definition.label
-                    .toLowerCase()
-                    .includes(query.trim().toLowerCase()),
-                )
-                .map((definition) => {
-                  const Icon = elementIcons[definition.type] ?? BoxIcon;
-                  return (
-                    <Button
-                      key={definition.type}
-                      variant="secondary"
-                      className="h-20 flex-col"
-                      disabled={readOnly}
-                      draggable={!readOnly}
-                      onDragStart={(event) => {
-                        elementDrag.start(event.dataTransfer, {
-                          kind: "element",
-                          elementType: definition.type,
-                        });
-                      }}
-                      onDragEnd={() => elementDrag.end()}
-                      onClick={() => {
-                        const placement = resolveClickInsertion({
-                          document: editor.document,
-                          definitions: editor.builder.elements,
-                          selectedId: editor.selectedId,
-                          elementType: definition.type,
-                        });
-                        if (placement)
-                          editor.dispatch({
-                            type: "insert",
-                            parentId: placement.parentId,
-                            index: placement.index,
-                            clipboard: createElementClipboard(definition),
-                          });
-                      }}
-                    >
-                      <Icon data-icon="inline-start" />
-                      {definition.label}
-                    </Button>
-                  );
-                })}
+            <div className="flex flex-col gap-5">
+              {visibleElementGroups.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No elements found.
+                </p>
+              ) : (
+                visibleElementGroups.map(({ label, definitions }) => (
+                  <section key={label} aria-label={label}>
+                    <h3 className="mb-2 text-sm font-medium">{label}</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {definitions.map((definition) => {
+                        const Icon = elementIcons[definition.type] ?? BoxIcon;
+                        return (
+                          <Button
+                            key={definition.type}
+                            variant="secondary"
+                            className="h-20 flex-col"
+                            disabled={readOnly}
+                            draggable={!readOnly}
+                            onDragStart={(event) => {
+                              elementDrag.start(event.dataTransfer, {
+                                kind: "element",
+                                elementType: definition.type,
+                              });
+                            }}
+                            onDragEnd={() => elementDrag.end()}
+                            onClick={() => {
+                              const placement = resolveClickInsertion({
+                                document: editingDocument(editor),
+                                definitions: editor.builder.elements,
+                                selectedId: editor.selectedId,
+                                elementType: definition.type,
+                              });
+                              if (placement) {
+                                const clipboard =
+                                  createElementClipboard(definition);
+                                editor.dispatch({
+                                  type: "insert",
+                                  parentId: placement.parentId,
+                                  index: placement.index,
+                                  clipboard,
+                                });
+                                if (definition.type === "content-tabs")
+                                  editor.select(clipboard.rootId);
+                              }
+                            }}
+                          >
+                            <Icon data-icon="inline-start" />
+                            {definition.label}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))
+              )}
             </div>
           </ScrollArea>
         </TabsContent>
@@ -761,6 +821,9 @@ export function LibraryPanel() {
                   document={preview.document}
                   resources={preview.resources}
                   mode="preview"
+                  {...(editor.elementRenderers
+                    ? { elementRenderers: editor.elementRenderers }
+                    : {})}
                 />
               </>
             ) : null}

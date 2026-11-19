@@ -77,6 +77,15 @@ export function assertValidDocument(
       );
     }
     const policy = definition.childPolicy ?? { kind: "any" };
+    if (definition.parentTypes) {
+      const parentId = index.parentById.get(element.id);
+      const parent = parentId ? document.elements[parentId] : undefined;
+      if (!parent || !definition.parentTypes.includes(parent.type))
+        throw new PagebldrError(
+          "INVALID_ELEMENT",
+          `Element ${element.id} requires a parent of type ${definition.parentTypes.join(", ")}.`,
+        );
+    }
     if (policy.kind === "none" && element.children.length > 0) {
       throw new PagebldrError(
         "INVALID_ELEMENT",

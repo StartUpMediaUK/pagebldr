@@ -63,12 +63,12 @@ describe("Style engine", () => {
     ]);
     expect(
       standardStyleCapabilities.flatMap(({ properties }) => properties),
-    ).toHaveLength(92);
+    ).toHaveLength(93);
     expect(
       new Set(
         standardStyleCapabilities.flatMap(({ properties }) => properties),
       ),
-    ).toHaveLength(91);
+    ).toHaveLength(92);
   });
 
   it("resolves breakpoint, state, ordered Class, and local origins", () => {

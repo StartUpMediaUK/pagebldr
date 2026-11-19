@@ -45,6 +45,11 @@ export function createLibraryPreparation(
           ...Object.keys(input.elements),
           ...Object.keys(destination.elements),
         ]),
+        Object.values(destination.elements).flatMap((element) =>
+          typeof element.props.anchorId === "string"
+            ? [element.props.anchorId]
+            : [],
+        ),
       );
       // Stable dependency IDs intentionally share the page's customized design.
       // Command dispatch remains the structural and semantic validation boundary.
@@ -80,16 +85,28 @@ export function createLibraryPreparation(
   });
 }
 
-function reuseDependencies<Value>(
+function reuseDependencies<Value extends { readonly name: string }>(
   incoming: Readonly<Record<string, Value>>,
   existing: Readonly<Record<string, Value>>,
 ): Record<string, Value> {
-  return Object.fromEntries(
-    Object.entries(incoming).map(([id, value]) => [
-      id,
-      structuredClone(existing[id] ?? value),
-    ]),
+  const normalize = (name: string) => name.trim().toLocaleLowerCase();
+  const used = new Set(
+    Object.values(existing).map((value) => normalize(value.name)),
   );
+  const result: Record<string, Value> = {};
+  for (const [id, value] of Object.entries(incoming)) {
+    if (existing[id]) {
+      result[id] = structuredClone(existing[id]);
+      continue;
+    }
+    let name = value.name;
+    let suffix = 2;
+    while (used.has(normalize(name)))
+      name = `${value.name.slice(0, 108)} (${suffix++})`;
+    used.add(normalize(name));
+    result[id] = { ...structuredClone(value), name };
+  }
+  return result;
 }
 
 function freshIds(factory: IdFactory, reserved: readonly string[]): IdFactory {

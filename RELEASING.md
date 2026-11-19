@@ -4,6 +4,15 @@ Only `packages/pagebldr` is published. Documentation and examples remain private
 workspace consumers. Preparing a candidate does not authorize a commit, push,
 npm publish or docs deployment. Obtain product-owner review before each release.
 
+## Branch promotion
+
+Open feature and fix PRs against `master`. Merge and verify them there before
+promoting `master` to `release/alpha` through a promotion PR. If a staging gate
+is introduced, promote `master` to `release/staging` first, then promote staging
+to the approved release branch. Apply fixes on feature branches and repeat the
+same promotion path. Keep release versioning and publishing in the dedicated
+alpha workflow.
+
 ## Local candidate
 
 Use a supported Node version and pnpm 10.8.0. Start from the intended source
@@ -38,9 +47,12 @@ browser binaries locally; `PAGEBLDR_CHROMIUM_EXECUTABLE` selects a compatible
 local Chromium executable.
 
 Run the packed checker separately with `PAGEBLDR_REACT_VERSION=18.3.1` for React
-18; use a separate result file and evidence directory. CI additionally exercises
-Firefox and WebKit responsive authoring. The full Chromium suite includes Vite,
-the packed Next.js Host, root-entry navigation, published widgets, pencil
+18; use a separate result file and evidence directory. Routine PR CI runs the
+Node 22 workspace and package checks, the Changeset and public interface checks,
+and dependency checks. The publish workflow runs the full compatibility matrix
+on the reviewed release commit, including Firefox and WebKit responsive
+authoring and the Windows visual comparison. The full Chromium suite includes
+Vite, the packed Next.js Host, root-entry navigation, published widgets, pencil
 movement, keyboard, libraries and lifecycle recovery. Browser tests assert
 current behavior and capture screenshots; they are not a pixel-difference
 certification against every historical source screenshot.
@@ -120,10 +132,10 @@ Review and commit that state when authorized. The release-PR workflow requires
 the alpha state before versioning; it does not publish. Review the generated
 version/changelog PR and its checks. Then explicitly dispatch
 `Publish approved alpha` with the exact version. It reruns
-package/browser/security gates, uploads the checked archive, waits for the
-environment reviewer and verifies the archive again before publishing to
-`alpha`. It cannot run from another branch or before the repository enable flag
-is set. No long-lived npm write token is required.
+package/browser/security gates, requires the compatibility matrix, uploads the
+checked archive, waits for the environment reviewer and verifies the archive
+again before publishing to `alpha`. It cannot run from another branch or before
+the repository enable flag is set. No long-lived npm write token is required.
 
 Retain the version, source commit, checksum, browser reports and provenance URL.
 Verify the installed registry artifact, including both public React majors and
